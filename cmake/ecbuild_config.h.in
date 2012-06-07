@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef ecbase_config_h
-#define ecbase_config_h
+#ifndef ecbuild_config_h
+#define ecbuild_config_h
 
-#include "ecbase_platform.h"
+#include "ecbuild_platform.h"
 
 /* config info */
 

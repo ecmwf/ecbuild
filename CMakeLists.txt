@@ -24,7 +24,7 @@ ecbuild_declare_project()
 
 # TODO: rename to ecbuild_*
 
-configure_file( cmake/ecbase_version.h.in   ${CMAKE_BINARY_DIR}/ecbase_version.h  )
+configure_file( cmake/ecbuild_version.h.in   ${CMAKE_BINARY_DIR}/ecbuild_version.h  )
 
 # contents
 
@@ -39,7 +39,7 @@ ecbuild_add_resources( TARGET ${PROJECT_NAME}_description_files
                      DONT_PACK_REGEX "configure.*"
 )
 
-install( DIRECTORY cmake DESTINATION share/ecbase )
+install( DIRECTORY cmake DESTINATION share/ecbuild )
 
 add_subdirectory( tools  )
 

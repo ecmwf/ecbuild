@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef ecbase_version_h
-#define ecbase_version_h
+#ifndef ecbuild_version_h
+#define ecbuild_version_h
 
-#define ECBASE_VERSION "@ECBASE_VERSION@"
+#define ECBUILD_VERSION "@ECBUILD_VERSION@"
 
-#define ECBASE_MAJOR_VERSION @ECBASE_MAJOR_VERSION@
-#define ECBASE_MINOR_VERSION @ECBASE_MINOR_VERSION@
-#define ECBASE_PATCH_VERSION @ECBASE_PATCH_VERSION@
+#define ECBUILD_MAJOR_VERSION @ECBUILD_MAJOR_VERSION@
+#define ECBUILD_MINOR_VERSION @ECBUILD_MINOR_VERSION@
+#define ECBUILD_PATCH_VERSION @ECBUILD_PATCH_VERSION@
 
-#endif // ecbase_version_h
+#endif // ecbuild_version_h

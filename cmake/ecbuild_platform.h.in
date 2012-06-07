@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef ecbase_platform_h
-#define ecbase_platform_h
+#ifndef ecbuild_platform_h
+#define ecbuild_platform_h
 
 /* cpu arch info */
 
@@ -91,4 +91,4 @@
 
 #cmakedefine EC_HAVE_CXXABI_H
 
-#endif // ecbase_platform_h
+#endif // ecbuild_platform_h

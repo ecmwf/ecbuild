@@ -123,8 +123,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     ############################################################################################
     # generate the configuration headers here, so external projects also get them 
 
-    configure_file( ${buildsys_dir}/ecbase_config.h.in     ${CMAKE_BINARY_DIR}/ecbase_config.h   )
-    configure_file( ${buildsys_dir}/ecbase_platform.h.in   ${CMAKE_BINARY_DIR}/ecbase_platform.h )
+    configure_file( ${buildsys_dir}/ecbuild_config.h.in     ${CMAKE_BINARY_DIR}/ecbuild_config.h   )
+    configure_file( ${buildsys_dir}/ecbuild_platform.h.in   ${CMAKE_BINARY_DIR}/ecbuild_platform.h )
 
 endif()
 
