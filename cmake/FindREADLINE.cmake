@@ -14,12 +14,12 @@
 #  READLINE_DEFINITIONS - Compiler switches required for using READLINE
 
 if( DEFINED READLINE_PATH )
-    find_path(READLINE_INCLUDE_DIR readline/readline.h PATHS ${READLINE_PATH}/include PATH_SUFFIXES readline NO_DEFAULT_PATH)
+    find_path(READLINE_INCLUDE_DIR readline/readline.h PATHS ${READLINE_PATH}/include NO_DEFAULT_PATH)
     find_library(READLINE_LIBRARY  readline            PATHS ${READLINE_PATH}/lib     PATH_SUFFIXES readline NO_DEFAULT_PATH)
 endif()
 
-find_path(READLINE_INCLUDE_DIR readline.h PATH_SUFFIXES readline )
-find_library( READLINE_LIBRARY readline   PATH_SUFFIXES readline )
+find_path(READLINE_INCLUDE_DIR readline/readline.h )
+find_library( READLINE_LIBRARY readline            PATH_SUFFIXES readline )
 
 set( READLINE_LIBRARIES    ${READLINE_LIBRARY} )
 set( READLINE_INCLUDE_DIRS ${READLINE_INCLUDE_DIR} )
