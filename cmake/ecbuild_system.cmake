@@ -15,6 +15,38 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
 endif()
 
+
+############################################################################################
+# language support
+
+    enable_language( C )   # ensure C has been enabled
+
+    enable_language( CXX ) # ensure C++ has been enabled
+
+    if( DEFINED EC_FORTRAN ) # load fortran language if requested
+
+      # this is a fix for the known problem on CMake issue #9220
+
+      if( NOT EC_ALREADY_SEARCHED_FORTRAN )
+
+        set( __fortran_opt_flag "" )
+        if( EC_FORTRAN STREQUAL "OPTIONAL" )
+          set( __fortran_opt_flag ${EC_FORTRAN} )
+        endif()
+        enable_language( Fortran ${__fortran_opt_flag} )
+
+        if( EC_FORTRAN STREQUAL "REQUIRED" )
+          if( NOT CMAKE_Fortran_COMPILER OR NOT CMAKE_Fortran_COMPILER_WORKS )
+            message( FATAL_ERROR "Fortran compiler required by project ${PROJECT_NAME} but does not seem to work" )
+          endif()
+        endif()
+
+        set(EC_ALREADY_SEARCHED_FORTRAN 1 CACHE INTERNAL "Already searched for Fortran compiler" )
+
+      endif()
+
+    endif()
+
 ###############################################################################
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
@@ -23,11 +55,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     # but without using the var CMAKE_CURRENT_LIST_DIR (only >=2.8.3)
     get_filename_component( buildsys_dir ${CMAKE_CURRENT_LIST_FILE} PATH )
 
-        # ensure C and C++ languages have been enabled
-        enable_language( C )
-        enable_language( CXX )
-
-        # add backward support from 2.8 to 2.6
+    # add backward support from 2.8 to 2.6
     if( ${CMAKE_VERSION} VERSION_LESS "2.8" )
         set(CMAKE_MODULE_PATH "${buildsys_dir}/2.8" ${CMAKE_MODULE_PATH} )
     endif()
