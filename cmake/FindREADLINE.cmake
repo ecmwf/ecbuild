@@ -26,13 +26,6 @@ set( READLINE_INCLUDE_DIRS ${READLINE_INCLUDE_DIR} )
 
 include(FindPackageHandleStandardArgs)
 
-# debug_var(READLINE_LIBRARY)
-# debug_var(READLINE_INCLUDE_DIR)
-
-# handle the QUIETLY and REQUIRED arguments and set READLINE_FOUND to TRUE
-# if all listed variables are TRUE
 find_package_handle_standard_args(READLINE  DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR)
-
-# debug_var(READLINE_FOUND)
 
 mark_as_advanced(READLINE_INCLUDE_DIR READLINE_LIBRARY )

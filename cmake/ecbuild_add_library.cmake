@@ -55,7 +55,13 @@ macro( ecbuild_add_library )
 
     # add include dirs if defined
     if( DEFINED _PAR_INCLUDES )
-      include_directories( ${_PAR_INCLUDES} )
+      foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
+        if( path )
+          include_directories( ${path} )
+        else()
+          message( WARNING "Path ${path} was skipped" )
+        endif()
+      endforeach()
     endif()
 
     # add persistent layer files
@@ -80,7 +86,13 @@ macro( ecbuild_add_library )
 
     # add the link libraries
     if( DEFINED _PAR_LIBS )
-      target_link_libraries( ${_PAR_TARGET} ${_PAR_LIBS} )
+      foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
+        if( lib )
+          target_link_libraries( ${_PAR_TARGET} ${lib} )
+        else()
+          message( WARNING "Lib ${lib} was skipped" )
+        endif()
+      endforeach()
     endif()
 
     # add local flags
