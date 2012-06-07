@@ -19,16 +19,15 @@ endif()
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
-    # get directory where this file is, 
+    # get directory where this file is,
     # but without using the var CMAKE_CURRENT_LIST_DIR (only >=2.8.3)
     get_filename_component( buildsys_dir ${CMAKE_CURRENT_LIST_FILE} PATH )
 
-	# ensure C and C++ languages have been enabled
-	enable_language( C )
-	enable_language( CXX )
-	enable_language( Fortran OPTIONAL )
+        # ensure C and C++ languages have been enabled
+        enable_language( C )
+        enable_language( CXX )
 
-	# add backward support from 2.8 to 2.6
+        # add backward support from 2.8 to 2.6
     if( ${CMAKE_VERSION} VERSION_LESS "2.8" )
         set(CMAKE_MODULE_PATH "${buildsys_dir}/2.8" ${CMAKE_MODULE_PATH} )
     endif()
@@ -62,7 +61,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include(CheckCXXSourceCompiles)
     include(CheckCXXSourceRuns)
 
-    if( CMAKE_Fortran_COMPILER_WORKS )
+    if( CMAKE_Fortran_COMPILER_LOADED )
         include(CheckFortranFunctionExists)
         include(FortranCInterface)
     endif()
@@ -121,7 +120,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     endif()
 
     ############################################################################################
-    # generate the configuration headers here, so external projects also get them 
+    # generate the configuration headers here, so external projects also get them
 
     configure_file( ${buildsys_dir}/ecbuild_config.h.in     ${CMAKE_BINARY_DIR}/ecbuild_config.h   )
     configure_file( ${buildsys_dir}/ecbuild_platform.h.in   ${CMAKE_BINARY_DIR}/ecbuild_platform.h )

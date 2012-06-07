@@ -162,8 +162,6 @@ if( UNIX )
 
         set( EC_OS_NAME "aix" )
 
-        add_definitions( -Drs6000 )
-
         cmake_add_cxx_flags("-bmaxdata:0x40000000")
         cmake_add_cxx_flags("-qrtti")
         cmake_add_cxx_flags("-qfuncsect")
