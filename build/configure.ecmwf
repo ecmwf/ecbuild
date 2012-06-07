@@ -1,0 +1,81 @@
+#!/bin/ksh
+
+extra_params="$1"
+
+CMAKE=cmake
+
+if [[ -x /usr/local/apps/cmake/current/bin/cmake ]]
+then
+  CMAKE=/usr/local/apps/cmake/current/bin/cmake
+fi
+
+if [[ -x $HOME/local/bin/cmake ]]
+then
+  CMAKE=$HOME/local/bin/cmake
+fi
+
+if [[ -x $HOME/bin/cmake ]]
+then
+  CMAKE=$HOME/bin/cmake
+fi
+
+if [[ -f ./CMakeCache.txt ]]
+then
+	echo "[ ERROR ]"
+	echo "> Build directory ($PWD) is already cmake configured - CMakeCache.txt exists"
+	echo "> $0 can only be run in a clean directory"
+	echo "> To modify variables in this build tree, call direclty $CMAKE with -DVAR=VALUE"
+	echo "> aborting ... "
+	exit 1
+fi
+
+
+if [[ -z "$GRIB_API_PATH" ]]
+then
+	if [[ -z "$GRIB_API_INCLUDE_DIR" ]]
+	then
+  		GRIB_API_PATH=$HOME/grib_api
+	else
+  		for n in $GRIB_API_INCLUDE_DIR
+ 	 	do
+      			echo $n
+      			if [[ -f $n/grib_api.h ]]
+      			then
+        			GRIB_API_PATH=$(cd $n/..; pwd)
+     		 	fi
+  		done
+	fi
+fi
+
+if [[ -z "$ARCH" ]]
+then
+  ARCH=$(arch)
+fi
+
+EXTRA=""
+HPSS=hpss7322_prod
+
+if [[ $ARCH = "rs6000" ]]
+then
+  EXTRA="-DCMAKE_CXX_COMPILER=xlC_r -DCMAKE_C_COMPILER=xlc_r"
+fi
+
+if [[ $ARCH = "ibm_power6" || $ARCH = "ibm_power7" ]]
+then
+  EXTRA="-DCMAKE_CXX_COMPILER=xlC_r -DCMAKE_C_COMPILER=xlc_r -DDHSHOME=/marsdev/data/dhshome -DCMAKE_PREFIX_PATH=/usr/local/apps/jasper/1.900.0/LP64 -DCMAKE_INSTALL_PREFIX:PATH=/marsdev/data/dhshome -DBISON_EXECUTABLE:PATH=/usr/local/apps/bison/2.3/bin/bison"
+fi
+
+if [[ $ARCH = "linux" ]]
+then
+  EXTRA=-DWITH_READLINE=ON
+fi
+
+here=$(basename $(pwd))
+if [[ "$here" = "production" ]]
+then
+  type=Production
+else
+  type=Debug
+fi
+
+$CMAKE ../..  -DCMAKE_BUILD_TYPE=$type -DGRIB_API_PATH=$GRIB_API_PATH -DHPSS_PATH=/opt/$HPSS $EXTRA $extra_params $extra_params

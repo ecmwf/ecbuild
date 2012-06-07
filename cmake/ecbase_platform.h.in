@@ -1,0 +1,94 @@
+/*
+ * (C) Copyright 1996-2012 ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+#ifndef ecbase_platform_h
+#define ecbase_platform_h
+
+/* cpu arch info */
+
+#cmakedefine EC_BIG_ENDIAN       @EC_BIG_ENDIAN@
+#cmakedefine EC_LITTLE_ENDIAN    @EC_LITTLE_ENDIAN@
+
+/* compiler support */
+
+#cmakedefine EC_HAVE_FUNCTION_DEF
+
+/* os capability checks */
+
+#cmakedefine EC_HAVE_OFFT
+#cmakedefine EC_HAVE_OFF64T
+
+#cmakedefine EC_HAVE_FSEEK
+#cmakedefine EC_HAVE_FSEEKO
+#cmakedefine EC_HAVE_FTELLO
+#cmakedefine EC_HAVE_LSEEK
+#cmakedefine EC_HAVE_FTRUNCATE
+#cmakedefine EC_HAVE_OPEN
+#cmakedefine EC_HAVE_FOPEN
+#cmakedefine EC_HAVE_FLOCK
+#cmakedefine EC_HAVE_MMAP
+
+#cmakedefine EC_HAVE_STRUCT_STAT
+#cmakedefine EC_HAVE_STRUCT_STAT64
+#cmakedefine EC_HAVE_STAT
+#cmakedefine EC_HAVE_STAT64
+#cmakedefine EC_HAVE_FSTAT
+#cmakedefine EC_HAVE_FSTAT64
+
+#cmakedefine EC_HAVE_FSEEKO64
+#cmakedefine EC_HAVE_FTELLO64
+#cmakedefine EC_HAVE_LSEEK64
+#cmakedefine EC_HAVE_OPEN64
+#cmakedefine EC_HAVE_FOPEN64
+#cmakedefine EC_HAVE_FTRUNCATE64
+#cmakedefine EC_HAVE_FLOCK64
+#cmakedefine EC_HAVE_MMAP64
+
+#cmakedefine EC_HAVE_MALLOC_H
+#cmakedefine EC_HAVE_SYS_MALLOC_H
+
+#cmakedefine EC_HAVE_STRUCT_STATVFS
+#cmakedefine EC_HAVE_STRUCT_STATVFS64
+#cmakedefine EC_HAVE_STATVFS
+#cmakedefine EC_HAVE_STATVFS64
+
+#cmakedefine EC_HAVE_AIO
+#cmakedefine EC_HAVE_AIO64
+
+#cmakedefine EC_HAVE_F_GETLK
+#cmakedefine EC_HAVE_F_SETLKW
+#cmakedefine EC_HAVE_F_SETLK
+
+#cmakedefine EC_HAVE_F_GETLK64
+#cmakedefine EC_HAVE_F_SETLKW64
+#cmakedefine EC_HAVE_F_SETLK64
+
+#cmakedefine EC_HAVE_MAP_ANONYMOUS
+#cmakedefine EC_HAVE_MAP_ANON
+
+#cmakedefine EC_HAVE_FSYNC
+#cmakedefine EC_HAVE_FDATASYNC
+#cmakedefine EC_HAVE_DIRFD
+#cmakedefine EC_HAVE_SYSPROC
+#cmakedefine EC_HAVE_SYSPROCFS
+
+#cmakedefine EC_HAVE_EXECINFO_BACKTRACE
+
+/* reentrant funtions support */
+
+#cmakedefine EC_HAVE_GMTIME_R
+#cmakedefine EC_HAVE_GETPWUID_R
+#cmakedefine EC_HAVE_GETPWNAM_R
+#cmakedefine EC_HAVE_READDIR_R
+#cmakedefine EC_HAVE_GETHOSTBYNAME_R
+
+#cmakedefine EC_HAVE_CXXABI_H
+
+#endif // ecbase_platform_h

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+
+cmake="/usr/local/apps/cmake/current/bin/cmake"
+
+cc="-DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++"
+
+fc="-DCMAKE_Fortran_COMPILER=/usr/local/apps/pgi/pgi-10.8/linux86-64/10.8/bin/pgf90"
+
+build_type="-DCMAKE_BUILD_TYPE=$(basename $(pwd) | sed 's/\W[a-zA-Z0-9]*//')"
+
+install="-DCMAKE_INSTALL_PREFIX=/tmp/mak/odb_api/"
+
+common="-DCMAKE_PREFIX_PATH=/usr/local/lib/metaps/lib/grib_api/jasper;/usr/local/apps/python/2.7 -DCHECK_UNUSED_FILES=OFF -DWITH_READLINE=ON"
+
+grib_api="-DGRIB_API_PATH=/usr/local/lib/metaps/lib/grib_api/1.9.9  -DWITH_PNG=ON -DNETCDF_PATH=/usr/local/apps/netCDF/current"
+
+server="-DDHSHOME=/tmp/mak/dhs -DWITH_DUMMY_TAPES=ON"
+
+client="-DBUILD_MARS_CLIENT=ON -DEMOS_PATH=/usr/local/lib/metaps/lib/libemos_for_mars -DFDB_PATH=/usr/local/lib/metaps -DPGI_PATH=/usr/local/apps/pgi/pgi-10.8/linux86-64/10.8 -DBUILD_MARSLITE=OFF -DODB_PATH=/usr/local/apps/odb/CY37R3.001/pgf90/LP64/"
+
+$1 $cmake ../.. $cc $fc $build_type $install $common $grib_api $server $client $2 -DODB_PATH=$ODB_ROOT -DODB_API_MIGRATOR=ON -DODB_API_FORTRAN=ON -DODB_API_PYTHON=ON -DPGI_PATH=/usr/local/apps/pgi/pgi\-10.8/linux86-64/current

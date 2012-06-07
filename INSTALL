@@ -1,0 +1,38 @@
+===================================================
+MARS - Meteorological Archival and Retrieval System
+===================================================
+
+For detailed installation instructions see the Installation.pdf document
+packaged with these sources.
+
+An updated version of those instructions can also be found at 
+http://software.ecmwf.int/wiki/display/MARSAD/Building+MARS+with+CMake
+
+=============
+QUICK INSTALL
+=============
+
+tar zxvf MARS-2012.01.06-Source.tar.gz
+
+mkdir -p build/Production
+cd build/Production
+
+export DHSHOME=/path/to/dhshome
+cmake ../.. -DCMAKE_BUILD_TYPE=Production
+make
+make links
+
+[optionally]
+
+make install
+
+===============================
+MARS HELP & SUPPORT
+===============================
+
+Do not hesitate to contact the MARS developer team if you have any problems.
+
+Ideally, in order to achieve an effective (speedy) diagnostic and
+problem solving, we may need to have access to your machine (ssh or
+similar is fine). Please understand that MARS is not an off-the-shelf
+package.

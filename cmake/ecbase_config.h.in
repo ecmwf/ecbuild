@@ -1,0 +1,36 @@
+/*
+ * (C) Copyright 1996-2012 ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
+ * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+#ifndef ecbase_config_h
+#define ecbase_config_h
+
+#include "ecbase_platform.h"
+
+/* config info */
+
+#define EC_OS_NAME          "@CMAKE_SYSTEM@"
+#define EC_OS_STR           "@EC_OS_NAME@.@EC_OS_BITS@"
+
+#define EC_BUILD_TIMESTAMP  "@EC_BUILD_TIMESTAMP@"
+#define EC_BUILD_TYPE       "@CMAKE_BUILD_TYPE@"
+
+#define EC_COMPILER_ID      "@CMAKE_CXX_COMPILER_ID@"
+#define EC_COMPILER_VERSION "@EC_COMPILER_VERSION@"
+
+#define EC_C_COMPILER       "@CMAKE_C_COMPILER@"
+#define EC_C_FLAGS          "@EC_C_FLAGS_ALL@"
+
+#define EC_CXX_COMPILER     "@CMAKE_CXX_COMPILER@"
+#define EC_CXX_FLAGS        "@EC_CXX_FLAGS_ALL@"
+
+#define EC_Fortran_COMPILER "@CMAKE_Fortran_COMPILER@"
+#define EC_Fortran_FLAGS    "@EC_Fortran_FLAGS_ALL@"
+
+#endif
