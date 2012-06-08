@@ -54,7 +54,7 @@ macro( ecbuild_check_cxx_source_return SOURCE VAR VAR_OUTPUT )
             "${run_OUTPUT}\n" 
             "Return value: ${${VAR}}\n"
             "Source file was:\n${SOURCE}\n")
-    
+
           set( ${VAR}     1              CACHE INTERNAL "Test ${VAR}")
           set( ${VAR_OUTPUT} "${run_OUTPUT}" CACHE INTERNAL "Test ${VAR} output")
     

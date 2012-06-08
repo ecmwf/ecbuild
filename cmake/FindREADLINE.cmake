@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2012 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -20,6 +20,34 @@ endif()
 
 find_path(READLINE_INCLUDE_DIR readline/readline.h )
 find_library( READLINE_LIBRARY readline            PATH_SUFFIXES readline )
+
+# check what version we got
+cmake_push_check_state()
+
+  set( CMAKE_REQUIRED_LIBRARIES ${READLINE_LIBRARY} )
+  set( CMAKE_REQUIRED_INCLUDES  ${READLINE_INCLUDE_DIR} )
+
+  ecbuild_check_cxx_source_return(
+     "#include <stdio.h>\n#include <readline/readline.h>\n#include <iostream>\n
+      int main(){ std::cout << rl_library_version << std::flush; }" readline_version __readline_version_out )
+
+cmake_pop_check_state()
+
+debug_var( readline_version )
+debug_var( __readline_version_out )
+
+if( "${__readline_version_out}" MATCHES "^EditLine" )
+  message( STATUS "Found EditLine instead of Readline at '${READLINE_INCLUDE_DIR}'" )
+  if( READLINE_WRAPPER_OK )
+    set( READLINE_WRAPPER      "EditLine" )
+  else()
+    message( STATUS "Readline wrapper not accepted -- rejecting Readline at '${READLINE_INCLUDE_DIR}'" )
+    set( READLINE_LIBRARY      READLINE_LIBRARY-NOTFOUND )
+    set( READLINE_INCLUDE_DIR  READLINE_INCLUDE_DIR-NOTFOUND )
+  endif()
+endif()
+
+# if acceptable, set out the output variables
 
 set( READLINE_LIBRARIES    ${READLINE_LIBRARY} )
 set( READLINE_INCLUDE_DIRS ${READLINE_INCLUDE_DIR} )
