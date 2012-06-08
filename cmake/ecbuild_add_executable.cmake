@@ -61,15 +61,15 @@ macro( ecbuild_add_executable )
       add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
     endif()
 
-    # add the link libraries
     if( DEFINED _PAR_LIBS )
-      foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
-        if( lib )
-          target_link_libraries( ${_PAR_TARGET} ${lib} )
+	target_link_libraries( ${_PAR_TARGET} ${_PAR_LIBS} )
+#      foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
+#        if( lib )
+#          target_link_libraries( ${_PAR_TARGET} ${lib} )
 #        else()
 #          message( WARNING "Lib ${lib} was skipped" )
-        endif()
-      endforeach()
+#        endif()
+#      endforeach()
     endif()
 
     # add local flags
