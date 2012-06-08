@@ -89,7 +89,7 @@ client="-DBUILD_MARS_CLIENT=ON -DEMOS_PATH=/usr/local/lib/metaps/lib/libemos_for
 $1 $cmake ../.. $cc $fc $build_type $install $common $grib_api $server $client $2 \
         $EXTRA \
         -DODB_PATH=$ODB_ROOT \
-	-DENABLE_STATIC_LIBS=ON \
+	-DBUILD_SHARED_LIBS=OFF \
         -DODB_API_MIGRATOR=ON \
         -DODB_API_FORTRAN=ON \
         -DODB_API_PYTHON=ON \
