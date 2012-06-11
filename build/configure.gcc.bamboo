@@ -9,4 +9,7 @@ install="-DCMAKE_INSTALL_PREFIX=/usr/"
 
 #client="-DODB_PATH=/usr/local/apps/odb/CY37R3.001/pgf90/LP64/"
 
+
+/usr/bin/gfortran --version
+
 $1 $cmake ../.. $build_type $install $2  -DODB_API_MIGRATOR=OFF -DODB_API_FORTRAN=ON -DODB_API_PYTHON=ON 
