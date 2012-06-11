@@ -33,8 +33,8 @@ cmake_push_check_state()
 
 cmake_pop_check_state()
 
-debug_var( readline_version )
-debug_var( __readline_version_out )
+#debug_var( readline_version )
+#debug_var( __readline_version_out )
 
 if( "${__readline_version_out}" MATCHES "^EditLine" )
   message( STATUS "Found EditLine instead of Readline at '${READLINE_INCLUDE_DIR}'" )
