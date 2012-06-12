@@ -67,7 +67,7 @@ fi
 
 if [[ $ARCH = "linux" ]]
 then
-  EXTRA=-DWITH_READLINE=ON
+  EXTRA="-DWITH_READLINE=ON -DCMAKE_INSTALL_PREFIX:PATH=$HOME -DEC_LINK_DIR=$HOME"
 fi
 
 here=$(basename $(pwd))
