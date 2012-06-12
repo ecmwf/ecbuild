@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2012 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -86,7 +86,10 @@ macro( ecbuild_add_library )
 
     # add the link libraries
     if( DEFINED _PAR_LIBS )
-	target_link_libraries( ${_PAR_TARGET} ${_PAR_LIBS} )
+        target_link_libraries( ${_PAR_TARGET} ${_PAR_LIBS} )
+
+# this is not functioning with "libname:optimized"  -- like the boost libraries get found
+
 #      foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
 #        if( lib )
 #          target_link_libraries( ${_PAR_TARGET} ${lib} )
