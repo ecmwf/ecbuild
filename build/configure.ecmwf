@@ -9,6 +9,11 @@ then
   CMAKE=/usr/local/apps/cmake/current/bin/cmake
 fi
 
+if [[ -x $HOME/local/cmake/bin/cmake ]]
+then
+  CMAKE=$HOME/local/cmake/bin/cmake
+fi
+
 if [[ -x $HOME/local/bin/cmake ]]
 then
   CMAKE=$HOME/local/bin/cmake
