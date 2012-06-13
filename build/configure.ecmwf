@@ -67,7 +67,8 @@ fi
 
 if [[ $ARCH = "ibm_power6" || $ARCH = "ibm_power7" ]]
 then
-  EXTRA="-DCMAKE_CXX_COMPILER=xlC_r -DCMAKE_C_COMPILER=xlc_r -DDHSHOME=/marsdev/data/dhshome -DCMAKE_PREFIX_PATH=/usr/local/apps/jasper/1.900.0/LP64 -DCMAKE_INSTALL_PREFIX:PATH=/marsdev/data/dhshome -DBISON_EXECUTABLE:PATH=/usr/local/apps/bison/2.3/bin/bison"
+  EXTRA="-DCMAKE_CXX_COMPILER=xlC_r -DCMAKE_C_COMPILER=xlc_r -DCMAKE_PREFIX_PATH=/usr/local/apps/jasper/1.900.0/LP64 -DSWIG_EXECUTABLE=/usr/local/apps/swig/2.0.5/bin/swig -DBISON_EXECUTABLE='/usr/local/apps/freeware/bison-2.3/bin/bison' -DFLEX_EXECUTABLE='/opt/freeware/bin/flex'
+"
 fi
 
 if [[ $ARCH = "linux" ]]
