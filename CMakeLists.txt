@@ -1,8 +1,10 @@
 ############################################################################################
-# cmake
-#   options:
+# cmake options:
+#
 #       -DCMAKE_BUILD_TYPE=Debug|RelWithDebInfo|Release|Production
 #       -DCMAKE_INSTALL_PREFIX=/path/to/install
+#
+#       -DCMAKE_MODULE_PATH=/path/to/ecbuild/cmake
 #
 #       -DCMAKE_C_COMPILER=gcc
 #       -DCMAKE_C_COMPILER=g++
