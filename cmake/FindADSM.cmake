@@ -22,13 +22,15 @@ if( NOT DEFINED ADSM_LIBNAME )
 	message( STATUS "MARS only supports ADSM with 32 or 64 bits" )
 endif()
 
+PATHS ${GRIB_API_PATH} ${GRIB_API_PATH}/include PATH_SUFFIXES grib_api
+
 if( DEFINED ADSM_PATH )
-	find_path(ADSM_INCLUDE_DIR dsmapitd.h      ${ADSM_PATH}/include NO_DEFAULT_PATH)
-	find_library(ADSM_LIBRARY  ${ADSM_LIBNAME} ${ADSM_PATH}/lib     NO_DEFAULT_PATH)
+	find_path(ADSM_INCLUDE_DIR dsmapitd.h      PATHS ${ADSM_PATH} ${ADSM_PATH}/include PATH_SUFFIXES sample NO_DEFAULT_PATH )
+	find_library(ADSM_LIBRARY  ${ADSM_LIBNAME} PATHS ${ADSM_PATH} ${ADSM_PATH}/lib ${ADSM_PATH}/lib64 NO_DEFAULT_PATH )
 endif()
 
-find_path(ADSM_INCLUDE_DIR dsmapitd.h )
-find_library( ADSM_LIBRARY ${ADSM_LIBNAME}  )
+find_path(ADSM_INCLUDE_DIR dsmapitd.h PATH_SUFFIXES bin64 sample )
+find_library( ADSM_LIBRARY ${ADSM_LIBNAME} PATH_SUFFIXES bin64   )
 
 set( ADSM_LIBRARIES    ${ADSM_LIBRARY} )
 set( ADSM_INCLUDE_DIRS ${ADSM_INCLUDE_DIR} )

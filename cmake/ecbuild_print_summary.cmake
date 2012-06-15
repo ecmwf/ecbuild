@@ -6,8 +6,8 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-if( EXISTS project_summary.cmake )
-    include( project_summary.cmake )
+if( EXISTS ${PROJECT_SOURCE_DIR}/project_summary.cmake )
+    include( ${PROJECT_SOURCE_DIR}/project_summary.cmake )
 endif()
 
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
