@@ -162,6 +162,8 @@ if( UNIX )
 
         set( EC_OS_NAME "aix" )
 
+        set( CMAKE_SHARED_LINKER_FLAGS "-qbigtoc" )
+
         if( CMAKE_COMPILER_IS_GNUCC )
             if( EC_OS_BITS EQUAL "64" )
                 cmake_add_c_flags("-maix64")
