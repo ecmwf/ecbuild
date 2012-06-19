@@ -13,7 +13,7 @@
 macro( ecbuild_add_library )
 
     set( options )
-    set( single_value_args TARGET TYPE COMPONENT )
+    set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS )
     set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -31,6 +31,10 @@ macro( ecbuild_add_library )
     endif()
 
     ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+
+    get_filename_component( currdir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
+
+#    debug_var(currdir)
 
 #    debug_var( ${_PAR_TARGET}_h_srcs )
 #    debug_var( ${_PAR_TARGET}_c_srcs )
@@ -122,6 +126,30 @@ macro( ecbuild_add_library )
       LIBRARY DESTINATION lib
       ARCHIVE DESTINATION lib
       COMPONENT ${COMPONENT_DIRECTIVE} )
+
+    # install headers
+
+    set( _header_destination "include/${PROJECT_NAME}/${currdir}" )
+
+    if( DEFINED _PAR_INSTALL_HEADERS )
+        if( _PAR_INSTALL_HEADERS MATCHES "LISTED" )
+            install( FILES ${${_PAR_TARGET}_h_srcs}    DESTINATION ${_header_destination} )
+            if( DEFINED _PAR_TEMPLATES )
+                install( FILES ${_PAR_TEMPLATES} DESTINATION ${_header_destination} )
+            endif()
+        endif()
+        if( _PAR_INSTALL_HEADERS MATCHES "ALL" )
+            install( DIRECTORY ./  DESTINATION ${_header_destination} FILES_MATCHING PATTERN "*.h" )
+        endif()
+    endif()
+
+    if( DEFINED _PAR_INSTALL_HEADERS_LIST )
+        install( FILES ${_PAR_INSTALL_HEADERS_LIST} DESTINATION ${_header_destination} )
+    endif()
+
+    if( DEFINED _PAR_INSTALL_HEADERS_REGEX )
+        install( DIRECTORY ./  DESTINATION ${_header_destination} FILES_MATCHING PATTERN "${_PAR_INSTALL_HEADERS_REGEX}")
+    endif()
 
     # add definitions to compilation
     if( DEFINED _PAR_DEFINITIONS )
