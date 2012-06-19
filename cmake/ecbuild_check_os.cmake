@@ -161,7 +161,7 @@ if( UNIX )
     if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
     
         if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
-            set( CMAKE_SHARED_LINKER_FLAGS "-Wl,'-qbigtoc' ${CMAKE_SHARED_LINKER_FLAGS}" )
+            set( CMAKE_SHARED_LINKER_FLAGS "-Xlinker -qbigtoc ${CMAKE_SHARED_LINKER_FLAGS}" )
         endif()
 
         set( EC_OS_NAME "aix" )
