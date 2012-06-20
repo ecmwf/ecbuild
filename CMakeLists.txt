@@ -32,7 +32,6 @@ configure_file( cmake/ecbuild_version.h.in   ${CMAKE_BINARY_DIR}/ecbuild_version
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_description_files
                      SOURCES_PACK
-                        Installation.pdf
                         INSTALL
                         AUTHORS
                         NOTICE
