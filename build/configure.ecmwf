@@ -21,9 +21,9 @@ fi
 
 CMAKE=cmake
 
-if [[ -x /usr/local/apps/cmake/current/bin/cmake ]]
+if [[ -x /usr/local/apps/cmake/new/bin/cmake ]]
 then
-  CMAKE=/usr/local/apps/cmake/current/bin/cmake
+  CMAKE=/usr/local/apps/cmake/new/bin/cmake
 fi
 
 if [[ -x $HOME/local/cmake/bin/cmake ]]

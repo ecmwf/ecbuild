@@ -1,38 +1,21 @@
 ===================================================
-MARS - Meteorological Archival and Retrieval System
+EcBuild - ECMWF build system
 ===================================================
 
-For detailed installation instructions see the Installation.pdf document
-packaged with these sources.
+For detailed installation and usage instructions see the Manual.pdf document packaged with these sources.
 
 An updated version of those instructions can also be found at 
-http://software.ecmwf.int/wiki/display/MARSAD/Building+MARS+with+CMake
+http://software.ecmwf.int/wiki/display/SUPINF/ECMWF+Build+System
 
 =============
 QUICK INSTALL
 =============
 
-tar zxvf MARS-2012.01.06-Source.tar.gz
+1. Extract the source files
 
-mkdir -p build/Production
-cd build/Production
+ tar zxvf ecbuild-1.0.4-Source.tar.gz -C /path/to/install
 
-export DHSHOME=/path/to/dhshome
-cmake ../.. -DCMAKE_BUILD_TYPE=Production
-make
-make links
+2. Use cmake and point the module path to the installed source.
 
-[optionally]
+ cmake -DCMAKE_MODULE_PATH=/path/to/install [...]
 
-make install
-
-===============================
-MARS HELP & SUPPORT
-===============================
-
-Do not hesitate to contact the MARS developer team if you have any problems.
-
-Ideally, in order to achieve an effective (speedy) diagnostic and
-problem solving, we may need to have access to your machine (ssh or
-similar is fine). Please understand that MARS is not an off-the-shelf
-package.
