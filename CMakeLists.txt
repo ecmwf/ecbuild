@@ -37,7 +37,8 @@ ecbuild_add_resources( TARGET ${PROJECT_NAME}_description_files
                         NOTICE
                         LICENSE
                         COPYING
-                     DONT_PACK_REGEX "configure.*"
+                     DONT_PACK 
+                        build/configure.ecmwf
 )
 
 install( DIRECTORY cmake DESTINATION share/ecbuild )
