@@ -14,35 +14,26 @@ macro( ecbuild_declare_project )
 
     # read and parse project version file
     
-    set( three_part_version_regex "([0-9]+)\\.([0-9]+)\\.([0-9]+)")
-    set( four_part_version_regex  "([0-9]+)\\.([0-9]+)\\.([0-9]+)-([a-zA-Z0-9]+)")
     include( ${PROJECT_SOURCE_DIR}/VERSION.cmake )
 
-    set( ${PNAME}_VERSION_STR ${${PROJECT_NAME}_VERSION_STR} )
+    string(REPLACE "." " " _version_list ${${PROJECT_NAME}_VERSION_STR} ) # dots to spaces
+    
+    separate_arguments( _version_list )
 
-    set( vregex "" )
-    if( ${PNAME}_VERSION_STR MATCHES ${four_part_version_regex} )
-        set( vregex ${four_part_version_regex} )
-    else()
-        if( ${PNAME}_VERSION_STR MATCHES ${three_part_version_regex} )
-            set( vregex ${three_part_version_regex} )
-        else()
-            message( FATAL_ERROR "project ${PROJECT_NAME} has  unsuported version formating in ${PROJECT_SOURCE_DIR}/VERSION.cmake -- allowed format is [0-9]+.[0-9]+.[0-9]+(-[a-zA-Z0-9]+)" )
-        endif()
-    endif()
+    list( GET _version_list 0 ${PNAME}_MAJOR_VERSION )
+    list( GET _version_list 1 ${PNAME}_MINOR_VERSION )
+    list( GET _version_list 2 ${PNAME}_PATCH_VERSION )
 
-    string( REGEX REPLACE ${vregex} "\\1"  ${PNAME}_MAJOR_VERSION ${${PNAME}_VERSION_STR} )
-    string( REGEX REPLACE ${vregex} "\\2"  ${PNAME}_MINOR_VERSION ${${PNAME}_VERSION_STR} )
-    string( REGEX REPLACE ${vregex} "\\3"  ${PNAME}_PATCH_VERSION ${${PNAME}_VERSION_STR} )
+    set( ${PNAME}_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" ) 
 
-    set( ${PNAME}_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" )
+    # cleanup patch version of any extra qualifiers ( -dev -rc1 ... )
 
-    if( ${PNAME}_VERSION_STR MATCHES ${four_part_version_regex} )
-        string( REGEX REPLACE ${vregex} "\\4"  ${PNAME}_EXTRA_VERSION ${${PNAME}_VERSION_STR} )
-        set( ${PNAME}_VERSION "${${PNAME}_VERSION}-${${PNAME}_EXTRA_VERSION}" )
-    else()
-        set( ${PNAME}_EXTRA_VERSION "" )
-    endif()    
+    string(REGEX REPLACE "^([0-9]+)\\-.*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
+
+    debug_var( ${PNAME}_VERSION )
+    debug_var( ${PNAME}_MAJOR_VERSION )
+    debug_var( ${PNAME}_MINOR_VERSION )
+    debug_var( ${PNAME}_PATCH_VERSION )
 
     # print project header
     
