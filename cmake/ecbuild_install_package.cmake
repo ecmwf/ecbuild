@@ -70,7 +70,7 @@ macro( ecbuild_install_project )
         set(CPACK_RESOURCE_FILE_LICENSE    "${PROJECT_SOURCE_DIR}/LICENSE")
     endif()
 
-    # set(CPACK_PACKAGE_EXECUTABLES ${ECMWF_ALL_EXES})
+    # set(CPACK_PACKAGE_EXECUTABLES ${ECBUILD_ALL_EXES})
     
     # what to pack and not
 
@@ -85,7 +85,7 @@ macro( ecbuild_install_project )
 
     # skip the files that were declared as DONT_PACK
 
-    list( APPEND CPACK_SOURCE_IGNORE_FILES ${ECMWF_DONT_PACK_FILES} )
+    list( APPEND CPACK_SOURCE_IGNORE_FILES ${ECBUILD_DONT_PACK_FILES} )
 
     # cpack config file
 

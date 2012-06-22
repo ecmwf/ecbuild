@@ -13,7 +13,7 @@
 macro( ecbuild_add_test )
 
     set( options ) # no options
-    set( single_value_args TARGET ENABLED )
+    set( single_value_args TARGET ENABLED COMMAND )
     set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES CFLAGS CXXFLAGS FFLAGS CONDITION )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -22,12 +22,12 @@ macro( ecbuild_add_test )
       message(FATAL_ERROR "Unknown keywords given to ecbuild_add_test(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
-    if( NOT _PAR_TARGET  )
-      message(FATAL_ERROR "The call to ecbuild_add_test() doesn't specify the TARGET.")
+    if( NOT _PAR_TARGET AND NOT _PAR_COMMAND )
+      message(FATAL_ERROR "The call to ecbuild_add_test() doesn't specify the TARGET or COMMAND.")
     endif()
 
-    if( NOT _PAR_SOURCES )
-      message(FATAL_ERROR "The call to ecbuild_add_test() doesn't specify the SOURCES.")
+    if( DEFINED _PAR_TARGET AND NOT _PAR_SOURCES )
+      message(FATAL_ERROR "The call to ecbuild_add_test() defined TARGET but doesn't specify the SOURCES.")
     endif()
 
     set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
@@ -48,100 +48,116 @@ macro( ecbuild_add_test )
 
     if( _${_PAR_TARGET}_condition )
 
-        # add include dirs if defined
-        if( DEFINED _PAR_INCLUDES )
-          foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
-            if( path )
-              include_directories( ${path} )
-    #        else()
-    #          message( WARNING "Path ${path} was skipped" )
+        # TARGET defined so build the test
+
+        if( DEFINED _PAR_TARGET )
+
+            # add include dirs if defined
+            if( DEFINED _PAR_INCLUDES )
+              foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
+                if( path )
+                  include_directories( ${path} )
+                endif()
+              endforeach()
             endif()
-          endforeach()
-        endif()
     
-        # add persistent layer files
-        if( DEFINED _PAR_PERSISTENT )
-            ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES  ${_PAR_PERSISTENT} )
-        endif()
+            # add persistent layer files
+            if( DEFINED _PAR_PERSISTENT )
+                ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES  ${_PAR_PERSISTENT} )
+            endif()
     
-        # add the test target
-        add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} )
+            # add the test target
+            add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} )
     
-        # add extra dependencies
-        if( DEFINED _PAR_DEPENDS)
-          add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
-        endif()
+            # add extra dependencies
+            if( DEFINED _PAR_DEPENDS)
+              add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
+            endif()
     
-        # add resources
+            # add resources
             if( DEFINED _PAR_RESOURCES)
                     foreach( rfile ${_PAR_RESOURCES} )
                         add_custom_command( TARGET ${_PAR_TARGET} POST_BUILD
                             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${rfile} ${CMAKE_CURRENT_BINARY_DIR} )
                     endforeach()
-        endif()
-    
-        # add the link libraries
-        if( DEFINED _PAR_LIBS )
-          list(REMOVE_ITEM _PAR_LIBS debug)
-          list(REMOVE_ITEM _PAR_LIBS optimized)
-          foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
-            if( lib )
-              target_link_libraries( ${_PAR_TARGET} ${lib} )
-            else()
-              message( WARNING "Lib ${lib} was skipped" )
             endif()
-          endforeach()
-        endif()
     
-        # add local flags
-        if( DEFINED _PAR_CFLAGS )
-            set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
-        endif()
-        if( DEFINED _PAR_CXXFLAGS )
-            set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
-        endif()
-        if( DEFINED _PAR_FFLAGS )
-            set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
-        endif()
+            # add the link libraries
+            if( DEFINED _PAR_LIBS )
+              list(REMOVE_ITEM _PAR_LIBS debug)
+              list(REMOVE_ITEM _PAR_LIBS optimized)
+              foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
+                if( lib )
+                  target_link_libraries( ${_PAR_TARGET} ${lib} )
+                else()
+                  message( WARNING "Lib ${lib} was skipped" )
+                endif()
+              endforeach()
+            endif()
     
-        # add definitions to compilation
-        if( DEFINED _PAR_DEFINITIONS )
-            get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
-            list( APPEND _target_defs ${_PAR_DEFINITIONS} )
-            set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
+            # add local flags
+            if( DEFINED _PAR_CFLAGS )
+                set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
+            endif()
+            if( DEFINED _PAR_CXXFLAGS )
+                set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
+            endif()
+            if( DEFINED _PAR_FFLAGS )
+                set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
+            endif()
+    
+            # add definitions to compilation
+            if( DEFINED _PAR_DEFINITIONS )
+                get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
+                list( APPEND _target_defs ${_PAR_DEFINITIONS} )
+                set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
+            endif()
+    
+            # set build location to local build dir
+            # not the project base as defined for libs and execs
+            set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+    
+            # make sure target is removed before - some problems with AIX
+            get_target_property(EXE_FILENAME ${_PAR_TARGET} OUTPUT_NAME)
+            add_custom_command(
+                  TARGET ${_PAR_TARGET}
+                  PRE_BUILD
+                  COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME}
+            )
+
         endif()
-    
-        # set build location to local build dir
-        # not the project base as defined for libs and execs
-        set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
-    
-        # make sure target is removed before - some problems with AIX
-        get_target_property(EXE_FILENAME ${_PAR_TARGET} OUTPUT_NAME)
-        add_custom_command(
-              TARGET ${_PAR_TARGET}
-              PRE_BUILD
-              COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME}
-        )
     
         # define the arguments
         set( TEST_ARGS "" )
         if( DEFINED _PAR_ARGS  )
-          list ( APPEND TEST_ARGS ${_PAR_ARGS} )
+          list( APPEND TEST_ARGS ${_PAR_ARGS} )
         endif()
-    
-        # define the test]
+
+        # setup enable flag    
         if( NOT DEFINED _PAR_ENABLED )
             set( _PAR_ENABLED 1 )
         endif()
+
+        # define the test
         if( _PAR_ENABLED )
-            add_test( ${_PAR_TARGET} ${_PAR_TARGET} ${TEST_ARGS} )
+
+            if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET )
+                set( _PAR_TARGET ${_PAR_COMMAND} )
+            endif()
+
+            if( DEFINED _PAR_COMMAND )
+                add_test( ${_PAR_TARGET} ${_PAR_COMMAND} ${TEST_ARGS} ) # run a command as test
+            else()
+                add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ) # run the test that was generated
+            endif()
+
         endif()
     
         # add to the overall list of tests
-        list( APPEND ECMWF_ALL_TESTS ${_PAR_TARGET} )
-        set( ECMWF_ALL_TESTS ${ECMWF_ALL_TESTS} CACHE INTERNAL "" )
+        list( APPEND ECBUILD_ALL_TESTS ${_PAR_TARGET} )
+        set( ECBUILD_ALL_TESTS ${ECBUILD_ALL_TESTS} CACHE INTERNAL "" )
 
-    endif( _${_PAR_TARGET}_condition )
+    endif() # _condition
 
     # finally mark project files
     ecbuild_declare_project_files( ${_PAR_SOURCES} )

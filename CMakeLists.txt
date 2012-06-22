@@ -47,7 +47,7 @@ add_subdirectory( tools  )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
-set( ECMWF_PROJECTS "" CACHE INTERNAL "list of (sub)projects" )
+set( ECBUILD_PROJECTS "" CACHE INTERNAL "list of (sub)projects" )
 
 ecbuild_add_subproject( ecflow )
 

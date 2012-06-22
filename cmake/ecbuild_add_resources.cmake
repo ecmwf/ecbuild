@@ -50,12 +50,12 @@ macro( ecbuild_dont_pack )
     # transform the local files  to full absolute paths
     # and place them in the global list of files not to pack
     foreach( file ${LOCAL_FILES_NOT_TO_PACK} )
-        list( APPEND ECMWF_DONT_PACK_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${file} )
+        list( APPEND ECBUILD_DONT_PACK_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${file} )
     endforeach()
 
     # save cache if we added any files not to pack
     if( LOCAL_FILES_NOT_TO_PACK )
-        set( ECMWF_DONT_PACK_FILES ${ECMWF_DONT_PACK_FILES} CACHE INTERNAL "" )
+        set( ECBUILD_DONT_PACK_FILES ${ECBUILD_DONT_PACK_FILES} CACHE INTERNAL "" )
     endif()
 
 endmacro()
@@ -141,12 +141,12 @@ macro( ecbuild_add_resources )
     # transform the local files  to full absolute paths
     # and place them in the global list of files not to pack
     foreach( file ${LOCAL_FILES_NOT_TO_PACK} )
-        list( APPEND ECMWF_DONT_PACK_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${file} )
+        list( APPEND ECBUILD_DONT_PACK_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${file} )
     endforeach()
 
     # save cache if we added any files not to pack
     if( LOCAL_FILES_NOT_TO_PACK )
-        set( ECMWF_DONT_PACK_FILES ${ECMWF_DONT_PACK_FILES} CACHE INTERNAL "" )
+        set( ECBUILD_DONT_PACK_FILES ${ECBUILD_DONT_PACK_FILES} CACHE INTERNAL "" )
     endif()
 
 endmacro( ecbuild_add_resources  )

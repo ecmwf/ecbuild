@@ -41,7 +41,7 @@ macro( ecbuild_declare_project )
     
     message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION})" )
     
-    set( ECMWF_PROJECTS ${ECMWF_PROJECTS} ${PROJECT_NAME} CACHE INTERNAL "list of (sub)projects" )
+    set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${PROJECT_NAME} CACHE INTERNAL "list of (sub)projects" )
 
 endmacro( ecbuild_declare_project )
 
