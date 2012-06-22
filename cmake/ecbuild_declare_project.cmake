@@ -30,10 +30,10 @@ macro( ecbuild_declare_project )
 
     string(REGEX REPLACE "^([0-9]+)\\-.*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
 
-    debug_var( ${PNAME}_VERSION )
-    debug_var( ${PNAME}_MAJOR_VERSION )
-    debug_var( ${PNAME}_MINOR_VERSION )
-    debug_var( ${PNAME}_PATCH_VERSION )
+#    debug_var( ${PNAME}_VERSION )
+#    debug_var( ${PNAME}_MAJOR_VERSION )
+#    debug_var( ${PNAME}_MINOR_VERSION )
+#    debug_var( ${PNAME}_PATCH_VERSION )
 
     # print project header
     
