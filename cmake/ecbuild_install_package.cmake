@@ -48,7 +48,7 @@ macro( ecbuild_install_project )
     # name version etc
 
     set(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
-    set(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
+    set(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION}")
 
     set(CPACK_GENERATOR        "TGZ")
     set(CPACK_PACKAGE_VENDOR   "ECMWF")

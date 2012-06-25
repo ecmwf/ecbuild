@@ -113,6 +113,9 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     ############################################################################################
     # add our macros
 
+    # define the script to build the persistent class information
+    set( sg_perl "${buildsys_dir}/sg.pl" CACHE INTERNAL "perl script to generate persistent objects" )
+
     include( ecbuild_debug_var )
     include( ecbuild_list_operations )
     include( ecbuild_get_date )
