@@ -24,8 +24,6 @@ include( ecbuild_system )
 
 ecbuild_declare_project()
 
-# TODO: rename to ecbuild_*
-
 configure_file( cmake/ecbuild_version.h.in   ${CMAKE_BINARY_DIR}/ecbuild_version.h  )
 
 # contents
