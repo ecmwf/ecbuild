@@ -117,7 +117,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     set( sg_perl "${buildsys_dir}/sg.pl" CACHE INTERNAL "perl script to generate persistent objects" )
 
     include( ecbuild_debug_var )
-    include( ecbuild_list_operations )
+    include( ecbuild_check_cxx_source )
     include( ecbuild_get_date )
     include( ecbuild_add_persistent )
     include( ecbuild_generate_yy )
@@ -131,6 +131,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include( ecbuild_declare_project )
     include( ecbuild_install_package )
     include( ecbuild_separate_sources )
+    include( ecbuild_use_package )
 
     ############################################################################################
     # kickstart the build system

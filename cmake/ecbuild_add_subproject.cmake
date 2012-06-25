@@ -10,6 +10,8 @@
 # macro for adding a subproject directory
 ##############################################################################
 
+set( EC_ALL_PROJECTS "" CACHE INTERNAL "" )
+
 macro( ecbuild_add_subproject PROJ_NAME )
 
     string( TOUPPER ${PROJ_NAME} PNAME )
@@ -32,28 +34,34 @@ macro( ecbuild_add_subproject PROJ_NAME )
             message( FATAL_ERROR "User defined source directory '${${PNAME}_SOURCE}' for project '${PROJ_NAME}' does not exist or does not contain a CMakeLists.txt file." )
         endif()
 
-        set( ${PNAME}_SOURCE_DIR "${${PNAME}_SOURCE}" )
+        set( ${PNAME}_SUBPROJ_DIR "${${PNAME}_SOURCE}" )
 
     else() # default is 'dropped in' subdirectory named as project
 
         if( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJ_NAME} AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${PROJ_NAME}/CMakeLists.txt )
-            set( ${PNAME}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${PROJ_NAME}" )
+            set( ${PNAME}_SUBPROJ_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${PROJ_NAME}" )
         endif()
 
     endif()
 
     # found the subproject source so add it
 
-    if( DEFINED ${PNAME}_SOURCE_DIR )
+    list( FIND EC_ALL_PROJECTS ${PNAME} _ecbuild_has_${PNAME} )
 
-        set( ${PNAME}_SOURCE_DIR ${${PNAME}_SOURCE_DIR} CACHE PATH "Path to ${PROJ_NAME} source directory" )
+    if( _ecbuild_has_${PNAME} EQUAL "-1" ) # avoid double inclusion
+        if( DEFINED ${PNAME}_SUBPROJ_DIR )
+    
+            set( ${PNAME}_SUBPROJ_DIR ${${PNAME}_SUBPROJ_DIR} CACHE PATH "Path to ${PROJ_NAME} source directory" )
+    
+            set( EC_ALL_PROJECTS ${EC_ALL_PROJECTS} ${PNAME} CACHE INTERNAL "" )
+    
+            option( BUILD_${PNAME}  "whether to build ${PROJ_NAME}" ON )
+    
+            if( BUILD_${PNAME} )
+                add_subdirectory( ${${PNAME}_SUBPROJ_DIR} ${PROJ_NAME} )
+            endif()
 
-        option( BUILD_${PNAME}  "whether to build ${PROJ_NAME}" ON )
-
-        if( BUILD_${PNAME} )
-            add_subdirectory( ${${PNAME}_SOURCE_DIR} ${PROJ_NAME} )
-        endif()
-
+        endif()    
     endif()
 
 endmacro()
