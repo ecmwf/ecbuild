@@ -156,5 +156,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     configure_file( ${buildsys_dir}/ecbuild_config.h.in     ${CMAKE_BINARY_DIR}/ecbuild_config.h   )
     configure_file( ${buildsys_dir}/ecbuild_platform.h.in   ${CMAKE_BINARY_DIR}/ecbuild_platform.h )
 
+    include_directories( ${CMAKE_BINARY_DIR} )
+
 endif()
 
