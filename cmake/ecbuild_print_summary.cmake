@@ -40,13 +40,13 @@ macro( ecbuild_print_summary )
           message( STATUS " > ${lang} [${CMAKE_${lang}_COMPILER} ${EC_${lang}_FLAGS_ALL}]" )
         endforeach()
     
-    if( NOT ${CMAKE_EXE_LINKER_FLAGS} MATCHES "^$" OR NOT ${CMAKE_EXEC_LINKER_FLAGS_${EC_BUILD_TYPE}} MATCHES "^$" )
-        message( STATUS " shared exe flags : [${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXEC_LINKER_FLAGS_${EC_BUILD_TYPE}}]" )
-    endif()
-    if( NOT ${CMAKE_SHARED_LINKER_FLAGS} MATCHES "^$" OR NOT ${CMAKE_SHARED_LINKER_FLAGS_${EC_BUILD_TYPE}} MATCHES "^$" )
-        message( STATUS " shared link flags: [${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${EC_BUILD_TYPE}}]" )
-    endif()
-    
+        if( ( NOT "${CMAKE_EXEC_LINKER_FLAGS}" MATCHES "^[ ]*$" ) OR ( NOT "${CMAKE_EXEC_LINKER_FLAGS_${EC_BUILD_TYPE}}" MATCHES "^[ ]*$" ) )
+            message( STATUS " shared exe flags : [${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXEC_LINKER_FLAGS_${EC_BUILD_TYPE}}]" )
+        endif()
+        if( ( NOT "${CMAKE_SHARED_LINKER_FLAGS}" MATCHES "^[ ]*$" ) OR ( NOT "${CMAKE_SHARED_LINKER_FLAGS_${EC_BUILD_TYPE}}" MATCHES "^[ ]*$" ) )
+            message( STATUS " shared link flags: [${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${EC_BUILD_TYPE}}]" )
+        endif()
+
         message( STATUS "---------------------------------------------------------" )
     
     if( EC_BIG_ENDIAN )
