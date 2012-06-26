@@ -68,11 +68,8 @@ ecbuild_add_subproject( mars_server )
 ecbuild_add_subproject( mars_client )
 
 ############################################################################################
+# finalize
 
 ecbuild_install_project( NAME ecbuild )
 
-############################################################################################
-# summary
-
-# print the summary of the configuration
-include( ecbuild_print_summary )
+ecbuild_print_summary()

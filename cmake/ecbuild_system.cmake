@@ -132,6 +132,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include( ecbuild_install_package )
     include( ecbuild_separate_sources )
     include( ecbuild_use_package )
+    include( ecbuild_print_summary )
+    include( ecbuild_warn_unused_files )
 
     ############################################################################################
     # kickstart the build system
