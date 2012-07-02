@@ -14,11 +14,11 @@
 
 if( DEFINED SZIP_PATH )
     find_path(SZIP_INCLUDE_DIR szlib.h  PATHS ${SZIP_PATH}/include NO_DEFAULT_PATH)
-    find_library(SZIP_LIBRARY  libszip  PATHS ${SZIP_PATH}/lib     PATH_SUFFIXES szip NO_DEFAULT_PATH)
+    find_library(SZIP_LIBRARY  szip     PATHS ${SZIP_PATH}/lib     PATH_SUFFIXES szip NO_DEFAULT_PATH)
 endif()
 
 find_path(SZIP_INCLUDE_DIR szlib.h )
-find_library( SZIP_LIBRARY libszip  PATH_SUFFIXES szip )
+find_library( SZIP_LIBRARY szip  PATH_SUFFIXES szip )
 
 set( SZIP_LIBRARIES    ${SZIP_LIBRARY} )
 set( SZIP_INCLUDE_DIRS ${SZIP_INCLUDE_DIR} )
