@@ -43,10 +43,10 @@ macro( ecbuild_use_package )
     if( NOT DEFINED ${PNAME}_SUBPROJ_DIR ) 
     
         set( _${PNAME}_find_opts "" )
-        if( _PAR_REQUIRED )
+        if( DEFINED _PAR_REQUIRED )
             list( APPEND _${PNAME}_find_opts "REQUIRED" )
         endif()
-        if( _PAR_QUIET )
+        if( DEFINED _PAR_QUIET )
             list( APPEND _${PNAME}_find_opts "QUIET" )
         endif()
 

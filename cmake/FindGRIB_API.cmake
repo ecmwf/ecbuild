@@ -13,9 +13,11 @@
 #  GRIB_API_LIBRARIES - The libraries needed to use GRIB_API
 #  GRIB_API_DEFINITIONS - Compiler switches required for using GRIB_API
 
+option( WITH_GRIB_API "try to find grib_api installation" ON )
+
 # skip if GRIB_API is already found or if has is built inside
 
-if( NOT GRIB_API_FOUND )
+if( NOT GRIB_API_FOUND AND WITH_GRIB_API )
 
     # jpeg support
     
