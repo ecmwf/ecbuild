@@ -50,9 +50,9 @@ macro( ecbuild_generate_yy )
     add_custom_target( ${_PAR_YYPREFIX}_${DEPENDANT} SOURCES ${_PAR_YACC}.y ${_PAR_LEX}.l )
 
     if( BISON_FOUND )
-        bison_target( ${BASE}_parser  ${_PAR_YACC}.y  ${${BASE}yy_tmp_target} )
+		bison_target( ${BASE}_parser  ${_PAR_YACC}.y  ${${BASE}yy_tmp_target} COMPILE_FLAGS -t)
     else()
-        yacc_target( ${BASE}_parser  ${_PAR_YACC}.y   ${${BASE}yy_tmp_target} )
+		yacc_target( ${BASE}_parser  ${_PAR_YACC}.y   ${${BASE}yy_tmp_target} COMPILE_FLAGS -t)
     endif()
 
     if( FLEX_FOUND )
