@@ -161,5 +161,9 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
     include_directories( ${CMAKE_BINARY_DIR} )
 
+    install( FILES ${CMAKE_BINARY_DIR}/ecbuild_config.h
+                   ${CMAKE_BINARY_DIR}/ecbuild_platform.h
+             DESTINATION include/${PROJECT_NAME} )
+
 endif()
 

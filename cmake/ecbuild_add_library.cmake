@@ -13,7 +13,7 @@
 macro( ecbuild_add_library )
 
     set( options )
-    set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS )
+    set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE )
     set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS CONDITION )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -189,6 +189,14 @@ macro( ecbuild_add_library )
     
         # for the links target
         ecbuild_link_lib( ${_PAR_TARGET} ${LIB_FILENAME} )
+
+        # set linker language
+#        if( DEFINED EC_LINKER_LANGUAGE )
+#            set_target_properties( ${_PAR_TARGET} PROPERTIES LINKER_LANGUAGE ${EC_LINKER_LANGUAGE} )
+#        endif()
+#        if( DEFINED _PAR_LINKER_LANGUAGE )
+#            set_target_properties( ${_PAR_TARGET} PROPERTIES LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+#        endif()
 
     endif()
 
