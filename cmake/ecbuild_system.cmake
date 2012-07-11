@@ -51,6 +51,8 @@ endif()
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
+    set( ECBUILD_PROJECTS "" CACHE INTERNAL "list of ecbuild (sub)projects" )
+
     # get directory where this file is,
     # but without using the var CMAKE_CURRENT_LIST_DIR (only >=2.8.3)
     get_filename_component( buildsys_dir ${CMAKE_CURRENT_LIST_FILE} PATH )
