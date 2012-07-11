@@ -12,7 +12,7 @@
 
 macro( ecbuild_add_library )
 
-    set( options )
+    set( options TEST )
     set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE )
     set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS CONDITION )
 
@@ -127,60 +127,64 @@ macro( ecbuild_add_library )
         if( DEFINED _PAR_FFLAGS )
             set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
         endif()
+
+        # installation
     
-        # add installation paths
-        # and associate with defined component
-        set( COMPONENT_DIRECTIVE "" )
-        if( DEFINED _PAR_COMPONENT )
-            set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
-        else()
-            set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
-        endif()
+        if( NOT _PAR_TEST )
+
+            # and associate with defined component
+            set( COMPONENT_DIRECTIVE "" )
+            if( DEFINED _PAR_COMPONENT )
+                set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
+            else()
+                set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
+            endif()
     
-        install( TARGETS ${_PAR_TARGET}
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib
-          COMPONENT ${COMPONENT_DIRECTIVE} )
+            install( TARGETS ${_PAR_TARGET}
+                RUNTIME DESTINATION bin
+                LIBRARY DESTINATION lib
+                ARCHIVE DESTINATION lib
+                COMPONENT ${COMPONENT_DIRECTIVE} )
     
-        # install headers
-    
-        set( _header_destination "include/${PROJECT_NAME}/${currdir}" )
-    
-        if( DEFINED _PAR_INSTALL_HEADERS )
-            if( _PAR_INSTALL_HEADERS MATCHES "LISTED" )
-                install( FILES ${${_PAR_TARGET}_h_srcs}    DESTINATION ${_header_destination} )
-                if( DEFINED _PAR_TEMPLATES )
-                    install( FILES ${_PAR_TEMPLATES} DESTINATION ${_header_destination} )
+            # install headers
+        
+            set( _header_destination "include/${PROJECT_NAME}/${currdir}" )
+        
+            if( DEFINED _PAR_INSTALL_HEADERS )
+                if( _PAR_INSTALL_HEADERS MATCHES "LISTED" )
+                    install( FILES ${${_PAR_TARGET}_h_srcs}    DESTINATION ${_header_destination} )
+                    if( DEFINED _PAR_TEMPLATES )
+                        install( FILES ${_PAR_TEMPLATES} DESTINATION ${_header_destination} )
+                    endif()
+                endif()
+                if( _PAR_INSTALL_HEADERS MATCHES "ALL" )
+                    install( DIRECTORY ./  DESTINATION ${_header_destination} FILES_MATCHING PATTERN "*.h" )
                 endif()
             endif()
-            if( _PAR_INSTALL_HEADERS MATCHES "ALL" )
-                install( DIRECTORY ./  DESTINATION ${_header_destination} FILES_MATCHING PATTERN "*.h" )
+        
+            if( DEFINED _PAR_INSTALL_HEADERS_LIST )
+                install( FILES ${_PAR_INSTALL_HEADERS_LIST} DESTINATION ${_header_destination} )
             endif()
-        endif()
+        
+            if( DEFINED _PAR_INSTALL_HEADERS_REGEX )
+                install( DIRECTORY ./  DESTINATION ${_header_destination} FILES_MATCHING PATTERN "${_PAR_INSTALL_HEADERS_REGEX}")
+            endif()
     
-        if( DEFINED _PAR_INSTALL_HEADERS_LIST )
-            install( FILES ${_PAR_INSTALL_HEADERS_LIST} DESTINATION ${_header_destination} )
+            # set build location
+            set_property( TARGET ${_PAR_TARGET} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+            set_property( TARGET ${_PAR_TARGET} PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+
         endif()
-    
-        if( DEFINED _PAR_INSTALL_HEADERS_REGEX )
-            install( DIRECTORY ./  DESTINATION ${_header_destination} FILES_MATCHING PATTERN "${_PAR_INSTALL_HEADERS_REGEX}")
-        endif()
-    
+
         # add definitions to compilation
         if( DEFINED _PAR_DEFINITIONS )
             get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
             list( APPEND _target_defs ${_PAR_DEFINITIONS} )
             set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
         endif()
-    
-        # set build location
-        set_property( TARGET ${_PAR_TARGET} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
-        set_property( TARGET ${_PAR_TARGET} PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
-    
+        
         # make sure target is removed before - some problems with AIX
         get_target_property(LIB_LOCNAME ${_PAR_TARGET} LOCATION)
-        set(LIB_FILENAME ${CMAKE_SHARED_LIBRARY_PREFIX}${_PAR_TARGET}${CMAKE_SHARED_LIBRARY_SUFFIX}${LIB_SUFFIX})
         add_custom_command(
               TARGET ${_PAR_TARGET}
               PRE_BUILD
@@ -188,7 +192,10 @@ macro( ecbuild_add_library )
        )
     
         # for the links target
-        ecbuild_link_lib( ${_PAR_TARGET} ${LIB_FILENAME} )
+        if( NOT _PAR_TEST )
+            set(LIB_FILENAME ${CMAKE_SHARED_LIBRARY_PREFIX}${_PAR_TARGET}${CMAKE_SHARED_LIBRARY_SUFFIX}${LIB_SUFFIX})
+            ecbuild_link_lib( ${_PAR_TARGET} ${LIB_FILENAME} )
+        endif()
 
         # set linker language
 #        if( DEFINED EC_LINKER_LANGUAGE )
