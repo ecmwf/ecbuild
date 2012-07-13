@@ -111,7 +111,11 @@ macro( ecbuild_add_resources )
     # define as project files, but dont pack them
     if( DEFINED _PAR_SOURCES_DONT_PACK )
         list( APPEND LOCAL_FILES_NOT_TO_PACK ${_PAR_SOURCES_DONT_PACK} )
-        list( APPEND ${_PAR_TARGET}_files ${_PAR_SOURCES_DONT_PACK} )
+		foreach( sfile ${_PAR_SOURCES_DONT_PACK} )
+	        if( EXISTS "${sfile}" )
+				list( APPEND ${_PAR_TARGET}_files "${sfile}" )
+			endif()
+		endforeach()
     endif()
 
     # define as project files and pack them
