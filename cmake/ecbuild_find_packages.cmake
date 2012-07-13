@@ -18,19 +18,6 @@ if( NOT perl_version_return )
     string(REGEX REPLACE "version='([^']+)'.*" "\\1" PERL_VERSION ${perl_version_output_variable})
 endif()
 
-# python 
-
-find_package( PythonInterp )
-find_package( PythonLibs )
-
-if( PYTHONINTERP_FOUND )
-    execute_process( COMMAND ${PYTHON_EXECUTABLE} -V ERROR_VARIABLE _version  RESULT_VARIABLE _return ERROR_STRIP_TRAILING_WHITESPACE)
-    if( NOT _return )
-        string(REGEX REPLACE ".*([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\1.\\2.\\3" PYTHON_VERSION ${_version} )
-    endif()
-endif()
-
-
 # find preferably bison or else yacc
 
 if( NOT SKIP_BISON )

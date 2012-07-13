@@ -34,7 +34,7 @@ macro( ecbuild_print_summary )
     endif()
         message( STATUS "---------------------------------------------------------" )
     
-        message( STATUS " Compiler info    : [${CMAKE_CXX_COMPILER_ID} ${EC_COMPILER_VERSION}]" )
+        message( STATUS " Compiler info    : [${CMAKE_C_COMPILER_ID} ${EC_COMPILER_VERSION}]" )
     
         foreach( lang ${langs} )
           message( STATUS " > ${lang} [${CMAKE_${lang}_COMPILER} ${EC_${lang}_FLAGS_ALL}]" )

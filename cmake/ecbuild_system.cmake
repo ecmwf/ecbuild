@@ -21,8 +21,6 @@ endif()
 
     enable_language( C )   # ensure C has been enabled
 
-    enable_language( CXX ) # ensure C++ has been enabled
-
     if( DEFINED EC_FORTRAN ) # load fortran language if requested
 
       # this is a fix for the known problem on CMake issue #9220
@@ -119,6 +117,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     set( sg_perl "${buildsys_dir}/sg.pl" CACHE INTERNAL "perl script to generate persistent objects" )
 
     include( ecbuild_debug_var )
+    include( ecbuild_check_c_source )
     include( ecbuild_check_cxx_source )
     include( ecbuild_get_date )
     include( ecbuild_add_persistent )
@@ -136,6 +135,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include( ecbuild_use_package )
     include( ecbuild_print_summary )
     include( ecbuild_warn_unused_files )
+    include( ecbuild_find_python )
 
     ############################################################################################
     # kickstart the build system
