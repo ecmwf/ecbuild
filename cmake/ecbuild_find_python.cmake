@@ -31,6 +31,7 @@ macro( ecbuild_find_python )
     else()
       find_package( PythonInterp )
       find_package( PythonLibs   )
+    endif()
 
     if( PYTHONINTERP_FOUND )
         execute_process( COMMAND ${PYTHON_EXECUTABLE} -V ERROR_VARIABLE _version  RESULT_VARIABLE _return ERROR_STRIP_TRAILING_WHITESPACE)

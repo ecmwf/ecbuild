@@ -56,9 +56,6 @@ if( NOT BISON_FOUND ) # check for both yacc & lex together
     endif()
 endif()
 
-# find ncurses
-find_package( Curses  REQUIRED )
-
 # find rt when on Linux - other UNIX's have async io in the system library
 if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
     find_package( Realtime REQUIRED )
@@ -68,7 +65,7 @@ endif()
 set( CMAKE_THREAD_PREFER_PTHREAD 1 )
 find_package(Threads REQUIRED)
 if( NOT ${CMAKE_USE_PTHREADS_INIT} )
-    message( FATAL_ERROR "Mars only supports pthreads - thread library found is [${CMAKE_THREAD_LIBS_INIT}]" )
+    message( FATAL_ERROR "Only pthreads supported - thread library found is [${CMAKE_THREAD_LIBS_INIT}]" )
 endif()
 
 ###########################################################################################

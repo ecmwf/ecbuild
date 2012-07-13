@@ -243,23 +243,22 @@ add_definitions( -D${EC_OS_NAME} )
 
 if( CMAKE_COMPILER_IS_GNUCC )
 
-    # use pipe for faster compilation
-    cmake_add_c_flags("-pipe")
-    
-    if( CMAKE_Fortran_COMPILER_LOADED )
-        cmake_add_cxx_flags("-pipe")
-    endif()
+    cmake_add_c_flags("-pipe") # use pipe for faster compilation
 
     if( ENABLE_WARNINGS )
-
         cmake_add_c_flags("-Wall")
-        if( CMAKE_Fortran_COMPILER_LOADED )
-            cmake_add_cxx_flags("-Wall")
-        endif()
-
         #    cmake_add_c_flags("-Wextra")
-        #    cmake_add_cxx_flags("-Wextra")
+    endif()
 
+endif()
+
+if( CMAKE_COMPILER_IS_GNUCXX )
+
+   cmake_add_cxx_flags("-pipe") # use pipe for faster compilation
+
+    if( ENABLE_WARNINGS )
+        cmake_add_cxx_flags("-Wall")
+        #    cmake_add_cxx_flags("-Wextra")
     endif()
 
 endif()
