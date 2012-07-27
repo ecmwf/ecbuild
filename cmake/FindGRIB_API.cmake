@@ -22,7 +22,12 @@ if( NOT GRIB_API_FOUND AND WITH_GRIB_API )
     # jpeg support
     
     find_package( JPEG     QUIET ) # grib_api might be a static .a library in which
+
+    if( NOT "$ENV{JASPER_PATH}" STREQUAL "" )
+        list( APPEND CMAKE_PREFIX_PATH "$ENV{JASPER_PATH}" )
+    endif()
     find_package( Jasper   QUIET ) # case we don't know if which jpeg library was used
+
     find_package( OpenJPEG QUIET ) # so we try to find all jpeg libs and link to them 
     
     if(JPEG_FOUND)
@@ -57,9 +62,8 @@ if( NOT GRIB_API_FOUND AND WITH_GRIB_API )
 
     # find external grib_api
 
-    set( _ENV_GRIB_API_PATH "$ENV{GRIB_API_PATH}" )
-    if( NOT DEFINED GRIB_API_PATH AND _ENV_GRIB_API_PATH )
-        set( GRIB_API_PATH ${_ENV_GRIB_API_PATH} )
+    if( NOT DEFINED GRIB_API_PATH AND NOT "$ENV{GRIB_API_PATH}" STREQUAL "" )
+        list( APPEND GRIB_API_PATH "$ENV{GRIB_API_PATH}" )
     endif()
 
     if( DEFINED GRIB_API_PATH )

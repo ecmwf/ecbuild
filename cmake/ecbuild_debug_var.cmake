@@ -7,8 +7,7 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding persistent layer object classes
-##############################################################################
+# macro for debugging a cmake variable
 
 macro( debug_var VAR )
 
@@ -16,47 +15,12 @@ macro( debug_var VAR )
 
 endmacro( debug_var )
 
-
 ##############################################################################
-# macro that only adds a c flag if compiler supports it
+# macro for debugging a environment variable within cmake
 
-macro( cmake_add_c_flags m_c_flags )
+macro( debug_env_var VAR )
 
-  if( NOT DEFINED N_CFLAG )
-    set( N_CFLAG 0 )
-  endif()
+    message( STATUS "ENV ${VAR} [$ENV{${VAR}}]" )
 
-  math( EXPR N_CFLAG '${N_CFLAG}+1' )
+endmacro( debug_env_var )
 
-  check_c_compiler_flag( ${m_c_flags} C_FLAG_TEST_${N_CFLAG} )
-
-  if( C_FLAG_TEST_${N_CFLAG} )
-    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${m_c_flags}" )
-    message( STATUS "C FLAG [${m_c_flags}] added" )
-  else()
-    message( STATUS "C FLAG [${m_c_flags}] skipped" )
-  endif()
-
-endmacro()
-
-##############################################################################
-# macro that only adds a cxx flag if compiler supports it
-
-macro( cmake_add_cxx_flags m_cxx_flags )
-
-  if( NOT DEFINED N_CXXFLAG )
-    set( N_CXXFLAG 0 )
-  endif()
-
-  math( EXPR N_CXXFLAG '${N_CXXFLAG}+1' )
-
-  check_cxx_compiler_flag( ${m_cxx_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
-
-  if( CXX_FLAG_TEST_${N_CXXFLAG} )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${m_cxx_flags}" )
-    message( STATUS "C++ FLAG [${m_cxx_flags}] added" )
-  else()
-    message( STATUS "C++ FLAG [${m_cxx_flags}] skipped" )
-  endif()
-
-endmacro()

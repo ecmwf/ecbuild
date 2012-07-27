@@ -6,6 +6,9 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+##############################################################################
+# macro that runs the given C++ code and returns its output
+
 macro( ecbuild_check_cxx_source_return SOURCE VAR VAR_OUTPUT )
 
     if( NOT DEFINED ${VAR} )
@@ -79,5 +82,27 @@ macro( ecbuild_check_cxx_source_return SOURCE VAR VAR_OUTPUT )
         endif()
     
     endif()
+
+endmacro()
+
+##############################################################################
+# macro that only adds a cxx flag if compiler supports it
+
+macro( cmake_add_cxx_flags m_cxx_flags )
+
+  if( NOT DEFINED N_CXXFLAG )
+    set( N_CXXFLAG 0 )
+  endif()
+
+  math( EXPR N_CXXFLAG '${N_CXXFLAG}+1' )
+
+  check_cxx_compiler_flag( ${m_cxx_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
+
+  if( CXX_FLAG_TEST_${N_CXXFLAG} )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${m_cxx_flags}" )
+    message( STATUS "C++ FLAG [${m_cxx_flags}] added" )
+  else()
+    message( STATUS "C++ FLAG [${m_cxx_flags}] skipped" )
+  endif()
 
 endmacro()

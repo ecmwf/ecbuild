@@ -6,6 +6,9 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+##############################################################################
+# macro that runs the given C code and returns its output
+
 macro( ecbuild_check_c_source_return SOURCE VAR VAR_OUTPUT )
 
     if( NOT DEFINED ${VAR} )
@@ -81,3 +84,26 @@ macro( ecbuild_check_c_source_return SOURCE VAR VAR_OUTPUT )
     endif()
 
 endmacro()
+
+##############################################################################
+# macro that only adds a c flag if compiler supports it
+
+macro( cmake_add_c_flags m_c_flags )
+
+  if( NOT DEFINED N_CFLAG )
+    set( N_CFLAG 0 )
+  endif()
+
+  math( EXPR N_CFLAG '${N_CFLAG}+1' )
+
+  check_c_compiler_flag( ${m_c_flags} C_FLAG_TEST_${N_CFLAG} )
+
+  if( C_FLAG_TEST_${N_CFLAG} )
+    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${m_c_flags}" )
+    message( STATUS "C FLAG [${m_c_flags}] added" )
+  else()
+    message( STATUS "C FLAG [${m_c_flags}] skipped" )
+  endif()
+
+endmacro()
+
