@@ -182,7 +182,7 @@ if( UNIX )
 
         if( CMAKE_C_COMPILER_ID MATCHES "XL" )
 
-            cmake_add_c_flags("-qweaksymbol")
+#            cmake_add_c_flags("-qweaksymbol")
 
             if(EC_OS_BITS EQUAL "32" )
                 cmake_add_c_flags("-q32")
@@ -205,7 +205,8 @@ if( UNIX )
             cmake_add_cxx_flags("-bmaxdata:0x40000000")
             cmake_add_cxx_flags("-qrtti")
             cmake_add_cxx_flags("-qfuncsect")
-            cmake_add_cxx_flags("-qweaksymbol")
+ 
+#           cmake_add_cxx_flags("-qweaksymbol")
     
             if(EC_OS_BITS EQUAL "32" )
                 cmake_add_cxx_flags("-q32")
