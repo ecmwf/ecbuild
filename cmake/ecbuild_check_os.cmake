@@ -147,7 +147,7 @@ set( EC_OS_NAME "UNKNOWN" )
 if( UNIX )
 
     if( APPLE AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" ) # Mac OS X
-        set( EC_OS_NAME "macosx" )
+        set( EC_OS_NAME "MacOSX" )
     endif()
 
     if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" ) # Linux
