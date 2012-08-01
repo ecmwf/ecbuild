@@ -31,7 +31,7 @@ macro( ecbuild_separate_sources )
     endif()
 
     foreach( src ${_PAR_SOURCES} )
-        if(${src} MATCHES "(\\.h|\\.hxx|\\.hh|\\.hpp|\\.H)")
+        if(${src} MATCHES "(\\.h|\\.b|\\.hxx|\\.hh|\\.hpp|\\.H)")
             list( APPEND ${_PAR_TARGET}_h_srcs ${src} )
         endif()
     endforeach()
