@@ -39,6 +39,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             COPYING
                             cmake/FindADSM.cmake
                             cmake/FindCMath.cmake
+                            cmake/FindCairo.cmake
                             cmake/FindDl.cmake
                             cmake/FindEMOS.cmake
                             cmake/FindEcLib.cmake
@@ -53,6 +54,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             cmake/FindODB_API.cmake
                             cmake/FindOpenJPEG.cmake
                             cmake/FindPGIFortran.cmake
+                            cmake/FindProj4.cmake
                             cmake/FindREADLINE.cmake
                             cmake/FindRPCGEN.cmake
                             cmake/FindRealtime.cmake
@@ -74,3 +76,4 @@ install( DIRECTORY tools DESTINATION share/ecbuild/tools )
 ecbuild_install_project( NAME ecbuild )
 
 ecbuild_print_summary()
+
