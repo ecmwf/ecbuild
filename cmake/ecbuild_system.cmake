@@ -75,7 +75,6 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
     include(CheckTypeSize)
     include(CheckIncludeFile)
-    include(CheckIncludeFileCXX)
     include(CheckIncludeFiles)
 
     include(CheckFunctionExists)
@@ -85,9 +84,12 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include(CheckCSourceCompiles)
     include(CheckCSourceRuns)
 
-    include(CheckCXXCompilerFlag)
-    include(CheckCXXSourceCompiles)
-    include(CheckCXXSourceRuns)
+    if( CMAKE_CXX_COMPILER_LOADED )
+        include(CheckIncludeFileCXX)
+        include(CheckCXXCompilerFlag)
+        include(CheckCXXSourceCompiles)
+        include(CheckCXXSourceRuns)
+    endif()
 
     if( CMAKE_Fortran_COMPILER_LOADED )
         include(CheckFortranFunctionExists)
@@ -117,8 +119,12 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     set( sg_perl "${buildsys_dir}/sg.pl" CACHE INTERNAL "perl script to generate persistent objects" )
 
     include( ecbuild_debug_var )
+
     include( ecbuild_check_c_source )
-    include( ecbuild_check_cxx_source )
+    if( CMAKE_CXX_COMPILER_LOADED )
+        include( ecbuild_check_cxx_source )
+    endif()
+
     include( ecbuild_get_date )
     include( ecbuild_add_persistent )
     include( ecbuild_generate_yy )

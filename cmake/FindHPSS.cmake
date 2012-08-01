@@ -21,9 +21,6 @@ endif()
 find_path(HPSS_INCLUDE_DIR hpss_api.h PATH_SUFFIXES hpss )
 find_library( HPSS_LIBRARY hpss       PATH_SUFFIXES hpss )
 
-set( HPSS_LIBRARIES    ${HPSS_LIBRARY} )
-set( HPSS_INCLUDE_DIRS ${HPSS_INCLUDE_DIR} )
-
 include(FindPackageHandleStandardArgs)
 
 # handle the QUIETLY and REQUIRED arguments and set HPSS_FOUND to TRUE
@@ -32,3 +29,11 @@ find_package_handle_standard_args(HPSS  DEFAULT_MSG
                                   HPSS_LIBRARY HPSS_INCLUDE_DIR)
 
 mark_as_advanced(HPSS_INCLUDE_DIR HPSS_LIBRARY )
+
+if( HPSS_FOUND )
+    set( HPSS_LIBRARIES    ${HPSS_LIBRARY} )
+    set( HPSS_INCLUDE_DIRS ${HPSS_INCLUDE_DIR} )
+else()
+    set( HPSS_LIBRARIES    "" )
+    set( HPSS_INCLUDE_DIRS "" )
+endif()
