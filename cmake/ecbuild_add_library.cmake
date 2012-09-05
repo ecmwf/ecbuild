@@ -30,13 +30,6 @@ macro( ecbuild_add_library )
       message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the SOURCES.")
     endif()
 
-    ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
-
-#    debug_var( ${_PAR_TARGET}_h_srcs )
-#    debug_var( ${_PAR_TARGET}_c_srcs )
-#    debug_var( ${_PAR_TARGET}_cxx_srcs )
-#    debug_var( ${_PAR_TARGET}_f_srcs )
-
     get_filename_component( currdir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
 
 #    debug_var(currdir)
@@ -129,7 +122,14 @@ macro( ecbuild_add_library )
         endif()
 
         # installation
-    
+
+        ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+
+#    debug_var( ${_PAR_TARGET}_h_srcs )
+#    debug_var( ${_PAR_TARGET}_c_srcs )
+#    debug_var( ${_PAR_TARGET}_cxx_srcs )
+#    debug_var( ${_PAR_TARGET}_f_srcs )
+
         if( NOT _PAR_TEST )
 
             # and associate with defined component
@@ -157,7 +157,7 @@ macro( ecbuild_add_library )
                         install( FILES ${_PAR_TEMPLATES} DESTINATION ${_header_destination} )
                     endif()
                 endif()
-                if( _PAR_INSTALL_HEADERS MATCHES "ALL" )
+                if( _PAR_INSTALL_HEADERS MATCHES "ALL" ) # "(\\.h|\\.b|\\.hxx|\\.hh|\\.hpp|\\.H)" ????
                     install( DIRECTORY ./  DESTINATION ${_header_destination} FILES_MATCHING PATTERN "*.h" )
                 endif()
             endif()
