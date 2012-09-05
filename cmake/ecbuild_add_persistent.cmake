@@ -37,7 +37,7 @@ macro( ecbuild_add_persistent )
         DEPENDS ${file}.h
         )
       set_source_files_properties( ${file}.h PROPERTIES OBJECT_DEPENDS "${file}.b" )
-      list( APPEND ${_PAR_SRC_LIST} ${file}.b )
+      list( APPEND ${_PAR_SRC_LIST} ${CMAKE_CURRENT_BINARY_DIR}/${file}.b )
     endforeach()
 
 endmacro( ecbuild_add_persistent  )
