@@ -24,7 +24,7 @@ if( CMAKE_C_COMPILER_ID MATCHES "Clang" )
                   ARGS ${CMAKE_C_COMPILER_ARG1} --version
                   OUTPUT_VARIABLE EC_COMPILER_VERSION )
 
-    string(REGEX REPLACE ".*([0-9])\\.([0-9])(\\.([0-9]))?.*" "\\1.\\2" EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
+    string(REGEX REPLACE ".*clang version ([0-9])\\.([0-9])(\\.([0-9]))?.*" "\\1.\\2" EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
 endif()
 
 if( CMAKE_C_COMPILER_ID MATCHES "SunPro" )

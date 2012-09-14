@@ -32,25 +32,27 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     check_include_files( malloc.h       EC_HAVE_MALLOC_H      )
     check_include_files( sys/malloc.h   EC_HAVE_SYS_MALLOC_H  )
     
-    # test for struct stat
-    check_cxx_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat s; return 0; }"
+    check_include_files("sys/param.h;sys/mount.h" EC_HAVE_SYS_MOUNT_H )
+    check_include_files("sys/vfs.h"               EC_HAVE_SYS_VFS_H )
+
+    # test for struct statfs
+    check_c_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat s; return 0; }"
                                EC_HAVE_STRUCT_STAT )
     # test for struct stat64
-    check_cxx_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat64 s; return 0; }"
+    check_c_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat64 s; return 0; }"
                                EC_HAVE_STRUCT_STAT64 )
     # test for fstat
-    check_cxx_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat s;	::stat(\"\",&s); return 0; }"
+    check_c_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat s;	stat(\"\",&s); return 0; }"
                                EC_HAVE_STAT )
     # test for fstat64
-    check_cxx_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat64 s;	::stat64(\"\",&s); return 0; }"
+    check_c_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat64 s; stat64(\"\",&s); return 0; }"
                                EC_HAVE_STAT64 )
     # test for fstat
-    check_cxx_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat s;	::fstat(1,&s); return 0; }"
+    check_c_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat s; fstat(1,&s); return 0; }"
                                EC_HAVE_FSTAT )
     # test for fstat64
-    check_cxx_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat64 s;	::fstat64(1,&s); return 0; }"
+    check_c_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat64 s; fstat64(1,&s); return 0; }"
                                EC_HAVE_FSTAT64 )
-    
     
     # test for fseeko64
     check_cxx_source_compiles( "#include <stdio.h>\n#include <sys/types.h>\nint main(){FILE* file;off64_t l=0;::fseeko64(file,l,SEEK_CUR);return 0;}\n"

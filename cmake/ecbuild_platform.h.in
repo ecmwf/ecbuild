@@ -35,6 +35,8 @@
 #cmakedefine EC_HAVE_FLOCK
 #cmakedefine EC_HAVE_MMAP
 
+#cmakedefine EC_HAVE_SYS_MOUNT_H
+#cmakedefine EC_HAVE_SYS_VFS_H
 #cmakedefine EC_HAVE_STRUCT_STAT
 #cmakedefine EC_HAVE_STRUCT_STAT64
 #cmakedefine EC_HAVE_STAT
