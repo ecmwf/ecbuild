@@ -59,6 +59,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             cmake/FindRPCGEN.cmake
                             cmake/FindRealtime.cmake
                             cmake/FindSZip.cmake
+                            cmake/FindScin.cmake
                             cmake/FindXLFortranLibs.cmake
                             cmake/FindYACC.cmake
 )
