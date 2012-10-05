@@ -47,13 +47,13 @@ if( "${__readline_version_out}" MATCHES "^EditLine" )
   endif()
 endif()
 
-# if acceptable, set out the output variables
-
-set( READLINE_LIBRARIES    ${READLINE_LIBRARY} )
-set( READLINE_INCLUDE_DIRS ${READLINE_INCLUDE_DIR} )
-
 include(FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args(READLINE  DEFAULT_MSG READLINE_LIBRARY READLINE_INCLUDE_DIR)
+
+if( READLINE_FOUND )
+    set( READLINE_LIBRARIES    ${READLINE_LIBRARY} )
+    set( READLINE_INCLUDE_DIRS ${READLINE_INCLUDE_DIR} )
+endif()
 
 mark_as_advanced(READLINE_INCLUDE_DIR READLINE_LIBRARY )

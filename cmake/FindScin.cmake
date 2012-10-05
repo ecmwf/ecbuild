@@ -31,15 +31,17 @@ if( NOT SCIN_FOUND AND WITH_SCIN )
     find_path(SCIN_INCLUDE_DIR NAMES scin_api.h PATH_SUFFIXES scin_api )
     find_library( SCIN_LIBRARY NAMES scin       PATH_SUFFIXES scin     )
     
-    set( SCIN_LIBRARIES    ${SCIN_LIBRARY} )
-    set( SCIN_INCLUDE_DIRS ${SCIN_INCLUDE_DIR} )
-    
     include(FindPackageHandleStandardArgs)
     
     # handle the QUIETLY and REQUIRED arguments and set SCIN_FOUND to TRUE
     # if all listed variables are TRUE
     find_package_handle_standard_args(Scin  DEFAULT_MSG
                                       SCIN_LIBRARY SCIN_INCLUDE_DIR)
+
+    if( SCIN_FOUND )
+        set( SCIN_LIBRARIES    ${SCIN_LIBRARY} )
+        set( SCIN_INCLUDE_DIRS ${SCIN_INCLUDE_DIR} )
+    endif()
     
     mark_as_advanced(SCIN_INCLUDE_DIR SCIN_LIBRARY )
     
