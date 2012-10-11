@@ -41,7 +41,11 @@ macro( ecbuild_add_test )
     # further checks
 
     if( NOT _PAR_TARGET AND NOT _PAR_COMMAND )
-      message(FATAL_ERROR "The call to ecbuild_add_test() doesn't specify the TARGET or COMMAND.")
+        message(FATAL_ERROR "The call to ecbuild_add_test() doesn't specify the TARGET or COMMAND.")
+    endif()
+
+    if( _PAR_TYPE MATCHES "SCRIPT" AND NOT _PAR_COMMAND )
+        message(FATAL_ERROR "The call to ecbuild_add_test() defines a 'script' but doesn't specify the COMMAND.")
     endif()
 
     if( DEFINED _PAR_TARGET AND _PAR_TYPE MATCHES "EXE" AND NOT _PAR_SOURCES )
@@ -144,44 +148,44 @@ macro( ecbuild_add_test )
                       COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME}
                 )
 
-            endif() # EXE
+        endif() # EXE
     
-        endif() # condition
+      endif() # condition
     
-        # define the arguments
-        set( TEST_ARGS "" )
-        if( DEFINED _PAR_ARGS  )
-          list( APPEND TEST_ARGS ${_PAR_ARGS} )
-        endif()
+      # define the arguments
+      set( TEST_ARGS "" )
+      if( DEFINED _PAR_ARGS  )
+        list( APPEND TEST_ARGS ${_PAR_ARGS} )
+      endif()
 
-        # setup enable flag    
-        if( NOT DEFINED _PAR_ENABLED )
-            set( _PAR_ENABLED 1 )
-        endif()
+      # setup enable flag    
+      if( NOT DEFINED _PAR_ENABLED )
+          set( _PAR_ENABLED 1 )
+      endif()
 
-        # define the test
-        if( _PAR_ENABLED )
+      # define the test
+      if( _PAR_ENABLED )
 
-            if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET )
-                set( _PAR_TARGET ${_PAR_COMMAND} )
-            endif()
+          if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET )
+              set( _PAR_TARGET ${_PAR_COMMAND} )
+          endif()
 
-            if( DEFINED _PAR_COMMAND )
-                add_test( ${_PAR_TARGET} ${_PAR_COMMAND} ${TEST_ARGS} ) # run a command as test
-            else()
-                add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ) # run the test that was generated
-            endif()
+          if( DEFINED _PAR_COMMAND )
+              add_test( ${_PAR_TARGET} ${_PAR_COMMAND} ${TEST_ARGS} ) # run a command as test
+          else()
+              add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ) # run the test that was generated
+          endif()
 
 
-            if( DEFINED _PAR_ENVIRONMENT )
-                set_tests_properties( ${_PAR_TARGET} PROPERTIES ENVIRONMENT "${_PAR_ENVIRONMENT}")
-            endif()
+          if( DEFINED _PAR_ENVIRONMENT )
+              set_tests_properties( ${_PAR_TARGET} PROPERTIES ENVIRONMENT "${_PAR_ENVIRONMENT}")
+          endif()
 
-        endif()
+      endif()
     
-        # add to the overall list of tests
-        list( APPEND ECBUILD_ALL_TESTS ${_PAR_TARGET} )
-        set( ECBUILD_ALL_TESTS ${ECBUILD_ALL_TESTS} CACHE INTERNAL "" )
+      # add to the overall list of tests
+      list( APPEND ECBUILD_ALL_TESTS ${_PAR_TARGET} )
+      set( ECBUILD_ALL_TESTS ${ECBUILD_ALL_TESTS} CACHE INTERNAL "" )
 
     endif() # _condition
 
