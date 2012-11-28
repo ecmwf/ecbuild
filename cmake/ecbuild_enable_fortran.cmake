@@ -7,7 +7,7 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for enablignthe fortan language
+# macro for enabling the fortan language
 
 macro( ecbuild_enable_fortran )
 
