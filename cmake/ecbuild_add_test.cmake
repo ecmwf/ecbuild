@@ -13,7 +13,7 @@
 macro( ecbuild_add_test )
 
     set( options ) # no options
-    set( single_value_args TARGET ENABLED COMMAND TYPE )
+    set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE )
     set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES CFLAGS CXXFLAGS FFLAGS CONDITION ENVIRONMENT )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -139,6 +139,11 @@ macro( ecbuild_add_test )
                 # set build location to local build dir
                 # not the project base as defined for libs and execs
                 set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+
+                # set linker language
+                if( DEFINED _PAR_LINKER_LANGUAGE )
+                    set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+                endif()
         
                 # make sure target is removed before - some problems with AIX
                 get_target_property(EXE_FILENAME ${_PAR_TARGET} OUTPUT_NAME)

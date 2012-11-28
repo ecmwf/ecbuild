@@ -13,7 +13,7 @@
 macro( ecbuild_add_executable )
 
     set( options ) # no options
-    set( single_value_args TARGET COMPONENT ) # to which target source list to add the object classes
+    set( single_value_args TARGET COMPONENT LINKER_LANGUAGE ) # to which target source list to add the object classes
     set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS CONDITION )  # list of files to process
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -126,6 +126,11 @@ macro( ecbuild_add_executable )
         # set build location
         set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
     
+        # set linker language
+        if( DEFINED _PAR_LINKER_LANGUAGE )
+            set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+        endif()
+
         # make sure target is removed before - some problems with AIX
         get_target_property(EXE_FILENAME ${_PAR_TARGET} OUTPUT_NAME)
         if( NOT EXE_FILENAME )

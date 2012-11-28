@@ -198,12 +198,9 @@ macro( ecbuild_add_library )
         endif()
 
         # set linker language
-#        if( DEFINED EC_LINKER_LANGUAGE )
-#            set_target_properties( ${_PAR_TARGET} PROPERTIES LINKER_LANGUAGE ${EC_LINKER_LANGUAGE} )
-#        endif()
-#        if( DEFINED _PAR_LINKER_LANGUAGE )
-#            set_target_properties( ${_PAR_TARGET} PROPERTIES LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
-#        endif()
+        if( DEFINED _PAR_LINKER_LANGUAGE )
+            set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+        endif()
 
     endif()
 
