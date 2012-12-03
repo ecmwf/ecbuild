@@ -43,4 +43,8 @@ macro( ecbuild_enable_fortran )
 
   install( CODE "EXECUTE_PROCESS (COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${CMAKE_Fortran_MODULE_DIRECTORY}/\${BUILD_TYPE}\" \"${CMAKE_INSTALL_PREFIX}/include\")" )
 
+<<<<<<< HEAD
 endmacro( ecbuild_enable_fortran )
+=======
+endmacro( ecbuild_enable_fortran )
+>>>>>>> added macro to enable fortran language
