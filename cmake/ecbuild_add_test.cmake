@@ -66,7 +66,7 @@ macro( ecbuild_add_test )
         set( _${_PAR_TARGET}_condition TRUE )
     endif()
 
-    if( _${_PAR_TARGET}_condition )
+    if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
 
         if( _PAR_TYPE MATCHES "EXE" )
 

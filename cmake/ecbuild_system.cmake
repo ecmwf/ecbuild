@@ -40,6 +40,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include(CTest)                 # add cmake testing support
     enable_testing()
 
+    option( ENABLE_TESTS "enable the unit tests" ON )
+
     ############################################################################################
     # define valid build types
 
