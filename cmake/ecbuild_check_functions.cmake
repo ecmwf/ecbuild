@@ -10,6 +10,41 @@
 # os capability checks
 
 if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
+    
+    ### symbol checks ##################
+
+    check_symbol_exists( fseek        "stdio.h"                         EC_HAVE_FSEEK  )
+    check_symbol_exists( fseeko       "stdio.h"                         EC_HAVE_FSEEKO )
+    check_symbol_exists( ftello       "stdio.h"                         EC_HAVE_FTELLO )
+    check_symbol_exists( lseek        "sys/types.h;unistd.h"            EC_HAVE_LSEEK  )
+    check_symbol_exists( ftruncate    "sys/types.h;unistd.h"            EC_HAVE_FTRUNCATE  )
+    check_symbol_exists( open         "sys/types.h;sys/stat.h;fcntl.h"  EC_HAVE_OPEN   )
+    check_symbol_exists( fopen        "stdio.h"                         EC_HAVE_FOPEN  )
+    check_symbol_exists( flock        "sys/file.h"                      EC_HAVE_FLOCK  )
+    check_symbol_exists( mmap         "sys/mman.h"                      EC_HAVE_MMAP   )
+    
+    check_symbol_exists( F_GETLK      "fcntl.h"                         EC_HAVE_F_GETLK  )
+    check_symbol_exists( F_SETLK      "fcntl.h"                         EC_HAVE_F_SETLK  )
+    check_symbol_exists( F_SETLKW     "fcntl.h"                         EC_HAVE_F_SETLKW  )
+     
+    check_symbol_exists( F_GETLK64     "fcntl.h"                        EC_HAVE_F_GETLK64  )
+    check_symbol_exists( F_SETLK64     "fcntl.h"                        EC_HAVE_F_SETLK64  )
+    check_symbol_exists( F_SETLKW64    "fcntl.h"                        EC_HAVE_F_SETLKW64  )
+    
+    check_symbol_exists( MAP_ANONYMOUS "sys/mman.h"                     EC_HAVE_MAP_ANONYMOUS )
+    check_symbol_exists( MAP_ANON      "sys/mman.h"                     EC_HAVE_MAP_ANON )
+
+    ### include files checks ##################
+
+    check_include_files( malloc.h       EC_HAVE_MALLOC_H      )
+    check_include_files( sys/malloc.h   EC_HAVE_SYS_MALLOC_H  )
+    
+    check_include_files("sys/param.h;sys/mount.h" EC_HAVE_SYS_MOUNT_H )
+    check_include_files("sys/vfs.h"               EC_HAVE_SYS_VFS_H )
+
+    ### capability checks ##################
+
+    if( CMAKE_CXX_COMPILER_LOADED )
 
     # test for off_t
     check_cxx_source_compiles( "#include <stdio.h>\n#include <sys/types.h>\nint main(){ off_t l=0; return 0;}\n"
@@ -18,23 +53,6 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     check_cxx_source_compiles( "#include <stdio.h>\n#include <sys/types.h>\nint main(){ off64_t l=0; return 0;}\n"
                                EC_HAVE_OFF64T )
     
-    
-    check_symbol_exists( fseek     "stdio.h"                           EC_HAVE_FSEEK  )
-    check_symbol_exists( fseeko    "stdio.h"                           EC_HAVE_FSEEKO )
-    check_symbol_exists( ftello    "stdio.h"                           EC_HAVE_FTELLO )
-    check_symbol_exists( lseek     "sys/types.h;unistd.h"              EC_HAVE_LSEEK  )
-    check_symbol_exists( ftruncate "sys/types.h;unistd.h"              EC_HAVE_FTRUNCATE  )
-    check_symbol_exists( open      "sys/types.h;sys/stat.h;fcntl.h"    EC_HAVE_OPEN   )
-    check_symbol_exists( fopen     "stdio.h"                           EC_HAVE_FOPEN  )
-    check_symbol_exists( flock     "sys/file.h"                        EC_HAVE_FLOCK  )
-    check_symbol_exists( mmap      "sys/mman.h"                        EC_HAVE_MMAP   )
-    
-    check_include_files( malloc.h       EC_HAVE_MALLOC_H      )
-    check_include_files( sys/malloc.h   EC_HAVE_SYS_MALLOC_H  )
-    
-    check_include_files("sys/param.h;sys/mount.h" EC_HAVE_SYS_MOUNT_H )
-    check_include_files("sys/vfs.h"               EC_HAVE_SYS_VFS_H )
-
     # test for struct statfs
     check_cxx_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat s; return 0; }"
                                EC_HAVE_STRUCT_STAT )
@@ -53,7 +71,6 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     # test for fstat64
     check_cxx_source_compiles( "#include <sys/stat.h>\nint main(){ struct stat64 s; fstat64(1,&s); return 0; }"
                                EC_HAVE_FSTAT64 )
-    
     # test for fseeko64
     check_cxx_source_compiles( "#include <stdio.h>\n#include <sys/types.h>\nint main(){FILE* file;off64_t l=0;::fseeko64(file,l,SEEK_CUR);return 0;}\n"
                                EC_HAVE_FSEEKO64 )
@@ -84,36 +101,7 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     # test for struct statvfs64
     check_cxx_source_compiles( "#include <sys/statvfs.h>\nint main(){ struct statvfs64 v; }"
                                EC_HAVE_STRUCT_STATVFS64 )
-    
-    
-    ### test for Asynchronous IO ##################
-    
-    cmake_push_check_state()
-    
-       if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
-         set(CMAKE_REQUIRED_LIBRARIES ${RT_LIB})
-       endif()
-    
-       check_cxx_source_compiles( "#include <aio.h>\nint main(){ aiocb* aiocbp; int n = aio_write(aiocbp); n = aio_read(aiocbp);  n = aio_fsync(O_SYNC,aiocbp); }\n"
-                                   EC_HAVE_AIO )
-       check_cxx_source_compiles( "#include <aio.h>\nint main(){ aiocb64* aiocbp; int n = aio_write64(aiocbp); n = aio_read64(aiocbp); n = aio_fsync64(O_SYNC,aiocbp); }\n"
-                                   EC_HAVE_AIO64 )
-    
-    cmake_pop_check_state()
-    
-    ### test for symbols ##################
-    
-    check_symbol_exists( F_GETLK  "fcntl.h"                            EC_HAVE_F_GETLK  )
-    check_symbol_exists( F_SETLK  "fcntl.h"                            EC_HAVE_F_SETLK  )
-    check_symbol_exists( F_SETLKW "fcntl.h"                            EC_HAVE_F_SETLKW  )
-    
-    check_symbol_exists( F_GETLK64  "fcntl.h"                          EC_HAVE_F_GETLK64  )
-    check_symbol_exists( F_SETLK64  "fcntl.h"                          EC_HAVE_F_SETLK64  )
-    check_symbol_exists( F_SETLKW64 "fcntl.h"                          EC_HAVE_F_SETLKW64  )
-    
-    check_symbol_exists( MAP_ANONYMOUS "sys/mman.h"                    EC_HAVE_MAP_ANONYMOUS )
-    check_symbol_exists( MAP_ANON      "sys/mman.h"                    EC_HAVE_MAP_ANON )
-    
+        
     # test for fsync
     check_cxx_source_compiles( "#include <unistd.h>\nint main(){int fd = 1; int fs = fsync(fd); }\n"
                                EC_HAVE_FSYNC )
@@ -136,7 +124,21 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     check_cxx_source_compiles( "#include <unistd.h>\n#include <execinfo.h>\n int main(){ void ** buffer; int i = backtrace(buffer, 256); }\n"
                                EC_HAVE_EXECINFO_BACKTRACE )
     
-
+    ### asynchronous IO support ##################
+    
+    cmake_push_check_state()
+    
+       if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
+         set(CMAKE_REQUIRED_LIBRARIES ${RT_LIB})
+       endif()
+    
+       check_cxx_source_compiles( "#include <aio.h>\nint main(){ aiocb* aiocbp; int n = aio_write(aiocbp); n = aio_read(aiocbp);  n = aio_fsync(O_SYNC,aiocbp); }\n"
+                                   EC_HAVE_AIO )
+       check_cxx_source_compiles( "#include <aio.h>\nint main(){ aiocb64* aiocbp; int n = aio_write64(aiocbp); n = aio_read64(aiocbp); n = aio_fsync64(O_SYNC,aiocbp); }\n"
+                                   EC_HAVE_AIO64 )
+    
+    cmake_pop_check_state()
+        
     #### reentrant funtions support  #############
 
     # test for gmtime_r
@@ -163,17 +165,19 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     check_cxx_source_compiles( "#include <netdb.h>\nint main(){ const char *name; struct hostent *ret; char *buf; struct hostent **result; size_t buflen; int *h_errnop; int i = gethostbyname_r(name,ret,buf,buflen,result,h_errnop); }\n"
                                EC_HAVE_GETHOSTBYNAME_R )
 
+    endif( CMAKE_CXX_COMPILER_LOADED )
+
 endif()
 
 ############################################################################################
-# c++ compiler tests
+# c compiler tests
 
 check_c_source_compiles( 
       "inline int x(int a) {return a;}
       int main(int argc,char** argv){
 	    int a=1;
         return x(a);
-      }" C_HAS_INLINE )
+      }" EC_HAVE_C_INLINE )
 
 ############################################################################################
 # c++ compiler tests
@@ -189,17 +193,17 @@ if( CMAKE_CXX_COMPILER_LOADED )
                                EC_HAVE_CXXABI_H )
     
     # check for bool
-    check_cxx_source_compiles( "int main() { bool aflag = true; }" EC_HAVE_BOOL )
+    check_cxx_source_compiles( "int main() { bool aflag = true; }" EC_HAVE_CXX_BOOL )
     # fail if we dont have bool
-    if( NOT EC_HAVE_BOOL )
+    if( NOT EC_HAVE_CXX_BOOL )
         message( FATAL_ERROR "c++ compiler does not support bool" )
     endif()
     
     # check for sstream
     check_cxx_source_compiles( "#include <sstream>\nint main() { std::stringstream s; }"
-                               EC_HAVE_SSTREAM )
+                               EC_HAVE_CXX_SSTREAM )
     # fail if we dont have sstream
-    if( NOT EC_HAVE_SSTREAM )
+    if( NOT EC_HAVE_CXX_SSTREAM )
         message( FATAL_ERROR "c++ compiler does not support stringstream" )
     endif()
     

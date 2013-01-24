@@ -22,8 +22,7 @@
 
 /* os capability checks */
 
-#cmakedefine EC_HAVE_OFFT
-#cmakedefine EC_HAVE_OFF64T
+/* --- symbols --- */
 
 #cmakedefine EC_HAVE_FSEEK
 #cmakedefine EC_HAVE_FSEEKO
@@ -35,8 +34,30 @@
 #cmakedefine EC_HAVE_FLOCK
 #cmakedefine EC_HAVE_MMAP
 
+#cmakedefine EC_HAVE_F_GETLK
+#cmakedefine EC_HAVE_F_SETLKW
+#cmakedefine EC_HAVE_F_SETLK
+
+#cmakedefine EC_HAVE_F_GETLK64
+#cmakedefine EC_HAVE_F_SETLKW64
+#cmakedefine EC_HAVE_F_SETLK64
+
+#cmakedefine EC_HAVE_MAP_ANONYMOUS
+#cmakedefine EC_HAVE_MAP_ANON
+
+/* --- include files --- */
+
+#cmakedefine EC_HAVE_MALLOC_H
+#cmakedefine EC_HAVE_SYS_MALLOC_H
+
 #cmakedefine EC_HAVE_SYS_MOUNT_H
 #cmakedefine EC_HAVE_SYS_VFS_H
+
+/* --- capabilities --- */
+
+#cmakedefine EC_HAVE_OFFT
+#cmakedefine EC_HAVE_OFF64T
+
 #cmakedefine EC_HAVE_STRUCT_STAT
 #cmakedefine EC_HAVE_STRUCT_STAT64
 #cmakedefine EC_HAVE_STAT
@@ -53,27 +74,10 @@
 #cmakedefine EC_HAVE_FLOCK64
 #cmakedefine EC_HAVE_MMAP64
 
-#cmakedefine EC_HAVE_MALLOC_H
-#cmakedefine EC_HAVE_SYS_MALLOC_H
-
 #cmakedefine EC_HAVE_STRUCT_STATVFS
 #cmakedefine EC_HAVE_STRUCT_STATVFS64
 #cmakedefine EC_HAVE_STATVFS
 #cmakedefine EC_HAVE_STATVFS64
-
-#cmakedefine EC_HAVE_AIO
-#cmakedefine EC_HAVE_AIO64
-
-#cmakedefine EC_HAVE_F_GETLK
-#cmakedefine EC_HAVE_F_SETLKW
-#cmakedefine EC_HAVE_F_SETLK
-
-#cmakedefine EC_HAVE_F_GETLK64
-#cmakedefine EC_HAVE_F_SETLKW64
-#cmakedefine EC_HAVE_F_SETLK64
-
-#cmakedefine EC_HAVE_MAP_ANONYMOUS
-#cmakedefine EC_HAVE_MAP_ANON
 
 #cmakedefine EC_HAVE_FSYNC
 #cmakedefine EC_HAVE_FDATASYNC
@@ -83,7 +87,12 @@
 
 #cmakedefine EC_HAVE_EXECINFO_BACKTRACE
 
-/* reentrant funtions support */
+/* --- asynchronous IO support --- */
+
+#cmakedefine EC_HAVE_AIO
+#cmakedefine EC_HAVE_AIO64
+
+/* --- reentrant funtions support --- */
 
 #cmakedefine EC_HAVE_GMTIME_R
 #cmakedefine EC_HAVE_GETPWUID_R
@@ -91,6 +100,17 @@
 #cmakedefine EC_HAVE_READDIR_R
 #cmakedefine EC_HAVE_GETHOSTBYNAME_R
 
+/* --- c compiler support --- */
+
+#cmakedefine EC_HAVE_C_INLINE
+
+/* --- c++ compiler support --- */
+
+#cmakedefine EC_HAVE_FUNCTION_DEF
+
 #cmakedefine EC_HAVE_CXXABI_H
+#cmakedefine EC_HAVE_CXX_BOOL
+
+#cmakedefine EC_HAVE_CXX_SSTREAM
 
 #endif // ecbuild_platform_h

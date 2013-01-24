@@ -15,12 +15,16 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
 endif()
 
+set( ECBUILD_CMAKE_MINIMUM "2.8.4" )
+if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
+  message(FATAL_ERROR "${PROJECT_NAME} requires at least CMake ${ECBUILD_CMAKE_MINIMUM} -- you are using ${CMAKE_COMMAND} [${CMAKE_VERSION}]\n Please, get a newer version of CMake @ www.cmake.org" )
+endif()
 
 ############################################################################################
 # language support
 
-    # need C enabled because we use it to detect some system stuff
-    enable_language( C )
+# need C enabled because we use it to detect some system stuff
+enable_language( C )
 
 ###############################################################################
 # include our cmake macros, but only do so if this is the top project
@@ -28,13 +32,9 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
     set( ECBUILD_PROJECTS "" CACHE INTERNAL "list of ecbuild (sub)projects" )
 
-    # get directory where this file is,
-    # but without using the var CMAKE_CURRENT_LIST_DIR (only >=2.8.3)
-    get_filename_component( buildsys_dir ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-    # add backward support from 2.8 to 2.6
+    # add backport support for versions up too 2.8.4
     if( ${CMAKE_VERSION} VERSION_LESS "2.8" )
-        set(CMAKE_MODULE_PATH "${buildsys_dir}/2.8" ${CMAKE_MODULE_PATH} )
+        set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/2.8" ${CMAKE_MODULE_PATH} )
     endif()
 
     include(CTest)                 # add cmake testing support
@@ -63,6 +63,10 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include(CheckCSourceCompiles)
     include(CheckCSourceRuns)
 
+    include(CMakeParseArguments)
+
+    # include(CMakePrintSystemInformation) # available in cmake 2.8.4
+
     if( CMAKE_CXX_COMPILER_LOADED )
         include(CheckIncludeFileCXX)
         include(CheckCXXCompilerFlag)
@@ -75,18 +79,13 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
         include(FortranCInterface)
     endif()
 
-    # include(CMakePrintSystemInformation)
-
     include(TestBigEndian)
 
-    if( "${CMAKE_VERSION}" VERSION_LESS "2.8.4" )
-        include( ${buildsys_dir}/2.8/CMakeParseArguments.cmake )
-    else()
-        include(CMakeParseArguments)
-    endif()
+    ############################################################################################
+    # backport of cmake > 2.8.4 functions 
 
     if( "${CMAKE_VERSION}" VERSION_LESS "2.8.6" )
-        include( ${buildsys_dir}/2.8/CMakePushCheckState.cmake )
+        include( ${CMAKE_CURRENT_LIST_DIR}/2.8/CMakePushCheckState.cmake )
     else()
         include(CMakePushCheckState)
     endif()
@@ -94,12 +93,10 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     ############################################################################################
     # add our macros
 
-    # define the script to build the persistent class information
-    set( sg_perl "${buildsys_dir}/sg.pl" CACHE INTERNAL "perl script to generate persistent objects" )
-
     include( ecbuild_debug_var )
 
     include( ecbuild_check_c_source )
+
     if( CMAKE_CXX_COMPILER_LOADED )
         include( ecbuild_check_cxx_source )
     endif()
@@ -144,8 +141,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     ############################################################################################
     # generate the configuration headers here, so external projects also get them
 
-    configure_file( ${buildsys_dir}/ecbuild_config.h.in     ${CMAKE_BINARY_DIR}/ecbuild_config.h   )
-    configure_file( ${buildsys_dir}/ecbuild_platform.h.in   ${CMAKE_BINARY_DIR}/ecbuild_platform.h )
+    configure_file( ${CMAKE_CURRENT_LIST_DIR}/ecbuild_config.h.in     ${CMAKE_BINARY_DIR}/ecbuild_config.h   )
+    configure_file( ${CMAKE_CURRENT_LIST_DIR}/ecbuild_platform.h.in   ${CMAKE_BINARY_DIR}/ecbuild_platform.h )
 
     include_directories( ${CMAKE_BINARY_DIR} )
 

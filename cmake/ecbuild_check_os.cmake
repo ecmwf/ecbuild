@@ -240,8 +240,6 @@ if( ${EC_OS_NAME} MATCHES "UNKNOWN" )
     message( FATAL_ERROR "Unsupported operating system: [${CMAKE_SYSTEM_NAME}]" )
 endif()
 
-add_definitions( -D${EC_OS_NAME} )
-
 ############################################################################################
 # enable warnings
 
