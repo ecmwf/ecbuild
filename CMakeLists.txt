@@ -11,7 +11,7 @@
 #
 #       -DCMAKE_PREFIX_PATH=/path/to/jasper:/path/to/any/package/out/of/place
 
-cmake_minimum_required( VERSION 2.6.4 FATAL_ERROR )
+cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
 
 project( ecbuild NONE ) # no language used, pure cmake project
 
