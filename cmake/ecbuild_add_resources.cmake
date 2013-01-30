@@ -62,8 +62,8 @@ endmacro()
 macro( ecbuild_add_resources )
 
     set( options )
-    set( single_value_args TARGET  DONT_PACK_REGEX )
-    set( multi_value_args  SOURCES SOURCES_PACK SOURCES_DONT_PACK PACK DONT_PACK DONT_PACK_DIRS )
+    set( single_value_args TARGET )
+    set( multi_value_args  SOURCES SOURCES_PACK SOURCES_DONT_PACK PACK DONT_PACK DONT_PACK_DIRS DONT_PACK_REGEX )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -79,8 +79,11 @@ macro( ecbuild_add_resources )
 
     # all recursive files are not to pack
     if( DEFINED _PAR_DONT_PACK_REGEX )
-        file( GLOB_RECURSE all_files_in_subdirs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${_PAR_DONT_PACK_REGEX} )
-        list( APPEND LOCAL_FILES_NOT_TO_PACK ${all_files_in_subdirs} )
+        foreach( exp ${_PAR_DONT_PACK_REGEX} )
+            file( GLOB_RECURSE all_files_in_subdirs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${exp} )
+            debug_var(all_files_in_subdirs)
+            list( APPEND LOCAL_FILES_NOT_TO_PACK ${all_files_in_subdirs} )
+        endforeach()
     endif()
 
     # selected dirs not to pack
