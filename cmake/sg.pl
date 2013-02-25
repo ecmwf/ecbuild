@@ -61,12 +61,12 @@ foreach my $c ( @c )
 
 
 	my @s = map { "${_}::describe(s,depth+1)"      } $c->super;
-	my @m = map { "_describe(s,depth+1,\"$_\",$_)" } $c->members;
-	my $d = join(";\n\t","_startClass(s,depth,specName())",@s,@m,"_endClass(s,depth,specName())");
+	my @m = map { "eclib::_describe(s,depth+1,\"$_\",$_)" } $c->members;
+	my $d = join(";\n\t","eclib::_startClass(s,depth,specName())",@s,@m,"eclib::_endClass(s,depth,specName())");
 
 	my @s = map { "${_}::_export(h)"      } $c->super;
-	my @m = map { "::_export(h,\"$_\",$_)" } $c->members;
-	my $D = join(";\n\t","_startClass(h,\"$n\")",@s,@m,"_endClass(h,\"$n\")");
+	my @m = map { "eclib::_export(h,\"$_\",$_)" } $c->members;
+	my $D = join(";\n\t","eclib::_startClass(h,\"$n\")",@s,@m,"eclib::_endClass(h,\"$n\")");
 
 	my $spec = "\"$n\"";
 	my @tmpl = $c->template;
@@ -83,7 +83,7 @@ EOS
 		$spec =~ s/\n/ /g;
 	}
 
-	my $isa = "Isa::add(t,specName());";
+	my $isa = "eclib::Isa::add(t,specName());";
 	foreach my $s ( $c->super )
 	{
 		$isa = "${s}::isa(t);$isa";
@@ -96,19 +96,19 @@ EOS
 
 	print <<"EOF";
 
-${n}(Bless& b)$col1$init1
+${n}(eclib::Bless& b)$col1$init1
 {
 }
 
-${n}(Evolve b)$col2$init2
+${n}(eclib::Evolve b)$col2$init2
 {
 }
 
 static ${spec_type} specName()      { return ${spec}; }
-static void isa(TypeInfo* t)  { ${isa} }
-static Isa* isa()             { return Isa::get(specName());  }
+static void isa(eclib::TypeInfo* t)  { ${isa} }
+static eclib::Isa* isa()             { return eclib::Isa::get(specName());  }
 
-static void schema(Schema& s)
+static void schema(eclib::Schema& s)
 {
 	$schema;
 }
@@ -129,7 +129,7 @@ EOF
 
 print <<"EOF";
 
-void _export(Exporter& h) const { 
+void _export(eclib::Exporter& h) const { 
 	$D;
 }
 
@@ -144,7 +144,7 @@ foreach my $c ( @c )
 	my $n = $c->name;
 	open(OUT,">${n}.b");
 	select OUT;
-	print "static void schema(Schema& s) {\n";
+	print "static void schema(eclib::Schema& s) {\n";
 	foreach my $x ( $c->super )
 	{
 		print "${x}::schema(s);\n";
