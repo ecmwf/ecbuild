@@ -105,7 +105,7 @@ ${n}(eclib::Evolve b)$col2$init2
 }
 
 static ${spec_type} specName()      { return ${spec}; }
-static void isa(eclib::TypeInfo* t)  { ${isa} }
+static void isa(TypeInfo* t)  { ${isa} }
 static eclib::Isa* isa()             { return eclib::Isa::get(specName());  }
 
 static void schema(eclib::Schema& s)
