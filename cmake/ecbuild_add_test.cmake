@@ -12,7 +12,7 @@
 
 macro( ecbuild_add_test )
 
-    set( options ) # no options
+    set( options           BOOST )
     set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE )
     set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES CFLAGS CXXFLAGS FFLAGS CONDITION ENVIRONMENT )
 
@@ -52,6 +52,7 @@ macro( ecbuild_add_test )
       message(FATAL_ERROR "The call to ecbuild_add_test() defined TARGET but doesn't specify the SOURCES.")
     endif()
 
+
     ### conditional build
 
     if( DEFINED _PAR_CONDITION )
@@ -64,6 +65,17 @@ macro( ecbuild_add_test )
         include( ${_target_condition_file} )
     else()
         set( _${_PAR_TARGET}_condition TRUE )
+    endif()
+
+    # boost unit test ?
+
+    if( DEFINED _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
+        if( Boost_UNIT_TEST_FRAMEWORK_LIBRARY AND Boost_TEST_EXEC_MONITOR_LIBRARY )
+           # message( STATUS "${_PAR_TARGET} is a Boost unit test" )
+        else()
+            set( _${_PAR_TARGET}_condition FALSE )
+           # message( WARNING "${_PAR_TARGET} test deactivated -- Boost unit test framework not available" )
+        endif()
     endif()
 
     if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
@@ -116,6 +128,11 @@ macro( ecbuild_add_test )
                       message( WARNING "Lib ${lib} was skipped" )
                     endif()
                   endforeach()
+                endif()
+
+                # add test libraries
+                if( DEFINED _PAR_BOOST )
+                    target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
                 endif()
         
                 # add local flags

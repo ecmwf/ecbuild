@@ -26,13 +26,13 @@ macro( ecbuild_use_package )
       message(FATAL_ERROR "The call to ecbuild_use_package() doesn't specify the PROJECT.")
     endif()
 
+    string( TOUPPER ${_PAR_PROJECT} PNAME )
+
     if( DEFINED _PAR_NAME  )
         set( _package_name ${_PAR_NAME} )
     else()
-        set( _package_name ${_PAR_PROJECT} )
+        set( _package_name ${_PNAME} )
     endif()
-
-    string( TOUPPER ${_PAR_PROJECT} PNAME )
 
     # try to find the package as a subproject and build it
 
