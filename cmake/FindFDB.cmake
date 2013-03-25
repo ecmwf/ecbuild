@@ -12,7 +12,8 @@
 #  FDB_INCLUDE_DIRS - The FDB include directories
 #  FDB_LIBRARIES - The libraries needed to use FDB
 
-if( FDB_FOUND )
+
+if( NOT FDB_FOUND )
 
 	if( DEFINED FDB_PATH )
 		find_library( FDB_LIBRARY NAMES fdb PATHS ${FDB_PATH} ${FDB_PATH}/lib NO_DEFAULT_PATH)
