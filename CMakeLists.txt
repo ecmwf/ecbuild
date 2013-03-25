@@ -66,9 +66,9 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
 
 install( DIRECTORY cmake DESTINATION share/ecbuild/cmake )
 
-add_subdirectory( tools  )
+add_subdirectory( bin )
 
-install( DIRECTORY tools DESTINATION share/ecbuild/tools )
+install( DIRECTORY bin DESTINATION bin )
 
 
 ############################################################################################
