@@ -23,15 +23,24 @@ use File::Basename;
 # $ARGV[0] = "x.cc";
 # $ARGV[0] = "/usr/include/g++-3/std/bastring.h";
 
-# script takes 2 parameters:
+# script takes 3 parameters:
 # (1) file to process
 my $file = $ARGV[0];
 # (2) [optional] directory to place the generated .b file
 my $base = $ARGV[1];
+# (3) [optional] c++ namespace 
+my $namespace = $ARGV[2];
+
 # no argv[1] passed, take basedir from file
 if( $base eq "" )
 {
 	$base = dirname($file);
+}
+
+# no argv[1] passed, take basedir from file
+if( $namespace eq "" )
+{
+    $namespace = "eclib"
 }
 
 my @c = parser::parse($file);
@@ -61,12 +70,12 @@ foreach my $c ( @c )
 
 
 	my @s = map { "${_}::describe(s,depth+1)"      } $c->super;
-	my @m = map { "eckit::_describe(s,depth+1,\"$_\",$_)" } $c->members;
-	my $d = join(";\n\t","eckit::_startClass(s,depth,specName())",@s,@m,"eckit::_endClass(s,depth,specName())");
+	my @m = map { "${namespace}::_describe(s,depth+1,\"$_\",$_)" } $c->members;
+	my $d = join(";\n\t","${namespace}::_startClass(s,depth,specName())",@s,@m,"${namespace}::_endClass(s,depth,specName())");
 
 	my @s = map { "${_}::_export(h)"      } $c->super;
-	my @m = map { "eckit::_export(h,\"$_\",$_)" } $c->members;
-	my $D = join(";\n\t","eckit::_startClass(h,\"$n\")",@s,@m,"eckit::_endClass(h,\"$n\")");
+	my @m = map { "${namespace}::_export(h,\"$_\",$_)" } $c->members;
+	my $D = join(";\n\t","${namespace}::_startClass(h,\"$n\")",@s,@m,"${namespace}::_endClass(h,\"$n\")");
 
 	my $spec = "\"$n\"";
 	my @tmpl = $c->template;
@@ -83,7 +92,7 @@ EOS
 		$spec =~ s/\n/ /g;
 	}
 
-	my $isa = "eckit::Isa::add(t,specName());";
+	my $isa = "${namespace}::Isa::add(t,specName());";
 	foreach my $s ( $c->super )
 	{
 		$isa = "${s}::isa(t);$isa";
@@ -96,19 +105,19 @@ EOS
 
 	print <<"EOF";
 
-${n}(eckit::Bless& b)$col1$init1
+${n}(${namespace}::Bless& b)$col1$init1
 {
 }
 
-${n}(eckit::Evolve b)$col2$init2
+${n}(${namespace}::Evolve b)$col2$init2
 {
 }
 
 static ${spec_type} specName()      { return ${spec}; }
 static void isa(TypeInfo* t)  { ${isa} }
-static eckit::Isa* isa()             { return eckit::Isa::get(specName());  }
+static ${namespace}::Isa* isa()             { return ${namespace}::Isa::get(specName());  }
 
-static void schema(eckit::Schema& s)
+static void schema(${namespace}::Schema& s)
 {
 	$schema;
 }
@@ -129,7 +138,7 @@ EOF
 
 print <<"EOF";
 
-void _export(eckit::Exporter& h) const { 
+void _export(${namespace}::Exporter& h) const { 
 	$D;
 }
 
@@ -144,7 +153,7 @@ foreach my $c ( @c )
 	my $n = $c->name;
 	open(OUT,">${n}.b");
 	select OUT;
-	print "static void schema(eckit::Schema& s) {\n";
+	print "static void schema(${namespace}::Schema& s) {\n";
 	foreach my $x ( $c->super )
 	{
 		print "${x}::schema(s);\n";

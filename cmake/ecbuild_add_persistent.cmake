@@ -15,9 +15,9 @@ set( sg_perl "${CMAKE_CURRENT_LIST_DIR}/sg.pl" CACHE INTERNAL "perl script to ge
 
 macro( ecbuild_add_persistent )
 
-    set( options ) # no options
-    set( single_value_args SRC_LIST ) # to which target source list to add the object classes
-    set( multi_value_args  FILES )  # list of files to process
+    set( options ) 
+    set( single_value_args SRC_LIST NAMESPACE )
+    set( multi_value_args  FILES ) 
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -36,7 +36,7 @@ macro( ecbuild_add_persistent )
     foreach( file ${_PAR_FILES} )
       add_custom_command(
         OUTPUT  ${file}.b
-        COMMAND ${sg_perl} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.h ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND ${sg_perl} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.h ${CMAKE_CURRENT_BINARY_DIR} ${_PAR_NAMESPACE}
         DEPENDS ${file}.h
         )
       set_source_files_properties( ${file}.h PROPERTIES OBJECT_DEPENDS "${file}.b" )
