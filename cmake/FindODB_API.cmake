@@ -24,12 +24,12 @@ if( NOT ODB_API_FOUND )
     endif()
 
     if( DEFINED ODB_API_PATH )
-        find_path(ODB_API_INCLUDE_DIR NAMES oda.h PATHS ${ODB_API_PATH} ${ODB_API_PATH}/include PATH_SUFFIXES odb_api  NO_DEFAULT_PATH)
-        find_library(ODB_API_LIBRARY  NAMES odb   PATHS ${ODB_API_PATH} ${ODB_API_PATH}/lib     PATH_SUFFIXES odb_api  NO_DEFAULT_PATH)
+        find_path(ODB_API_INCLUDE_DIR NAMES odb_api_config.h PATHS ${ODB_API_PATH} ${ODB_API_PATH}/include PATH_SUFFIXES odb_api  NO_DEFAULT_PATH)
+        find_library(ODB_API_LIBRARY  NAMES Odb   PATHS ${ODB_API_PATH} ${ODB_API_PATH}/lib     PATH_SUFFIXES odb_api  NO_DEFAULT_PATH)
     endif()
 
-    find_path(ODB_API_INCLUDE_DIR NAMES oda.h PATH_SUFFIXES odb_api )
-    find_library( ODB_API_LIBRARY NAMES odb   PATH_SUFFIXES odb_api )
+    find_path(ODB_API_INCLUDE_DIR NAMES odb_api_config.h PATH_SUFFIXES odb_api )
+    find_library( ODB_API_LIBRARY NAMES Odb   PATH_SUFFIXES odb_api )
 
     set( ODB_API_LIBRARIES    ${ODB_API_LIBRARY} )
     set( ODB_API_INCLUDE_DIRS ${ODB_API_INCLUDE_DIR} )
