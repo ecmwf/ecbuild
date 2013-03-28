@@ -117,7 +117,11 @@ sub execute {
     my $dir = getcwd();
     print "> executing [$command] in [$dir]\n" if($options{debug});
     my $result = `$command 2>&1`;
-    if( $? != 0 ) { die "command [$command] failed: $!\n"; }
+    if( $? != 0 ) 
+    { 
+        print $result;
+        die "command [$command] failed: $!\n"; 
+    }
     return $result;
 }
 
@@ -142,7 +146,7 @@ sub parse_plan  {
     {
         chomp;
         s/#.*//;
-        if(/^\s*([A-Z]+\/(\w+))\s+([^=]*)$/) {
+        if(/^\s*([A-Z_]+\/(\w+))\s+([^=]*)$/) {
             my $pack   = $1;
             my $repo   = $2;
             my $branch = $3;
@@ -206,11 +210,11 @@ sub refresh_repo($) {
     my $repo = $repos{$p};
     my $branch = $repo->{br};
 
+    print "> refreshing repo $p\n" if($options{debug});
+
     die "repo $p does not exist in $projdir" unless ( -d "$projdir/$p/.git" );
 
     checkout_branch($p);
-
-    print "> refreshing repo $p\n" if($options{debug});
     
     chdir_to( "$projdir/$p" ); 
     execute( "git pull -u origin $branch" );
@@ -224,7 +228,14 @@ sub refresh() {
     
     foreach my $r ( sort keys %repos )
     {
-        refresh_repo($r) if ( -d "$projdir/$r/.git" );
+        if ( -d "$projdir/$r/.git" )
+        {
+            refresh_repo($r);
+        }
+        else
+        {
+            print "WARNING: repo $r does not exist -- skipping refresh\n";
+        }
     }
 }
 
@@ -253,22 +264,24 @@ sub generate() {
 
     open(OUT,">$projdir/CMakeLists.txt") or die "error writing to $projdir/CMakeLists.txt: $!";
 
-    print OUT "cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )\n";
-    print OUT "project( ${project}_suite C CXX )\n";
-    print OUT "\n";
-
-    print OUT "set( CMAKE_MODULE_PATH \"\${CMAKE_CURRENT_SOURCE_DIR}/cmake\" \${CMAKE_MODULE_PATH} )\n";
+    print OUT "cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )\n\n";
     
-    if( -d "$projdir/ecbuild" )
-        print OUT "set( CMAKE_MODULE_PATH \"\${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake\" \${CMAKE_MODULE_PATH} )\n";
-    
-    print OUT "include( ecbuild_system )\n"
-       
     foreach my $kv ( sort keys %cmakevars ) 
     {
         print OUT "SET( $kv \"$cmakevars{$kv}\" )\n";
     }
+    print OUT "\n\n";
+
+    print OUT "project( ${project}_suite C CXX )\n\n";
+
+    print OUT "set( CMAKE_MODULE_PATH \"\${CMAKE_CURRENT_SOURCE_DIR}/cmake\" \${CMAKE_MODULE_PATH} )\n";
+    if( exists $repos{ecbuild} )
+    {
+        print OUT "set( CMAKE_MODULE_PATH \"\${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake\" \${CMAKE_MODULE_PATH} )\n";
+    }
+    print OUT "\n";
     
+    print OUT "include( ecbuild_system )\n\n";  
 
     foreach my $r ( sort keys %repos )
     {        
@@ -276,6 +289,8 @@ sub generate() {
 
         print OUT "add_subdirectory( $r )\n";
     }
+    
+    close OUT;
 }
 
 #------------------------------------------------------------------------------
@@ -302,26 +317,31 @@ sub configure() {
     
     my $cmakeopts = $options{cmakeopts};
 
-    execute( "cmake $projdir $opts $cmakeopts" );
+    print execute( "cmake $projdir $opts $cmakeopts" );
 }
 
 #------------------------------------------------------------------------------
 
 sub build() {
     
-    my $bdir = $options{builddir};
+    my $bdir  = $options{builddir};
+    my $btype = $options{buildtype};
     
     print "> build in $bdir\n" if($options{debug});
 
-    configure() unless ( -e "$bdir/CMakeCache.txt" );
+    die "build dir $bdir/$btype doesn't exists" unless ( -e "$bdir/$btype" );
+
+    configure() unless ( -e "$bdir/$btype/CMakeCache.txt" );
     
-    chdir_to($bdir);
+    chdir_to( "$bdir/$btype" );
     
-    execute( "make -j4" );
+    print execute( "make -j4" );
 }
 
 #==============================================================================
 # main
+
+$options{debug} = 1;
 
 parse_commandline();
 
@@ -336,6 +356,8 @@ parse_plan();
 #            print "$r $k $v\n";
 #        }
 #    }
+
+$options{build} = 1 unless ( $options{populate} or $options{refresh} or $options{generate} or $options{configure} );
 
 populate()  if $options{populate};
 refresh()   if $options{refresh};
