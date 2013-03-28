@@ -1,0 +1,13 @@
+# Example of a BuildPlan.txt
+# use with ecbuild.pl
+
+# Packages
+ECSDK/ecbuild     mars_production
+MARS/eclib        mars_production
+GRIB/grib_api     mars_production
+MARS/odb_api      mars_production
+MARS/server       mars_production
+
+# cmake options
+CMAKE_C_COMPILER=gcc
+CMAKE_CXX_COMPILER=g++
