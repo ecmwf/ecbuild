@@ -329,8 +329,6 @@ sub build() {
     
     print "> build in $bdir\n" if($options{debug});
 
-    die "build dir $bdir/$btype doesn't exists" unless ( -e "$bdir/$btype" );
-
     configure() unless ( -e "$bdir/$btype/CMakeCache.txt" );
     
     chdir_to( "$bdir/$btype" );
