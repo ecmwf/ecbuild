@@ -15,7 +15,7 @@ cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
 
 project( ecbuild NONE ) # no language used, pure cmake project
 
-set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} PARENT_SCOPE )
+set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
 
 include( ecbuild_system )
 
