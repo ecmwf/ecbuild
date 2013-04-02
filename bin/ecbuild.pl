@@ -289,6 +289,11 @@ sub generate() {
 
         print OUT "add_subdirectory( $r )\n";
     }
+    print OUT "\n";
+
+    print OUT "ecbuild_install_project( NAME ${project}_suite )\n";
+    
+    print OUT "ecbuild_print_summary()\n";
     
     close OUT;
 }
