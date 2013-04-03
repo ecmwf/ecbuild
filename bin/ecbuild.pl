@@ -266,11 +266,11 @@ sub generate() {
 
     print OUT "cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )\n\n";
     
-    foreach my $kv ( sort keys %cmakevars ) 
-    {
-        print OUT "SET( $kv \"$cmakevars{$kv}\" )\n";
-    }
-    print OUT "\n\n";
+#    foreach my $kv ( sort keys %cmakevars ) 
+#    {
+#        print OUT "SET( $kv \"$cmakevars{$kv}\" )\n";
+#    }
+#    print OUT "\n\n";
 
     print OUT "project( ${project}_suite C CXX )\n\n";
 
@@ -319,7 +319,13 @@ sub configure() {
     print "> configure in $bdir with $btype\n" if($options{debug});
     
     my $opts = "-DCMAKE_BUILD_TYPE=$btype"; 
-    
+
+    foreach my $kv ( sort keys %cmakevars ) 
+    {
+        $opts = $opts . " -D$kv=\"$cmakevars{$kv}\" ";
+    }
+    print OUT "\n\n";
+
     my $cmakeopts = $options{cmakeopts};
 
     print execute( "cmake $projdir $opts $cmakeopts" );
