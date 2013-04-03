@@ -47,7 +47,7 @@ macro( ecbuild_declare_project )
     message( STATUS "---------------------------------------------------------" )
     
     if( DEFINED ${PNAME}_GIT_SHA1 )
-        message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION} -- ${${PNAME}_GIT_SHA1})" )
+        message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION}) [${${PNAME}_GIT_SHA1}]" )
     else()
         message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION})" )
     endif()
