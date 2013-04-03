@@ -14,7 +14,7 @@ macro( ecbuild_add_test )
 
     set( options           BOOST )
     set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE )
-    set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES CFLAGS CXXFLAGS FFLAGS CONDITION ENVIRONMENT )
+    set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -97,7 +97,11 @@ macro( ecbuild_add_test )
         
                 # add persistent layer files
                 if( DEFINED _PAR_PERSISTENT )
-                    ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES  ${_PAR_PERSISTENT} )
+		            if( DEFINED PERSISTENT_NAMESPACE )
+        		        ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE ${PERSISTENT_NAMESPACE} )
+            		else()
+                		ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
+            		endif()
                 endif()
         
                 # add the test target
@@ -145,6 +149,10 @@ macro( ecbuild_add_test )
                 if( DEFINED _PAR_FFLAGS )
                     set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
                 endif()
+                if( DEFINED _PAR_GENERATED )
+                    set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
+                endif()
+
         
                 # add definitions to compilation
                 if( DEFINED _PAR_DEFINITIONS )

@@ -14,7 +14,7 @@ macro( ecbuild_add_executable )
 
     set( options ) # no options
     set( single_value_args TARGET COMPONENT LINKER_LANGUAGE ) # to which target source list to add the object classes
-    set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS CONDITION )  # list of files to process
+    set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )  # list of files to process
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -59,8 +59,12 @@ macro( ecbuild_add_executable )
     
         # add persistent layer files
         if( DEFINED _PAR_PERSISTENT )
-            ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
-        endif()
+			if( DEFINED PERSISTENT_NAMESPACE )
+	            ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE ${PERSISTENT_NAMESPACE} )
+			else()
+	            ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
+			endif()
+     endif()
     
         # add templates to project files and remove from compilation sources
         if( DEFINED _PAR_TEMPLATES )
@@ -99,6 +103,9 @@ macro( ecbuild_add_executable )
         endif()
         if( DEFINED _PAR_FFLAGS )
             set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
+        endif()
+        if( DEFINED _PAR_GENERATED )
+            set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
         endif()
     
         # add installation paths

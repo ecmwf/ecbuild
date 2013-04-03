@@ -14,7 +14,7 @@ macro( ecbuild_add_library )
 
     set( options TEST )
     set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE )
-    set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS CONDITION )
+    set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -79,7 +79,11 @@ macro( ecbuild_add_library )
     
         # add persistent layer files
         if( DEFINED _PAR_PERSISTENT )
-            ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
+            if( DEFINED PERSISTENT_NAMESPACE )
+                ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE ${PERSISTENT_NAMESPACE} )
+            else()
+                ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
+            endif()
         endif()
     
         # add templates to project files and remove from compilation sources
@@ -119,6 +123,9 @@ macro( ecbuild_add_library )
         endif()
         if( DEFINED _PAR_FFLAGS )
             set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
+        endif()
+        if( DEFINED _PAR_GENERATED )
+            set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
         endif()
 
         # installation
