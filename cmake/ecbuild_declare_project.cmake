@@ -35,11 +35,23 @@ macro( ecbuild_declare_project )
 #    debug_var( ${PNAME}_MINOR_VERSION )
 #    debug_var( ${PNAME}_PATCH_VERSION )
 
+
+    # if git project get its HEAD SHA1
+
+    if( EXISTS ${PROJECT_SOURCE_DIR}/.git )
+        get_git_head_revision( GIT_REFSPEC ${PNAME}_GIT_SHA1 )
+    endif()
+
     # print project header
     
     message( STATUS "---------------------------------------------------------" )
     
-    message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION})" )
+    if( DEFINED ${PNAME}_GIT_SHA1 )
+        message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION} -- ${${PNAME}_GIT_SHA1})" )
+    else()
+        message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION})" )
+    endif()
+    
     
     set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${PROJECT_NAME} CACHE INTERNAL "list of (sub)projects" )
 
