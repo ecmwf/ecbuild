@@ -327,7 +327,6 @@ sub configure() {
     {
         $opts = $opts . " -D$kv=\"$cmakevars{$kv}\" ";
     }
-    print OUT "\n\n";
 
     my $cmakeopts = $options{cmakeopts};
 
