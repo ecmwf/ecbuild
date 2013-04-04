@@ -12,9 +12,9 @@
 
 macro( ecbuild_add_executable )
 
-    set( options ) # no options
-    set( single_value_args TARGET COMPONENT LINKER_LANGUAGE ) # to which target source list to add the object classes
-    set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )  # list of files to process
+    set( options NOINSTALL )
+    set( single_value_args TARGET COMPONENT LINKER_LANGUAGE )
+    set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -108,20 +108,36 @@ macro( ecbuild_add_executable )
             set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
         endif()
     
-        # add installation paths
-        # and associate with defined component
-        set( COMPONENT_DIRECTIVE "" )
-        if( DEFINED _PAR_COMPONENT )
-            set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
-        else()
-            set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
-        endif()
-    
-        install( TARGETS ${_PAR_TARGET}
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib
-          COMPONENT ${COMPONENT_DIRECTIVE} )
+        # filter sources        
+
+        ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+
+#    debug_var( ${_PAR_TARGET}_h_srcs )
+#    debug_var( ${_PAR_TARGET}_c_srcs )
+#    debug_var( ${_PAR_TARGET}_cxx_srcs )
+#    debug_var( ${_PAR_TARGET}_f_srcs )
+
+        # installation
+
+        if( NOT _PAR_NOINSTALL )
+
+            # add installation paths and associate with defined component
+            if( DEFINED _PAR_COMPONENT )
+                set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
+            else()
+                set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
+            endif()
+        
+            install( TARGETS ${_PAR_TARGET}
+              RUNTIME DESTINATION bin
+              LIBRARY DESTINATION lib
+              ARCHIVE DESTINATION lib
+              COMPONENT ${COMPONENT_DIRECTIVE} )
+
+            # set build location
+            set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+
+         endif()
     
         # add definitions to compilation
         if( DEFINED _PAR_DEFINITIONS )
@@ -129,10 +145,7 @@ macro( ecbuild_add_executable )
             list( APPEND _target_defs ${_PAR_DEFINITIONS} )
             set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
         endif()
-    
-        # set build location
-        set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
-    
+        
         # set linker language
         if( DEFINED _PAR_LINKER_LANGUAGE )
             set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
@@ -150,7 +163,9 @@ macro( ecbuild_add_executable )
         )
     
         # for the links target
-        ecbuild_link_exe( ${_PAR_TARGET} ${EXE_FILENAME} )
+        if( NOT DEFINED _PAR_NOINSTALL )
+            ecbuild_link_exe( ${_PAR_TARGET} ${EXE_FILENAME} )
+        endif()
 
     endif()
 

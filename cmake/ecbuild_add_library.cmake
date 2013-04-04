@@ -12,7 +12,7 @@
 
 macro( ecbuild_add_library )
 
-    set( options TEST )
+    set( options NOINSTALL )
     set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE )
     set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
@@ -128,7 +128,7 @@ macro( ecbuild_add_library )
             set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
         endif()
 
-        # installation
+        # filter sources        
 
         ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
 
@@ -137,10 +137,11 @@ macro( ecbuild_add_library )
 #    debug_var( ${_PAR_TARGET}_cxx_srcs )
 #    debug_var( ${_PAR_TARGET}_f_srcs )
 
-        if( NOT _PAR_TEST )
+        # installation
+
+        if( NOT _PAR_NOINSTALL )
 
             # and associate with defined component
-            set( COMPONENT_DIRECTIVE "" )
             if( DEFINED _PAR_COMPONENT )
                 set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
             else()
@@ -154,27 +155,33 @@ macro( ecbuild_add_library )
                 COMPONENT ${COMPONENT_DIRECTIVE} )
     
             # install headers
-        
-            set( _header_destination "include/${PROJECT_NAME}/${currdir}" )
+            if( _PAR_HEADER_DESTINATION )
+                set( _h_destination "${_PAR_HEADER_DESTINATION}/${currdir}" )
+            else()
+                set( _h_destination "include/${PROJECT_NAME}/${currdir}" )
+            endif()
         
             if( DEFINED _PAR_INSTALL_HEADERS )
                 if( _PAR_INSTALL_HEADERS MATCHES "LISTED" )
-                    install( FILES ${${_PAR_TARGET}_h_srcs}    DESTINATION ${_header_destination} )
+                    install( FILES ${${_PAR_TARGET}_h_srcs}    DESTINATION ${_h_destination} )
                     if( DEFINED _PAR_TEMPLATES )
-                        install( FILES ${_PAR_TEMPLATES} DESTINATION ${_header_destination} )
+                        install( FILES ${_PAR_TEMPLATES} DESTINATION ${_h_destination} )
                     endif()
                 endif()
                 if( _PAR_INSTALL_HEADERS MATCHES "ALL" ) # "(\\.h|\\.b|\\.hxx|\\.hh|\\.hpp|\\.H)" ????
-                    install( DIRECTORY ./  DESTINATION ${_header_destination} FILES_MATCHING PATTERN "*.h" )
+                    install( DIRECTORY ./  DESTINATION ${_h_destination} FILES_MATCHING PATTERN "*.h" )
+                    install( DIRECTORY ./  DESTINATION ${_h_destination} FILES_MATCHING PATTERN "*.hh" )
+                    install( DIRECTORY ./  DESTINATION ${_h_destination} FILES_MATCHING PATTERN "*.hpp" )
+                    install( DIRECTORY ./  DESTINATION ${_h_destination} FILES_MATCHING PATTERN "*.H" )
                 endif()
             endif()
         
             if( DEFINED _PAR_INSTALL_HEADERS_LIST )
-                install( FILES ${_PAR_INSTALL_HEADERS_LIST} DESTINATION ${_header_destination} )
+                install( FILES ${_PAR_INSTALL_HEADERS_LIST} DESTINATION ${_h_destination} )
             endif()
         
             if( DEFINED _PAR_INSTALL_HEADERS_REGEX )
-                install( DIRECTORY ./  DESTINATION ${_header_destination} FILES_MATCHING PATTERN "${_PAR_INSTALL_HEADERS_REGEX}")
+                install( DIRECTORY ./  DESTINATION ${_h_destination} FILES_MATCHING PATTERN "${_PAR_INSTALL_HEADERS_REGEX}")
             endif()
     
             # set build location
@@ -199,7 +206,7 @@ macro( ecbuild_add_library )
        )
     
         # for the links target
-        if( NOT _PAR_TEST )
+        if( NOT DEFINED _PAR_NOINSTALL )
             set(LIB_FILENAME ${CMAKE_SHARED_LIBRARY_PREFIX}${_PAR_TARGET}${CMAKE_SHARED_LIBRARY_SUFFIX}${LIB_SUFFIX})
             ecbuild_link_lib( ${_PAR_TARGET} ${LIB_FILENAME} )
         endif()

@@ -56,10 +56,9 @@ macro( ecbuild_print_summary )
         message( STATUS " Little endian [${EC_LITTLE_ENDIAN}] IEEE LE [${IEEE_LE}]" )
     endif()
     
-        message( STATUS " sizeof - void*  [${EC_SIZEOF_PTR}] - int    [${EC_SIZEOF_INT}]" )
-        message( STATUS "        - short  [${EC_SIZEOF_SHORT}] - long   [${EC_SIZEOF_LONG}] - long long [${EC_SIZEOF_LONG_LONG}]" )
-        message( STATUS "        - float  [${EC_SIZEOF_FLOAT}] - double [${EC_SIZEOF_DOUBLE}]" )
-        message( STATUS "        - size_t [${EC_SIZEOF_SIZE_T}] - off_t  [${EC_SIZEOF_OFF_T}]" )
+        message( STATUS " sizeof - void*  [${EC_SIZEOF_PTR}] - size_t [${EC_SIZEOF_SIZE_T}] - off_t  [${EC_SIZEOF_OFF_T}]" )
+        message( STATUS "        - short  [${EC_SIZEOF_SHORT}] - int    [${EC_SIZEOF_INT}] - long   [${EC_SIZEOF_LONG}] - long long [${EC_SIZEOF_LONG_LONG}]" )
+        message( STATUS "        - float  [${EC_SIZEOF_FLOAT}] - double [${EC_SIZEOF_DOUBLE}] - long double [${EC_SIZEOF_LONG_DOUBLE}]" )
     
         message( STATUS "---------------------------------------------------------" )
     

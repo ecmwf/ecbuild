@@ -48,17 +48,18 @@ endif()
 ############################################################################################
 # check architecture architecture
 
-check_type_size( "void *"       EC_SIZEOF_PTR       )
-check_type_size( char           EC_SIZEOF_CHAR      )
-check_type_size( short          EC_SIZEOF_SHORT     )
-check_type_size( int            EC_SIZEOF_INT       )
-check_type_size( long           EC_SIZEOF_LONG      )
-check_type_size( "long long"    EC_SIZEOF_LONG_LONG )
-check_type_size( float          EC_SIZEOF_FLOAT     )
-check_type_size( double         EC_SIZEOF_DOUBLE    )
-check_type_size( size_t         EC_SIZEOF_SIZE_T    )
-check_type_size( ssize_t        EC_SIZEOF_SSIZE_T   )
-check_type_size( off_t          EC_SIZEOF_OFF_T     )
+check_type_size( "void *"       EC_SIZEOF_PTR         )
+check_type_size( char           EC_SIZEOF_CHAR        )
+check_type_size( short          EC_SIZEOF_SHORT       )
+check_type_size( int            EC_SIZEOF_INT         )
+check_type_size( long           EC_SIZEOF_LONG        )
+check_type_size( "long long"    EC_SIZEOF_LONG_LONG   )
+check_type_size( float          EC_SIZEOF_FLOAT       )
+check_type_size( double         EC_SIZEOF_DOUBLE      )
+check_type_size( "long double"  EC_SIZEOF_LONG_DOUBLE )
+check_type_size( size_t         EC_SIZEOF_SIZE_T      )
+check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
+check_type_size( off_t          EC_SIZEOF_OFF_T       )
 
 ############################################################################################
 # check endiness
