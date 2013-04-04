@@ -180,6 +180,9 @@ sub checkout_branch($) {
     print "> checking out repo $p $branch\n" if($options{debug});
     
     chdir_to( "$projdir/$p" ); 
+    
+    execute( "git fetch --tags" );  # get latest tags in case we want to change to a new one
+    
     execute( "git checkout $branch" );
 }
 
