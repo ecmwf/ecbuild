@@ -47,23 +47,21 @@ endfunction()
 # removed used files from unused list
 macro( ecbuild_declare_project_files )
 
-  foreach( AFILE ${ARGV} )
+  foreach( _afile ${ARGV} )
 
-    # debug_var( AFILE )
+    # debug_var( _afile )
 
-    get_property( source_gen SOURCE ${AFILE} PROPERTY GENERATED )
+    get_property( _src_gen SOURCE ${_afile} PROPERTY GENERATED )
 
-    if( NOT source_gen )
-    	
-		set( thisFileName ${CMAKE_CURRENT_SOURCE_DIR}/${AFILE} )
+    if( NOT _src_gen )
 
-		# debug_var( thisFileName )
+    	get_filename_component( _abspath ${_afile} ABSOLUTE )
 
     	# check for existance of all declared files
-	    if( EXISTS ${thisFileName} )
-    	    list( REMOVE_ITEM EC_UNUSED_FILES ${thisFileName} )
+	    if( EXISTS ${_abspath} )
+    	    list( REMOVE_ITEM EC_UNUSED_FILES ${_abspath} )
 	    else()
-			message( FATAL_ERROR "In directory ${CMAKE_CURRENT_SOURCE_DIR} file ${AFILE} was declared in CMakeLists.txt but not found" )
+			message( FATAL_ERROR "In directory ${CMAKE_CURRENT_SOURCE_DIR} file ${_afile} was declared in CMakeLists.txt but not found" )
     	endif()
     endif()
 
