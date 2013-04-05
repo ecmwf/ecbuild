@@ -11,7 +11,6 @@
 #  NETCDF_FOUND - System has NetCDF
 #  NETCDF_INCLUDE_DIRS - The NetCDF include directories
 #  NETCDF_LIBRARIES - The libraries needed to use NetCDF
-#  NETCDF_DEFINITIONS - Compiler switches required for using NetCDF
 
 if( DEFINED NETCDF_PATH )
 	find_path(NETCDF_INCLUDE_DIR netcdf.h PATHS ${NETCDF_PATH}/include PATH_SUFFIXES netcdf NO_DEFAULT_PATH)
@@ -26,7 +25,7 @@ set( NETCDF_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR} )
 
 include(FindPackageHandleStandardArgs)
 
-# handle the QUIETLY and REQUIRED arguments and set GRIBAPI_FOUND to TRUE
+# handle the QUIETLY and REQUIRED arguments and set NETCDF_FOUND to TRUE
 # if all listed variables are TRUE
 find_package_handle_standard_args(NETCDF  DEFAULT_MSG
 								  NETCDF_LIBRARY NETCDF_INCLUDE_DIR)
