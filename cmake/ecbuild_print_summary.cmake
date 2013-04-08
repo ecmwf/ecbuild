@@ -29,8 +29,6 @@ macro( ecbuild_print_summary )
         message( STATUS " install prefix   : [${CMAKE_INSTALL_PREFIX}]" )
     if( EC_LINK_DIR )
         message( STATUS " links prefix     : [${EC_LINK_DIR}]" )
-    #    debug_var( EC_ALL_EXES )
-    #    debug_var( EC_ALL_LIBS )
     endif()
         message( STATUS "---------------------------------------------------------" )
     

@@ -196,9 +196,12 @@ macro( ecbuild_add_library )
             list( APPEND _target_defs ${_PAR_DEFINITIONS} )
             set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
         endif()
-        
-        # make sure target is removed before - some problems with AIX
+    
+        # paths to target    
+        set(LIB_FILENAME ${CMAKE_SHARED_LIBRARY_PREFIX}${_PAR_TARGET}${CMAKE_SHARED_LIBRARY_SUFFIX}${LIB_SUFFIX})
         get_target_property(LIB_LOCNAME ${_PAR_TARGET} LOCATION)
+
+        # make sure target is removed before - some problems with AIX
         add_custom_command(
               TARGET ${_PAR_TARGET}
               PRE_BUILD
@@ -206,8 +209,7 @@ macro( ecbuild_add_library )
        )
     
         # for the links target
-        if( NOT DEFINED _PAR_NOINSTALL )
-            set(LIB_FILENAME ${CMAKE_SHARED_LIBRARY_PREFIX}${_PAR_TARGET}${CMAKE_SHARED_LIBRARY_SUFFIX}${LIB_SUFFIX})
+        if( NOT _PAR_NOINSTALL )
             ecbuild_link_lib( ${_PAR_TARGET} ${LIB_FILENAME} )
         endif()
 

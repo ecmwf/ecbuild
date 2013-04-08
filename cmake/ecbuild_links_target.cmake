@@ -63,6 +63,12 @@ macro( ecbuild_define_links_target )
 
     add_custom_target( links DEPENDS ${ec_link_libs} ${ec_link_exes} )
 
+     #   debug_var( EC_ALL_EXES )
+     #   debug_var( ec_link_exes )
+
+     #  debug_var( EC_ALL_LIBS )
+     #   debug_var( ec_link_libs )
+
   endif()
 
 endmacro(ecbuild_define_links_target)

@@ -151,11 +151,13 @@ macro( ecbuild_add_executable )
             set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
         endif()
 
-        # make sure target is removed before - some problems with AIX
+        # paths to target
         get_target_property(EXE_FILENAME ${_PAR_TARGET} OUTPUT_NAME)
         if( NOT EXE_FILENAME )
             set( EXE_FILENAME ${_PAR_TARGET} )
         endif()
+
+        # make sure target is removed before - some problems with AIX
         add_custom_command(
               TARGET ${_PAR_TARGET}
               PRE_BUILD
@@ -163,7 +165,7 @@ macro( ecbuild_add_executable )
         )
     
         # for the links target
-        if( NOT DEFINED _PAR_NOINSTALL )
+        if( NOT _PAR_NOINSTALL )
             ecbuild_link_exe( ${_PAR_TARGET} ${EXE_FILENAME} )
         endif()
 
