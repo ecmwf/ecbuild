@@ -34,6 +34,8 @@
 #cmakedefine EC_HAVE_FLOCK
 #cmakedefine EC_HAVE_MMAP
 
+#cmakedefine EC_HAVE_POSIX_MEMALIGN
+
 #cmakedefine EC_HAVE_F_GETLK
 #cmakedefine EC_HAVE_F_SETLKW
 #cmakedefine EC_HAVE_F_SETLK
@@ -46,6 +48,17 @@
 #cmakedefine EC_HAVE_MAP_ANON
 
 /* --- include files --- */
+
+#cmakedefine EC_HAVE_ASSERT_H      
+#cmakedefine EC_HAVE_STDLIB_H      
+#cmakedefine EC_HAVE_UNISTD_H      
+#cmakedefine EC_HAVE_STRING_H      
+#cmakedefine EC_HAVE_STRINGS_H     
+#cmakedefine EC_HAVE_SYS_STAT_H    
+#cmakedefine EC_HAVE_SYS_TIME_H    
+#cmakedefine EC_HAVE_SYS_TYPES_H   
+#cmakedefine EC_HAVE_MALLOC_H      
+#cmakedefine EC_HAVE_SYS_MALLOC_H  
 
 #cmakedefine EC_HAVE_MALLOC_H
 #cmakedefine EC_HAVE_SYS_MALLOC_H
@@ -113,4 +126,4 @@
 
 #cmakedefine EC_HAVE_CXX_SSTREAM
 
-#endif // ecbuild_platform_h
+#endif /* ecbuild_platform_h */

@@ -23,6 +23,8 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     check_symbol_exists( flock        "sys/file.h"                      EC_HAVE_FLOCK  )
     check_symbol_exists( mmap         "sys/mman.h"                      EC_HAVE_MMAP   )
     
+    check_symbol_exists( posix_memalign "stdlib.h"                      EC_HAVE_POSIX_MEMALIGN )
+    
     check_symbol_exists( F_GETLK      "fcntl.h"                         EC_HAVE_F_GETLK  )
     check_symbol_exists( F_SETLK      "fcntl.h"                         EC_HAVE_F_SETLK  )
     check_symbol_exists( F_SETLKW     "fcntl.h"                         EC_HAVE_F_SETLKW  )
@@ -36,6 +38,14 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
 
     ### include files checks ##################
 
+    check_include_files( assert.h       EC_HAVE_ASSERT_H      )
+    check_include_files( stdlib.h       EC_HAVE_STDLIB_H      )
+    check_include_files( unistd.h       EC_HAVE_UNISTD_H      )
+    check_include_files( string.h       EC_HAVE_STRING_H      )
+    check_include_files( strings.h      EC_HAVE_STRINGS_H     )
+    check_include_files( sys/stat.h     EC_HAVE_SYS_STAT_H    )
+    check_include_files( sys/time.h     EC_HAVE_SYS_TIME_H    )
+    check_include_files( sys/types.h    EC_HAVE_SYS_TYPES_H   )
     check_include_files( malloc.h       EC_HAVE_MALLOC_H      )
     check_include_files( sys/malloc.h   EC_HAVE_SYS_MALLOC_H  )
     
@@ -173,11 +183,11 @@ endif()
 # c compiler tests
 
 check_c_source_compiles( 
-      "inline int x(int a) {return a;}
-      int main(int argc,char** argv){
-	    int a=1;
-        return x(a);
-      }" EC_HAVE_C_INLINE )
+      " typedef int foo_t;
+        static inline foo_t static_foo(){return 0;}
+        foo_t foo(){return 0;}
+        int main(int argc, char *argv[]){return 0;}
+      " EC_HAVE_C_INLINE )
 
 ############################################################################################
 # c++ compiler tests

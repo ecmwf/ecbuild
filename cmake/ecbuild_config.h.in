@@ -33,4 +33,4 @@
 #define EC_Fortran_COMPILER "@CMAKE_Fortran_COMPILER@"
 #define EC_Fortran_FLAGS    "@EC_Fortran_FLAGS_ALL@"
 
-#endif
+#endif /* ecbuild_config_h */
