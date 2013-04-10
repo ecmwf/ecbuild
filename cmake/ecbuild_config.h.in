@@ -16,7 +16,10 @@
 /* config info */
 
 #define EC_OS_NAME          "@CMAKE_SYSTEM@"
+#define EC_OS_BITS          "@EC_OS_BITS@"
 #define EC_OS_STR           "@EC_OS_NAME@.@EC_OS_BITS@"
+#define EC_OS_VERSION       "@CMAKE_SYSTEM_VERSION@"
+#define EC_SYS_PROCESSOR    "@CMAKE_SYSTEM_PROCESSOR@"
 
 #define EC_BUILD_TIMESTAMP  "@EC_BUILD_TIMESTAMP@"
 #define EC_BUILD_TYPE       "@CMAKE_BUILD_TYPE@"

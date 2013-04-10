@@ -23,6 +23,7 @@ macro( ecbuild_print_summary )
         message( STATUS "---------------------------------------------------------" )
     
         message( STATUS " operating system : [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )
+        message( STATUS " processor        : [${CMAKE_SYSTEM_PROCESSOR}]" )
         message( STATUS " cmake            : [${CMAKE_COMMAND}] (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION})" )
         message( STATUS " build type       : [${CMAKE_BUILD_TYPE}]" )
         message( STATUS " timestamp        : [${EC_BUILD_TIMESTAMP}]" )
