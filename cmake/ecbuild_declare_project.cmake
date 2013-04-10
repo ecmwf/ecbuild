@@ -42,6 +42,27 @@ macro( ecbuild_declare_project )
         get_git_head_revision( GIT_REFSPEC ${PNAME}_GIT_SHA1 )
     endif()
 
+    # user defined project-specific installation paths
+
+    set(${PNAME}_INSTALL_LIB_DIR     lib     CACHE PATH "${PNAME} installation directory for libraries")
+    set(${PNAME}_INSTALL_BIN_DIR     bin     CACHE PATH "${PNAME} installation directory for executables")
+
+    set(${PNAME}_INSTALL_INCLUDE_DIR include/${PROJECT_NAME}      CACHE PATH "${PNAME} installation directory for header files")
+    set(${PNAME}_INSTALL_CMAKE_DIR   share/${PROJECT_NAME}/cmake  CACHE PATH "${PNAME} installation directory for CMake files")
+
+    # install dirs local to this project
+
+    set( INSTALL_BIN_DIR     ${${PNAME}_INSTALL_BIN_DIR} ) 
+    set( INSTALL_LIB_DIR     ${${PNAME}_INSTALL_LIB_DIR} ) 
+    set( INSTALL_INCLUDE_DIR ${${PNAME}_INSTALL_INCLUDE_DIR} ) 
+    set( INSTALL_CMAKE_DIR   ${${PNAME}_INSTALL_CMAKE_DIR} ) 
+
+    # install ecbuild configuration
+
+    install( FILES ${CMAKE_BINARY_DIR}/ecbuild_config.h 
+                   ${CMAKE_BINARY_DIR}/ecbuild_platform.h
+             DESTINATION ${INSTALL_INCLUDE_DIR} )
+
     # print project header
     
     message( STATUS "---------------------------------------------------------" )
@@ -51,7 +72,11 @@ macro( ecbuild_declare_project )
     else()
         message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION})" )
     endif()
-    
+
+#    debug_var(INSTALL_BIN_DIR)
+#    debug_var(INSTALL_LIB_DIR)
+#    debug_var(INSTALL_INCLUDE_DIR)
+#    debug_var(INSTALL_CMAKE_DIR)
     
     set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${PROJECT_NAME} CACHE INTERNAL "list of (sub)projects" )
 

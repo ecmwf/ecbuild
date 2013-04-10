@@ -21,9 +21,9 @@ if( ENABLE_RPATHS )
     
     # set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib") # install with this RPATH
     # the RPATH to be used when installing, but only if it's not a system directory
-    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}" isSystemDir)
     if("${isSystemDir}" STREQUAL "-1")
-       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}")
     endif()
 
 ENDIF()

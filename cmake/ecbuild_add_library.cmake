@@ -149,16 +149,16 @@ macro( ecbuild_add_library )
             endif()
     
             install( TARGETS ${_PAR_TARGET}
-                RUNTIME DESTINATION bin
-                LIBRARY DESTINATION lib
-                ARCHIVE DESTINATION lib
-                COMPONENT ${COMPONENT_DIRECTIVE} )
+              RUNTIME DESTINATION ${INSTALL_BIN_DIR}
+              LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+              ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
+              COMPONENT ${COMPONENT_DIRECTIVE} )
     
             # install headers
             if( _PAR_HEADER_DESTINATION )
-                set( _h_destination "${_PAR_HEADER_DESTINATION}/${currdir}" )
+                set( _h_destination "${_PAR_HEADER_DESTINATION}" )
             else()
-                set( _h_destination "include/${PROJECT_NAME}/${currdir}" )
+                set( _h_destination "${INSTALL_INCLUDE_DIR}/${currdir}" )
             endif()
         
             if( DEFINED _PAR_INSTALL_HEADERS )

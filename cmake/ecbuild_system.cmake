@@ -148,15 +148,5 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
     include_directories( ${CMAKE_BINARY_DIR} )
 
-    if( DEFINED ${PROJECT_NAME}_HEADER_DESTINATION )
-        set( _h_destination "${${PROJECT_NAME}_HEADER_DESTINATION}" )
-    else()
-        set( _h_destination "include/${PROJECT_NAME}" )
-    endif()
-
-    install( FILES ${CMAKE_BINARY_DIR}/ecbuild_config.h
-                   ${CMAKE_BINARY_DIR}/ecbuild_platform.h
-             DESTINATION ${_h_destination} )
-
 endif()
 

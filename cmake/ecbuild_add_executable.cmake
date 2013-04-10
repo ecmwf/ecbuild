@@ -129,9 +129,9 @@ macro( ecbuild_add_executable )
             endif()
         
             install( TARGETS ${_PAR_TARGET}
-              RUNTIME DESTINATION bin
-              LIBRARY DESTINATION lib
-              ARCHIVE DESTINATION lib
+              RUNTIME DESTINATION ${INSTALL_BIN_DIR}
+              LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+              ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
               COMPONENT ${COMPONENT_DIRECTIVE} )
 
             # set build location
