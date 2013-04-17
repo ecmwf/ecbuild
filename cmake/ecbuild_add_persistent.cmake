@@ -34,13 +34,26 @@ macro( ecbuild_add_persistent )
     endif()
 
     foreach( file ${_PAR_FILES} )
+
+      get_filename_component( _file_dir    ${file} PATH )
+      get_filename_component( _file_we     ${file} NAME_WE )
+
+      set( file ${_file_we} )
+      if( _file_dir )
+         file( MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_file_dir} )
+         set( file ${_file_dir}/${_file_we} )
+      endif()
+
+      # debug_var(file)
+
       add_custom_command(
         OUTPUT  ${file}.b
-        COMMAND ${sg_perl} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.h ${CMAKE_CURRENT_BINARY_DIR} ${_PAR_NAMESPACE}
+        COMMAND ${sg_perl} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.h ${CMAKE_CURRENT_BINARY_DIR}/${_file_dir} ${_PAR_NAMESPACE}
         DEPENDS ${file}.h
         )
       set_source_files_properties( ${file}.h PROPERTIES OBJECT_DEPENDS "${file}.b" )
       list( APPEND ${_PAR_SRC_LIST} ${CMAKE_CURRENT_BINARY_DIR}/${file}.b )
+    
     endforeach()
 
 endmacro( ecbuild_add_persistent  )
