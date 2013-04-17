@@ -46,7 +46,7 @@ for f in $( find $DIRS $* \(   \
  \) -print -follow | grep -v "\.git/" | grep -v "\.svn/" )
 do
 #  echo $f
-  ./license.pl -u $f
+  license.pl -u $f
 done
 
 #|  sed "s/ /\\\ /g" | \
