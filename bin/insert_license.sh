@@ -10,25 +10,27 @@
 
 if [ -z $1 ]
 then
-    echo "insert_license"
+    echo "apply_license.sh"
     echo "usage: $0 [dir] [dir] ... "
     echo "dir - directory where to search"
     exit 1
 fi
 
 for f in $( find $DIRS $* \(   \
-            -iname "*.java"   \
-        -or -iname "*.xml"   \
-        -or -iname "*.sh"   \
-        -or -iname "*.pl"   \
-        -or -iname "*.pm"   \
-        -or -iname "*.py"   \
-        -or -iname "*.js"   \
+            -iname "*.java" \
+        -or -iname "*.xml" \
+        -or -iname "*.sh"  \
+        -or -iname "*.pl"  \
+        -or -iname "*.pm"  \
+        -or -iname "*.py"  \
+        -or -iname "*.js"  \
         -or -iname "*.c"   \
         -or -iname "*.cpp" \
         -or -iname "*.cxx" \
         -or -iname "*.cc"  \
         -or -iname "*.h"   \
+        -or -iname "*.hh"  \
+        -or -iname "*.hpp" \
         -or -iname "*.l"   \
         -or -iname "*.y"   \
         -or -iname "*.f"   \
@@ -36,16 +38,15 @@ for f in $( find $DIRS $* \(   \
         -or -iname "*.for" \
         -or -iname "*.f77" \
         -or -iname "*.f90" \
-        -or -iname "*.cmake"   \
+        -or -iname "*.cmake" \
         -or -iname "*.css"   \
         -or -iname "*.sql"   \
         -or -iname "*.properties"  \
-        -or -iname "*.def"  \
+        -or -iname "*.def" \
  \) -print -follow | grep -v "\.git/" | grep -v "\.svn/" )
 do
 #  echo $f
-#   p4 revert $f
-  p4 edit $f && ./license.pl $f
+  ./license.pl -u $f
 done
 
 #|  sed "s/ /\\\ /g" | \

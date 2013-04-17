@@ -36,6 +36,8 @@ my %COMMENTS = (
 		cpp        => { start => "/*\n"  , end => " */\n\n"  , comment => " * " },
 		cxx        => { start => "/*\n"  , end => " */\n\n"  , comment => " * " },
 		h          => { start => "/*\n"  , end => " */\n\n"  , comment => " * " },
+		hh         => { start => "/*\n"  , end => " */\n\n"  , comment => " * " },
+		hpp        => { start => "/*\n"  , end => " */\n\n"  , comment => " * " },
 		l          => { start => "/*\n"  , end => " */\n\n"  , comment => " * " },
 		'y'        => { start => "/*\n"  , end => " */\n\n"  , comment => " * " },
 		'f'        => { comment => "C ", end => "C\n\n" }, # assume f77
@@ -50,11 +52,14 @@ my %COMMENTS = (
 		def        => { comment => "# ", end => "\n" },
 
 		);
-
+        
+my %cmdargs = map { $_ => 1 } @ARGV;
 
 foreach my $file ( @ARGV )
 {
-#s    my $doit=0;
+    next if( $file eq "-u" or $file eq "--update" );
+
+#   my $doit=0;
     my $doit=1;
 
 	$file =~ /\.(\w+)$/;
@@ -74,7 +79,20 @@ foreach my $file ( @ARGV )
 
 	if(join("",@text) =~ /icensed under the/gs) 
 	{
-		print "$file: License already stated. File ignored\n";
+        if( exists( $cmdargs{"-u"} ) or exists( $cmdargs{"--update"} ) )
+        {
+            # lets update the year if needed
+            my $currentyear = (localtime)[5] + 1900;
+            if($doit)
+            {
+                print("$file: updating license year to $currentyear\n");
+                system("perl -pi -e 's/Copyright ([0-9]{4})-[0-9]{4} ECMWF/Copyright \$1-$currentyear ECMWF/' $file");
+            }
+        }
+        else
+        {    
+            print "$file: License already stated. File ignored\n";
+        }
 		next;
 	}
 
