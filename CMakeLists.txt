@@ -37,12 +37,18 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             NOTICE
                             LICENSE
                             COPYING
+)
+
+ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
+                        SOURCES_PACK
                             cmake/FindADSM.cmake
                             cmake/FindCMath.cmake
                             cmake/FindCairo.cmake
                             cmake/FindDl.cmake
+                            cmake/FindECKIT.cmake
                             cmake/FindEMOS.cmake
                             cmake/FindEcLib.cmake
+                            cmake/FindEcregrid.cmake
                             cmake/FindFDB.cmake
                             cmake/FindGRIB_API.cmake
                             cmake/FindHPSS.cmake
@@ -64,12 +70,15 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             cmake/FindYACC.cmake
 )
 
-install( DIRECTORY cmake DESTINATION share/ecbuild/cmake )
+if( NOT ECBUILD_NO_INSTALL )
 
-add_subdirectory( bin )
+    install( DIRECTORY cmake DESTINATION share/ecbuild/cmake )
 
-install( DIRECTORY bin DESTINATION bin )
+    add_subdirectory( bin )
 
+    add_subdirectory( share )
+
+endif()
 
 ############################################################################################
 # finalize
@@ -77,4 +86,3 @@ install( DIRECTORY bin DESTINATION bin )
 ecbuild_install_project( NAME ecbuild )
 
 ecbuild_print_summary()
-

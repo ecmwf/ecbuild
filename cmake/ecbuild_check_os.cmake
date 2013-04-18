@@ -141,7 +141,7 @@ math( EXPR EC_OS_BITS "${EC_SIZEOF_PTR} * 8")
 
 if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
     message( STATUS "OS system          [${CMAKE_SYSTEM}]" )
-    message( FATAL_ERROR "mars only supported on 32 or 64 bit OS's" )
+    message( FATAL_ERROR "ecbuild only supports 32 or 64 bit OS's" )
 endif()
 
 set( EC_OS_NAME "UNKNOWN" )

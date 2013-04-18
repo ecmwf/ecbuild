@@ -48,6 +48,7 @@ macro( ecbuild_declare_project )
     set(${PNAME}_INSTALL_BIN_DIR     bin     CACHE PATH "${PNAME} installation directory for executables")
 
     set(${PNAME}_INSTALL_INCLUDE_DIR include/${PROJECT_NAME}      CACHE PATH "${PNAME} installation directory for header files")
+    set(${PNAME}_INSTALL_DATA_DIR    share/${PROJECT_NAME}        CACHE PATH "${PNAME} installation directory for data files")
     set(${PNAME}_INSTALL_CMAKE_DIR   share/${PROJECT_NAME}/cmake  CACHE PATH "${PNAME} installation directory for CMake files")
 
     # install dirs local to this project
@@ -55,6 +56,7 @@ macro( ecbuild_declare_project )
     set( INSTALL_BIN_DIR     ${${PNAME}_INSTALL_BIN_DIR} ) 
     set( INSTALL_LIB_DIR     ${${PNAME}_INSTALL_LIB_DIR} ) 
     set( INSTALL_INCLUDE_DIR ${${PNAME}_INSTALL_INCLUDE_DIR} ) 
+    set( INSTALL_DATA_DIR    ${${PNAME}_INSTALL_DATA_DIR} ) 
     set( INSTALL_CMAKE_DIR   ${${PNAME}_INSTALL_CMAKE_DIR} ) 
 
     # install ecbuild configuration
@@ -76,6 +78,7 @@ macro( ecbuild_declare_project )
 #    debug_var(INSTALL_BIN_DIR)
 #    debug_var(INSTALL_LIB_DIR)
 #    debug_var(INSTALL_INCLUDE_DIR)
+#    debug_var(INSTALL_DATA_DIR)
 #    debug_var(INSTALL_CMAKE_DIR)
     
     set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${PROJECT_NAME} CACHE INTERNAL "list of (sub)projects" )
