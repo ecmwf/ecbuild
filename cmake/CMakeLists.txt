@@ -1,0 +1,34 @@
+ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
+                        SOURCES_PACK
+                            sg.pl
+                            FindADSM.cmake
+                            FindCMath.cmake
+                            FindCairo.cmake
+                            FindDl.cmake
+                            FindECKIT.cmake
+                            FindEMOS.cmake
+                            FindEcLib.cmake
+                            FindEcregrid.cmake
+                            FindFDB.cmake
+                            FindGRIB_API.cmake
+                            FindHPSS.cmake
+                            FindLEX.cmake
+                            FindLibGFortran.cmake
+                            FindNDBM.cmake
+                            FindNetCDF.cmake
+                            FindODB.cmake
+                            FindODB_API.cmake
+                            FindOpenJPEG.cmake
+                            FindPGIFortran.cmake
+                            FindProj4.cmake
+                            FindREADLINE.cmake
+                            FindRPCGEN.cmake
+                            FindRealtime.cmake
+                            FindSZip.cmake
+                            FindScin.cmake
+                            FindXLFortranLibs.cmake
+                            FindYACC.cmake
+                            2.8/CMakePushCheckState.cmake
+                            contrib/GetGitRevisionDescription.cmake
+                            contrib/GetGitRevisionDescription.cmake.in
+)
