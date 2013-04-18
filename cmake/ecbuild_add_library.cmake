@@ -149,11 +149,12 @@ macro( ecbuild_add_library )
             endif()
     
             install( TARGETS ${_PAR_TARGET}
+              EXPORT  ${PROJECT_NAME}Targets
               RUNTIME DESTINATION ${INSTALL_BIN_DIR}
               LIBRARY DESTINATION ${INSTALL_LIB_DIR}
               ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
               COMPONENT ${COMPONENT_DIRECTIVE} )
-    
+
             # install headers
             if( _PAR_HEADER_DESTINATION )
                 set( _h_destination "${_PAR_HEADER_DESTINATION}" )
@@ -185,9 +186,14 @@ macro( ecbuild_add_library )
             endif()
     
             # set build location
+
             set_property( TARGET ${_PAR_TARGET} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
             set_property( TARGET ${_PAR_TARGET} PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+    
+            # export location of target to other projects -- must be exactly after setting the build location (see previous 2 commands)
 
+            export( TARGETS ${_PAR_TARGET} APPEND FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake" )
+    
         endif()
 
         # add definitions to compilation
@@ -212,6 +218,9 @@ macro( ecbuild_add_library )
         if( NOT _PAR_NOINSTALL )
             ecbuild_link_lib( ${_PAR_TARGET} ${LIB_FILENAME} )
         endif()
+
+        # append to the list of this project targets
+        set( ${PROJECT_NAME}_ALL_LIBS ${${PROJECT_NAME}_ALL_LIBS} ${_PAR_TARGET} CACHE INTERNAL "" )    
 
         # set linker language
         if( DEFINED _PAR_LINKER_LANGUAGE )

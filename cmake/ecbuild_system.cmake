@@ -30,7 +30,9 @@ enable_language( C )
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
-    set( ECBUILD_PROJECTS "" CACHE INTERNAL "list of ecbuild (sub)projects" )
+    set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects" )
+
+    set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
 
     # add backport support for versions up too 2.8.4
     if( ${CMAKE_VERSION} VERSION_LESS "2.8" )

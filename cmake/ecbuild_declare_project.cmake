@@ -12,6 +12,11 @@ macro( ecbuild_declare_project )
 
     string( TOUPPER ${PROJECT_NAME} PNAME )
 
+    # reset the lists of targets (executables, libs, tests & resources)
+
+    set( ${PROJECT_NAME}_ALL_EXES "" CACHE INTERNAL "" )
+    set( ${PROJECT_NAME}_ALL_LIBS "" CACHE INTERNAL "" )
+
     # read and parse project version file
     
     include( ${PROJECT_SOURCE_DIR}/VERSION.cmake )
@@ -30,11 +35,10 @@ macro( ecbuild_declare_project )
 
     string(REGEX REPLACE "^([0-9]+)\\-.*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
 
-#    debug_var( ${PNAME}_VERSION )
-#    debug_var( ${PNAME}_MAJOR_VERSION )
-#    debug_var( ${PNAME}_MINOR_VERSION )
-#    debug_var( ${PNAME}_PATCH_VERSION )
-
+    # debug_var( ${PNAME}_VERSION )
+    # debug_var( ${PNAME}_MAJOR_VERSION )
+    # debug_var( ${PNAME}_MINOR_VERSION )
+    # debug_var( ${PNAME}_PATCH_VERSION )
 
     # if git project get its HEAD SHA1
 
@@ -59,6 +63,15 @@ macro( ecbuild_declare_project )
     set( INSTALL_DATA_DIR    ${${PNAME}_INSTALL_DATA_DIR} ) 
     set( INSTALL_CMAKE_DIR   ${${PNAME}_INSTALL_CMAKE_DIR} ) 
 
+    # make relative paths absolute (needed later on)
+    foreach(p LIB BIN INCLUDE DATA CMAKE)
+        set( var INSTALL_${p}_DIR )
+        if( NOT IS_ABSOLUTE "${${var}}" )
+            set( ${var} "${CMAKE_INSTALL_PREFIX}/${${var}}" )
+        endif()
+        # debug_var( ${var} )
+    endforeach()
+
     # install ecbuild configuration
 
     install( FILES ${CMAKE_BINARY_DIR}/ecbuild_config.h 
@@ -74,12 +87,6 @@ macro( ecbuild_declare_project )
     else()
         message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION})" )
     endif()
-
-#    debug_var(INSTALL_BIN_DIR)
-#    debug_var(INSTALL_LIB_DIR)
-#    debug_var(INSTALL_INCLUDE_DIR)
-#    debug_var(INSTALL_DATA_DIR)
-#    debug_var(INSTALL_CMAKE_DIR)
     
     set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${PROJECT_NAME} CACHE INTERNAL "list of (sub)projects" )
 

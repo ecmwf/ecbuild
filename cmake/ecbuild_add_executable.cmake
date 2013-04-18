@@ -129,13 +129,19 @@ macro( ecbuild_add_executable )
             endif()
         
             install( TARGETS ${_PAR_TARGET}
+              EXPORT  ${PROJECT_NAME}Targets
               RUNTIME DESTINATION ${INSTALL_BIN_DIR}
               LIBRARY DESTINATION ${INSTALL_LIB_DIR}
               ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
               COMPONENT ${COMPONENT_DIRECTIVE} )
 
             # set build location
+
             set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+
+            # export location of target to other projects -- must be exactly after setting the build location (see previous command)
+
+            export( TARGETS ${_PAR_TARGET} APPEND FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake" )
 
          endif()
     
@@ -168,6 +174,9 @@ macro( ecbuild_add_executable )
         if( NOT _PAR_NOINSTALL )
             ecbuild_link_exe( ${_PAR_TARGET} ${EXE_FILENAME} )
         endif()
+
+        # append to the list of this project targets
+        set( ${PROJECT_NAME}_ALL_EXES ${${PROJECT_NAME}_ALL_EXES} ${_PAR_TARGET} CACHE INTERNAL "" )    
 
     endif()
 

@@ -6,12 +6,19 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-function(create_cpack_config filename)
+###############################################################################
+
+function( __ecbuild_create_cpack_config filename )
+
   set(CPACK_OUTPUT_CONFIG_FILE "${filename}")
   include(CPack)
-endfunction(create_cpack_config)
+
+endfunction( __ecbuild_create_cpack_config )
+
+###############################################################################
 
 macro( ecbuild_install_project )
+
 
     set( options )
     set( single_value_args NAME FILENAME DESCRIPTION )
@@ -20,12 +27,16 @@ macro( ecbuild_install_project )
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_PAR_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_add_library(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+      message(FATAL_ERROR "Unknown keywords given to ecbuild_install_project(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
     if( NOT _PAR_NAME  )
       message(FATAL_ERROR "The call to ecbuild_install_project() doesn't specify the NAME.")
     endif()
+
+
+
+    ### PACKAGING
 
     string( TOUPPER ${PROJECT_NAME} PNAME )
     
@@ -91,6 +102,55 @@ macro( ecbuild_install_project )
 
     set(CPACK_INSTALL_CMAKE_PROJECTS "${${PROJECT_NAME}_BINARY_DIR}" "${PROJECT_NAME}" "${CPACK_COMPONENTS_ALL}" "*" )
 
-    create_cpack_config( CPackConfig-${_PAR_NAME}.cmake )
+    __ecbuild_create_cpack_config( CPackConfig-${_PAR_NAME}.cmake )
+
+   
+
+    ### EXPORTS
+
+    # exports the package for use from the build-tree -- inserts <package> into the CMake user package registry
+
+    export( PACKAGE ${PROJECT_NAME} )
+ 
+    file( RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${INSTALL_INCLUDE_DIR}" )
+
+    set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
+    if( EXISTS ${PROJECT_NAME}-config.cmake.in )
+        set( _template_config "${PROJECT_NAME}-config.cmake.in" )
+    endif()
+
+    set( _template_config_version "${ECBUILD_MACROS_DIR}/project-config-version.cmake.in" )
+    if( EXISTS ${PROJECT_NAME}-config-version.cmake.in )
+        set( _template_config_version "${PROJECT_NAME}-config-version.cmake.in" )
+    endif()
+
+    # project-config-version.cmake
+
+    set( PACKAGE_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" ) 
+    
+    configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake" @ONLY )
+
+    # project-config.cmake.in @ build tree
+
+    set( CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}" )
+    configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config.cmake" @ONLY )
+
+    # project-config.cmake.in @ install tree
+
+    set( CONF_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
+    configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}-config.cmake" @ONLY )
+ 
+    # install the ${PROJECT_NAME}-config.cmake and ${PROJECT_NAME}-config-version.cmake
+
+    install( FILES
+        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}-config.cmake"
+        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
+        DESTINATION "${INSTALL_CMAKE_DIR}" )
+ 
+    # install the export
+
+    if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
+        install( EXPORT ${PROJECT_NAME}Targets DESTINATION "${INSTALL_CMAKE_DIR}" )
+    endif()
 
 endmacro( ecbuild_install_project )

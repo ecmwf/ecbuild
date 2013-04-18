@@ -1,0 +1,20 @@
+# Config file for the @PROJECT_NAME@ package
+# Defines the following variables:
+#
+#  @PNAME@_INCLUDE_DIRS - include directories for @PROJECT_NAME@
+#  @PNAME@_LIBRARIES    - libraries to link against
+
+# compute paths
+
+get_filename_component(@PNAME@_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(@PNAME@_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+# insert definitions for IMPORTED targets
+
+if( NOT @PROJECT_NAME@_BINARY_DIR )
+  include( "${@PNAME@_CMAKE_DIR}/@PROJECT_NAME@Targets.cmake" OPTIONAL )
+endif()
+
+# could define here what targets to expose ...
+# set(@PNAME@_LIBRARIES foo)
+# set(@PNAME@_EXECUTABLE bar)
