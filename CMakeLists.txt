@@ -1,15 +1,7 @@
 ############################################################################################
 # cmake options:
 #
-#       -DCMAKE_BUILD_TYPE=Debug|RelWithDebInfo|Release|Production
 #       -DCMAKE_INSTALL_PREFIX=/path/to/install
-#
-#       -DCMAKE_MODULE_PATH=/path/to/ecbuild/cmake
-#
-#       -DCMAKE_C_COMPILER=gcc
-#       -DCMAKE_C_COMPILER=g++
-#
-#       -DCMAKE_PREFIX_PATH=/path/to/jasper:/path/to/any/package/out/of/place
 
 cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
 
