@@ -4,11 +4,11 @@
 #  @PNAME@_INCLUDE_DIRS - include directories
 #  @PNAME@_DEFINITIONS  - preprocessor definitions
 #  @PNAME@_LIBRARIES    - libraries to link against
-# 
+#
 # Also defines @PROJECT_NAME@ third-party library dependencies:
 #  @PNAME@_TPLS             - package names of  third-party library dependencies
-#  @PNAME@_TPL_INCLUDE_DIRS - include directories 
-#  @PNAME@_TPL_DEFINITIONS  - preprocessor definitions 
+#  @PNAME@_TPL_INCLUDE_DIRS - include directories
+#  @PNAME@_TPL_DEFINITIONS  - preprocessor definitions
 #  @PNAME@_TPL_LIBRARIES    - libraries to link against
 
 # compute paths
@@ -25,9 +25,9 @@ set( @PNAME@_TPL_INCLUDE_DIRS "@CONF_TPL_INCLUDE_DIRS@" )
 set( @PNAME@_TPL_DEFINITIONS  "@CONF_TPL_DEFINITIONS@" )
 set( @PNAME@_TPL_LIBRARIES    "@CONF_TPL_LIBRARIES@" )
 
-set( @PNAME@_INCLUDE_DIRS     "${@PNAME@_OWN_INCLUDE_DIRS}" "${@PNAME@_TPL_INCLUDE_DIRS}" )
-set( @PNAME@_DEFINITIONS      "${@PNAME@_OWN_DEFINITIONS}" "${@PNAME@_TPL_DEFINITIONS}" )
-set( @PNAME@_LIBRARIES        "${@PNAME@_OWN_LIBRARIES}" "${@PNAME@_TPL_LIBRARIES}" )
+set( @PNAME@_INCLUDE_DIRS     ${@PNAME@_OWN_INCLUDE_DIRS} ${@PNAME@_TPL_INCLUDE_DIRS} )
+set( @PNAME@_DEFINITIONS      ${@PNAME@_OWN_DEFINITIONS} ${@PNAME@_TPL_DEFINITIONS} )
+set( @PNAME@_LIBRARIES        ${@PNAME@_OWN_LIBRARIES}  ${@PNAME@_TPL_LIBRARIES} )
 
 # insert definitions for IMPORTED targets
 
