@@ -12,8 +12,8 @@
 
 macro( ecbuild_use_package )
 
-    set( options REQUIRED QUIET )
-    set( single_value_args PROJECT NAME )
+    set( options REQUIRED QUIET EXACT )
+    set( single_value_args PROJECT NAME VERSION )
     set( multi_value_args )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -26,31 +26,43 @@ macro( ecbuild_use_package )
       message(FATAL_ERROR "The call to ecbuild_use_package() doesn't specify the PROJECT.")
     endif()
 
-    string( TOUPPER ${_PAR_PROJECT} PNAME )
+    if( _PAR_EXACT AND NOT _PAR_VERSION )
+      message(FATAL_ERROR "Call to ecbuild_use_package() requests EXACT but doesn't specify VERSION.")
+    endif()    
 
-    if( DEFINED _PAR_NAME  )
+    set( _package_name ${_PAR_PROJECT} )
+    if( _PAR_NAME  )
         set( _package_name ${_PAR_NAME} )
-    else()
-        set( _package_name ${_PNAME} )
     endif()
 
     # try to find the package as a subproject and build it
 
     ecbuild_add_subproject( ${_PAR_PROJECT} )
 
-    # subproject not found, so try to find precompiled binaries
+    # subproject not found, so try to find precompiled binaries or a build tree
+
+    string( TOUPPER ${_PAR_PROJECT} PNAME )
 
     if( NOT DEFINED ${PNAME}_SUBPROJ_DIR ) 
     
-        set( _${PNAME}_find_opts "" )
-        if( DEFINED _PAR_REQUIRED )
-            list( APPEND _${PNAME}_find_opts "REQUIRED" )
+        set( _${PNAME}_opts "" )
+        set( _${PNAME}_version "" )
+
+        if( _PAR_REQUIRED )
+            list( APPEND _${PNAME}_opts "REQUIRED" )
         endif()
-        if( DEFINED _PAR_QUIET )
-            list( APPEND _${PNAME}_find_opts "QUIET" )
+        if( _PAR_QUIET )
+            list( APPEND _${PNAME}_opts "QUIET" )
+        endif()
+        
+        if( _PAR_VERSION )
+            set( _${PNAME}_version ${_PAR_VERSION} )
+            if( _PAR_EXACT )
+                set( _${PNAME}_version ${_PAR_VERSION} EXACT )
+            endif()
         endif()
 
-        find_package( ${_package_name} ${_${PNAME}_find_opts} )
+        find_package( ${_package_name} ${_${PNAME}_version} ${_${PNAME}_opts} )
 
     endif()
 

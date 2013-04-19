@@ -149,7 +149,7 @@ macro( ecbuild_add_library )
             endif()
     
             install( TARGETS ${_PAR_TARGET}
-              EXPORT  ${PROJECT_NAME}Targets
+              EXPORT  ${CMAKE_PROJECT_NAME}-targets
               RUNTIME DESTINATION ${INSTALL_BIN_DIR}
               LIBRARY DESTINATION ${INSTALL_LIB_DIR}
               ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
@@ -192,7 +192,7 @@ macro( ecbuild_add_library )
     
             # export location of target to other projects -- must be exactly after setting the build location (see previous 2 commands)
 
-            export( TARGETS ${_PAR_TARGET} APPEND FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake" )
+            export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
     
         endif()
 

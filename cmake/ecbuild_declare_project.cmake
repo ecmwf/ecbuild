@@ -21,7 +21,7 @@ macro( ecbuild_declare_project )
     
     include( ${PROJECT_SOURCE_DIR}/VERSION.cmake )
 
-    string(REPLACE "." " " _version_list ${${PROJECT_NAME}_VERSION_STR} ) # dots to spaces
+    string( REPLACE "." " " _version_list ${${PROJECT_NAME}_VERSION_STR} ) # dots to spaces
     
     separate_arguments( _version_list )
 
@@ -33,7 +33,7 @@ macro( ecbuild_declare_project )
 
     # cleanup patch version of any extra qualifiers ( -dev -rc1 ... )
 
-    string(REGEX REPLACE "^([0-9]+)\\-.*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
+    string( REGEX REPLACE "^([0-9]+)\\-.*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
 
     # debug_var( ${PNAME}_VERSION )
     # debug_var( ${PNAME}_MAJOR_VERSION )
@@ -63,14 +63,26 @@ macro( ecbuild_declare_project )
     set( INSTALL_DATA_DIR    ${${PNAME}_INSTALL_DATA_DIR} ) 
     set( INSTALL_CMAKE_DIR   ${${PNAME}_INSTALL_CMAKE_DIR} ) 
 
-    # make relative paths absolute (needed later on)
-    foreach(p LIB BIN INCLUDE DATA CMAKE)
+    # make relative paths absolute  ( needed later on ) and cache them ...
+    foreach( p LIB BIN INCLUDE DATA CMAKE )
+
         set( var INSTALL_${p}_DIR )
         if( NOT IS_ABSOLUTE "${${var}}" )
             set( ${var} "${CMAKE_INSTALL_PREFIX}/${${var}}" )
         endif()
+
+        set( ${PNAME}_FULL_INSTALL_${p}_DIR ${${var}} CACHE INTERNAL "${PNAME} ${p} full install path" )
+
         # debug_var( ${var} )
+
     endforeach()
+
+    # clear the build dir exported targets file (only on the top project)
+
+    if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+        set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" ) 
+        file( REMOVE ${TOP_PROJECT_TARGETS_FILE} )
+    endif()
 
     # install ecbuild configuration
 

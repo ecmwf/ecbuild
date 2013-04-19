@@ -39,6 +39,7 @@ macro( ecbuild_install_project )
     ### PACKAGING
 
     string( TOUPPER ${PROJECT_NAME} PNAME )
+    string( TOLOWER ${PROJECT_NAME} LNAME )
     
     # components
 
@@ -107,50 +108,112 @@ macro( ecbuild_install_project )
    
 
     ### EXPORTS
-
-    # exports the package for use from the build-tree -- inserts <package> into the CMake user package registry
-
-    export( PACKAGE ${PROJECT_NAME} )
  
-    file( RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${INSTALL_INCLUDE_DIR}" )
+    # TOP-LEVEL PROJECT EXPORT
+    if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
-    set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
-    if( EXISTS ${PROJECT_NAME}-config.cmake.in )
-        set( _template_config "${PROJECT_NAME}-config.cmake.in" )
-    endif()
-
-    set( _template_config_version "${ECBUILD_MACROS_DIR}/project-config-version.cmake.in" )
-    if( EXISTS ${PROJECT_NAME}-config-version.cmake.in )
-        set( _template_config_version "${PROJECT_NAME}-config-version.cmake.in" )
-    endif()
-
-    # project-config-version.cmake
-
-    set( PACKAGE_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" ) 
+        # exports the package for use from the build-tree -- inserts <package> into the CMake user package registry
     
-    configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake" @ONLY )
+        export( PACKAGE ${PROJECT_NAME} )
+         
+        set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
+        if( EXISTS ${LNAME}-config.cmake.in )
+            set( _template_config "${LNAME}-config.cmake.in" )
+        endif()
+    
+        set( _template_config_version "${ECBUILD_MACROS_DIR}/project-config-version.cmake.in" )
+        if( EXISTS ${LNAME}-config-version.cmake.in )
+            set( _template_config_version "${LNAME}-config-version.cmake.in" )
+        endif()
+    
+        # project-config-version.cmake
+    
+        set( PACKAGE_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" ) 
+        
+        configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
 
-    # project-config.cmake.in @ build tree
+        # prepare imutable variables (don't depend on install path)
+                        
+        set( CONF_LIBRARIES ${${PROJECT_NAME}_ALL_LIBS} )
+        if( ${PNAME}_LIBRARIES )
+            set( CONF_LIBRARIES ${${PNAME}_LIBRARIES} )
+        endif()
+                    
+        set( CONF_DEFINITIONS "" )
+        if( ${PNAME}_DEFINITIONS )
+           set( CONF_DEFINITIONS ${${PNAME}_DEFINITIONS} )
+        endif()
 
-    set( CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}" )
-    configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config.cmake" @ONLY )
+        set( CONF_TPL_LIBRARIES   "" )
+        set( CONF_TPL_DEFINITIONS "" )
+        foreach( _tpl ${${PNAME}_TPLS} )
+            string( TOUPPER ${_tpl} TPL )    
+            list( APPEND CONF_TPL_LIBRARIES   ${${TPL}_LIBRARIES} )
+            list( APPEND CONF_TPL_DEFINITIONS ${${TPL}_DEFINITIONS} )
+        endforeach()
+   
+        # project-config.cmake @ build tree
 
-    # project-config.cmake.in @ install tree
+        set( CONF_TPLS ${${PNAME}_TPLS} )
 
-    set( CONF_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
-    configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}-config.cmake" @ONLY )
- 
-    # install the ${PROJECT_NAME}-config.cmake and ${PROJECT_NAME}-config-version.cmake
+        set( CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}" )
+        if( ${PNAME}_INCLUDE_DIRS )
+            set( CONF_INCLUDE_DIRS ${${PNAME}_INCLUDE_DIRS} )
+        endif()
 
-    install( FILES
-        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}-config.cmake"
-        "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
-        DESTINATION "${INSTALL_CMAKE_DIR}" )
- 
-    # install the export
+        set( CONF_TPL_INCLUDE_DIRS "" )
+        foreach( _tpl ${${PNAME}_TPLS} )
+            string( TOUPPER ${_tpl} TPL )
+            list( APPEND CONF_TPL_INCLUDE_DIRS ${${TPL}_INCLUDE_DIRS} )
+        endforeach()
 
-    if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
-        install( EXPORT ${PROJECT_NAME}Targets DESTINATION "${INSTALL_CMAKE_DIR}" )
+        configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake" @ONLY )
+    
+        # project-config.cmake @ install tree
+        
+        file( RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${INSTALL_INCLUDE_DIR}" )
+        set( CONF_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
+
+        set( CONF_TPL_INCLUDE_DIRS "" )
+        foreach( _tpl ${${PNAME}_TPLS} )
+            string( TOUPPER ${_tpl} TPL )
+            if( ${TPL}_FULL_INSTALL_INCLUDE_DIR )
+                file( RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${${TPL}_FULL_INSTALL_INCLUDE_DIR}" )
+                list( APPEND CONF_TPL_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
+            endif()
+        endforeach()
+        
+        configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
+     
+        # install the ${LNAME}-config.cmake and ${LNAME}-config-version.cmake
+    
+        install( FILES
+            "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake"
+            "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake"
+            DESTINATION "${INSTALL_CMAKE_DIR}" )
+     
+        # install the export
+    
+        if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
+            install( EXPORT ${PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
+        endif()
+    
+    else() ### SUB-PROJECT EXPORT
+
+        set( ${PNAME}_FOUND  TRUE  PARENT_SCOPE )
+    
+        if( ${PNAME}_INCLUDE_DIRS )
+            set( ${PNAME}_INCLUDE_DIRS ${${PNAME}_INCLUDE_DIRS} PARENT_SCOPE )
+        endif()
+        
+        if( ${PNAME}_LIBRARIES )
+            set( ${PNAME}_LIBRARIES ${${PNAME}_LIBRARIES} PARENT_SCOPE )
+        endif()
+                
+        if( ${PNAME}_DEFINITIONS )
+            set( ${PNAME}_DEFINITIONS ${${PNAME}_DEFINITIONS} PARENT_SCOPE )
+        endif()
+
     endif()
 
 endmacro( ecbuild_install_project )
