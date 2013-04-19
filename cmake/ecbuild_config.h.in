@@ -2,8 +2,8 @@
  * (C) Copyright 1996-2012 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
- * In applying this licence, ECMWF does not waive the privileges and immunities 
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
@@ -24,8 +24,11 @@
 #define EC_BUILD_TIMESTAMP  "@EC_BUILD_TIMESTAMP@"
 #define EC_BUILD_TYPE       "@CMAKE_BUILD_TYPE@"
 
-#define EC_COMPILER_ID      "@CMAKE_CXX_COMPILER_ID@"
-#define EC_COMPILER_VERSION "@EC_COMPILER_VERSION@"
+#define EC_C_COMPILER_ID      "@CMAKE_C_COMPILER_ID@"
+#define EC_C_COMPILER_VERSION "@CMAKE_C_COMPILER_VERSION@"
+
+#define EC_CXX_COMPILER_ID      "@CMAKE_CXX_COMPILER_ID@"
+#define EC_CXX_COMPILER_VERSION "@CMAKE_CXX_COMPILER_VERSION@"
 
 #define EC_C_COMPILER       "@CMAKE_C_COMPILER@"
 #define EC_C_FLAGS          "@EC_C_FLAGS_ALL@"
@@ -33,7 +36,16 @@
 #define EC_CXX_COMPILER     "@CMAKE_CXX_COMPILER@"
 #define EC_CXX_FLAGS        "@EC_CXX_FLAGS_ALL@"
 
+#cmakedefine EC_HAVE_Fortran
+
+#ifdef EC_HAVE_Fortran
+
+#define EC_Fortran_COMPILER_ID      "@CMAKE_Fortran_COMPILER_ID@"
+#define EC_Fortran_COMPILER_VERSION "@CMAKE_Fortran_COMPILER_VERSION@"
+
 #define EC_Fortran_COMPILER "@CMAKE_Fortran_COMPILER@"
 #define EC_Fortran_FLAGS    "@EC_Fortran_FLAGS_ALL@"
+
+#endif
 
 #endif /* ecbuild_config_h */
