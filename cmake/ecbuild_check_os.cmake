@@ -1,49 +1,56 @@
 # (C) Copyright 1996-2012 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
 ############################################################################################
-# check compiler version
+# try to get compiler version if cmake did not
 
-set( EC_COMPILER_VERSION "?.?" )
+if( NOT CMAKE_C_COMPILER_VERSION )
 
-if( CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Intel" )
-    exec_program( ${CMAKE_C_COMPILER} 
-                  ARGS ${CMAKE_C_COMPILER_ARG1} -dumpversion
-                  OUTPUT_VARIABLE EC_COMPILER_VERSION )
+    set( EC_COMPILER_VERSION "?.?" )
 
-    string(REGEX REPLACE "([0-9])\\.([0-9])(\\.([0-9]))?" "\\1.\\2"  EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
+    if( CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Intel" )
+        exec_program( ${CMAKE_C_COMPILER}
+                      ARGS ${CMAKE_C_COMPILER_ARG1} -dumpversion
+                      OUTPUT_VARIABLE EC_COMPILER_VERSION )
+
+        string(REGEX REPLACE "([0-9])\\.([0-9])(\\.([0-9]))?" "\\1.\\2"  EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
+    endif()
+
+    if( CMAKE_C_COMPILER_ID MATCHES "Clang" )
+        exec_program( ${CMAKE_C_COMPILER}
+                      ARGS ${CMAKE_C_COMPILER_ARG1} --version
+                      OUTPUT_VARIABLE EC_COMPILER_VERSION )
+
+        string(REGEX REPLACE ".*clang version ([0-9])\\.([0-9])(\\.([0-9]))?.*" "\\1.\\2" EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
+    endif()
+
+    if( CMAKE_C_COMPILER_ID MATCHES "SunPro" )
+        exec_program( ${CMAKE_C_COMPILER}
+                      ARGS ${CMAKE_C_COMPILER_ARG1} -V
+                      OUTPUT_VARIABLE EC_COMPILER_VERSION )
+
+        string(REGEX REPLACE ".*([0-9]+)\\.([0-9]+).*" "\\1.\\2" EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
+    endif()
+
+    if( CMAKE_C_COMPILER_ID MATCHES "XL" )
+        exec_program( ${CMAKE_C_COMPILER}
+                      ARGS ${CMAKE_C_COMPILER_ARG1} -qversion
+                      OUTPUT_VARIABLE EC_COMPILER_VERSION )
+
+        string(REGEX REPLACE ".*V([0-9]+)\\.([0-9]+).*" "\\1.\\2" EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
+
+    endif()
+
+    if( NOT EC_COMPILER_VERSION STREQUAL "?.?" )
+        set(CMAKE_C_COMPILER_VERSION "${EC_COMPILER_VERSION}" )
+    endif()
+
 endif()
-
-if( CMAKE_C_COMPILER_ID MATCHES "Clang" )
-    exec_program( ${CMAKE_C_COMPILER} 
-                  ARGS ${CMAKE_C_COMPILER_ARG1} --version
-                  OUTPUT_VARIABLE EC_COMPILER_VERSION )
-
-    string(REGEX REPLACE ".*clang version ([0-9])\\.([0-9])(\\.([0-9]))?.*" "\\1.\\2" EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
-endif()
-
-if( CMAKE_C_COMPILER_ID MATCHES "SunPro" )
-    exec_program( ${CMAKE_C_COMPILER} 
-                  ARGS ${CMAKE_C_COMPILER_ARG1} -V
-                  OUTPUT_VARIABLE EC_COMPILER_VERSION )
-
-    string(REGEX REPLACE ".*([0-9]+)\\.([0-9]+).*" "\\1.\\2" EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
-endif()
-
-if( CMAKE_C_COMPILER_ID MATCHES "XL" )
-    exec_program( ${CMAKE_C_COMPILER} 
-                  ARGS ${CMAKE_C_COMPILER_ARG1} -qversion
-                  OUTPUT_VARIABLE EC_COMPILER_VERSION )
-    
-    string(REGEX REPLACE ".*V([0-9]+)\\.([0-9]+).*" "\\1.\\2" EC_COMPILER_VERSION ${EC_COMPILER_VERSION} )
-
-endif()
-
 
 ############################################################################################
 # check architecture architecture
@@ -82,12 +89,12 @@ check_c_source_runs(
        unsigned char dc[]={0x30,0x61,0xDE,0x80,0x93,0x67,0xCC,0xD9,0};
        double da=1.23456789e-75;
        unsigned char* ca;
-     
+
        unsigned char fc[]={0x05,0x83,0x48,0x22,0};
        float fa=1.23456789e-35;
-     
+
        if (sizeof(double)!=8) return 1;
-     
+
        ca=(unsigned char*)&da;
        if (compare(dc,ca)) return 1;
 
@@ -95,7 +102,7 @@ check_c_source_runs(
 
        ca=(unsigned char*)&fa;
        if (compare(fc,ca)) return 1;
-     
+
        return 0;
      }" IEEE_BE )
 
@@ -112,12 +119,12 @@ check_c_source_runs(
        unsigned char dc[]={0xD9,0xCC,0x67,0x93,0x80,0xDE,0x61,0x30,0};
        double da=1.23456789e-75;
        unsigned char* ca;
-     
+
        unsigned char fc[]={0x22,0x48,0x83,0x05,0};
        float fa=1.23456789e-35;
-     
+
        if (sizeof(double)!=8) return 1;
-     
+
        ca=(unsigned char*)&da;
        if (compare(dc,ca)) return 1;
 
@@ -125,7 +132,7 @@ check_c_source_runs(
 
        ca=(unsigned char*)&fa;
        if (compare(fc,ca)) return 1;
-     
+
        return 0;
      }" IEEE_LE )
 
@@ -156,7 +163,7 @@ if( UNIX )
     endif()
 
     if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
-    
+
         if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
             set( CMAKE_SHARED_LINKER_FLAGS "-Xlinker -qbigtoc ${CMAKE_SHARED_LINKER_FLAGS}" )
         endif()
@@ -206,18 +213,18 @@ if( UNIX )
             cmake_add_cxx_flags("-bmaxdata:0x40000000")
             cmake_add_cxx_flags("-qrtti")
             cmake_add_cxx_flags("-qfuncsect")
- 
+
 #           cmake_add_cxx_flags("-qweaksymbol")
-    
+
             if(EC_OS_BITS EQUAL "32" )
                 cmake_add_cxx_flags("-q32")
             endif()
-            
+
             if(${CMAKE_BUILD_TYPE} MATCHES "Release" OR ${CMAKE_BUILD_TYPE} MATCHES "Production" )
                     cmake_add_cxx_flags("-qstrict")
                     cmake_add_cxx_flags("-qinline")
             endif()
-    
+
             if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
                     cmake_add_cxx_flags("-qfullpath")
                     cmake_add_cxx_flags("-qkeepparm")
