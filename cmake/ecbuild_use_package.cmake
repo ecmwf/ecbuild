@@ -10,8 +10,6 @@
 # macro for adding a subproject directory
 ##############################################################################
 
-set( EC_ALL_PROJECTS "" CACHE INTERNAL "" )
-
 macro( ecbuild_use_package )
 
     set( options REQUIRED QUIET EXACT )
@@ -66,10 +64,11 @@ macro( ecbuild_use_package )
 
     # check if was already added as subproject ...
 
+    set( _just_added 0 )
     set( _do_version_check 0 )
     set( _source_description "" )
 
-    list( FIND EC_ALL_PROJECTS ${PNAME} _ecbuild_project_${PNAME} )
+    list( FIND ECBUILD_ALL_SUBPROJECTS ${_PAR_PROJECT} _ecbuild_project_${PNAME} )
 
     if( NOT _ecbuild_project_${PNAME} EQUAL "-1" )
         set( ${PNAME}_PREVIOUS_SUBPROJECT 1 )
@@ -86,19 +85,24 @@ macro( ecbuild_use_package )
             if( DEFINED ${PNAME}_SUBPROJ_DIR )
 
                 # check version is acceptable
+                set( _just_added 1 )
                 set( _do_version_check 1 )
-                set( _source_description "Added sub-project ${_PAR_PROJECT} (sources)" )
+                set( _source_description "sub-project ${_PAR_PROJECT} (sources)" )
 
                 # add as a subproject
 
                 set( ${PNAME}_SUBPROJ_DIR ${${PNAME}_SUBPROJ_DIR} CACHE PATH "Path to ${_PAR_PROJECT} source directory" )
 
-                set( EC_ALL_PROJECTS ${EC_ALL_PROJECTS} ${PNAME} CACHE INTERNAL "" )
+                set( ECBUILD_ALL_SUBPROJECTS ${ECBUILD_ALL_SUBPROJECTS} ${_PAR_PROJECT} CACHE INTERNAL "" )
 
                 add_subdirectory( ${${PNAME}_SUBPROJ_DIR} ${_PAR_PROJECT} )
 
                 set( ${PNAME}_FOUND 1 CACHE INTERNAL "" )
                 set( ${_PAR_PROJECT}_VERSION ${${PNAME}_VERSION} )
+
+                if( ${PNAME}_USES_ECBUILD )
+                  set( ECBUILD_SUBPROJECTS ${ECBUILD_SUBPROJECTS} ${PROJECT_NAME} CACHE INTERNAL "list of ecbuild (sub)projects using ecbuild" )
+                endif()
 
             endif()
 
@@ -114,17 +118,17 @@ macro( ecbuild_use_package )
 
         # check version is acceptable
         set( _do_version_check 1 )
-        set( _source_description "Previously used package ${_PAR_PROJECT} (sources)" )
+        set( _source_description "already existing sub-project ${_PAR_PROJECT} (sources)" )
 
     endif()
 
     # Case 3) project was NOT added as subproject, but is FOUND -- so it was previously found as a binary ( either build or install tree )
 
-    if( ${PNAME}_FOUND AND NOT ${PNAME}_PREVIOUS_SUBPROJECT )
+    if( ${PNAME}_FOUND AND NOT ${PNAME}_PREVIOUS_SUBPROJECT AND NOT _just_added )
 
         # check version is acceptable
         set( _do_version_check 1 )
-        set( _source_description "Previously found package ${_PAR_PROJECT} (binaries)" )
+        set( _source_description "previously found package ${_PAR_PROJECT} (binaries)" )
 
     endif()
 
@@ -133,11 +137,13 @@ macro( ecbuild_use_package )
     if( _PAR_VERSION AND _do_version_check )
             if( _PAR_EXACT )
                 if( NOT ${_PAR_PROJECT}_VERSION VERSION_EQUAL _PAR_VERSION )
-                    message( FATAL_ERROR "${_source_description} version ${${_PAR_PROJECT}_VERSION} -- ${PROJECT_NAME} requires exactly ${_PAR_VERSION}" )
+                    message( FATAL_ERROR "${PROJECT_NAME} requires (exactly) ${_PAR_PROJECT} = ${_PAR_VERSION} -- detected as ${_source_description} ${${_PAR_PROJECT}_VERSION}" )
                 endif()
             else()
-                if( ${_PAR_PROJECT}_VERSION VERSION_GREATER _PAR_VERSION OR ${_PAR_PROJECT}_VERSION VERSION_EQUAL _PAR_VERSION )
-                    message( FATAL_ERROR "${_source_description} version ${${_PAR_PROJECT}_VERSION} -- ${PROJECT_NAME} requires exactly ${_PAR_VERSION}" )
+				if( _PAR_VERSION VERSION_LESS ${_PAR_PROJECT}_VERSION OR _PAR_VERSION VERSION_EQUAL ${_PAR_PROJECT}_VERSION )
+                    message( STATUS "${PROJECT_NAME} requires ${_PAR_PROJECT} >= ${_PAR_VERSION} -- detected as ${_source_description} ${${_PAR_PROJECT}_VERSION}" )
+				else()
+                    message( FATAL_ERROR "${PROJECT_NAME} requires ${_PAR_PROJECT} >= ${_PAR_VERSION} -- detected only ${_source_description} ${${_PAR_PROJECT}_VERSION}" )
                 endif()
             endif()
     endif()

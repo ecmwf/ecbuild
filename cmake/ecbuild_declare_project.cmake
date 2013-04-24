@@ -29,13 +29,16 @@ macro( ecbuild_declare_project )
     list( GET _version_list 1 ${PNAME}_MINOR_VERSION )
     list( GET _version_list 2 ${PNAME}_PATCH_VERSION )
 
-    set( ${PNAME}_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" ) 
-
     # cleanup patch version of any extra qualifiers ( -dev -rc1 ... )
 
     string( REGEX REPLACE "^([0-9]+)\\-.*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
 
+    set( ${PNAME}_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" ) 
+
+    set( ${PNAME}_VERSION_STR "${${PROJECT_NAME}_VERSION_STR}" ) # ignore caps 
+
     # debug_var( ${PNAME}_VERSION )
+    # debug_var( ${PNAME}_VERSION_STR )
     # debug_var( ${PNAME}_MAJOR_VERSION )
     # debug_var( ${PNAME}_MINOR_VERSION )
     # debug_var( ${PNAME}_PATCH_VERSION )
@@ -77,13 +80,6 @@ macro( ecbuild_declare_project )
 
     endforeach()
 
-    # clear the build dir exported targets file (only on the top project)
-
-    if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
-        set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" ) 
-        file( REMOVE ${TOP_PROJECT_TARGETS_FILE} )
-    endif()
-
     # install ecbuild configuration
 
     install( FILES ${CMAKE_BINARY_DIR}/ecbuild_config.h 
@@ -95,12 +91,10 @@ macro( ecbuild_declare_project )
     message( STATUS "---------------------------------------------------------" )
     
     if( DEFINED ${PNAME}_GIT_SHA1 )
-        message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION}) [${${PNAME}_GIT_SHA1}]" )
+        message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR}) [${${PNAME}_GIT_SHA1}]" )
     else()
-        message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION})" )
+        message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR})" )
     endif()
-    
-    set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${PROJECT_NAME} CACHE INTERNAL "list of (sub)projects" )
 
 endmacro( ecbuild_declare_project )
 

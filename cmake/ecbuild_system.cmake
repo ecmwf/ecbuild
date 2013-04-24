@@ -32,9 +32,15 @@ enable_language( C )
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
-    set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects" )
+    set( ECBUILD_ALL_SUBPROJECTS "" CACHE INTERNAL "list of all (sub)projects, with or without ecbuild" )
+    set( ECBUILD_SUBPROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
 
     set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
+
+    # clear the build dir exported targets file (only on the top project)
+
+    set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" )
+    file( REMOVE ${TOP_PROJECT_TARGETS_FILE} )
 
     # add backport support for versions up too 2.8.4
     if( ${CMAKE_VERSION} VERSION_LESS "2.8" )

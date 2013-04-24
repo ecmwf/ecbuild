@@ -60,7 +60,7 @@ macro( ecbuild_install_project )
     # name version etc
 
     set(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
-    set(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION}")
+    set(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
 
     set(CPACK_GENERATOR        "TGZ")
     set(CPACK_PACKAGE_VENDOR   "ECMWF")
@@ -126,9 +126,9 @@ macro( ecbuild_install_project )
             set( _template_config_version "${LNAME}-config-version.cmake.in" )
         endif()
     
-        # project-config-version.cmake
+        # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)
     
-        set( PACKAGE_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" ) 
+        set( PACKAGE_VERSION "${${PNAME}_VERSION}" ) 
         
         configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
 
