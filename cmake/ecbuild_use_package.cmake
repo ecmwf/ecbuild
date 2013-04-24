@@ -97,7 +97,7 @@ macro( ecbuild_use_package )
 
                 add_subdirectory( ${${PNAME}_SUBPROJ_DIR} ${_PAR_PROJECT} )
 
-                set( ${PNAME}_FOUND 1 CACHE INTERNAL "" )
+                set( ${PNAME}_FOUND 1 )
                 set( ${_PAR_PROJECT}_VERSION ${${PNAME}_VERSION} )
 
                 if( ${PNAME}_USES_ECBUILD )
@@ -133,6 +133,12 @@ macro( ecbuild_use_package )
     endif()
 
     # test version for Cases 1,2,3
+
+    # debug_var( _PAR_PROJECT )
+    # debug_var( _PAR_VERSION )
+    # debug_var( _just_added )
+    # debug_var( ${PNAME}_FOUND )
+    # debug_var( ${PNAME}_PREVIOUS_SUBPROJECT )
 
     if( _PAR_VERSION AND _do_version_check )
             if( _PAR_EXACT )
@@ -173,7 +179,7 @@ macro( ecbuild_use_package )
 
         if( ${_PAR_PROJECT}_FOUND )
 
-            set( ${PNAME}_FOUND ${${_PAR_PROJECT}_FOUND} CACHE INTERNAL "" )
+            set( ${PNAME}_FOUND ${${_PAR_PROJECT}_FOUND} )
 
             message( STATUS "---------------------------------------------------------" )
             message( STATUS " [${_PAR_PROJECT}] (${${_PAR_PROJECT}_VERSION})" )

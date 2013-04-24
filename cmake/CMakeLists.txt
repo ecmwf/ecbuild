@@ -5,19 +5,16 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             FindCMath.cmake
                             FindCairo.cmake
                             FindDl.cmake
-                            FindECKIT.cmake
                             FindEMOS.cmake
                             FindEcLib.cmake
                             FindEcregrid.cmake
                             FindFDB.cmake
-                            FindGRIB_API.cmake
                             FindHPSS.cmake
                             FindLEX.cmake
                             FindLibGFortran.cmake
                             FindNDBM.cmake
                             FindNetCDF.cmake
                             FindODB.cmake
-                            FindODB_API.cmake
                             FindOpenJPEG.cmake
                             FindPGIFortran.cmake
                             FindProj4.cmake
