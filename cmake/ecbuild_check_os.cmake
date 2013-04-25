@@ -77,7 +77,6 @@ if( _BIG_ENDIAN )
     set( EC_BIG_ENDIAN    1 )
 else()
     set( EC_LITTLE_ENDIAN 1 )
-    add_definitions( -DLITTLE_ENDIAN )
 endif()
 
 check_c_source_runs(
