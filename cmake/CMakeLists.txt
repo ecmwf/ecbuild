@@ -9,7 +9,8 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             FindEcLib.cmake
                             FindEcregrid.cmake
                             FindFDB.cmake
-                            FindHPSS.cmake
+                            Findgrib_api.cmake
+							FindHPSS.cmake
                             FindLEX.cmake
                             FindLibGFortran.cmake
                             FindNDBM.cmake

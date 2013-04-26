@@ -161,9 +161,6 @@ macro( ecbuild_use_package )
         set( _${PNAME}_opts "" )
         set( _${PNAME}_version "" )
 
-        if( _PAR_REQUIRED )
-            list( APPEND _${PNAME}_opts "REQUIRED" )
-        endif()
         if( _PAR_QUIET )
             list( APPEND _${PNAME}_opts "QUIET" )
         endif()
@@ -174,6 +171,8 @@ macro( ecbuild_use_package )
                 set( _${PNAME}_version ${_PAR_VERSION} EXACT )
             endif()
         endif()
+
+        include( Find${_PAR_PROJECT} OPTIONAL )
 
         find_package( ${_PAR_PROJECT} ${_${PNAME}_version} ${_${PNAME}_opts} )
 
@@ -189,7 +188,10 @@ macro( ecbuild_use_package )
                 message( STATUS "   ${PNAME}_DEFINITIONS : [${${PNAME}_DEFINITIONS}]" )
             endif()
             message( STATUS "   ${PNAME}_LIBRARIES : [${${PNAME}_LIBRARIES}]" )
-
+        else()
+            if( _PAR_REQUIRED )
+                message( FATAL_ERROR "${PROJECT_NAME} requires package ${_PAR_PROJECT} but no suitable version was found" )
+            endif()
         endif()
 
     endif()
