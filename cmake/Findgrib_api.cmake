@@ -14,48 +14,54 @@
 #  GRIB_API_DEFINITIONS - Compiler switches required for using GRIB_API
 
 option( NO_GRIB_API_BINARIES "skip trying to find grib_api installed binaries" OFF )
+option( GRIB_API_PNG "use png with grib_api" ON )
+option( GRIB_API_JPG "use jpg with grib_api" ON )
 
 if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
 
-    # jpeg support
+    if( GRIB_API_JPG ) # jpeg support
+        
+        find_package( JPEG     QUIET ) # grib_api might be a static .a library in which
     
-    find_package( JPEG     QUIET ) # grib_api might be a static .a library in which
+        if( NOT "$ENV{JASPER_PATH}" STREQUAL "" )
+            list( APPEND CMAKE_PREFIX_PATH "$ENV{JASPER_PATH}" )
+        endif()
+        find_package( Jasper   QUIET ) # case we don't know if which jpeg library was used
+    
+        find_package( OpenJPEG QUIET ) # so we try to find all jpeg libs and link to them 
+        
+        if(JPEG_FOUND)
+            list( APPEND _grib_api_jpg_incs ${JPEG_INCLUDE_DIR} )
+            list( APPEND _grib_api_jpg_libs ${JPEG_LIBRARIES} )
+        endif()
+        if(JASPER_FOUND)
+            list( APPEND _grib_api_jpg_incs ${JASPER_INCLUDE_DIR} )
+            list( APPEND _grib_api_jpg_libs ${JASPER_LIBRARIES} )
+        endif()
+        if(OPENJPEG_FOUND)
+            list( APPEND _grib_api_jpg_incs ${OPENJPEG_INCLUDE_DIR} )
+            list( APPEND _grib_api_jpg_libs ${OPENJPEG_LIBRARIES} )
+        endif()
 
-    if( NOT "$ENV{JASPER_PATH}" STREQUAL "" )
-        list( APPEND CMAKE_PREFIX_PATH "$ENV{JASPER_PATH}" )
     endif()
-    find_package( Jasper   QUIET ) # case we don't know if which jpeg library was used
+    
+    if( GRIB_API_JPG ) # png support
+    
+        find_package(PNG)
+    
+        if( DEFINED PNG_PNG_INCLUDE_DIR AND NOT DEFINED PNG_INCLUDE_DIRS )
+          set( PNG_INCLUDE_DIRS ${PNG_PNG_INCLUDE_DIR}  CACHE INTERNAL "PNG include dirs" )
+        endif()
+        if( DEFINED PNG_LIBRARY AND NOT DEFINED PNG_LIBRARIES )
+          set( PNG_LIBRARIES ${PNG_LIBRARY} CACHE INTERNAL "PNG libraries" )
+        endif()
+        
+        if(PNG_FOUND)
+            list( APPEND _grib_api_png_defs ${PNG_DEFINITIONS} )
+            list( APPEND _grib_api_png_incs ${PNG_INCLUDE_DIRS} )
+            list( APPEND _grib_api_png_libs ${PNG_LIBRARIES} )
+        endif()
 
-    find_package( OpenJPEG QUIET ) # so we try to find all jpeg libs and link to them 
-    
-    if(JPEG_FOUND)
-        list( APPEND _grib_api_jpg_incs ${JPEG_INCLUDE_DIR} )
-        list( APPEND _grib_api_jpg_libs ${JPEG_LIBRARIES} )
-    endif()
-    if(JASPER_FOUND)
-        list( APPEND _grib_api_jpg_incs ${JASPER_INCLUDE_DIR} )
-        list( APPEND _grib_api_jpg_libs ${JASPER_LIBRARIES} )
-    endif()
-    if(OPENJPEG_FOUND)
-        list( APPEND _grib_api_jpg_incs ${OPENJPEG_INCLUDE_DIR} )
-        list( APPEND _grib_api_jpg_libs ${OPENJPEG_LIBRARIES} )
-    endif()
-    
-    # png support
-    
-    find_package(PNG)
-
-    if( DEFINED PNG_PNG_INCLUDE_DIR AND NOT DEFINED PNG_INCLUDE_DIRS )
-      set( PNG_INCLUDE_DIRS ${PNG_PNG_INCLUDE_DIR}  CACHE INTERNAL "PNG include dirs" )
-    endif()
-    if( DEFINED PNG_LIBRARY AND NOT DEFINED PNG_LIBRARIES )
-      set( PNG_LIBRARIES ${PNG_LIBRARY} CACHE INTERNAL "PNG libraries" )
-    endif()
-    
-    if(PNG_FOUND)
-        list( APPEND _grib_api_png_defs ${PNG_DEFINITIONS} )
-        list( APPEND _grib_api_png_incs ${PNG_INCLUDE_DIRS} )
-        list( APPEND _grib_api_png_libs ${PNG_LIBRARIES} )
     endif()
 
     # find external grib_api

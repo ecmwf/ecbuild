@@ -177,6 +177,11 @@ macro( ecbuild_use_package )
             file( GLOB _ecmwf_paths "/usr/local/apps/${_PAR_PROJECT}/*" ) 
         endif()
 
+        # check environment variable
+        if( NOT ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
+            set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
+        endf()
+
         # search user defined paths first
         if( ${_PAR_PROJECT}_PATH OR ${PNAME}_PATH OR _ecmwf_paths )
             find_package( ${_PAR_PROJECT} PATHS ${${_PAR_PROJECT}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} ${_${PNAME}_version} ${_${PNAME}_opts} QUIET NO_DEFAULT_PATH )
