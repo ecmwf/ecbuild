@@ -12,8 +12,8 @@
 
 macro( ecbuild_use_package )
 
-    set( options REQUIRED QUIET EXACT )
-    set( single_value_args PROJECT VERSION )
+    set( options            REQUIRED QUIET EXACT )
+    set( single_value_args  PROJECT VERSION )
     set( multi_value_args )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -154,44 +154,23 @@ macro( ecbuild_use_package )
             endif()
     endif()
 
-    # Case 4) it is NOT added as sub-project (now or before), and not FOUND as binary neither  -- so try to find precompiled binaries or a build tree
+    # Case 4) is NOT FOUND so far, NOT as sub-project (now or before), and NOT as binary neither 
+    #         so try to find precompiled binaries or a build tree
 
-    if( NOT ${PNAME}_PREVIOUS_SUBPROJECT AND NOT DEFINED ${PNAME}_SUBPROJ_DIR )
+    if( NOT ${PNAME}_FOUND )
 
-        set( _${PNAME}_opts "" )
-        set( _${PNAME}_version "" )
-
-        if( _PAR_QUIET )
-            list( APPEND _${PNAME}_opts "QUIET" )
-        endif()
-
+        set( _opts )
         if( _PAR_VERSION )
-            set( _${PNAME}_version ${_PAR_VERSION} )
-            if( _PAR_EXACT )
-                set( _${PNAME}_version ${_PAR_VERSION} EXACT )
-            endif()
+            list( APPEND _opts VERSION ${_PAR_VERSION} )
         endif()
-
-        # paths @ ECMWF
-        if( EXISTS /usr/local/apps/${_PAR_PROJECT} )
-            file( GLOB _ecmwf_paths "/usr/local/apps/${_PAR_PROJECT}/*" ) 
+        if( _PAR_EXACT )
+            list( APPEND _opts EXACT )
         endif()
-
-        # check environment variable
-        if( NOT ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
-            set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
+        if( _PAR_REQUIRED )
+            list( APPEND _opts REQUIRED )
         endif()
-
-        # search user defined paths first
-        if( ${_PAR_PROJECT}_PATH OR ${PNAME}_PATH OR _ecmwf_paths )
-            find_package( ${_PAR_PROJECT} PATHS ${${_PAR_PROJECT}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} ${_${PNAME}_version} ${_${PNAME}_opts} QUIET NO_DEFAULT_PATH )
-        endif()
-
-        # search system paths
-        find_package( ${_PAR_PROJECT} ${_${PNAME}_version} ${_${PNAME}_opts} )
-
-        # search binaries directly -- if we have a macro for that
-        include( Find${_PAR_PROJECT} OPTIONAL )
+    
+        ecbuild_find_package( NAME ${_PAR_PROJECT} ${_opts} )
 
         if( ${_PAR_PROJECT}_FOUND )
 
@@ -205,10 +184,7 @@ macro( ecbuild_use_package )
                 message( STATUS "   ${PNAME}_DEFINITIONS : [${${PNAME}_DEFINITIONS}]" )
             endif()
             message( STATUS "   ${PNAME}_LIBRARIES : [${${PNAME}_LIBRARIES}]" )
-        else()
-            if( _PAR_REQUIRED )
-                message( FATAL_ERROR "${PROJECT_NAME} requires package ${_PAR_PROJECT} but no suitable version was found" )
-            endif()
+
         endif()
 
     endif()

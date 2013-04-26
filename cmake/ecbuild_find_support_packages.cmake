@@ -71,6 +71,12 @@ endif()
 ###########################################################################################
 # fortran static link libraries
 
+foreach( _fortran_lib PGI XLF LIBGFORTRAN )
+    if( NOT ${_fortran_lib}_PATH AND NOT "$ENV{${_fortran_lib}_PATH}" STREQUAL "" )
+        set( ${_fortran_lib}_PATH "$ENV{${_fortran_lib}_PATH}" )
+    endif()
+endforeach()
+
 if( WITH_PGI_FORTRAN OR DEFINED PGI_PATH )
     find_package(PGIFortran)
     if( PGIFORTRAN_LIBRARIES )

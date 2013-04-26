@@ -123,6 +123,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include( ecbuild_declare_project )
     include( ecbuild_install_package )
     include( ecbuild_separate_sources )
+    include( ecbuild_find_package )
     include( ecbuild_use_package )
     include( ecbuild_print_summary )
     include( ecbuild_warn_unused_files )
@@ -134,12 +135,12 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     ############################################################################################
     # kickstart the build system
 
-    include( ecbuild_define_options )  # define build options
-    include( ecbuild_find_packages )   # find packages we depend on
-    include( ecbuild_check_os )        # check for os characteristics
-    include( ecbuild_check_functions ) # check for available functions
-    include( ecbuild_define_paths )    # define installation paths
-    include( ecbuild_links_target )    # define the links target
+    include( ecbuild_define_options )               # define build options
+    include( ecbuild_find_support_packages )        # find packages we depend on
+    include( ecbuild_check_os )                     # check for os characteristics
+    include( ecbuild_check_functions )              # check for available functions
+    include( ecbuild_define_paths )                 # define installation paths
+    include( ecbuild_links_target )                 # define the links target
 
     ############################################################################################
     # define the build timestamp

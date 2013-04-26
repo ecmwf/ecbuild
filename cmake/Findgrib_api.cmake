@@ -96,7 +96,7 @@ if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
         list( GET _version_list 1 GRIB_API_MINOR_VERSION )
         list( GET _version_list 2 GRIB_API_PATCH_VERSION )
 
-        set( GRIB_API_VERSION "${GRIB_API_MAJOR_VERSION}.${GRIB_API_MINOR_VERSION}.${GRIB_API_PATCH_VERSION}" ) 
+        set( GRIB_API_VERSION     "${GRIB_API_MAJOR_VERSION}.${GRIB_API_MINOR_VERSION}.${GRIB_API_PATCH_VERSION}" ) 
         set( GRIB_API_VERSION_STR "${_grib_info_out}" )
 
         set( grib_api_VERSION     "${GRIB_API_VERSION}" ) 
