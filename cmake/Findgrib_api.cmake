@@ -101,11 +101,10 @@ if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
     include(FindPackageHandleStandardArgs)
     
     # handle the QUIETLY and REQUIRED arguments and set GRIB_API_FOUND to TRUE
-    # if all listed variables are TRUE
-    find_package_handle_standard_args(grib_api  DEFAULT_MSG
-                                      GRIB_API_LIBRARY GRIB_API_INCLUDE_DIR GRIB_API_INFO )
+    find_package_handle_standard_args( grib_api DEFAULT_MSG
+                                       GRIB_API_LIBRARY GRIB_API_INCLUDE_DIR GRIB_API_INFO )
     
-    mark_as_advanced(GRIB_API_INCLUDE_DIR GRIB_API_LIBRARY GRIB_API_INFO)
+    mark_as_advanced( GRIB_API_INCLUDE_DIR GRIB_API_LIBRARY GRIB_API_INFO )
     
     list( APPEND GRIB_API_DEFINITIONS  ${_grib_api_jpg_defs} ${_grib_api_png_defs} )
     list( APPEND GRIB_API_INCLUDE_DIRS ${_grib_api_jpg_incs} ${_grib_api_png_incs} )

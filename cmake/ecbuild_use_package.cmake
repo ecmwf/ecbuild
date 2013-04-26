@@ -172,9 +172,21 @@ macro( ecbuild_use_package )
             endif()
         endif()
 
-        include( Find${_PAR_PROJECT} OPTIONAL )
+        # paths @ ECMWF
+        if( EXISTS /usr/local/apps/${_PAR_PROJECT} )
+            file( GLOB _ecmwf_paths "/usr/local/apps/${_PAR_PROJECT}/*" ) 
+        endif()
 
+        # search user defined paths first
+        if( ${_PAR_PROJECT}_PATH OR ${PNAME}_PATH OR _ecmwf_paths )
+            find_package( ${_PAR_PROJECT} PATHS ${${_PAR_PROJECT}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} ${_${PNAME}_version} ${_${PNAME}_opts} QUIET NO_DEFAULT_PATH )
+        endif()
+
+        # search system paths
         find_package( ${_PAR_PROJECT} ${_${PNAME}_version} ${_${PNAME}_opts} )
+
+        # search binaries directly -- if we have a macro for that
+        include( Find${_PAR_PROJECT} OPTIONAL )
 
         if( ${_PAR_PROJECT}_FOUND )
 
