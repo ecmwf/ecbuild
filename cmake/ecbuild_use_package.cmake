@@ -180,7 +180,7 @@ macro( ecbuild_use_package )
         # check environment variable
         if( NOT ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
             set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
-        endf()
+        endif()
 
         # search user defined paths first
         if( ${_PAR_PROJECT}_PATH OR ${PNAME}_PATH OR _ecmwf_paths )
