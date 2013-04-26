@@ -45,7 +45,7 @@ if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
 
     endif()
     
-    if( GRIB_API_JPG ) # png support
+    if( GRIB_API_PNG ) # png support
     
         find_package(PNG)
     
