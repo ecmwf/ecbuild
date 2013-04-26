@@ -30,6 +30,8 @@ macro( ecbuild_find_package )
       message(FATAL_ERROR "Call to ecbuild_find_package() requests EXACT but doesn't specify VERSION.")
     endif()
 
+    debug_var( _PAR_NAME )
+
     string( TOUPPER ${_PAR_NAME} PNAME )
 
     set( _${PNAME}_version "" )
@@ -57,12 +59,26 @@ macro( ecbuild_find_package )
 
     # search user defined paths first
     if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR _ecmwf_paths )
-        find_package( ${_PAR_NAME} PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} ${_${PNAME}_version} QUIET NO_DEFAULT_PATH )
+
+        if( NOT ${_PAR_NAME}_FOUND )
+            find_package( ${_PAR_NAME} CONFIG PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} ${_${PNAME}_version} QUIET NO_DEFAULT_PATH )
+        endif()
+
+        if( NOT ${_PAR_NAME}_FOUND )
+            find_package( ${_PAR_NAME} PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} ${_${PNAME}_version} QUIET NO_DEFAULT_PATH )
+        endif()
+    
     endif()
 
     # search system paths
 
-    find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_quiet} )
+    if( NOT ${_PAR_NAME}_FOUND )
+        find_package( ${_PAR_NAME} CONFIG ${_${PNAME}_version} ${_quiet} )
+    endif()
+
+    if( NOT ${_PAR_NAME}_FOUND )
+        find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_quiet} )
+    endif()
 
     # check version ...
 
