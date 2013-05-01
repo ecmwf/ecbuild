@@ -48,8 +48,14 @@ macro( ecbuild_find_package )
     endif()
 
     # paths @ ECMWF
+    set( _ecmwf_paths )
+    if( EXISTS /usr/local/lib/metaps/lib/${_PAR_NAME} )
+        file( GLOB _ecmwf_paths_metaps "/usr/local/lib/metaps/lib/${_PAR_NAME}/*" ) 
+        list( APPEND _ecmwf_paths ${_ecmwf_paths_metaps} )
+    endif()
     if( EXISTS /usr/local/apps/${_PAR_NAME} )
-        file( GLOB _ecmwf_paths "/usr/local/apps/${_PAR_NAME}/*" ) 
+        file( GLOB _ecmwf_paths_apps "/usr/local/apps/${_PAR_NAME}/*" ) 
+        list( APPEND _ecmwf_paths ${_ecmwf_paths_apps} )
     endif()
 
     # check environment variable
