@@ -69,14 +69,16 @@ macro( ecbuild_add_test )
 
     # boost unit test ?
 
-    if( DEFINED _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
+    if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
         if( Boost_UNIT_TEST_FRAMEWORK_LIBRARY AND Boost_TEST_EXEC_MONITOR_LIBRARY )
-           # message( STATUS "${_PAR_TARGET} is a Boost unit test" )
+           message( STATUS "${_PAR_TARGET} is a Boost unit test" )
         else()
-            set( _${_PAR_TARGET}_condition FALSE )
-           # message( WARNING "${_PAR_TARGET} test deactivated -- Boost unit test framework not available" )
+           set( _${_PAR_TARGET}_condition FALSE )
+           message( WARNING "${_PAR_TARGET} test deactivated -- Boost unit test framework not available" )
         endif()
     endif()
+
+    # enable the tests
 
     if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
 
@@ -135,7 +137,7 @@ macro( ecbuild_add_test )
                 endif()
 
                 # add test libraries
-                if( DEFINED _PAR_BOOST )
+                if( _PAR_BOOST )
                     target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
                 endif()
         
@@ -178,9 +180,9 @@ macro( ecbuild_add_test )
                       COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME}
                 )
 
-        endif() # EXE
+            endif() # TARGET
     
-      endif() # condition
+         endif() # EXE
     
       # define the arguments
       set( TEST_ARGS "" )
