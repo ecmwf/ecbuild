@@ -27,12 +27,13 @@ macro( ecbuild_check_c_source_return SOURCE VAR VAR_OUTPUT )
     
         # write the source file
     
-        file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.c" "${SOURCE}\n" )
-    
+        file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${VAR}.c" "${SOURCE}\n" )
+        file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/TestSrcs/${VAR}.c" "${SOURCE}\n" )
+
         message( STATUS "Performing Test ${VAR}" )
         try_run( ${VAR}_EXITCODE ${VAR}_COMPILED
           ${CMAKE_BINARY_DIR}
-          ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.c
+          ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${VAR}.c
           COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
           CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${MACRO_CHECK_FUNCTION_DEFINITIONS}
           -DCMAKE_SKIP_RPATH:BOOL=${CMAKE_SKIP_RPATH}

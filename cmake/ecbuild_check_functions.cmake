@@ -52,6 +52,15 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     check_include_files("sys/param.h;sys/mount.h" EC_HAVE_SYS_MOUNT_H )
     check_include_files("sys/vfs.h"               EC_HAVE_SYS_VFS_H )
 
+    # test for stat vs stat64
+
+    ecbuild_check_c_source_return(
+       "#include <sys/types.h>
+        #include <sys/stat.h>
+        #include <unistd.h>
+        #include <stdio.h>
+        int main() { struct stat s; printf(\"%ld\", sizeof(s.st_size) ); }" stat_sizeof_off_t EC_STAT_SIZEOF_OFF_T )
+
     ### capability checks ##################
 
     if( CMAKE_CXX_COMPILER_LOADED )
