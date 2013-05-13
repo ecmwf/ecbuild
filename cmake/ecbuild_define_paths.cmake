@@ -11,6 +11,8 @@
 file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
+#######################################################################################################
+
 # setup library building rpaths (both in build dir and then when installed)
 
 set( CMAKE_SKIP_BUILD_RPATH              FALSE ) # use full RPATHs for the build tree
@@ -21,9 +23,9 @@ if( ENABLE_RPATHS )
     
     # set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib") # install with this RPATH
     # the RPATH to be used when installing, but only if it's not a system directory
-    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}" isSystemDir)
+    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${INSTALL_LIB_DIR}" isSystemDir)
     if("${isSystemDir}" STREQUAL "-1")
-       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}")
+       set(CMAKE_INSTALL_RPATH "${INSTALL_LIB_DIR}")
     endif()
 
 ENDIF()
