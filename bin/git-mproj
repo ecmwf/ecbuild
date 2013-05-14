@@ -14,6 +14,10 @@
 
 set -e
 
+txtbld=$(tput bold)             #  bold
+bldblu=${txtbld}$(tput setaf 6) #  bold cyan
+txtrst=$(tput sgr0)             #  reset
+
 dashless=$(basename "$0" | sed -e 's/-/ /')
 USAGE="$dashless <command> [options...]"
 
@@ -30,10 +34,10 @@ cd ..
 for d in $( find $PWD -type d -iname ".git" )
 do
     gdir=$(dirname $d)
+	proj=$(basename $gdir)
     pushd $gdir > /dev/null
     branch=$(git symbolic-ref --short HEAD)
-    echo
-    echo "---> $gdir ($branch)"
+	echo -e "${bldblu}---> $proj ($branch)${txtrst}"
     git "$@"
     popd > /dev/null
 done
