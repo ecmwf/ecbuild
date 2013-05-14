@@ -53,6 +53,46 @@ if( NOT CMAKE_C_COMPILER_VERSION )
 endif()
 
 ############################################################################################
+# check size of pointer and off_t 
+
+ecbuild_check_c_source_return( "#include <stdio.h>\nint main(){printf(\"%ld\",sizeof(void*));return 0;}" check_void_ptr __sizeof_void_ptr )
+ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}" check_off_t    __sizeof_off_t )
+
+debug_var(__sizeof_void_ptr)
+debug_var(__sizeof_off_t)
+
+math( EXPR EC_OS_BITS "${__sizeof_void_ptr} * 8" )
+
+# we only support 23 and 64 bit operating systems
+if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
+    message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
+endif()
+
+# ensure we use 64bit access to files even on 32bit os -- aka Large File Support
+# by making off_t 64bit and stat behave as stat64
+if( ENABLE_LARGE_FILE_SUPPORT AND __sizeof_off_t LESS "8" )
+
+    if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+        add_definitions( -D_FILE_OFFSET_BITS=64 )
+    endif()
+
+    if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
+        add_definitions( -D_LARGE_FILES=64 )
+    endif()
+
+    ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}" check_off_t_final  __sizeof_off_t_final )
+
+    if( __sizeof_off_t_final LESS "8" )
+        message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- sizeof off_t ${__sizeof_off_t_final}" )
+    endif()
+
+    set( __sizeof_off_t ${__sizeof_off_t_final} )
+
+endif()
+
+set( EC_SIZEOF_OFF_T ${__sizeof_off_t} )
+
+############################################################################################
 # check architecture architecture
 
 check_type_size( "void *"       EC_SIZEOF_PTR         )
@@ -66,7 +106,6 @@ check_type_size( double         EC_SIZEOF_DOUBLE      )
 check_type_size( "long double"  EC_SIZEOF_LONG_DOUBLE )
 check_type_size( size_t         EC_SIZEOF_SIZE_T      )
 check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
-check_type_size( off_t          EC_SIZEOF_OFF_T       )
 
 ############################################################################################
 # check endiness
@@ -142,19 +181,6 @@ endif()
 
 ############################################################################################
 # check operating system
-
-math( EXPR EC_OS_BITS "${EC_SIZEOF_PTR} * 8")
-
-if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
-    message( STATUS "OS system          [${CMAKE_SYSTEM}]" )
-    message( FATAL_ERROR "ecbuild only supports 32 or 64 bit OS's" )
-endif()
-
-# ensure we use 64bit access to files even on 32bit os -- aka Large File Support
-if( EC_OS_BITS EQUAL "32" )
-    add_definitions( -D_FILE_OFFSET_BITS=64 )
-endif()
-
 
 set( EC_OS_NAME "UNKNOWN" )
 if( UNIX )
@@ -244,6 +270,7 @@ endif()
 if( WIN32 )
     if( CYGWIN ) # cygwin under windows
         set( EC_OS_NAME "cygwin" )
+        message( WARNING "Building on Cygwin is untested -- proceed at your own risk" )
     else()
         message( FATAL_ERROR "Can only build on Windows using Cygwin" )
     endif()

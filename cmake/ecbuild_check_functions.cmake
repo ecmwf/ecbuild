@@ -64,7 +64,7 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     ### capability checks ##################
 
     # test off_t
-    check_c_source_compiles( "#include <stdio.h>\n#include <sys/types.h>\nint main(){ off_t l=0; return 0;}\n"   EC_HAVE_OFFT    )
+    check_c_source_compiles( "#include <sys/types.h>\nint main(){ off_t l=0; return 0;}\n" EC_HAVE_OFFT )
     # test off64_t
     check_c_source_compiles( "#define _LARGEFILE64_SOURCE\n#include <stdio.h>\n#include <sys/types.h>\nint main(){ off64_t l=0; return 0;}\n" EC_HAVE_OFF64T  )
     # test struct stat
