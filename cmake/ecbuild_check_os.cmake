@@ -58,9 +58,6 @@ endif()
 ecbuild_check_c_source_return( "#include <stdio.h>\nint main(){printf(\"%ld\",sizeof(void*));return 0;}" check_void_ptr __sizeof_void_ptr )
 ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}" check_off_t    __sizeof_off_t )
 
-debug_var(__sizeof_void_ptr)
-debug_var(__sizeof_off_t)
-
 math( EXPR EC_OS_BITS "${__sizeof_void_ptr} * 8" )
 
 # we only support 23 and 64 bit operating systems
