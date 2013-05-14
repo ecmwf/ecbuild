@@ -31,8 +31,9 @@ for d in $( find $PWD -type d -iname ".git" )
 do
     gdir=$(dirname $d)
     pushd $gdir > /dev/null
+    branch=$(git symbolic-ref --short HEAD)
     echo
-    echo "### $gdir ###"
+    echo "---> $gdir ($branch)"
     git "$@"
     popd > /dev/null
 done
