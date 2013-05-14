@@ -150,6 +150,12 @@ if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
     message( FATAL_ERROR "ecbuild only supports 32 or 64 bit OS's" )
 endif()
 
+# ensure we use 64bit access to files even on 32bit os -- aka Large File Support
+if( EC_OS_BITS EQUAL "32" )
+    add_definitions( -D_FILE_OFFSET_BITS=64 )
+endif()
+
+
 set( EC_OS_NAME "UNKNOWN" )
 if( UNIX )
 
