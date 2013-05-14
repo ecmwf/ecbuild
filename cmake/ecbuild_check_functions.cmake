@@ -55,11 +55,9 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     # test for stat vs stat64
 
     ecbuild_check_c_source_return(
-       "#include <sys/types.h>
-        #include <sys/stat.h>
-        #include <unistd.h>
-        #include <stdio.h>
-        int main() { struct stat s; printf(\"%ld\", sizeof(s.st_size) ); return 0; }" EC_STAT_OFF_T EC_STAT_SIZEOF_OFF_T )
+        "#include <sys/types.h>\n#include <sys/stat.h>\n#include <unistd.h>\n#include <stdio.h>\nint main(){struct stat s;printf(\"%ld\",sizeof(s.st_size));return 0;}" 
+        VAR     EC_STAT_OFF_T
+        OUTPUT  EC_STAT_SIZEOF_OFF_T )
 
     ### capability checks ##################
 

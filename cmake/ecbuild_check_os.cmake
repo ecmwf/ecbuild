@@ -55,8 +55,14 @@ endif()
 ############################################################################################
 # check size of pointer and off_t 
 
-ecbuild_check_c_source_return( "#include <stdio.h>\nint main(){printf(\"%ld\",sizeof(void*));return 0;}" check_void_ptr __sizeof_void_ptr )
-ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}" check_off_t    __sizeof_off_t )
+ecbuild_check_c_source_return( "#include <stdio.h>\nint main(){printf(\"%ld\",sizeof(void*));return 0;}" 
+                               VAR check_void_ptr  OUTPUT __sizeof_void_ptr )
+ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}" 
+                               VAR check_off_t    OUTPUT __sizeof_off_t )
+
+if( NOT check_off_t OR NOT check_void_ptr )
+    message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- failed either check_void_ptr or check_off_t" )
+endif()
 
 math( EXPR EC_OS_BITS "${__sizeof_void_ptr} * 8" )
 
@@ -77,10 +83,20 @@ if( ENABLE_LARGE_FILE_SUPPORT AND __sizeof_off_t LESS "8" )
         add_definitions( -D_LARGE_FILES=64 )
     endif()
 
-    ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}" check_off_t_final  __sizeof_off_t_final )
+    get_directory_property( __compile_defs COMPILE_DEFINITIONS )
 
-    if( __sizeof_off_t_final LESS "8" )
-        message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- sizeof off_t ${__sizeof_off_t_final}" )
+    if( __compile_defs )
+        foreach( def ${__compile_defs} )
+            list( APPEND CMAKE_REQUIRED_DEFINITIONS -D${def} )
+        endforeach()
+    endif()
+
+    ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}" 
+        VAR  check_off_t_final  
+        OUTPUT __sizeof_off_t_final )
+
+    if( NOT check_off_t_final OR __sizeof_off_t_final LESS "8" )
+        message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- sizeof off_t [${__sizeof_off_t_final}]" )
     endif()
 
     set( __sizeof_off_t ${__sizeof_off_t_final} )
