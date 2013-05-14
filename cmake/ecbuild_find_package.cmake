@@ -67,11 +67,11 @@ macro( ecbuild_find_package )
     if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR _ecmwf_paths )
 
         if( NOT ${_PAR_NAME}_FOUND )
-            find_package( ${_PAR_NAME} NO_MODULE PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} ${_${PNAME}_version} QUIET NO_DEFAULT_PATH )
+            find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} NO_DEFAULT_PATH )
         endif()
 
         if( NOT ${_PAR_NAME}_FOUND )
-            find_package( ${_PAR_NAME} PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} ${_${PNAME}_version} QUIET NO_DEFAULT_PATH )
+            find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} NO_DEFAULT_PATH )
         endif()
     
     endif()
@@ -79,7 +79,7 @@ macro( ecbuild_find_package )
     # search system paths
 
     if( NOT ${_PAR_NAME}_FOUND )
-        find_package( ${_PAR_NAME} NO_MODULE ${_${PNAME}_version} ${_quiet} )
+        find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_quiet} NO_MODULE)
     endif()
 
     if( NOT ${_PAR_NAME}_FOUND )
