@@ -18,8 +18,11 @@ macro( ecbuild_declare_project )
     set( ${PROJECT_NAME}_ALL_LIBS "" CACHE INTERNAL "" )
 
     # read and parse project version file
-    
-    include( ${PROJECT_SOURCE_DIR}/VERSION.cmake )
+    if( EXISTS ${PROJECT_SOURCE_DIR}/VERSION.cmake )
+        include( ${PROJECT_SOURCE_DIR}/VERSION.cmake )
+    else()
+        set( ${PROJECT_NAME}_VERSION_STR "0.0.0" )
+    endif()
 
     string( REPLACE "." " " _version_list ${${PROJECT_NAME}_VERSION_STR} ) # dots to spaces
     
