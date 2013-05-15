@@ -70,12 +70,21 @@ macro( ecbuild_use_package )
     set( _do_version_check 0 )
     set( _source_description "" )
 
-    list( FIND ECBUILD_ALL_SUBPROJECTS ${_PAR_PROJECT} _ecbuild_project_${PNAME} )
+    list( FIND ECBUILD_PROJECTS ${_PAR_PROJECT} _ecbuild_project_${PNAME} )
 
     if( NOT _ecbuild_project_${PNAME} EQUAL "-1" )
         set( ${PNAME}_PREVIOUS_SUBPROJECT 1 )
     else()
         set( ${PNAME}_PREVIOUS_SUBPROJECT 0 )
+    endif()
+
+    # solve capitalization issues
+    
+    if( ${_PAR_PROJECT}_FOUND AND NOT ${PNAME}_FOUND )
+        set( ${PNAME}_FOUND 1 ) 
+    endif()
+    if( ${PNAME}_FOUND AND NOT ${_PAR_PROJECT}_FOUND )
+        set( ${_PAR_PROJECT}_FOUND 1 ) 
     endif()
 
     # Case 1) project was NOT added as subproject and is NOT FOUND
@@ -95,16 +104,12 @@ macro( ecbuild_use_package )
 
                 set( ${PNAME}_SUBPROJ_DIR ${${PNAME}_SUBPROJ_DIR} CACHE PATH "Path to ${_PAR_PROJECT} source directory" )
 
-                set( ECBUILD_ALL_SUBPROJECTS ${ECBUILD_ALL_SUBPROJECTS} ${_PAR_PROJECT} CACHE INTERNAL "" )
+                set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${_PAR_PROJECT} CACHE INTERNAL "" )
 
                 add_subdirectory( ${${PNAME}_SUBPROJ_DIR} ${_PAR_PROJECT} )
 
                 set( ${PNAME}_FOUND 1 )
                 set( ${_PAR_PROJECT}_VERSION ${${PNAME}_VERSION} )
-
-                if( ${PNAME}_USES_ECBUILD )
-                  set( ECBUILD_SUBPROJECTS ${ECBUILD_SUBPROJECTS} ${PROJECT_NAME} CACHE INTERNAL "list of ecbuild (sub)projects using ecbuild" )
-                endif()
 
             endif()
 

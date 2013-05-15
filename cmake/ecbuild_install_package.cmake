@@ -207,7 +207,10 @@ macro( ecbuild_install_project )
     else() ### SUB-PROJECT EXPORT
 
         set( ${PNAME}_FOUND  TRUE  PARENT_SCOPE )
+        set( ${PROJECT_NAME}_FOUND  TRUE  PARENT_SCOPE )
+
         set( ${PNAME}_VERSION ${${PNAME}_VERSION} PARENT_SCOPE )
+        set( ${PROJECT_NAME}_VERSION ${${PNAME}_VERSION} PARENT_SCOPE )
 
         if( ${PNAME}_INCLUDE_DIRS )
             set( ${PNAME}_INCLUDE_DIRS ${${PNAME}_INCLUDE_DIRS} PARENT_SCOPE )

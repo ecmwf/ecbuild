@@ -32,8 +32,7 @@ enable_language( C )
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
-    set( ECBUILD_ALL_SUBPROJECTS "" CACHE INTERNAL "list of all (sub)projects, with or without ecbuild" )
-    set( ECBUILD_SUBPROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
+    set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
 
     set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
 
