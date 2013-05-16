@@ -110,6 +110,10 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
         include( ecbuild_check_cxx_source )
     endif()
 
+    if( CMAKE_Fortran_COMPILER_LOADED )
+        include( ecbuild_check_fortran_source )
+    endif()
+
     include( ecbuild_get_date )
     include( ecbuild_add_persistent )
     include( ecbuild_generate_yy )
