@@ -11,6 +11,7 @@
 
 macro( ecbuild_check_fortran_source_return SOURCE )
 
+    message( WARNING "This macro ecbuild_check_fortran_source has never been tested" )
     set( options )
     set( single_value_args VAR  OUTPUT )
     set( multi_value_args  INCLUDES LIBS DEFINITIONS )
@@ -30,7 +31,7 @@ macro( ecbuild_check_fortran_source_return SOURCE )
 
         set(MACRO_CHECK_FUNCTION_DEFINITIONS "-D${_PAR_VAR} ${CMAKE_REQUIRED_FLAGS}")
 
-        set(CHECK_C_SOURCE_COMPILES_ADD_LIBRARIES)
+        set(CHECK_Fortran_SOURCE_COMPILES_ADD_LIBRARIES)
         if( CMAKE_REQUIRED_LIBRARIES )
             list( APPEND __add_libs ${CMAKE_REQUIRED_LIBRARIES} )
         endif()
