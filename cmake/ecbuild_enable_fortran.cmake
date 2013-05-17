@@ -24,7 +24,7 @@ macro( ecbuild_enable_fortran )
 
     enable_language( Fortran )
 
-    if( DEFINED __PAR_REQUIRED )
+    if( DEFINED _PAR_REQUIRED )
       if( NOT CMAKE_Fortran_COMPILER OR NOT CMAKE_Fortran_COMPILER_WORKS )
           message( FATAL_ERROR "Fortran compiler required by project ${PROJECT_NAME} but does not seem to work" )
       endif()
