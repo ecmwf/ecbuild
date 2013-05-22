@@ -44,7 +44,8 @@ fi
 
 perl -pi -e "s/\"[0-9\.\-a-zA-Z]+\"/\"$vrs\"/" $vrsfile
 
-# git ci $vrsfile -m "tagged version $vrs"
+git ci $vrsfile -m "tagged version $vrs"
+git tag $vrs 
 
 echo
 echo "NOTE: don't forget to 'git push --tags [origin branch]' to propagate these changes"
