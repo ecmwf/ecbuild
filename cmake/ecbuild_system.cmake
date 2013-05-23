@@ -140,6 +140,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
     include( ecbuild_define_options )               # define build options
     include( ecbuild_find_support_packages )        # find packages we depend on
+    include( ecbuild_check_compiler )               # check for compiler characteristics
     include( ecbuild_check_os )                     # check for os characteristics
     include( ecbuild_check_functions )              # check for available functions
     include( ecbuild_define_paths )                 # define installation paths

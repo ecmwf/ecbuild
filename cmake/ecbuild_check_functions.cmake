@@ -141,48 +141,4 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
 
 endif()
 
-############################################################################################
-# c compiler tests
-
-check_c_source_compiles( 
-      " typedef int foo_t;
-        static inline foo_t static_foo(){return 0;}
-        foo_t foo(){return 0;}
-        int main(int argc, char *argv[]){return 0;}
-      " EC_HAVE_C_INLINE )
-
-############################################################################################
-# c++ compiler tests
-
-if( CMAKE_CXX_COMPILER_LOADED )
-
-    # check for __FUNCTION__
-    check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }" EC_HAVE_FUNCTION_DEF )
-    
-    # check for c++ abi, usually present in GNU compilers
-    check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }" EC_HAVE_CXXABI_H )
-    
-    # check for bool
-    check_cxx_source_compiles( "int main() { bool aflag = true; }" EC_HAVE_CXX_BOOL )
-    # fail if we dont have bool
-    if( NOT EC_HAVE_CXX_BOOL )
-        message( FATAL_ERROR "c++ compiler does not support bool" )
-    endif()
-    
-    # check for sstream
-    check_cxx_source_compiles( "#include <sstream>\nint main() { std::stringstream s; }" EC_HAVE_CXX_SSTREAM )
-    # fail if we dont have sstream
-    if( NOT EC_HAVE_CXX_SSTREAM )
-        message( FATAL_ERROR "c++ compiler does not support stringstream" )
-    endif()
-    
-endif()
-
-###############################################################################
-# checks
-
-if( NOT EC_HAVE_GETPWUID_R )
-    message( FATAL_ERROR "OS does not support getpwuid_r" )
-endif()   
-
 
