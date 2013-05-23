@@ -81,74 +81,76 @@ endif()
 ############################################################################################
 # check endiness
 
-test_big_endian( _BIG_ENDIAN )
+if( NOT EC_SKIP_OS_ENDINESS_TEST )
 
-if( _BIG_ENDIAN )
-    set( EC_BIG_ENDIAN    1 )
-else()
-    set( EC_LITTLE_ENDIAN 1 )
-endif()
-
-check_c_source_runs(
-     "int compare(unsigned char* a,unsigned char* b) {
-       while(*a != 0) if (*(b++)!=*(a++)) return 1;
-       return 0;
-     }
-     int main(int argc,char** argv) {
-       unsigned char dc[]={0x30,0x61,0xDE,0x80,0x93,0x67,0xCC,0xD9,0};
-       double da=1.23456789e-75;
-       unsigned char* ca;
-
-       unsigned char fc[]={0x05,0x83,0x48,0x22,0};
-       float fa=1.23456789e-35;
-
-       if (sizeof(double)!=8) return 1;
-
-       ca=(unsigned char*)&da;
-       if (compare(dc,ca)) return 1;
-
-       if (sizeof(float)!=4) return 1;
-
-       ca=(unsigned char*)&fa;
-       if (compare(fc,ca)) return 1;
-
-       return 0;
-     }" IEEE_BE )
-
-if( "${IEEE_BE}" STREQUAL "" )
-    set( IEEE_BE 0 CACHE INTERNAL "Test IEEE_BE")
-endif()
-
-check_c_source_runs(
-     "int compare(unsigned char* a,unsigned char* b) {
-       while(*a != 0) if (*(b++)!=*(a++)) return 1;
-       return 0;
-     }
-     int main(int argc,char** argv) {
-       unsigned char dc[]={0xD9,0xCC,0x67,0x93,0x80,0xDE,0x61,0x30,0};
-       double da=1.23456789e-75;
-       unsigned char* ca;
-
-       unsigned char fc[]={0x22,0x48,0x83,0x05,0};
-       float fa=1.23456789e-35;
-
-       if (sizeof(double)!=8) return 1;
-
-       ca=(unsigned char*)&da;
-       if (compare(dc,ca)) return 1;
-
-       if (sizeof(float)!=4) return 1;
-
-       ca=(unsigned char*)&fa;
-       if (compare(fc,ca)) return 1;
-
-       return 0;
-     }" IEEE_LE )
-
-if( "${IEEE_BE}" STREQUAL "" )
-    set( IEEE_LE 0 CACHE INTERNAL "Test IEEE_LE")
-endif()
-
+    test_big_endian( _BIG_ENDIAN )
+    
+    if( _BIG_ENDIAN )
+        set( EC_BIG_ENDIAN    1 )
+    else()
+        set( EC_LITTLE_ENDIAN 1 )
+    endif()
+    
+    check_c_source_runs(
+         "int compare(unsigned char* a,unsigned char* b) {
+           while(*a != 0) if (*(b++)!=*(a++)) return 1;
+           return 0;
+         }
+         int main(int argc,char** argv) {
+           unsigned char dc[]={0x30,0x61,0xDE,0x80,0x93,0x67,0xCC,0xD9,0};
+           double da=1.23456789e-75;
+           unsigned char* ca;
+    
+           unsigned char fc[]={0x05,0x83,0x48,0x22,0};
+           float fa=1.23456789e-35;
+    
+           if (sizeof(double)!=8) return 1;
+    
+           ca=(unsigned char*)&da;
+           if (compare(dc,ca)) return 1;
+    
+           if (sizeof(float)!=4) return 1;
+    
+           ca=(unsigned char*)&fa;
+           if (compare(fc,ca)) return 1;
+    
+           return 0;
+         }" IEEE_BE )
+    
+    if( "${IEEE_BE}" STREQUAL "" )
+        set( IEEE_BE 0 CACHE INTERNAL "Test IEEE_BE")
+    endif()
+    
+    check_c_source_runs(
+         "int compare(unsigned char* a,unsigned char* b) {
+           while(*a != 0) if (*(b++)!=*(a++)) return 1;
+           return 0;
+         }
+         int main(int argc,char** argv) {
+           unsigned char dc[]={0xD9,0xCC,0x67,0x93,0x80,0xDE,0x61,0x30,0};
+           double da=1.23456789e-75;
+           unsigned char* ca;
+    
+           unsigned char fc[]={0x22,0x48,0x83,0x05,0};
+           float fa=1.23456789e-35;
+    
+           if (sizeof(double)!=8) return 1;
+    
+           ca=(unsigned char*)&da;
+           if (compare(dc,ca)) return 1;
+    
+           if (sizeof(float)!=4) return 1;
+    
+           ca=(unsigned char*)&fa;
+           if (compare(fc,ca)) return 1;
+    
+           return 0;
+         }" IEEE_LE )
+    
+    if( "${IEEE_BE}" STREQUAL "" )
+        set( IEEE_LE 0 CACHE INTERNAL "Test IEEE_LE")
+    endif()
+endif()    
 
 ############################################################################################
 # check operating system
