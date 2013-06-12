@@ -101,9 +101,9 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     check_c_source_compiles( "#define _LARGEFILE64_SOURCE\n#include <sys/statvfs.h>\nint main(){ struct statvfs64 v; }" EC_HAVE_STRUCT_STATVFS64 )
         
     # test for fsync
-    check_c_source_compiles( "#include <unistd.h>\nint main(){int fd = 1; int fs = fsync(fd); }\n" EC_HAVE_FSYNC )
+    check_symbol_exists(fsync "unistd.h" EC_HAVE_FSYNC)
     # test for fdatasync
-    check_c_source_compiles( "#include <unistd.h>\nint main(){int fd = 1; int fs = fdatasync(fd); }\n" EC_HAVE_FDATASYNC )
+    check_symbol_exists(fdatasync "unistd.h" EC_HAVE_FDATASYNC)
     # test for dirfd
     check_c_source_compiles( "#include <sys/types.h>\n#include <dirent.h>\nint main(){ DIR *dirp; int i = dirfd(dirp); }\n" EC_HAVE_DIRFD )
     # test for sys/proc.h
