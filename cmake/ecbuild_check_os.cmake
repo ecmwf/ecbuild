@@ -26,7 +26,7 @@ if( NOT CROSS_COMPILING )
 else()
 
     check_type_size( "void *"  VOID_PTR )
-    set( __sizeof_void_ptr VOID_PTR )
+    set( __sizeof_void_ptr ${VOID_PTR} )
 
     set(CMAKE_EXTRA_INCLUDE_FILES "sys/types.h" )
     check_type_size("off_t"    OFF_T )
