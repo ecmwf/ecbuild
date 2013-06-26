@@ -9,18 +9,34 @@
 ############################################################################################
 # check size of pointer and off_t 
 
-ecbuild_check_c_source_return( "#include <stdio.h>\nint main(){printf(\"%ld\",sizeof(void*));return 0;}" 
-                               VAR check_void_ptr  OUTPUT __sizeof_void_ptr )
-ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}" 
-                               VAR check_off_t    OUTPUT __sizeof_off_t )
+if( NOT CROSS_COMPILING )
 
-if( NOT check_off_t OR NOT check_void_ptr )
-    message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- failed either check_void_ptr or check_off_t" )
+    ecbuild_check_c_source_return( "#include <stdio.h>\nint main(){printf(\"%ld\",sizeof(void*));return 0;}"
+                                   VAR check_void_ptr
+                                   OUTPUT __sizeof_void_ptr )
+
+    ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}"
+                                    VAR check_off_t
+                                    OUTPUT __sizeof_off_t )
+
+    if( NOT check_off_t OR NOT check_void_ptr )
+        message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- failed either check_void_ptr or check_off_t" )
+    endif()
+
+else()
+
+    check_type_size( "void *"  VOID_PTR )
+    set( __sizeof_void_ptr VOID_PTR )
+
+    set(CMAKE_EXTRA_INCLUDE_FILES "sys/types.h" )
+    check_type_size("off_t"    OFF_T )
+    set(CMAKE_EXTRA_INCLUDE_FILES)
+
 endif()
 
 math( EXPR EC_OS_BITS "${__sizeof_void_ptr} * 8" )
 
-# we only support 23 and 64 bit operating systems
+# we only support 32 and 64 bit operating systems
 if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
     message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
 endif()
