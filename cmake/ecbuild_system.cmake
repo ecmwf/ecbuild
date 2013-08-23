@@ -9,8 +9,9 @@
 ############################################################################################
 # disallow in-source build
 
+# FIXME: This is borkem
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(FATAL_ERROR
+	message(WARNING_ERROR
     "${PROJECT_NAME} requires an out of source build.\n
     Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
 endif()
