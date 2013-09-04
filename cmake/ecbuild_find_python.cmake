@@ -33,6 +33,9 @@ macro( ecbuild_find_python )
       find_package( PythonLibs   )
     endif()
 
+    # find where python site-packages are ...
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+
     if( PYTHONINTERP_FOUND )
         execute_process( COMMAND ${PYTHON_EXECUTABLE} -V ERROR_VARIABLE _version  RESULT_VARIABLE _return ERROR_STRIP_TRAILING_WHITESPACE)
         if( NOT _return )
