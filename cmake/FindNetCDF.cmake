@@ -20,8 +20,11 @@ if( DEFINED NETCDF_PATH )
     find_library(NETCDF_LIBRARY  netcdf         PATHS ${NETCDF_PATH}/lib     PATH_SUFFIXES netcdf NO_DEFAULT_PATH)
 endif()
 
-find_path(NETCDF_INCLUDE_DIR netcdf.h PATH_SUFFIXES netcdf )
-find_library( NETCDF_LIBRARY netcdf   PATH_SUFFIXES netcdf )
+set( _ncdf_sfx   netcdf netcdf4 )
+
+find_path( NETCDF_INCLUDE_DIR netcdf.h PATH_SUFFIXES ${_ncdf_sfx} )
+
+find_library( NETCDF_LIBRARY netcdf   PATH_SUFFIXES ${_ncdf_sfx} )
 
 set( NETCDF_LIBRARIES    ${NETCDF_LIBRARY} )
 set( NETCDF_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR} )
@@ -30,8 +33,10 @@ include(FindPackageHandleStandardArgs)
 
 if( NETCDF_CXX )
 
-    find_library( NETCDF_CXX_LIBRARY  netcdf_c++ PATHS ${NETCDF_PATH}/lib     PATH_SUFFIXES netcdf NO_DEFAULT_PATH)
-    find_library( NETCDF_CXX_LIBRARY  netcdf_c++ PATH_SUFFIXES netcdf )
+    set( _ncdf_cxx netcdf_c++ netcdf_c++ )
+
+    find_library( NETCDF_CXX_LIBRARY NAMES ${_ncdf_cxx} PATHS ${NETCDF_PATH}/lib PATH_SUFFIXES ${_ncdf_sfx} NO_DEFAULT_PATH )
+    find_library( NETCDF_CXX_LIBRARY NAMES ${_ncdf_cxx} netcdf_c++4 PATH_SUFFIXES ${_ncdf_sfx} )
 
     list( APPEND NETCDF_LIBRARIES    ${NETCDF_CXX_LIBRARY} )
 
