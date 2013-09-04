@@ -33,7 +33,9 @@ if( NETCDF_CXX )
     find_library( NETCDF_CXX_LIBRARY  netcdf_c++ PATHS ${NETCDF_PATH}/lib     PATH_SUFFIXES netcdf NO_DEFAULT_PATH)
     find_library( NETCDF_CXX_LIBRARY  netcdf_c++ PATH_SUFFIXES netcdf )
 
-    find_package_handle_standard_args( NETCDF  DEFAULT_MSG NETCDF_LIBRARY NETCDF_INCLUDE_DIR)
+    list( APPEND NETCDF_LIBRARIES    ${NETCDF_CXX_LIBRARY} )
+
+    find_package_handle_standard_args( NETCDF  DEFAULT_MSG NETCDF_LIBRARY NETCDF_CXX_LIBRARY NETCDF_INCLUDE_DIR)
 
     mark_as_advanced(NETCDF_INCLUDE_DIR NETCDF_CXX_LIBRARY )
 
