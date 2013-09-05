@@ -15,9 +15,11 @@
 list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 rt pgsse1 pgsse2 ) # better ?                                                    # 
 foreach( pglib ${pg_libs} )
     if( DEFINED PGI_PATH )
-      find_library( ${pglib}_lib  ${pglib} PATH ${PGI_PATH}/lib NO_DEFAULT_PATH )
+      find_library( ${pglib}_lib  ${pglib} 
+		  HINTS /usr/local/apps/pgi/pgi-10.8/linux86-64/10.8/lib
+		  PATH ${PGI_PATH}/lib NO_DEFAULT_PATH )
     endif()
-    find_library( ${pglib}_lib  ${pglib} )
+	find_library( ${pglib}_lib  ${pglib} HINTS /usr/local/apps/pgi/pgi-10.8/linux86-64/10.8/lib)
     if( ${pglib}_lib )
         list( APPEND PGIFORTRAN_LIBRARIES ${${pglib}_lib} )
     endif()
