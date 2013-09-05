@@ -9,12 +9,14 @@
 ############################################################################################
 # disallow in-source build
 
-# FIXME: This is borkem
-#if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-#message(FATAL_ERROR
-#"${PROJECT_NAME} requires an out of source build.\n
-#Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
-#endif()
+if( EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt ) # check for failed attempts to build within the source tree
+   message( FATAL_ERROR "Project ${PROJECT_NAME} contains a CMakeCache.txt inside source tree [${CMAKE_SOURCE_DIR}/CMakeCache.txt].\n Please remove it and
+   make sure that source tree is prestine and clean of unintended files, before retrying." )
+endif()
+
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+	message( FATAL_ERROR "${PROJECT_NAME} requires an out of source build.\n Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
+endif()
 
 set( ECBUILD_CMAKE_MINIMUM "2.8.4" )
 if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
