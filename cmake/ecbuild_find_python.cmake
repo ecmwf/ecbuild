@@ -112,6 +112,7 @@ macro( ecbuild_find_python )
         find_package_handle_standard_args( PythonLibs DEFAULT_MSG PYTHON_INCLUDE_DIR PYTHON_LIBRARIES )
 
         set( PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIR} )
+        set( PYTHON_INCLUDE_PATH ${PYTHON_INCLUDE_DIR} )
 
         list( REMOVE_DUPLICATES PYTHON_INCLUDE_DIRS )
 
@@ -121,11 +122,11 @@ macro( ecbuild_find_python )
 
     endif()
 
-    debug_var( PYTHONINTERP_FOUND )
-    debug_var( PYTHON_EXECUTABLE )
-    debug_var( PYTHONLIBS_FOUND )
-    debug_var( PYTHON_INCLUDE_DIRS )
-    debug_var( PYTHON_LIBRARIES )
-    debug_var( PYTHON_SITE_PACKAGES )
+#    debug_var( PYTHONINTERP_FOUND )
+#    debug_var( PYTHON_EXECUTABLE )
+#    debug_var( PYTHONLIBS_FOUND )
+#    debug_var( PYTHON_INCLUDE_DIRS )
+#    debug_var( PYTHON_LIBRARIES )
+#    debug_var( PYTHON_SITE_PACKAGES )
 
 endmacro( ecbuild_find_python )
