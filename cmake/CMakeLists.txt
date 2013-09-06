@@ -10,11 +10,12 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             FindEcregrid.cmake
                             FindFDB.cmake
                             Findgrib_api.cmake
-							FindHPSS.cmake
+				FindHPSS.cmake
                             FindLEX.cmake
                             FindLibGFortran.cmake
                             FindNDBM.cmake
                             FindNetCDF.cmake
+                            FindNetCDF3.cmake
                             FindODB.cmake
                             FindOpenJPEG.cmake
                             FindPGIFortran.cmake
@@ -29,4 +30,5 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             2.8/CMakePushCheckState.cmake
                             contrib/GetGitRevisionDescription.cmake
                             contrib/GetGitRevisionDescription.cmake.in
+                            contrib/FindNetCDF4.cmake
 )

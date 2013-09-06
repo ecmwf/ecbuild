@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# Try to find NetCDF
+# Try to find NetCDF3 or NetCDF4 -- default is 4
 #
 # Input:
 #  * NETCDF_PATH - user defined path where to search for the library first
@@ -14,72 +14,53 @@
 #
 # Output:
 #  NETCDF_FOUND - System has NetCDF
+#  NETCDF_DEFINITIONS
 #  NETCDF_INCLUDE_DIRS - The NetCDF include directories
 #  NETCDF_LIBRARIES - The libraries needed to use NetCDF
 
+# default is netcdf4
 
-### TODO: generalize this into a macro for all ecbuild
-
-if( DEFINED NETCDF_PATH )
-    list( APPEND _netcdf_incs ${NETCDF_PATH} ${NETCDF_PATH}/include )
-    list( APPEND _netcdf_libs ${NETCDF_PATH} ${NETCDF_PATH}/lib )
+if( NOT PREFER_NETCDF3 )
+  set( PREFER_NETCDF4 1 )
+else()
+  set( PREFER_NETCDF4 0 )
 endif()
-	
-set( _base_hints /usr/local/apps/netcdf /usr/local/apps/netcdf4  )
-foreach( _h ${_base_hints} )
+mark_as_advanced( PREFER_NETCDF4 PREFER_NETCDF3 )
 
-	if( EXISTS ${_h} )
-	
-        list( APPEND _netcdf_incs  ${_h}/include ${_h}/current/include ${_h}/new/include ${_h}/stable/include )
-        list( APPEND _netcdf_libs  ${_h}/lib ${_h}/current/lib ${_h}/new/lib ${_h}/stable/lib )
+### NetCDF4
 
-		file(GLOB _hd ${_h}/*)
-        foreach( d ${_hd} )
-            if( IS_DIRECTORY ${d} )
-                list( APPEND _netcdf_incs ${d}/include ${d}/LP64/include )
-                list( APPEND _netcdf_libs ${d}/lib ${d}/LP64/lib )
-            endif()
-        endforeach()
+if( PREFER_NETCDF4 )
+
+    if( DEFINED $ENV{NETCDF_PATH} )
+        set( NETCDF_ROOT "$ENV{NETCDF_PATH}" )
+        list( APPEND CMAKE_PREFIX_PATH  $ENV{NETCDF_PATH} )
     endif()
 
-endforeach() 
+    if( DEFINED NETCDF_PATH )
+        set( NETCDF_ROOT "${NETCDF_PATH}" )
+        list( APPEND CMAKE_PREFIX_PATH  ${NETCDF_PATH} )
+    endif()
 
-###
+    ecbuild_add_extra_search_paths( hdf5 )
 
-set( _ncdf_sfx netcdf netcdf4 LP64 )
+    find_package( HDF5 COMPONENTS C CXX HL )
 
-find_path( NETCDF_INCLUDE_DIR  netcdf.h  PATHS ${_netcdf_incs} PATH_SUFFIXES ${_ncdf_sfx} NO_DEFAULT_PATH )
-find_path( NETCDF_INCLUDE_DIR  netcdf.h  PATHS ${_netcdf_incs} PATH_SUFFIXES ${_ncdf_sfx} )
+    ecbuild_add_extra_search_paths( netcdf4 )
 
-find_library( NETCDF_LIBRARY  netcdf  PATHS ${_netcdf_libs} PATH_SUFFIXES ${_ncdf_sfx}  NO_DEFAULT_PATH )
-find_library( NETCDF_LIBRARY  netcdf  PATHS ${_netcdf_libs} PATH_SUFFIXES ${_ncdf_sfx}  )
+    find_package( NetCDF4 )
 
-set( NETCDF_LIBRARIES    ${NETCDF_LIBRARY} )
-set( NETCDF_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR} )
-
-include(FindPackageHandleStandardArgs)
-
-if( NETCDF_CXX )
-
-    find_path( NETCDF_CXX_INCLUDE_DIR netcdfcpp.h PATHS ${_netcdf_incs} PATH_SUFFIXES ${_ncdf_sfx} NO_DEFAULT_PATH)
-    find_path( NETCDF_CXX_INCLUDE_DIR netcdfcpp.h PATHS ${_netcdf_incs} PATH_SUFFIXES ${_ncdf_sfx} )
-
-    set( _ncdf_cxx netcdf_c++ netcdf_c++ netcdf_c++4 )
-
-    find_library( NETCDF_CXX_LIBRARY NAMES ${_ncdf_cxx} PATHS ${_netcdf_libs} PATH_SUFFIXES ${_ncdf_sfx} NO_DEFAULT_PATH )
-    find_library( NETCDF_CXX_LIBRARY NAMES ${_ncdf_cxx} PATHS ${_netcdf_libs} PATH_SUFFIXES ${_ncdf_sfx} )
-
-    list( APPEND NETCDF_INCLUDE_DIRS ${NETCDF_CXX_INCLUDE_DIR} )
-    list( APPEND NETCDF_LIBRARIES    ${NETCDF_CXX_LIBRARY} )
-
-    find_package_handle_standard_args( NETCDF  DEFAULT_MSG NETCDF_LIBRARY NETCDF_CXX_LIBRARY NETCDF_INCLUDE_DIR NETCDF_CXX_INCLUDE_DIR )
-
-    mark_as_advanced(NETCDF_INCLUDE_DIR NETCDF_CXX_LIBRARY )
-
-else()
-
-    find_package_handle_standard_args( NETCDF  DEFAULT_MSG NETCDF_LIBRARY NETCDF_INCLUDE_DIR)
+    if( NETCDF_FOUND AND HDF5_FOUND )
+        list( APPEND NETCDF_DEFINITIONS  ${HDF5_DEFINITIONS} )
+        list( APPEND NETCDF_LIBRARIES    ${HDF5_HL_LIBRARIES} ${HDF5_LIBRARIES}  )
+        list( APPEND  ${HDF5_INCLUDE_DIRS} )
+    endif()
 
 endif()
 
-mark_as_advanced(NETCDF_INCLUDE_DIR NETCDF_LIBRARY )
+### NetCDF3
+
+if( PREFER_NETCDF3 )
+
+    find_package( NetCDF3 )
+
+endif()

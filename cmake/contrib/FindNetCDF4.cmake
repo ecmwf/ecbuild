@@ -91,9 +91,11 @@ endmacro()
 find_program( NETCDF_CONFIG_EXECUTABLE
     NAMES nc-config
     HINTS ENV NETCDF_ROOT
+    PATHS
     PATH_SUFFIXES bin Bin
     DOC "NETCDF CONFIG PROGRAM.  Used only to detect NETCDF compile flags." )
 mark_as_advanced( NETCDF_CONFIG_EXECUTABLE )
+
 set(output "no")
 _NETCDF_CONFIG (--has-hdf5 output return)
 set(HAS_HDF5 FALSE)
@@ -119,6 +121,7 @@ else()
 endif()
 set( NETCDF_IS_PARALLEL TRUE CACHE BOOL
     "NETCDF library compiled with parallel IO support" )
+
 
 if( NETCDF_INCLUDE_DIRS AND NETCDF_LIBRARIES )
     # Do nothing: we already have NETCDF_INCLUDE_PATH and NETCDF_LIBRARIES in the
@@ -195,11 +198,13 @@ else()
                 NAMES ${THIS_LIBRARY_SEARCH_DEBUG}
                 HINTS ${NETCDF_${LANGUAGE}_LIBRARY_DIRS}
                 ENV NETCDF_ROOT
+                PATHS
                 PATH_SUFFIXES lib64 Lib64 lib Lib)
             find_library( NETCDF_${LIB}_LIBRARY_RELEASE
                 NAMES ${THIS_LIBRARY_SEARCH_RELEASE}
                 HINTS ${NETCDF_${LANGUAGE}_LIBRARY_DIRS}
                 ENV NETCDF_ROOT
+                PATHS
                 PATH_SUFFIXES lib64 Lib64 lib Lib )
             select_library_configurations( NETCDF_${LIB} )
             # even though we adjusted the individual library names in

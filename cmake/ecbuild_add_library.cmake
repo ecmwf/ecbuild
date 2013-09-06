@@ -68,6 +68,7 @@ macro( ecbuild_add_library )
     
         # add include dirs if defined
         if( DEFINED _PAR_INCLUDES )
+          list( REMOVE_DUPLICATES _PAR_INCLUDES )
           foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
             if( path )
               include_directories( ${path} )
@@ -103,6 +104,7 @@ macro( ecbuild_add_library )
     
         # add the link libraries
         if( DEFINED _PAR_LIBS )
+          list(REMOVE_DUPLICATES _PAR_LIBS )
           list(REMOVE_ITEM _PAR_LIBS debug)
           list(REMOVE_ITEM _PAR_LIBS optimized)
           foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND

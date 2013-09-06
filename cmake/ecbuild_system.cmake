@@ -49,6 +49,9 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
         set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/2.8" ${CMAKE_MODULE_PATH} )
     endif()
 
+    # add extra macros from external contributions
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
+
     include(CTest)                 # add cmake testing support
     enable_testing()
 
@@ -131,9 +134,11 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include( ecbuild_separate_sources )
     include( ecbuild_find_package )
     include( ecbuild_use_package )
+    include( ecbuild_add_extra_search_paths )
     include( ecbuild_print_summary )
     include( ecbuild_warn_unused_files )
     include( ecbuild_find_python )
+    include( ecbuild_find_fortranlibs )
     include( ecbuild_enable_fortran )
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )

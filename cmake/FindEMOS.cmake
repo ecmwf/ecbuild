@@ -12,23 +12,26 @@
 #  EMOS_INCLUDE_DIRS - The EMOS include directories
 #  EMOS_LIBRARIES - The libraries needed to use EMOS
 
+ecbuild_add_extra_search_paths( libemos )
+
 if( NOT DEFINED EMOS_PATH AND DEFINED $ENV{EMOS_PATH} )
 	set( EMOS_PATH $ENV{EMOS_PATH} )
 endif()
 
 if( DEFINED EMOS_PATH )
-	find_library( EMOS_LIBRARY NAMES emos.R64.D64.I32 emos.R64 emosR64 emos PATHS ${EMOS_PATH} ${EMOS_PATH}/lib PATH_SUFFIXES emos NO_DEFAULT_PATH)
+    find_library( EMOS_LIBRARY NAMES emos.R64.D64.I32 emos.R64 emosR64 emos PATHS ${EMOS_PATH} PATH_SUFFIXES lib lib/emos NO_DEFAULT_PATH)
 endif()
 
-find_library( EMOS_LIBRARY  NAMES emos.R64.D64.I32 emos.R64 emosR64 emos )
+find_library( EMOS_LIBRARY NAMES emos.R64.D64.I32 emos.R64 emosR64 emos )
 
-set( EMOS_LIBRARIES    ${EMOS_LIBRARY} )
+ecbuild_find_fortranlibs()
 
 include(FindPackageHandleStandardArgs)
 
-# handle the QUIETLY and REQUIRED arguments and set EMOS_FOUND to TRUE
-# if all listed variables are TRUE
-find_package_handle_standard_args(EMOS  DEFAULT_MSG
-								  EMOS_LIBRARY )
+find_package_handle_standard_args( EMOS  DEFAULT_MSG  EMOS_LIBRARY FORTRANLIBS_FOUND )
 
 mark_as_advanced(EMOS_LIBRARY)
+
+if( EMOS_FOUND )
+    set( EMOS_LIBRARIES  ${EMOS_LIBRARY} ${FORTRAN_LIBRARIES} )
+endif()

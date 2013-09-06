@@ -68,33 +68,3 @@ if( NOT ${CMAKE_USE_PTHREADS_INIT} )
     message( FATAL_ERROR "Only pthreads supported - thread library found is [${CMAKE_THREAD_LIBS_INIT}]" )
 endif()
 
-###########################################################################################
-# fortran static link libraries
-
-foreach( _fortran_lib PGI XLF LIBGFORTRAN )
-    if( NOT ${_fortran_lib}_PATH AND NOT "$ENV{${_fortran_lib}_PATH}" STREQUAL "" )
-        set( ${_fortran_lib}_PATH "$ENV{${_fortran_lib}_PATH}" )
-    endif()
-endforeach()
-
-if( WITH_PGI_FORTRAN OR DEFINED PGI_PATH )
-    find_package(PGIFortran)
-    if( PGIFORTRAN_LIBRARIES )
-        set( FORTRAN_LIBRARIES ${PGIFORTRAN_LIBRARIES} )
-    endif()
-endif()
-
-if( WITH_XL_FORTRAN OR DEFINED XLF_PATH )
-    find_package(XLFortranLibs)
-    if( XLFORTRAN_LIBRARIES )
-        set( FORTRAN_LIBRARIES ${XLFORTRAN_LIBRARIES} )
-    endif()
-endif()
-
-if( WITH_LIBGFORTRAN OR DEFINED LIBGFORTRAN_PATH )
-    find_package(LibGFortran)
-    if( LIBGFORTRAN_LIBRARIES )
-        set( FORTRAN_LIBRARIES ${LIBGFORTRAN_LIBRARIES} )
-    endif()
-endif()
-
