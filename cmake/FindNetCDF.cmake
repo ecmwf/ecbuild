@@ -31,6 +31,14 @@ mark_as_advanced( PREFER_NETCDF4 PREFER_NETCDF3 )
 
 if( PREFER_NETCDF4 )
 
+    # hdf5
+
+    ecbuild_add_extra_search_paths( hdf5 )
+
+    find_package( HDF5 COMPONENTS C CXX HL )
+
+    # netcdf4
+
     if( DEFINED $ENV{NETCDF_PATH} )
         set( NETCDF_ROOT "$ENV{NETCDF_PATH}" )
         list( APPEND CMAKE_PREFIX_PATH  $ENV{NETCDF_PATH} )
@@ -41,9 +49,14 @@ if( PREFER_NETCDF4 )
         list( APPEND CMAKE_PREFIX_PATH  ${NETCDF_PATH} )
     endif()
 
-    ecbuild_add_extra_search_paths( hdf5 )
+    if( NETCDF_CXX )
+       set( NETCDF_FIND_COMPONENTS C CXX )
+    else()
+       set( NETCDF_FIND_COMPONENTS C )
+    endif()
 
-    find_package( HDF5 COMPONENTS C CXX HL )
+debug_var( NETCDF_CXX )
+debug_var( NETCDF_FIND_COMPONENTS )
 
     ecbuild_add_extra_search_paths( netcdf4 )
 
@@ -52,8 +65,16 @@ if( PREFER_NETCDF4 )
     if( NETCDF_FOUND AND HDF5_FOUND )
         # list( APPEND NETCDF_DEFINITIONS  ${HDF5_DEFINITIONS} )
         list( APPEND NETCDF_LIBRARIES    ${HDF5_HL_LIBRARIES} ${HDF5_LIBRARIES}  )
-        list( APPEND  ${HDF5_INCLUDE_DIRS} )
+        list( APPEND NETCDF_INCLUDE_DIRS ${HDF5_INCLUDE_DIRS} )
     endif()
+
+    debug_var( NETCDF_FOUND )
+    debug_var( NETCDF_LIBRARIES )
+    debug_var( NETCDF_INCLUDE_DIRS )
+    debug_var( HDF5_FOUND )
+    debug_var( HDF5_INCLUDE_DIRS )
+    debug_var( HDF5_HL_LIBRARIES )
+    debug_var( HDF5_LIBRARIES )
 
 endif()
 
