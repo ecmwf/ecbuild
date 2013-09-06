@@ -29,6 +29,8 @@ macro( ecbuild_add_extra_search_paths pkg )
          endforeach()
 
          file( GLOB ps ${_apps}/*)
+         list( SORT ps )
+         # list( REVERSE ps )
          foreach( p ${ps} )
              if( IS_DIRECTORY ${p} )
                   list( APPEND CMAKE_PREFIX_PATH  ${p} )
