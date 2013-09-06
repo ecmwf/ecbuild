@@ -12,7 +12,7 @@
 # list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl  pgftnrtl nspgc pgc rt pgsse1 pgsse2 ) # init
 # list( APPEND pg_libs pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf pgc pgf90 rt pgsse1 pgsse2 )             # mars client linux.2
 # list( APPEND pg_libs pgftnrtl nspgc pgc rt pgsse1 pgsse2 )                                                    # mars client linux.3
-list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 pgf902 rt pgsse1 pgsse2 ) # better ?                                                    #
+list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 pgf902 pghpf2 rt pgsse1 pgsse2 ) # better ?                                                    #
 foreach( pglib ${pg_libs} )
     if( DEFINED PGI_PATH )
       find_library( ${pglib}_lib  ${pglib} 
