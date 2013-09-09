@@ -72,14 +72,9 @@ if( NOT odb_api_FOUND )
 
           endif()
 
-          debug_var( ODB_API_${v}_VERSION )
-
         endforeach()
 
     endif()
-
-    string( REPLACE "." " " _version_list ${_odb_info_out} ) # dots to spaces
-    separate_arguments( _version_list )
 
     set( ODB_API_VERSION     "${ODB_API_MAJOR_VERSION}.${ODB_API_MINOR_VERSION}.${ODB_API_PATCH_VERSION}" )
     set( ODB_API_VERSION_STR "${_odb_info_out}" )
