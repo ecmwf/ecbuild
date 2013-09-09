@@ -42,7 +42,9 @@ macro( ecbuild_add_extra_search_paths pkg )
 
     endforeach()
 
-    list( REMOVE_DUPLICATES CMAKE_PREFIX_PATH )
+    if( CMAKE_PREFIX_PATH )
+        list( REMOVE_DUPLICATES CMAKE_PREFIX_PATH )
+    endif()
 
 endmacro()
 
