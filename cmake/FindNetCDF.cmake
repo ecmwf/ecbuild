@@ -55,9 +55,6 @@ if( PREFER_NETCDF4 )
        set( NETCDF_FIND_COMPONENTS C )
     endif()
 
-debug_var( NETCDF_CXX )
-debug_var( NETCDF_FIND_COMPONENTS )
-
     ecbuild_add_extra_search_paths( netcdf4 )
 
     find_package( NetCDF4 )
@@ -68,13 +65,13 @@ debug_var( NETCDF_FIND_COMPONENTS )
         list( APPEND NETCDF_INCLUDE_DIRS ${HDF5_INCLUDE_DIRS} )
     endif()
 
-    debug_var( NETCDF_FOUND )
-    debug_var( NETCDF_LIBRARIES )
-    debug_var( NETCDF_INCLUDE_DIRS )
-    debug_var( HDF5_FOUND )
-    debug_var( HDF5_INCLUDE_DIRS )
-    debug_var( HDF5_HL_LIBRARIES )
-    debug_var( HDF5_LIBRARIES )
+#    debug_var( NETCDF_FOUND )
+#    debug_var( NETCDF_LIBRARIES )
+#    debug_var( NETCDF_INCLUDE_DIRS )
+#    debug_var( HDF5_FOUND )
+#    debug_var( HDF5_INCLUDE_DIRS )
+#    debug_var( HDF5_HL_LIBRARIES )
+#    debug_var( HDF5_LIBRARIES )
 
 endif()
 
