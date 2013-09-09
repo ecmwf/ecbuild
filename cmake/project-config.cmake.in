@@ -34,3 +34,13 @@ set( @PNAME@_LIBRARIES        ${@PNAME@_OWN_LIBRARIES}  ${@PNAME@_TPL_LIBRARIES}
 if( NOT @PROJECT_NAME@_BINARY_DIR )
   include( "@TOP_PROJECT_TARGETS_FILE@" OPTIONAL )
 endif()
+
+# here goes the imports of the TPL's
+
+include( ${CMAKE_CURRENT_LIST_FILE}.tpls OPTIONAL )
+
+# publish this file as imported
+
+set( @PNAME@_IMPORT_FILE ${CMAKE_CURRENT_LIST_FILE} )
+mark_as_advanced( @PNAME@_IMPORT_FILE )
+

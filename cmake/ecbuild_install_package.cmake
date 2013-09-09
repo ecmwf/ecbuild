@@ -188,8 +188,28 @@ macro( ecbuild_install_project )
             endif()
         endforeach()
 
-        configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake" @ONLY )
-    
+        set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
+
+        configure_file( "${_template_config}" "${_lname_config}" @ONLY )
+
+        file( REMOVE ${_lname_config}.tpls.in )
+
+        foreach( _tpl ${${PNAME}_TPLS} )
+            string( TOUPPER ${_tpl} TPL )
+            if( ${TPL}_IMPORT_FILE )
+                 debug_var( ${TPL}_IMPORT_FILE )
+                 set( __import_file "${${TPL}_IMPORT_FILE}" )
+                 debug_var( __import_file )
+                 file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_IMPORT_FILE )\n" )
+                 file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
+                 file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
+            endif()
+        endforeach()
+
+        if( EXISTS "${_lname_config}.tpls.in" )
+            configure_file( "${_lname_config}.tpls.in" "${_lname_config}.tpls" @ONLY )
+        endif()
+
         # project-config.cmake @ install tree
         
         file( RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${INSTALL_INCLUDE_DIR}" )
