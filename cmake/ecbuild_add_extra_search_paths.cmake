@@ -32,16 +32,7 @@ macro( ecbuild_add_extra_search_paths pkg )
 
     foreach( _apps /usr/local/apps/${pkg} )
 
-#         foreach( p ${_apps} ${_apps}/current ${_apps}/stable ${_apps}/new ${_apps}/next ${_apps}/prev )
-#           if( EXISTS ${p} )
-#               list( APPEND CMAKE_PREFIX_PATH ${p} )
-#           endif()
-#           if( EXISTS ${p}/LP64 )
-#               list( APPEND CMAKE_PREFIX_PATH ${p}/LP64 )
-#           endif()
-#         endforeach()
-
-         file( GLOB ps ${_apps}/*)
+         file( GLOB ps ${_apps}/[0-9]*)
          list( SORT ps )
          list( REVERSE ps ) # reversing will give us the newest versions first
          foreach( p ${ps} )
@@ -53,6 +44,15 @@ macro( ecbuild_add_extra_search_paths pkg )
              endif()
          endforeach()
 
+         foreach( p ${_apps} ${_apps}/current ${_apps}/stable ${_apps}/new ${_apps}/next ${_apps}/prev )
+           if( EXISTS ${p} )
+               list( APPEND CMAKE_PREFIX_PATH ${p} )
+           endif()
+           if( EXISTS ${p}/LP64 )
+               list( APPEND CMAKE_PREFIX_PATH ${p}/LP64 )
+           endif()
+         endforeach()
+
     endforeach()
 
     # sanitize the list
@@ -60,6 +60,8 @@ macro( ecbuild_add_extra_search_paths pkg )
     if( CMAKE_PREFIX_PATH )
         list( REMOVE_DUPLICATES CMAKE_PREFIX_PATH )
     endif()
+
+    debug_var( CMAKE_PREFIX_PATH )
 
 endmacro()
 
