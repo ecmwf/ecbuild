@@ -34,17 +34,17 @@ macro( ecbuild_declare_project )
 
     # cleanup patch version of any extra qualifiers ( -dev -rc1 ... )
 
-    string( REGEX REPLACE "^([0-9]+)\\-.*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
+    string( REGEX REPLACE "^([0-9]+)[\\-\\_\\+\\.].*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
 
     set( ${PNAME}_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" ) 
 
     set( ${PNAME}_VERSION_STR "${${PROJECT_NAME}_VERSION_STR}" ) # ignore caps 
 
-    # debug_var( ${PNAME}_VERSION )
-    # debug_var( ${PNAME}_VERSION_STR )
-    # debug_var( ${PNAME}_MAJOR_VERSION )
-    # debug_var( ${PNAME}_MINOR_VERSION )
-    # debug_var( ${PNAME}_PATCH_VERSION )
+#    debug_var( ${PNAME}_VERSION )
+#    debug_var( ${PNAME}_VERSION_STR )
+#    debug_var( ${PNAME}_MAJOR_VERSION )
+#    debug_var( ${PNAME}_MINOR_VERSION )
+#    debug_var( ${PNAME}_PATCH_VERSION )
 
     # if git project get its HEAD SHA1
 

@@ -12,7 +12,7 @@ macro( ecbuild_install_project )
 
 
     set( options )
-    set( single_value_args NAME FILENAME DESCRIPTION )
+    set( single_value_args NAME DESCRIPTION )
     set( multi_value_args  COMPONENTS )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -38,22 +38,16 @@ macro( ecbuild_install_project )
         set(CPACK_COMPONENTS_ALL   "${PROJECT_NAME}")
     endif()
     
-    # filename MarsServer-...-tar.gz
-
-    if( DEFINED _PAR_FILENAME )
-        set(CPACK_PACKAGE_FILE_NAME   "${_PAR_FILENAME}")
-    else()
-        set(CPACK_PACKAGE_FILE_NAME   "${_PAR_NAME}")
-    endif()
-
     # name version etc
 
     set(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
     set(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
 
-#    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "ECMWF") # required for DEB
+    set(CPACK_PACKAGE_FILE_NAME   "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 
-    set(CPACK_GENERATOR        "TGZ;RPM")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "ECMWF") # required for DEB
+
+    set(CPACK_GENERATOR        "TGZ;RPM;DEB")
     set(CPACK_PACKAGE_VENDOR   "ECMWF")
 
     # short description
