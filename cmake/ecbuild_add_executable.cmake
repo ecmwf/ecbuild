@@ -124,18 +124,18 @@ macro( ecbuild_add_executable )
         if( NOT _PAR_NOINSTALL )
 
             # add installation paths and associate with defined component
-            if( DEFINED _PAR_COMPONENT )
-                set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
-            else()
-                set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
-            endif()
+#            if( DEFINED _PAR_COMPONENT )
+#                set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
+#            else()
+#                set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
+#            endif()
         
             install( TARGETS ${_PAR_TARGET}
               EXPORT  ${CMAKE_PROJECT_NAME}-targets
               RUNTIME DESTINATION ${INSTALL_BIN_DIR}
               LIBRARY DESTINATION ${INSTALL_LIB_DIR}
-              ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
-              COMPONENT ${COMPONENT_DIRECTIVE} )
+              ARCHIVE DESTINATION ${INSTALL_LIB_DIR} )
+#              COMPONENT ${COMPONENT_DIRECTIVE} )
 
             # set build location
 

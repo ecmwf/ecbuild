@@ -78,9 +78,9 @@ if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
         find_program(GRIB_API_INFO     NAMES grib_info  PATHS ${GRIB_API_PATH} ${GRIB_API_PATH}/bin     PATH_SUFFIXES grib_api  NO_DEFAULT_PATH)
     endif()
     
-    find_path(GRIB_API_INCLUDE_DIR NAMES grib_api.h PATH_SUFFIXES grib_api )
-    find_library( GRIB_API_LIBRARY NAMES grib_api   PATH_SUFFIXES grib_api )
-    find_program(GRIB_API_INFO     NAMES grib_info  PATH_SUFFIXES grib_api )
+    find_path(GRIB_API_INCLUDE_DIR NAMES grib_api.h PATHS PATH_SUFFIXES grib_api )
+    find_library( GRIB_API_LIBRARY NAMES grib_api   PATHS PATH_SUFFIXES grib_api )
+    find_program(GRIB_API_INFO     NAMES grib_info  PATHS PATH_SUFFIXES grib_api )
     
     set( GRIB_API_LIBRARIES    ${GRIB_API_LIBRARY} )
     set( GRIB_API_INCLUDE_DIRS ${GRIB_API_INCLUDE_DIR} )
