@@ -1,0 +1,4 @@
+#!/bin/bash
+# $1 = top directory $2 = git directory $3 = build directory $4 = install directory $5 = ecbuild $6 = cpus
+
+/usr/local/apps/cmake/current/bin/cmake $2 
