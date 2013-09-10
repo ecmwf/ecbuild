@@ -1,6 +1,8 @@
 #!/bin/bash
 # $1 = top directory $2 = git directory $3 = build directory $4 = install directory $5 = ecbuild $6 = cpus
 
-/usr/local/apps/cmake/current/bin/cmake $2 
+/usr/local/apps/cmake/current/bin/cmake $2 \
+    -DCMAKE_PREFIX_PATH=$4 \
+    -DCMAKE_INSTALL_PREFIX=$4
 
 /usr/local/apps/cmake/current/bin/cmake $2 -LAH > build-info.txt
