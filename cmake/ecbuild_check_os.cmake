@@ -172,15 +172,38 @@ endif()
 # check operating system
 
 set( EC_OS_NAME "UNKNOWN" )
+
+### Unix's -- Proper operating systems
+
 if( UNIX )
+
+    ### APPLE ###
 
     if( APPLE AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" ) # Mac OS X
         set( EC_OS_NAME "MacOSX" )
     endif()
 
+    ### Linux ###
+
     if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" ) # Linux
+
         set( EC_OS_NAME "linux" )
+
+        # recent linkers default to --enable-new-dtags
+        # which then adds both RPATH and RUNPATH to executables
+        # thus invalidating RPATH setting, and making LD_LIBRARY_PATH take precedence
+        # to be sure, use tool 'readelf -a <exe> | grep PATH' to see what paths are built-in
+        # see:
+        #  * http://blog.qt.digia.com/blog/2011/10/28/rpath-and-runpath
+        #  * http://www.cmake.org/Wiki/CMake_RPATH_handling
+        #  * man ld
+        #  * http://blog.tremily.us/posts/rpath
+        #  * http://fwarmerdam.blogspot.co.uk/2010/12/rpath-runpath-and-ldlibrarypath.html
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags")
+
     endif()
+
+    ### AIX ###
 
     if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
 
@@ -269,17 +292,33 @@ if( UNIX )
 
 endif()
 
+### Windows -- are you sure?
+
 if( WIN32 )
-    if( CYGWIN ) # cygwin under windows
+
+    ### Cygwin
+
+    if( CYGWIN )
+
         set( EC_OS_NAME "cygwin" )
-        message( WARNING "Building on Cygwin is untested -- proceed at your own risk" )
+        message( WARNING "Building on Cygwin should work but is untested -- proceed at your own risk" )
+
     else()
-        message( FATAL_ERROR "Can only build on Windows using Cygwin" )
+
+        message( FATAL_ERROR "ecBuild can only build on Windows using Cygwin" )
+
     endif()
+
 endif()
 
+### final warning / error
+
 if( ${EC_OS_NAME} MATCHES "UNKNOWN" )
-    message( FATAL_ERROR "Unsupported operating system: [${CMAKE_SYSTEM_NAME}]" )
+    if( DISABLE_OS_CHECK )
+        message( WARNING "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]" )
+    else()
+        message( FATAL_ERROR "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]" )
+    endif()
 endif()
 
 ############################################################################################
