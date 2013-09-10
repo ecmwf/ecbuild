@@ -35,6 +35,11 @@ if( NOT odb_api_FOUND )
                       PATHS ${ODB_API_PATH} ${ODB_API_PATH}/lib
                       PATH_SUFFIXES odb_api
                       NO_DEFAULT_PATH )
+
+        find_library( ODB_API_ECLIB_LIBRARY NAMES Ec
+                      PATHS ${ODB_API_PATH} ${ODB_API_PATH}/lib
+                      PATH_SUFFIXES odb_api
+                      NO_DEFAULT_PATH )
     endif()
     
         find_path( ODB_API_INCLUDE_DIR
@@ -46,6 +51,9 @@ if( NOT odb_api_FOUND )
                       PATHS
                       PATH_SUFFIXES odb_api )
 
+        find_library( ODB_API_ECLIB_LIBRARY NAMES Ec
+                      PATHS
+                      PATH_SUFFIXES odb_api )
 
 
     # get the version
@@ -64,14 +72,9 @@ if( NOT odb_api_FOUND )
 
           endif()
 
-          debug_var( ODB_API_${v}_VERSION )
-
         endforeach()
 
     endif()
-
-    string( REPLACE "." " " _version_list ${_odb_info_out} ) # dots to spaces
-    separate_arguments( _version_list )
 
     set( ODB_API_VERSION     "${ODB_API_MAJOR_VERSION}.${ODB_API_MINOR_VERSION}.${ODB_API_PATCH_VERSION}" )
     set( ODB_API_VERSION_STR "${_odb_info_out}" )
@@ -79,22 +82,18 @@ if( NOT odb_api_FOUND )
     set( odb_api_VERSION     "${ODB_API_VERSION}" )
     set( odb_api_VERSION_STR "${ODB_API_VERSION_STR}" )
 
-    set( ODB_API_LIBRARIES    ${ODB_API_LIBRARY} )
-    set( ODB_API_INCLUDE_DIRS ${ODB_API_INCLUDE_DIR} )
-    
     # handle the QUIETLY and REQUIRED arguments and set ODB_API_FOUND to TRUE
 
     include(FindPackageHandleStandardArgs)
 
     find_package_handle_standard_args( odb_api DEFAULT_MSG
-                                       ODB_API_LIBRARY ODB_API_INCLUDE_DIR )
+                                       ODB_API_LIBRARY ODB_API_ECLIB_LIBRARY ODB_API_INCLUDE_DIR )
     
-    mark_as_advanced( ODB_API_INCLUDE_DIR ODB_API_LIBRARY ODB_API_INFO )
-    
-    list( APPEND ODB_API_DEFINITIONS  ${_odb_api_jpg_defs} ${_odb_api_png_defs} )
-    list( APPEND ODB_API_INCLUDE_DIRS ${_odb_api_jpg_incs} ${_odb_api_png_incs} )
-    list( APPEND ODB_API_LIBRARIES    ${_odb_api_jpg_libs} ${_odb_api_png_libs} )
+    set( ODB_API_LIBRARIES    ${ODB_API_LIBRARY} ${ODB_API_ECLIB_LIBRARY} )
+    set( ODB_API_INCLUDE_DIRS ${ODB_API_INCLUDE_DIR} )
 
+    mark_as_advanced( ODB_API_INCLUDE_DIR ODB_API_LIBRARY ODB_API_ECLIB_LIBRARY )
+    
     set( odb_api_FOUND ${ODB_API_FOUND} )
 
 endif()
