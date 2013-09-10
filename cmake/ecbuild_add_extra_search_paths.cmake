@@ -61,7 +61,7 @@ macro( ecbuild_add_extra_search_paths pkg )
         list( REMOVE_DUPLICATES CMAKE_PREFIX_PATH )
     endif()
 
-    debug_var( CMAKE_PREFIX_PATH )
+#    debug_var( CMAKE_PREFIX_PATH )
 
 endmacro()
 
