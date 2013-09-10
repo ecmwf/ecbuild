@@ -34,7 +34,7 @@ macro( ecbuild_declare_project )
 
     # cleanup patch version of any extra qualifiers ( -dev -rc1 ... )
 
-    string( REGEX REPLACE "^([0-9]+)[\\-\\_\\+\\.].*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
+    string( REGEX REPLACE "^([0-9]+).*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
 
     set( ${PNAME}_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" ) 
 
@@ -63,23 +63,25 @@ macro( ecbuild_declare_project )
 
     # install dirs local to this project
 
-    set( INSTALL_BIN_DIR     ${${PNAME}_INSTALL_BIN_DIR} ) 
-    set( INSTALL_LIB_DIR     ${${PNAME}_INSTALL_LIB_DIR} ) 
+    set( INSTALL_BIN_DIR     ${${PNAME}_INSTALL_BIN_DIR}     )
+    set( INSTALL_LIB_DIR     ${${PNAME}_INSTALL_LIB_DIR}     )
     set( INSTALL_INCLUDE_DIR ${${PNAME}_INSTALL_INCLUDE_DIR} ) 
-    set( INSTALL_DATA_DIR    ${${PNAME}_INSTALL_DATA_DIR} ) 
-    set( INSTALL_CMAKE_DIR   ${${PNAME}_INSTALL_CMAKE_DIR} ) 
+    set( INSTALL_DATA_DIR    ${${PNAME}_INSTALL_DATA_DIR}    )
+    set( INSTALL_CMAKE_DIR   ${${PNAME}_INSTALL_CMAKE_DIR}   )
 
     # make relative paths absolute  ( needed later on ) and cache them ...
     foreach( p LIB BIN INCLUDE DATA CMAKE )
 
         set( var INSTALL_${p}_DIR )
+
         if( NOT IS_ABSOLUTE "${${var}}" )
-            set( ${var} "${CMAKE_INSTALL_PREFIX}/${${var}}" )
+            set( ${PNAME}_FULL_INSTALL_${p}_DIR "${CMAKE_INSTALL_PREFIX}/${${var}}" CACHE INTERNAL "${PNAME} ${p} full install path" )
+        else()
+            message( WARNING "Setting an absolute path for ${VAR} in project ${PNAME}, breakes generation of relocatable binary packages (rpm,deb,...)" )
+            set( ${PNAME}_FULL_INSTALL_${p}_DIR "${${var}}" CACHE INTERNAL "${PNAME} ${p} full install path" )
         endif()
 
-        set( ${PNAME}_FULL_INSTALL_${p}_DIR ${${var}} CACHE INTERNAL "${PNAME} ${p} full install path" )
-
-        # debug_var( ${var} )
+#        debug_var( ${PNAME}_FULL_INSTALL_${p}_DIR )
 
     endforeach()
 

@@ -32,13 +32,13 @@ macro( ecbuild_install_project )
     
     # components
 
-    if( DEFINED _PAR_COMPONENTS )
-        set(CPACK_COMPONENTS_ALL   "${_PAR_COMPONENTS}")
-    else()
-        set(CPACK_COMPONENTS_ALL   "${PROJECT_NAME}")
-    endif()
+#    if( DEFINED _PAR_COMPONENTS )
+#        set(CPACK_COMPONENTS_ALL   "${_PAR_COMPONENTS}")
+#    else()
+#        set(CPACK_COMPONENTS_ALL   "${PROJECT_NAME}")
+#    endif()
     
-    # name version etc
+    # name, version, etc ...
 
     set(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
     set(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
@@ -47,7 +47,11 @@ macro( ecbuild_install_project )
 
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "ECMWF") # required for DEB
 
-    set(CPACK_GENERATOR        "TGZ;RPM;DEB")
+#    set(CPACK_ARCHIVE_COMPONENT_INSTALL "ON")
+#    set(CPACK_RPM_COMPONENT_INSTALL "ON")
+
+#    set(CPACK_GENERATOR        "TGZ;RPM;DEB")
+    set(CPACK_GENERATOR        "TGZ")
     set(CPACK_PACKAGE_VENDOR   "ECMWF")
 
     # short description
@@ -86,7 +90,7 @@ macro( ecbuild_install_project )
 
     # cpack config file
 
-    set(CPACK_INSTALL_CMAKE_PROJECTS "${${PROJECT_NAME}_BINARY_DIR}" "${PROJECT_NAME}" "${CPACK_COMPONENTS_ALL}" "*" )
+    # set(CPACK_INSTALL_CMAKE_PROJECTS "${${PROJECT_NAME}_BINARY_DIR}" "${PROJECT_NAME}" "${CPACK_COMPONENTS_ALL}" "*" )
 
     include( CPack )
 
@@ -196,7 +200,7 @@ macro( ecbuild_install_project )
 
         # project-config.cmake @ install tree
         
-        file( RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${INSTALL_INCLUDE_DIR}" )
+        file( RELATIVE_PATH REL_INCLUDE_DIR "${${PNAME}_FULL_INSTALL_CMAKE_DIR}" "${${PNAME}_FULL_INSTALL_INCLUDE_DIR}" )
         set( CONF_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
 
         set( CONF_TPL_INCLUDE_DIRS "" )
