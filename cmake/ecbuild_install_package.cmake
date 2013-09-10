@@ -8,15 +8,6 @@
 
 ###############################################################################
 
-function( __ecbuild_create_cpack_config filename )
-
-  set(CPACK_OUTPUT_CONFIG_FILE "${filename}")
-  include(CPack)
-
-endfunction( __ecbuild_create_cpack_config )
-
-###############################################################################
-
 macro( ecbuild_install_project )
 
 
@@ -34,9 +25,7 @@ macro( ecbuild_install_project )
       message(FATAL_ERROR "The call to ecbuild_install_project() doesn't specify the NAME.")
     endif()
 
-
-
-    ### PACKAGING
+    ### PACKAGING ########################################################
 
     string( TOUPPER ${PROJECT_NAME} PNAME )
     string( TOLOWER ${PROJECT_NAME} LNAME )
@@ -62,15 +51,17 @@ macro( ecbuild_install_project )
     set(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
     set(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
 
-    set(CPACK_GENERATOR        "TGZ")
+#    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "ECMWF") # required for DEB
+
+    set(CPACK_GENERATOR        "TGZ;RPM")
     set(CPACK_PACKAGE_VENDOR   "ECMWF")
 
     # short description
 
-    if( DEFINED _PAR_DESCRIPTION )
+    if( _PAR_DESCRIPTION )
         set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${_PAR_DESCRIPTION}" )
     else()
-        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "")
+        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${_PAR_NAME} misses a description" )
     endif()
 
     # long description
@@ -103,13 +94,12 @@ macro( ecbuild_install_project )
 
     set(CPACK_INSTALL_CMAKE_PROJECTS "${${PROJECT_NAME}_BINARY_DIR}" "${PROJECT_NAME}" "${CPACK_COMPONENTS_ALL}" "*" )
 
-    __ecbuild_create_cpack_config( CPackConfig-${_PAR_NAME}.cmake )
+    include( CPack )
 
-   
-
-    ### EXPORTS
+    ### EXPORTS ########################################################
  
     # TOP-LEVEL PROJECT EXPORT
+
     if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
         # exports the package for use from the build-tree -- inserts <package> into the CMake user package registry
