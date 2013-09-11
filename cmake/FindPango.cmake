@@ -10,9 +10,10 @@
 
 include(FindPackageHandleStandardArgs)
 
-find_path(PANGO_INCLUDE_DIR NAMES pangocairo.h HINTS /usr/include/pango-1.0/pango)
-find_library(PANGO_LIBRARY NAMES libpango-1.0.so)
+set(PANGO_VERSION 1.0)
 
-message(status "PANGO" ${PANGO_INCLUDE_DIR} ${PANGO_LIBRARY})
+
+find_path(PANGO_INCLUDE_DIR NAMES pangocairo.h HINTS /usr/include/pango-${PANGO_VERSION}/pango)
+find_library(PANGO_LIBRARY NAMES libpango-${PANGO_VERSION}.so)
 
 mark_as_advanced(PANGO_INCLUDE_DIR PANGO_LIBRARY)
