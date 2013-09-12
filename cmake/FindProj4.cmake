@@ -13,8 +13,6 @@ endif()
 
 ecbuild_add_extra_search_paths( proj4 )
 
-debug_var( CMAKE_PREFIX_PATH )
-
 if( NOT PROJ4_PATH )
 
     include(FindPkgConfig)
