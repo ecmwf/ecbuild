@@ -24,13 +24,6 @@ debug_var( PC_LIBPANGO_VERSION )
 debug_var( PC_LIBPANGO_LIBRARIES )
 debug_var( PC_LIBPANGO_INCLUDE_DIRS )
 
-#set(LIBPANGO_DEFINITIONS ${PC_LIBPANGO_CFLAGS_OTHER})
-
-#find_path( LIBPANGO_INCLUDE_DIR NAMES pango/pangocairo.h HINTS ${PC_LIBPANGO_INCLUDE_DIR} ${PC_LIBPANGO_INCLUDE_DIRS} PATH_SUFFIXES pango )
-#find_library(LIBPANGO_LIBRARY   NAMES pango libpango libpango-1.0 pango-1.0 HINTS ${PC_LIBPANGO_LIBDIR} ${PC_LIBPANGO_LIBRARY_DIRS} )
-
-# handle the QUIETLY and REQUIRES arguments and set PANGO_FOUND to TRUE
-
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args( pango DEFAULT_MSG PC_LIBPANGO_LIBRARIES PC_LIBPANGO_INCLUDE_DIRS )
 
