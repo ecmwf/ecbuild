@@ -82,6 +82,16 @@ macro( ecbuild_add_test )
 
     if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
 
+      # add resources
+
+      if( DEFINED _PAR_RESOURCES )
+        foreach( rfile ${_PAR_RESOURCES} )
+          execute_process( COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${rfile} ${CMAKE_CURRENT_BINARY_DIR} )
+        endforeach()
+      endif()
+
+      # build executable
+
         if( _PAR_TYPE MATCHES "EXE" )
 
             # TARGET defined so build the test
@@ -114,14 +124,6 @@ macro( ecbuild_add_test )
                 # add extra dependencies
                 if( DEFINED _PAR_DEPENDS)
                   add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
-                endif()
-        
-                # add resources
-                if( DEFINED _PAR_RESOURCES)
-                        foreach( rfile ${_PAR_RESOURCES} )
-                            add_custom_command( TARGET ${_PAR_TARGET} POST_BUILD
-                                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${rfile} ${CMAKE_CURRENT_BINARY_DIR} )
-                        endforeach()
                 endif()
         
                 # add the link libraries
