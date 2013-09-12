@@ -19,10 +19,10 @@ if( NOT DEFINED EMOS_PATH AND DEFINED $ENV{EMOS_PATH} )
 endif()
 
 if( DEFINED EMOS_PATH )
-    find_library( EMOS_LIBRARY NAMES emos.R64.D64.I32 emos.R64 emosR64 emos PATHS ${EMOS_PATH} PATH_SUFFIXES lib lib/emos NO_DEFAULT_PATH)
+    find_library( EMOS_LIBRARY NAMES emos emos.R64.D64.I32 emos.R64 emosR64 PATHS ${EMOS_PATH} PATH_SUFFIXES lib lib/emos NO_DEFAULT_PATH)
 endif()
 
-find_library( EMOS_LIBRARY NAMES emos.R64.D64.I32 emos.R64 emosR64 emos )
+find_library( EMOS_LIBRARY NAMES emos emos.R64.D64.I32 emos.R64 emosR64)
 
 ecbuild_find_fortranlibs()
 
