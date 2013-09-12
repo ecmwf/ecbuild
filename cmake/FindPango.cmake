@@ -8,19 +8,28 @@
 
 # - Try to find Pango
 
+# Output:
+#   PANGO_FOUND
+#   PANGO_LIBRARIES
+#   PANGO_INCLUDE_DIRS
 
-set(PANGO_VERSION 1.0)
+ecbuild_add_extra_search_paths( pango )
 
+find_package(PkgConfig)
 
-find_path(PANGO_INCLUDE_DIR NAMES pangoPANGO.h HINTS /usr/include/pango-${PANGO_VERSION}/pango)
-find_library(PANGO_LIBRARY NAMES libpango-${PANGO_VERSION}.so)
+pkg_check_modules(PC_LIBPANGO QUIET pango)
 
-set( PANGO_LIBRARIES    ${PANGO_LIBRARY} )
-set( PANGO_INCLUDE_DIRS ${PANGO_INCLUDE_DIR} )
+set(LIBPANGO_DEFINITIONS ${PC_LIBPANGO_CFLAGS_OTHER})
+
+find_path( LIBPANGO_INCLUDE_DIR NAMES pango.h HINTS ${PC_LIBPANGO_INCLUDE_DIR} ${PC_LIBPANGO_INCLUDE_DIRS} PATH_SUFFIXES pango )
+find_library(LIBPANGO_LIBRARY   NAMES pango libpango libpango-1.0 pango-1.0 HINTS ${PC_LIBPANGO_LIBDIR} ${PC_LIBPANGO_LIBRARY_DIRS} )
+
+set( PANGO_LIBRARIES ${LIBPANGO_LIBRARY} )
+set( PANGO_INCLUDE_DIRS ${LIBPANGO_INCLUDE_DIR} )
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args(PANGO  DEFAULT_MSG
-	PANGO_LIBRARY PANGO_INCLUDE_DIR)
+# handle the QUIETLY and REQUIRES arguments and set PANGO_FOUND to TRUE
+find_package_handle_standard_args( pango DEFAULT_MSG LIBPANGO_LIBRARY LIBPANGO_INCLUDE_DIR )
 
-mark_as_advanced(PANGO_INCLUDE_DIR PANGO_LIBRARY)
+mark_as_advanced(LIBPANGO_INCLUDE_DIR LIBPANGO_LIBRARY)

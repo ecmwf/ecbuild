@@ -21,6 +21,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             FindOpenJPEG.cmake
                             FindPGIFortran.cmake
                             FindProj4.cmake
+                            FindPango.cmake
                             FindREADLINE.cmake
                             FindRPCGEN.cmake
                             FindRealtime.cmake
