@@ -18,7 +18,8 @@ list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl 
 foreach( pglib ${pg_libs} )
 
     if( DEFINED PGI_PATH )
-      find_library( ${pglib}_lib  ${pglib} PATH ${PGI_PATH} PATH_SUFFIXES lib libso NO_DEFAULT_PATH )
+      find_library( ${pglib}_lib  ${pglib} PATH ${PGI_PATH} ${PGI_PATH}/lib ${PGI_PATH}/libso NO_DEFAULT_PATH )
+      debug_var( ${pglib}_lib )
     endif()
 
     find_library( ${pglib}_lib  ${pglib} HINTS /usr/local/apps/pgi/pgi-10.8/linux86-64/10.8 PATH PATH_SUFFIXES lib libso )
