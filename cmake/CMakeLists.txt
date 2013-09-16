@@ -22,6 +22,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             FindPGIFortran.cmake
                             FindProj4.cmake
                             FindPango.cmake
+                            FindPangoCairo.cmake
                             FindREADLINE.cmake
                             FindRPCGEN.cmake
                             FindRealtime.cmake

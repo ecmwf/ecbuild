@@ -18,10 +18,10 @@ find_package(PkgConfig)
 
 pkg_check_modules(PC_LIBPANGOCAIRO QUIET pangocairo)
 
-debug_var( PC_LIBPANGOCAIRO_FOUND )
-debug_var( PC_LIBPANGOCAIRO_VERSION )
-debug_var( PC_LIBPANGOCAIRO_LIBRARIES )
-debug_var( PC_LIBPANGOCAIRO_INCLUDE_DIRS )
+#debug_var( PC_LIBPANGOCAIRO_FOUND )
+#debug_var( PC_LIBPANGOCAIRO_VERSION )
+#debug_var( PC_LIBPANGOCAIRO_LIBRARIES )
+#debug_var( PC_LIBPANGOCAIRO_INCLUDE_DIRS )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args( pangocairo DEFAULT_MSG PC_LIBPANGOCAIRO_LIBRARIES PC_LIBPANGOCAIRO_INCLUDE_DIRS )
