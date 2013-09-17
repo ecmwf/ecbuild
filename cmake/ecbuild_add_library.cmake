@@ -31,8 +31,11 @@ macro( ecbuild_add_library )
     endif()
 
     get_filename_component( currdir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
+    
+    file(RELATIVE_PATH reldir ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
-#    debug_var(currdir)
+    # debug_var( currdir )
+    # debug_var( reldir )
 
     ### conditional build
 
