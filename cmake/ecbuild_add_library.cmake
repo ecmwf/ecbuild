@@ -13,7 +13,7 @@
 macro( ecbuild_add_library )
 
     set( options NOINSTALL )
-    set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE )
+    set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE HEADER_DESTINATION )
     set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
