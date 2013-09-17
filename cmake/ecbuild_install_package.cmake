@@ -52,6 +52,7 @@ macro( ecbuild_install_project )
 
 #    set(CPACK_GENERATOR        "TGZ;RPM;DEB")
     set(CPACK_GENERATOR        "TGZ")
+    set(CPACK_SOURCE_GENERATOR "TGZ")
     set(CPACK_PACKAGE_VENDOR   "ECMWF")
 
     # short description
