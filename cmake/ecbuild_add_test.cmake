@@ -22,10 +22,27 @@ macro( ecbuild_add_test )
       message(FATAL_ERROR "Unknown keywords given to ecbuild_add_test(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
-    # check test type
+    set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
 
-    if( NOT _PAR_TYPE )  # may be EXE or PYTHON
+    # default is enabled
+    if( NOT DEFINED _PAR_ENABLED )
+      set( _PAR_ENABLED 1 )
+    endif()
+
+
+    ### check test type
+
+    # command implies script
+    if( DEFINED _PAR_COMMAND )
+        set( _PAR_TYPE "SCRIPT" )
+    endif()
+
+    # default of TYPE
+    if( NOT _PAR_TYPE AND DEFINED _PAR_TARGET )
         set( _PAR_TYPE "EXE" )
+        if( NOT _PAR_SOURCES )
+           message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a TARGET without SOURCES.")
+        endif()
     endif()
 
     if( _PAR_TYPE MATCHES "PYTHON" )
@@ -36,22 +53,19 @@ macro( ecbuild_add_test )
         endif()
     endif()
 
-    set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
-
-    # further checks
+    ### further checks
 
     if( NOT _PAR_TARGET AND NOT _PAR_COMMAND )
-        message(FATAL_ERROR "The call to ecbuild_add_test() doesn't specify the TARGET or COMMAND.")
+        message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a TARGET nor a COMMAND.")
+    endif()
+
+    if( NOT _PAR_COMMAND AND NOT _PAR_SOURCES )
+      message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a COMMAND nor SOURCES, so no test can be defined or built.")
     endif()
 
     if( _PAR_TYPE MATCHES "SCRIPT" AND NOT _PAR_COMMAND )
         message(FATAL_ERROR "The call to ecbuild_add_test() defines a 'script' but doesn't specify the COMMAND.")
     endif()
-
-    if( DEFINED _PAR_TARGET AND _PAR_TYPE MATCHES "EXE" AND NOT _PAR_SOURCES )
-      message(FATAL_ERROR "The call to ecbuild_add_test() defined TARGET but doesn't specify the SOURCES.")
-    endif()
-
 
     ### conditional build
 
@@ -78,7 +92,7 @@ macro( ecbuild_add_test )
         endif()
     endif()
 
-    # enable the tests
+    ### enable the tests
 
     if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
 
@@ -92,11 +106,7 @@ macro( ecbuild_add_test )
 
       # build executable
 
-        if( _PAR_TYPE MATCHES "EXE" )
-
-            # TARGET defined so build the test
-    
-            if( DEFINED _PAR_TARGET )
+      if( DEFINED _PAR_SOURCES )
     
                 # add include dirs if defined
                 if( DEFINED _PAR_INCLUDES )
@@ -184,9 +194,7 @@ macro( ecbuild_add_test )
                       COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME}
                 )
 
-            endif() # TARGET
-    
-         endif() # EXE
+      endif() # _PAR_SOURCES
     
       # define the arguments
       set( TEST_ARGS "" )
@@ -194,15 +202,11 @@ macro( ecbuild_add_test )
         list( APPEND TEST_ARGS ${_PAR_ARGS} )
       endif()
 
-      # setup enable flag    
-      if( NOT DEFINED _PAR_ENABLED )
-          set( _PAR_ENABLED 1 )
-      endif()
+      ### define the test
 
-      # define the test
-      if( _PAR_ENABLED )
+      if( _PAR_ENABLED ) # we can disable and still build it but not run it with 'make tests'
 
-          if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET )
+          if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET ) # in the absence of target, we use the command as a name
               set( _PAR_TARGET ${_PAR_COMMAND} )
           endif()
 
@@ -212,7 +216,6 @@ macro( ecbuild_add_test )
               add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ) # run the test that was generated
           endif()
 
-
           if( DEFINED _PAR_ENVIRONMENT )
               set_tests_properties( ${_PAR_TARGET} PROPERTIES ENVIRONMENT "${_PAR_ENVIRONMENT}")
           endif()
@@ -221,6 +224,7 @@ macro( ecbuild_add_test )
     
       # add to the overall list of tests
       list( APPEND ECBUILD_ALL_TESTS ${_PAR_TARGET} )
+      list( REMOVE_DUPLICATES ECBUILD_ALL_TESTS )
       set( ECBUILD_ALL_TESTS ${ECBUILD_ALL_TESTS} CACHE INTERNAL "" )
 
     endif() # _condition
