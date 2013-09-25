@@ -12,8 +12,6 @@
 # git-proj: status, branch, checkout
 #
 
-set -e
-
 txtbld=$(tput bold)             #  bold
 bldblu=${txtbld}$(tput setaf 6) #  bold cyan
 txtrst=$(tput sgr0)             #  reset
@@ -23,21 +21,32 @@ USAGE="$dashless <command> [options...]"
 
 SUBDIRECTORY_OK="yes"
 
-PATH=$PATH:$(git --exec-path)
+PATH=$(git --exec-path):$PATH
 . git-sh-setup
 
 require_work_tree_exists
 
+# go to top
+
 cd_to_toplevel
 cd ..
 
-for d in $( find $PWD -type d -iname ".git" )
+# check option for number of levels
+nlevels=$(git config --global --int --get mproj.levels)
+if [ "$nlevels" != "" ]
+then
+    nlevels="-maxdepth $nlevels"
+fi
+
+# do it
+
+for d in $( find $PWD $nlevels -type d -iname ".git" )
 do
     gdir=$(dirname $d)
-	proj=$(basename $gdir)
+    proj=$(basename $gdir)
     pushd $gdir > /dev/null
     branch=$(git symbolic-ref --short HEAD)
-	echo -e "${bldblu}---> $proj ($branch)${txtrst}"
+    echo -e "${bldblu}---> $proj ($branch)${txtrst}"
     git "$@"
     popd > /dev/null
 done
