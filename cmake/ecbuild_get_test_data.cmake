@@ -74,10 +74,10 @@ function( ecbuild_get_test_data )
       set( _p_DIRNAME ${PROJECT_NAME}/${currdir} )
     endif()
 
-    debug_var( _p_TARGET )
-    debug_var( _p_NAME )
-    debug_var( _p_URL )
-    debug_var( _p_DIRNAME )
+#    debug_var( _p_TARGET )
+#    debug_var( _p_NAME )
+#    debug_var( _p_URL )
+#    debug_var( _p_DIRNAME )
 
     # download the data
 
