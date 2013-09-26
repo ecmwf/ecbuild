@@ -141,6 +141,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     include( ecbuild_find_python )
     include( ecbuild_find_fortranlibs )
     include( ecbuild_enable_fortran )
+    include( ecbuild_get_test_data )
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
