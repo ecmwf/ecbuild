@@ -14,7 +14,6 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             ecbuild_check_functions.cmake
                             ecbuild_check_os.cmake
                             ecbuild_cmake_macros.cmake
-                            ecbuild_config.h.in
                             ecbuild_debug_var.cmake
                             ecbuild_declare_project.cmake
                             ecbuild_define_build_types.cmake
@@ -32,13 +31,11 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             ecbuild_get_test_data.cmake
                             ecbuild_install_package.cmake
                             ecbuild_links_target.cmake
-                            ecbuild_platform.h.in
                             ecbuild_print_summary.cmake
                             ecbuild_project_files.cmake
                             ecbuild_separate_sources.cmake
                             ecbuild_system.cmake
                             ecbuild_use_package.cmake
-                            ecbuild_version.h.in
                             ecbuild_warn_unused_files.cmake
                             FindADSM.cmake
                             FindCMath.cmake
@@ -69,6 +66,13 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             FindScin.cmake
                             FindXLFortranLibs.cmake
                             FindYACC.cmake
+                            ecbuild_config.h.in
+                            ecbuild_platform.h.in
+                            ecbuild_version.h.in
+                            md5.in
+                            project-config-version.cmake.in
+                            project-config.cmake.in
+                            sha1.in
                             2.8/CMakePushCheckState.cmake
                             contrib/GetGitRevisionDescription.cmake
                             contrib/GetGitRevisionDescription.cmake.in
