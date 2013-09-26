@@ -123,9 +123,8 @@ macro( ecbuild_add_test )
             if( _md5 )
               ecbuild_get_test_data( TARGET _test_data_${name} NAME ${_name} MD5 ${_md5} )
             else()
-              ecbuild_get_test_data( TARGET _test_data_${name} NAME ${_name} CHECKSUM )
+              ecbuild_get_test_data( TARGET _test_data_${name} NAME ${_name} )
             endif()
-
 
             list( APPEND _PAR_DEPENDS _test_data_${name} )
 

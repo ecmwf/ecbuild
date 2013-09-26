@@ -47,10 +47,10 @@ endfunction()
 # examples:
 #
 ## no check done
-#    ecbuild_get_test_data( NAME msl.grib )
+#    ecbuild_get_test_data( NAME msl.grib NOCHECK )
 #
 ## checksum agains remote md5 file
-#    ecbuild_get_test_data( NAME msl.grib CHECKSUM )
+#    ecbuild_get_test_data( NAME msl.grib )
 #
 ## checksum agains local md5
 #    ecbuild_get_test_data( NAME msl.grib MD5 f69ca0929d1122c7878d19f32401abe9 )
@@ -60,7 +60,7 @@ endfunction()
 
 function( ecbuild_get_test_data )
 
-    set( options CHECKSUM )
+    set( options NOCHECK )
     set( single_value_args TARGET URL NAME DIRNAME MD5 SHA1)
     set( multi_value_args  )
 
@@ -101,11 +101,7 @@ function( ecbuild_get_test_data )
 
     set( _deps ${_p_NAME} )
 
-    if( _p_MD5 OR _p_SHA1 )
-        set( _p_CHECKSUM 1 )
-    endif()
-
-    if( _p_CHECKSUM )
+    if( NOT _p_NOCHECK )
 
         find_program( MD5SUM md5sum )
 
