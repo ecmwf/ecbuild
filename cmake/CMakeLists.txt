@@ -1,6 +1,45 @@
 ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                         SOURCES_PACK
                             sg.pl
+                            ecbuild_add_executable.cmake
+                            ecbuild_add_extra_search_paths.cmake
+                            ecbuild_add_library.cmake
+                            ecbuild_add_persistent.cmake
+                            ecbuild_add_resources.cmake
+                            ecbuild_add_test.cmake
+                            ecbuild_check_c_source.cmake
+                            ecbuild_check_compiler.cmake
+                            ecbuild_check_cxx_source.cmake
+                            ecbuild_check_fortran_source.cmake
+                            ecbuild_check_functions.cmake
+                            ecbuild_check_os.cmake
+                            ecbuild_cmake_macros.cmake
+                            ecbuild_config.h.in
+                            ecbuild_debug_var.cmake
+                            ecbuild_declare_project.cmake
+                            ecbuild_define_build_types.cmake
+                            ecbuild_define_options.cmake
+                            ecbuild_define_paths.cmake
+                            ecbuild_enable_fortran.cmake
+                            ecbuild_find_fortranlibs.cmake
+                            ecbuild_find_package.cmake
+                            ecbuild_find_python.cmake
+                            ecbuild_find_support_packages.cmake
+                            ecbuild_generate_rpc.cmake
+                            ecbuild_generate_yy.cmake
+                            ecbuild_get_date.cmake
+                            ecbuild_get_resources.cmake
+                            ecbuild_get_test_data.cmake
+                            ecbuild_install_package.cmake
+                            ecbuild_links_target.cmake
+                            ecbuild_platform.h.in
+                            ecbuild_print_summary.cmake
+                            ecbuild_project_files.cmake
+                            ecbuild_separate_sources.cmake
+                            ecbuild_system.cmake
+                            ecbuild_use_package.cmake
+                            ecbuild_version.h.in
+                            ecbuild_warn_unused_files.cmake
                             FindADSM.cmake
                             FindCMath.cmake
                             FindCairo.cmake
@@ -11,7 +50,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             FindFDB.cmake
                             Findgrib_api.cmake
                             Findodb_api.cmake
-							FindHPSS.cmake
+				FindHPSS.cmake
                             FindLEX.cmake
                             FindLibGFortran.cmake
                             FindNDBM.cmake
