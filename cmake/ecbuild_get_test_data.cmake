@@ -43,6 +43,20 @@ endfunction()
 
 ##############################################################################
 # function for getting test data
+#
+# examples:
+#
+## no check done
+#    ecbuild_get_test_data( NAME msl.grib )
+#
+## checksum agains remote md5 file
+#    ecbuild_get_test_data( NAME msl.grib CHECKSUM )
+#
+## checksum agains local md5
+#    ecbuild_get_test_data( NAME msl.grib MD5 f69ca0929d1122c7878d19f32401abe9 )
+#
+## checksum agains local sha1
+#    ecbuild_get_test_data( NAME msl.grib SHA1 5a8e8c57c510b64e31863ca47cfc3b65971089d9 )
 
 function( ecbuild_get_test_data )
 
@@ -65,8 +79,8 @@ function( ecbuild_get_test_data )
     endif()
 
     if( NOT _p_TARGET )
-#      string( REGEX REPLACE "[^A-Za-z0-9_]" "_" _p_TARGET "test_data_${_p_NAME}")
-      string( REGEX REPLACE "[^A-Za-z0-9_]" "_" _p_TARGET "${_p_NAME}")
+      string( REGEX REPLACE "[^A-Za-z0-9_]" "_" _p_TARGET "test_data_${_p_NAME}")
+#      string( REGEX REPLACE "[^A-Za-z0-9_]" "_" _p_TARGET "${_p_NAME}")
 #      set( _p_TARGET ${_p_NAME} )
     endif()
 

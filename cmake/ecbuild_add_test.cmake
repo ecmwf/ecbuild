@@ -14,7 +14,7 @@ macro( ecbuild_add_test )
 
     set( options           BOOST )
     set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE )
-    set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
+    set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -102,6 +102,35 @@ macro( ecbuild_add_test )
         foreach( rfile ${_PAR_RESOURCES} )
           execute_process( COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${rfile} ${CMAKE_CURRENT_BINARY_DIR} )
         endforeach()
+      endif()
+
+      # get test data
+
+      if( _PAR_TEST_DATA )
+
+         debug_var(_PAR_TEST_DATA)
+
+         foreach( _d ${_PAR_TEST_DATA} )
+
+            # string( REGEX REPLACE "(.+):.*" "\\1" _name "${_d}" )
+            # string( REGEX REPLACE ".*:(.+)" "\\1" _md5  "${_d}" )
+
+
+            string( REGEX MATCH "[^:]+" _name "${_d}" )
+            string( REGEX MATCH ":.*"  _md5  "${_d}" )
+            string( REPLACE ":" "" _md5 "${_md5}" )
+
+            if( _md5 )
+              ecbuild_get_test_data( TARGET _test_data_${name} NAME ${_name} MD5 ${_md5} )
+            else()
+              ecbuild_get_test_data( TARGET _test_data_${name} NAME ${_name} CHECKSUM )
+            endif()
+
+
+            list( APPEND _PAR_DEPENDS _test_data_${name} )
+
+         endforeach()
+
       endif()
 
       # build executable
