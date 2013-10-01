@@ -108,13 +108,7 @@ macro( ecbuild_add_test )
 
       if( _PAR_TEST_DATA )
 
-         debug_var(_PAR_TEST_DATA)
-
          foreach( _d ${_PAR_TEST_DATA} )
-
-            # string( REGEX REPLACE "(.+):.*" "\\1" _name "${_d}" )
-            # string( REGEX REPLACE ".*:(.+)" "\\1" _md5  "${_d}" )
-
 
             string( REGEX MATCH "[^:]+" _name "${_d}" )
             string( REGEX MATCH ":.*"  _md5  "${_d}" )
@@ -223,6 +217,23 @@ macro( ecbuild_add_test )
                 )
 
       endif() # _PAR_SOURCES
+
+      if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET ) # in the absence of target, we use the command as a name
+          set( _PAR_TARGET ${_PAR_COMMAND} )
+      endif()
+
+      # scripts dont have actual build targets so no data downloads are executed
+      # we build a phony target to trigger the dependency downloads
+      if( DEFINED _PAR_COMMAND )
+
+          add_custom_target( ${_PAR_TARGET}.x ALL COMMAND touch ${_PAR_TARGET}.x )
+
+          if( DEFINED _PAR_DEPENDS)
+             add_dependencies( ${_PAR_TARGET}.x ${_PAR_DEPENDS} )
+           endif()
+
+      endif()
+
     
       # define the arguments
       set( TEST_ARGS "" )
@@ -233,10 +244,6 @@ macro( ecbuild_add_test )
       ### define the test
 
       if( _PAR_ENABLED ) # we can disable and still build it but not run it with 'make tests'
-
-          if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET ) # in the absence of target, we use the command as a name
-              set( _PAR_TARGET ${_PAR_COMMAND} )
-          endif()
 
           if( DEFINED _PAR_COMMAND )
               add_test( ${_PAR_TARGET} ${_PAR_COMMAND} ${TEST_ARGS} ) # run a command as test
