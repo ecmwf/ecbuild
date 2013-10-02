@@ -48,6 +48,7 @@ macro( ecbuild_add_executable )
 
         # add include dirs if defined
         if( DEFINED _PAR_INCLUDES )
+          list(REMOVE_DUPLICATES _PAR_INCLUDES )
           foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
             if( path )
               include_directories( ${path} )
@@ -83,6 +84,7 @@ macro( ecbuild_add_executable )
     
         # add the link libraries
         if( DEFINED _PAR_LIBS )
+          list(REMOVE_DUPLICATES _PAR_LIBS )
           list(REMOVE_ITEM _PAR_LIBS debug)
           list(REMOVE_ITEM _PAR_LIBS optimized)
           foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
@@ -122,20 +124,26 @@ macro( ecbuild_add_executable )
         if( NOT _PAR_NOINSTALL )
 
             # add installation paths and associate with defined component
-            if( DEFINED _PAR_COMPONENT )
-                set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
-            else()
-                set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
-            endif()
+#            if( DEFINED _PAR_COMPONENT )
+#                set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
+#            else()
+#                set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
+#            endif()
         
             install( TARGETS ${_PAR_TARGET}
+              EXPORT  ${CMAKE_PROJECT_NAME}-targets
               RUNTIME DESTINATION ${INSTALL_BIN_DIR}
               LIBRARY DESTINATION ${INSTALL_LIB_DIR}
-              ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
-              COMPONENT ${COMPONENT_DIRECTIVE} )
+              ARCHIVE DESTINATION ${INSTALL_LIB_DIR} )
+#              COMPONENT ${COMPONENT_DIRECTIVE} )
 
             # set build location
+
             set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+
+            # export location of target to other projects -- must be exactly after setting the build location (see previous command)
+
+            export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
 
          endif()
     
@@ -168,6 +176,9 @@ macro( ecbuild_add_executable )
         if( NOT _PAR_NOINSTALL )
             ecbuild_link_exe( ${_PAR_TARGET} ${EXE_FILENAME} )
         endif()
+
+        # append to the list of this project targets
+        set( ${PROJECT_NAME}_ALL_EXES ${${PROJECT_NAME}_ALL_EXES} ${_PAR_TARGET} CACHE INTERNAL "" )    
 
     endif()
 

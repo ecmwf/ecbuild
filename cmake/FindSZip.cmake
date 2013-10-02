@@ -12,12 +12,14 @@
 #  SZIP_INCLUDE_DIRS - The SZip include directories
 #  SZIP_LIBRARIES - The libraries needed to use SZip
 
+ecbuild_add_extra_search_paths( szip )
+
 if( DEFINED SZIP_PATH )
-    find_path(SZIP_INCLUDE_DIR szlib.h       PATHS ${SZIP_PATH}/include PATH_SUFFIXES szip NO_DEFAULT_PATH)
-    find_library(SZIP_LIBRARY  NAMES szip sz PATHS ${SZIP_PATH}/lib     PATH_SUFFIXES szip NO_DEFAULT_PATH)
+    find_path( SZIP_INCLUDE_DIR szlib.h       PATHS ${SZIP_PATH}/include PATH_SUFFIXES szip NO_DEFAULT_PATH )
+    find_library( SZIP_LIBRARY  NAMES szip sz PATHS ${SZIP_PATH}/lib     PATH_SUFFIXES szip NO_DEFAULT_PATH )
 endif()
 
-find_path(SZIP_INCLUDE_DIR szlib.h PATH_SUFFIXES szip )
+find_path( SZIP_INCLUDE_DIR szlib.h PATH_SUFFIXES szip )
 find_library( SZIP_LIBRARY NAMES szip sz  PATH_SUFFIXES szip )
 
 set( SZIP_LIBRARIES    ${SZIP_LIBRARY} )

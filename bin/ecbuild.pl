@@ -292,6 +292,7 @@ sub generate() {
     print OUT "\n";
     
     print OUT "include( ecbuild_system )\n\n";  
+    print OUT "ecbuild_declare_project()\n\n";  
 
     foreach my $r ( sort keys %repos )
     {        
