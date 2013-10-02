@@ -64,12 +64,15 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             cmake/FindYACC.cmake
 )
 
-install( DIRECTORY cmake DESTINATION share/ecbuild/cmake )
-
 add_subdirectory( bin )
 
-install( DIRECTORY bin DESTINATION bin )
+if( NOT ECBUILD_NO_INSTALL )
 
+	install( DIRECTORY cmake DESTINATION share/ecbuild/cmake )
+
+	install( DIRECTORY bin DESTINATION bin )
+
+endif()
 
 ############################################################################################
 # finalize
