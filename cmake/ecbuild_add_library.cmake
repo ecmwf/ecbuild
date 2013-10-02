@@ -13,7 +13,7 @@
 macro( ecbuild_add_library )
 
     set( options NOINSTALL )
-    set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE )
+    set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE HEADER_DESTINATION )
     set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -31,8 +31,11 @@ macro( ecbuild_add_library )
     endif()
 
     get_filename_component( currdir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
+    
+    file(RELATIVE_PATH reldir ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 
-#    debug_var(currdir)
+    # debug_var( currdir )
+    # debug_var( reldir )
 
     ### conditional build
 
@@ -68,6 +71,7 @@ macro( ecbuild_add_library )
     
         # add include dirs if defined
         if( DEFINED _PAR_INCLUDES )
+          list( REMOVE_DUPLICATES _PAR_INCLUDES )
           foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
             if( path )
               include_directories( ${path} )
@@ -103,6 +107,7 @@ macro( ecbuild_add_library )
     
         # add the link libraries
         if( DEFINED _PAR_LIBS )
+          list(REMOVE_DUPLICATES _PAR_LIBS )
           list(REMOVE_ITEM _PAR_LIBS debug)
           list(REMOVE_ITEM _PAR_LIBS optimized)
           foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
@@ -142,18 +147,19 @@ macro( ecbuild_add_library )
         if( NOT _PAR_NOINSTALL )
 
             # and associate with defined component
-            if( DEFINED _PAR_COMPONENT )
-                set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
-            else()
-                set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
-            endif()
+#            if( DEFINED _PAR_COMPONENT )
+#                set( COMPONENT_DIRECTIVE "${_PAR_COMPONENT}" )
+#            else()
+#                set( COMPONENT_DIRECTIVE "${PROJECT_NAME}" )
+#            endif()
     
             install( TARGETS ${_PAR_TARGET}
+              EXPORT  ${CMAKE_PROJECT_NAME}-targets
               RUNTIME DESTINATION ${INSTALL_BIN_DIR}
               LIBRARY DESTINATION ${INSTALL_LIB_DIR}
-              ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
-              COMPONENT ${COMPONENT_DIRECTIVE} )
-    
+              ARCHIVE DESTINATION ${INSTALL_LIB_DIR} )
+#              COMPONENT ${COMPONENT_DIRECTIVE} )
+
             # install headers
             if( _PAR_HEADER_DESTINATION )
                 set( _h_destination "${_PAR_HEADER_DESTINATION}" )
@@ -185,9 +191,14 @@ macro( ecbuild_add_library )
             endif()
     
             # set build location
+
             set_property( TARGET ${_PAR_TARGET} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
             set_property( TARGET ${_PAR_TARGET} PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+    
+            # export location of target to other projects -- must be exactly after setting the build location (see previous 2 commands)
 
+            export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
+    
         endif()
 
         # add definitions to compilation
@@ -212,6 +223,9 @@ macro( ecbuild_add_library )
         if( NOT _PAR_NOINSTALL )
             ecbuild_link_lib( ${_PAR_TARGET} ${LIB_FILENAME} )
         endif()
+
+        # append to the list of this project targets
+        set( ${PROJECT_NAME}_ALL_LIBS ${${PROJECT_NAME}_ALL_LIBS} ${_PAR_TARGET} CACHE INTERNAL "" )    
 
         # set linker language
         if( DEFINED _PAR_LINKER_LANGUAGE )

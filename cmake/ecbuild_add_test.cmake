@@ -14,7 +14,7 @@ macro( ecbuild_add_test )
 
     set( options           BOOST )
     set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE )
-    set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
+    set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -22,10 +22,27 @@ macro( ecbuild_add_test )
       message(FATAL_ERROR "Unknown keywords given to ecbuild_add_test(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
-    # check test type
+    set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
 
-    if( NOT _PAR_TYPE )  # may be EXE or PYTHON
+    # default is enabled
+    if( NOT DEFINED _PAR_ENABLED )
+      set( _PAR_ENABLED 1 )
+    endif()
+
+
+    ### check test type
+
+    # command implies script
+    if( DEFINED _PAR_COMMAND )
+        set( _PAR_TYPE "SCRIPT" )
+    endif()
+
+    # default of TYPE
+    if( NOT _PAR_TYPE AND DEFINED _PAR_TARGET )
         set( _PAR_TYPE "EXE" )
+        if( NOT _PAR_SOURCES )
+           message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a TARGET without SOURCES.")
+        endif()
     endif()
 
     if( _PAR_TYPE MATCHES "PYTHON" )
@@ -36,22 +53,19 @@ macro( ecbuild_add_test )
         endif()
     endif()
 
-    set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
-
-    # further checks
+    ### further checks
 
     if( NOT _PAR_TARGET AND NOT _PAR_COMMAND )
-        message(FATAL_ERROR "The call to ecbuild_add_test() doesn't specify the TARGET or COMMAND.")
+        message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a TARGET nor a COMMAND.")
+    endif()
+
+    if( NOT _PAR_COMMAND AND NOT _PAR_SOURCES )
+      message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a COMMAND nor SOURCES, so no test can be defined or built.")
     endif()
 
     if( _PAR_TYPE MATCHES "SCRIPT" AND NOT _PAR_COMMAND )
         message(FATAL_ERROR "The call to ecbuild_add_test() defines a 'script' but doesn't specify the COMMAND.")
     endif()
-
-    if( DEFINED _PAR_TARGET AND _PAR_TYPE MATCHES "EXE" AND NOT _PAR_SOURCES )
-      message(FATAL_ERROR "The call to ecbuild_add_test() defined TARGET but doesn't specify the SOURCES.")
-    endif()
-
 
     ### conditional build
 
@@ -69,25 +83,56 @@ macro( ecbuild_add_test )
 
     # boost unit test ?
 
-    if( DEFINED _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
+    if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
         if( Boost_UNIT_TEST_FRAMEWORK_LIBRARY AND Boost_TEST_EXEC_MONITOR_LIBRARY )
-           # message( STATUS "${_PAR_TARGET} is a Boost unit test" )
+           message( STATUS "${_PAR_TARGET} is a Boost unit test" )
         else()
-            set( _${_PAR_TARGET}_condition FALSE )
-           # message( WARNING "${_PAR_TARGET} test deactivated -- Boost unit test framework not available" )
+           set( _${_PAR_TARGET}_condition FALSE )
+           message( WARNING "${_PAR_TARGET} test deactivated -- Boost unit test framework not available" )
         endif()
     endif()
 
+    ### enable the tests
+
     if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
 
-        if( _PAR_TYPE MATCHES "EXE" )
+      # add resources
 
-            # TARGET defined so build the test
-    
-            if( DEFINED _PAR_TARGET )
+      if( DEFINED _PAR_RESOURCES )
+        foreach( rfile ${_PAR_RESOURCES} )
+          execute_process( COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${rfile} ${CMAKE_CURRENT_BINARY_DIR} )
+        endforeach()
+      endif()
+
+      # get test data
+
+      if( _PAR_TEST_DATA )
+
+         foreach( _d ${_PAR_TEST_DATA} )
+
+            string( REGEX MATCH "[^:]+" _name "${_d}" )
+            string( REGEX MATCH ":.*"  _md5  "${_d}" )
+            string( REPLACE ":" "" _md5 "${_md5}" )
+
+            if( _md5 )
+              ecbuild_get_test_data( TARGET _test_data_${name} NAME ${_name} MD5 ${_md5} )
+            else()
+              ecbuild_get_test_data( TARGET _test_data_${name} NAME ${_name} )
+            endif()
+
+            list( APPEND _PAR_DEPENDS _test_data_${name} )
+
+         endforeach()
+
+      endif()
+
+      # build executable
+
+      if( DEFINED _PAR_SOURCES )
     
                 # add include dirs if defined
                 if( DEFINED _PAR_INCLUDES )
+                  list(REMOVE_DUPLICATES _PAR_INCLUDES )
                   foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
                     if( path )
                       include_directories( ${path} )
@@ -113,16 +158,9 @@ macro( ecbuild_add_test )
                   add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
                 endif()
         
-                # add resources
-                if( DEFINED _PAR_RESOURCES)
-                        foreach( rfile ${_PAR_RESOURCES} )
-                            add_custom_command( TARGET ${_PAR_TARGET} POST_BUILD
-                                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${rfile} ${CMAKE_CURRENT_BINARY_DIR} )
-                        endforeach()
-                endif()
-        
                 # add the link libraries
                 if( DEFINED _PAR_LIBS )
+                  list(REMOVE_DUPLICATES _PAR_LIBS )
                   list(REMOVE_ITEM _PAR_LIBS debug)
                   list(REMOVE_ITEM _PAR_LIBS optimized)
                   foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
@@ -135,7 +173,7 @@ macro( ecbuild_add_test )
                 endif()
 
                 # add test libraries
-                if( DEFINED _PAR_BOOST )
+                if( _PAR_BOOST )
                     target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
                 endif()
         
@@ -178,9 +216,24 @@ macro( ecbuild_add_test )
                       COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME}
                 )
 
-        endif() # EXE
-    
-      endif() # condition
+      endif() # _PAR_SOURCES
+
+      if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET ) # in the absence of target, we use the command as a name
+          set( _PAR_TARGET ${_PAR_COMMAND} )
+      endif()
+
+      # scripts dont have actual build targets so no data downloads are executed
+      # we build a phony target to trigger the dependency downloads
+      if( DEFINED _PAR_COMMAND )
+
+          add_custom_target( ${_PAR_TARGET}.x ALL COMMAND touch ${_PAR_TARGET}.x )
+
+          if( DEFINED _PAR_DEPENDS)
+             add_dependencies( ${_PAR_TARGET}.x ${_PAR_DEPENDS} )
+           endif()
+
+      endif()
+
     
       # define the arguments
       set( TEST_ARGS "" )
@@ -188,24 +241,15 @@ macro( ecbuild_add_test )
         list( APPEND TEST_ARGS ${_PAR_ARGS} )
       endif()
 
-      # setup enable flag    
-      if( NOT DEFINED _PAR_ENABLED )
-          set( _PAR_ENABLED 1 )
-      endif()
+      ### define the test
 
-      # define the test
-      if( _PAR_ENABLED )
-
-          if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET )
-              set( _PAR_TARGET ${_PAR_COMMAND} )
-          endif()
+      if( _PAR_ENABLED ) # we can disable and still build it but not run it with 'make tests'
 
           if( DEFINED _PAR_COMMAND )
               add_test( ${_PAR_TARGET} ${_PAR_COMMAND} ${TEST_ARGS} ) # run a command as test
           else()
               add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ) # run the test that was generated
           endif()
-
 
           if( DEFINED _PAR_ENVIRONMENT )
               set_tests_properties( ${_PAR_TARGET} PROPERTIES ENVIRONMENT "${_PAR_ENVIRONMENT}")
@@ -215,6 +259,7 @@ macro( ecbuild_add_test )
     
       # add to the overall list of tests
       list( APPEND ECBUILD_ALL_TESTS ${_PAR_TARGET} )
+      list( REMOVE_DUPLICATES ECBUILD_ALL_TESTS )
       set( ECBUILD_ALL_TESTS ${ECBUILD_ALL_TESTS} CACHE INTERNAL "" )
 
     endif() # _condition

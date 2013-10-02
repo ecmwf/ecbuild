@@ -68,6 +68,8 @@
 
 /* --- capabilities --- */
 
+#cmakedefine EC_STAT_SIZEOF_OFF_T @EC_STAT_SIZEOF_OFF_T@
+
 #cmakedefine EC_HAVE_OFFT
 #cmakedefine EC_HAVE_OFF64T
 

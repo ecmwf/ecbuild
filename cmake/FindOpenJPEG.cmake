@@ -16,6 +16,8 @@
 #  OPENJPEG_LIBRARY, where to find the OpenJPEG library.
 #  OPENJPEG_INCLUDE_DIR, where to find the openjpeg.h header
 
+ecbuild_add_extra_search_paths( openjpg )
+
 IF( NOT DEFINED OPENJPEG_PATH AND NOT "$ENV{OPENJPEG_PATH}" STREQUAL "" )
   SET( OPENJPEG_PATH "$ENV{OPENJPEG_PATH}" )
 ENDIF()

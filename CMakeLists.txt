@@ -1,19 +1,11 @@
 ############################################################################################
 # cmake options:
 #
-#       -DCMAKE_BUILD_TYPE=Debug|RelWithDebInfo|Release|Production
 #       -DCMAKE_INSTALL_PREFIX=/path/to/install
-#
-#       -DCMAKE_MODULE_PATH=/path/to/ecbuild/cmake
-#
-#       -DCMAKE_C_COMPILER=gcc
-#       -DCMAKE_C_COMPILER=g++
-#
-#       -DCMAKE_PREFIX_PATH=/path/to/jasper:/path/to/any/package/out/of/place
 
 cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
 
-project( ecbuild C ) # no language used, pure cmake project
+project( ecbuild C )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
 
@@ -26,8 +18,6 @@ ecbuild_declare_project()
 
 configure_file( cmake/ecbuild_version.h.in ${CMAKE_BINARY_DIR}/ecbuild_version.h  )
 
-install( FILES ${CMAKE_BINARY_DIR}/ecbuild_version.h DESTINATION include/ecbuild/ )
-
 # contents
 
 ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
@@ -37,39 +27,19 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             NOTICE
                             LICENSE
                             COPYING
-                            cmake/FindADSM.cmake
-                            cmake/FindCMath.cmake
-                            cmake/FindCairo.cmake
-                            cmake/FindDl.cmake
-                            cmake/FindEMOS.cmake
-                            cmake/FindEcLib.cmake
-                            cmake/FindFDB.cmake
-                            cmake/FindGRIB_API.cmake
-                            cmake/FindHPSS.cmake
-                            cmake/FindLEX.cmake
-                            cmake/FindLibGFortran.cmake
-                            cmake/FindNDBM.cmake
-                            cmake/FindNetCDF.cmake
-                            cmake/FindODB.cmake
-                            cmake/FindODB_API.cmake
-                            cmake/FindOpenJPEG.cmake
-                            cmake/FindPGIFortran.cmake
-                            cmake/FindProj4.cmake
-                            cmake/FindREADLINE.cmake
-                            cmake/FindRPCGEN.cmake
-                            cmake/FindRealtime.cmake
-                            cmake/FindSZip.cmake
-                            cmake/FindScin.cmake
-                            cmake/FindXLFortranLibs.cmake
-                            cmake/FindYACC.cmake
 )
 
-install( DIRECTORY cmake DESTINATION share/ecbuild/cmake )
+add_subdirectory( cmake )
 
-add_subdirectory( bin )
+if( NOT ECBUILD_NO_INSTALL )
 
-install( DIRECTORY bin DESTINATION bin )
+    install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} FILES_MATCHING PATTERN "*.cmake*" )
 
+    add_subdirectory( bin )
+
+    add_subdirectory( share )
+
+endif()
 
 ############################################################################################
 # finalize
@@ -77,4 +47,3 @@ install( DIRECTORY bin DESTINATION bin )
 ecbuild_install_project( NAME ecbuild )
 
 ecbuild_print_summary()
-

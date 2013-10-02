@@ -6,28 +6,79 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# - Try to find NetCDF
-# Once done this will define
+# Try to find NetCDF3 or NetCDF4 -- default is 4
+#
+# Input:
+#  * NETCDF_PATH - user defined path where to search for the library first
+#  * NETCDF_CXX  - if to search also for netcdf_c++ wrapper library
+#
+# Output:
 #  NETCDF_FOUND - System has NetCDF
+#  NETCDF_DEFINITIONS
 #  NETCDF_INCLUDE_DIRS - The NetCDF include directories
 #  NETCDF_LIBRARIES - The libraries needed to use NetCDF
 
-if( DEFINED NETCDF_PATH )
-	find_path(NETCDF_INCLUDE_DIR netcdf.h PATHS ${NETCDF_PATH}/include PATH_SUFFIXES netcdf NO_DEFAULT_PATH)
-	find_library(NETCDF_LIBRARY  netcdf   PATHS ${NETCDF_PATH}/lib     PATH_SUFFIXES netcdf NO_DEFAULT_PATH)
+# default is netcdf4
+
+if( NOT PREFER_NETCDF3 )
+  set( PREFER_NETCDF4 1 )
+else()
+  set( PREFER_NETCDF4 0 )
+endif()
+mark_as_advanced( PREFER_NETCDF4 PREFER_NETCDF3 )
+
+### NetCDF4
+
+if( PREFER_NETCDF4 )
+
+    # hdf5
+
+    ecbuild_add_extra_search_paths( hdf5 )
+
+    find_package( HDF5 COMPONENTS C CXX HL )
+
+    # netcdf4
+
+    if( DEFINED $ENV{NETCDF_PATH} )
+        set( NETCDF_ROOT "$ENV{NETCDF_PATH}" )
+        list( APPEND CMAKE_PREFIX_PATH  $ENV{NETCDF_PATH} )
+    endif()
+
+    if( DEFINED NETCDF_PATH )
+        set( NETCDF_ROOT "${NETCDF_PATH}" )
+        list( APPEND CMAKE_PREFIX_PATH  ${NETCDF_PATH} )
+    endif()
+
+    if( NETCDF_CXX )
+       set( NETCDF_FIND_COMPONENTS C CXX )
+    else()
+       set( NETCDF_FIND_COMPONENTS C )
+    endif()
+
+    ecbuild_add_extra_search_paths( netcdf4 )
+
+    find_package( NetCDF4 )
+
+    if( NETCDF_FOUND AND HDF5_FOUND )
+        # list( APPEND NETCDF_DEFINITIONS  ${HDF5_DEFINITIONS} )
+        list( APPEND NETCDF_LIBRARIES    ${HDF5_HL_LIBRARIES} ${HDF5_LIBRARIES}  )
+        list( APPEND NETCDF_INCLUDE_DIRS ${HDF5_INCLUDE_DIRS} )
+    endif()
+
+#    debug_var( NETCDF_FOUND )
+#    debug_var( NETCDF_LIBRARIES )
+#    debug_var( NETCDF_INCLUDE_DIRS )
+#    debug_var( HDF5_FOUND )
+#    debug_var( HDF5_INCLUDE_DIRS )
+#    debug_var( HDF5_HL_LIBRARIES )
+#    debug_var( HDF5_LIBRARIES )
+
 endif()
 
-find_path(NETCDF_INCLUDE_DIR netcdf.h PATH_SUFFIXES netcdf )
-find_library( NETCDF_LIBRARY netcdf   PATH_SUFFIXES netcdf )
+### NetCDF3
 
-set( NETCDF_LIBRARIES    ${NETCDF_LIBRARY} )
-set( NETCDF_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR} )
+if( PREFER_NETCDF3 )
 
-include(FindPackageHandleStandardArgs)
+    find_package( NetCDF3 )
 
-# handle the QUIETLY and REQUIRED arguments and set NETCDF_FOUND to TRUE
-# if all listed variables are TRUE
-find_package_handle_standard_args(NETCDF  DEFAULT_MSG
-								  NETCDF_LIBRARY NETCDF_INCLUDE_DIR)
-
-mark_as_advanced(NETCDF_INCLUDE_DIR NETCDF_LIBRARY )
+endif()

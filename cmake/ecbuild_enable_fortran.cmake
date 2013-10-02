@@ -22,25 +22,31 @@ macro( ecbuild_enable_fortran )
       message(FATAL_ERROR "Unknown keywords given to ecbuild_enable_fortran(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
-  enable_language( Fortran )
+    enable_language( Fortran )
 
-  if( DEFINED __PAR_REQUIRED )
+    if( DEFINED _PAR_REQUIRED )
       if( NOT CMAKE_Fortran_COMPILER OR NOT CMAKE_Fortran_COMPILER_WORKS )
           message( FATAL_ERROR "Fortran compiler required by project ${PROJECT_NAME} but does not seem to work" )
       endif()
-  endif()
+    endif()
 
-  if( CMAKE_Fortran_COMPILER_LOADED )
-    include(CheckFortranFunctionExists)
-    include(FortranCInterface)
-  endif()
+    if( CMAKE_Fortran_COMPILER_LOADED )
 
-  if( DEFINED _PAR_MODULE_DIRECTORY )
-    set( CMAKE_Fortran_MODULE_DIRECTORY  ${_PAR_MODULE_DIRECTORY} CACHE PATH "directory for all fortran modules." )
-  else()
-    set( CMAKE_Fortran_MODULE_DIRECTORY  ${PROJECT_BINARY_DIR}/${INSTALL_INCLUDE_DIR} CACHE PATH "directory for all fortran modules." )
-  endif()
+        include(CheckFortranFunctionExists)
+        include(FortranCInterface)
 
-  install( CODE "EXECUTE_PROCESS (COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${CMAKE_Fortran_MODULE_DIRECTORY}/\${BUILD_TYPE}\" \"${CMAKE_INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}\")" )
+        set( EC_HAVE_Fortran 1 )
+
+    endif()
+
+    if( DEFINED _PAR_MODULE_DIRECTORY )
+        set( CMAKE_Fortran_MODULE_DIRECTORY  ${_PAR_MODULE_DIRECTORY} CACHE PATH "directory for all fortran modules." )
+    else()
+        set( CMAKE_Fortran_MODULE_DIRECTORY  ${PROJECT_BINARY_DIR}/fortran CACHE PATH "directory for all fortran modules." )
+    endif()
+
+    include_directories( ${CMAKE_Fortran_MODULE_DIRECTORY} )
+
+    install( CODE "EXECUTE_PROCESS (COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${CMAKE_Fortran_MODULE_DIRECTORY}/\${BUILD_TYPE}\" \"${INSTALL_INCLUDE_DIR}\")" )
 
 endmacro( ecbuild_enable_fortran )

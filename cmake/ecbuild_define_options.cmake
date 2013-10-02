@@ -14,3 +14,5 @@ option( ENABLE_RPATHS           "when installing insert RPATHS into binaries"   
 option( ENABLE_WARNINGS         "enable compiler warnings"                        OFF )
 
 option( CHECK_UNUSED_FILES      "check for unused project files"                  ON  )
+
+option( ENABLE_LARGE_FILE_SUPPORT "build with large file support"   ON  )

@@ -9,16 +9,21 @@
 ############################################################################################
 # disallow in-source build
 
+if( EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt ) # check for failed attempts to build within the source tree
+   message( FATAL_ERROR "Project ${PROJECT_NAME} contains a CMakeCache.txt inside source tree [${CMAKE_SOURCE_DIR}/CMakeCache.txt].\n Please remove it and
+   make sure that source tree is prestine and clean of unintended files, before retrying." )
+endif()
+
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(FATAL_ERROR
-    "${PROJECT_NAME} requires an out of source build.\n
-    Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
+	message( FATAL_ERROR "${PROJECT_NAME} requires an out of source build.\n Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
 endif()
 
 set( ECBUILD_CMAKE_MINIMUM "2.8.4" )
 if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
   message(FATAL_ERROR "${PROJECT_NAME} requires at least CMake ${ECBUILD_CMAKE_MINIMUM} -- you are using ${CMAKE_COMMAND} [${CMAKE_VERSION}]\n Please, get a newer version of CMake @ www.cmake.org" )
 endif()
+
+set( ECBUILD_MACRO_VERSION "1.1" )
 
 ############################################################################################
 # language support
@@ -30,12 +35,22 @@ enable_language( C )
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
-    set( ECBUILD_PROJECTS "" CACHE INTERNAL "list of ecbuild (sub)projects" )
+    set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
+
+    set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
+
+    # clear the build dir exported targets file (only on the top project)
+
+    set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" )
+    file( REMOVE ${TOP_PROJECT_TARGETS_FILE} )
 
     # add backport support for versions up too 2.8.4
     if( ${CMAKE_VERSION} VERSION_LESS "2.8" )
         set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/2.8" ${CMAKE_MODULE_PATH} )
     endif()
+
+    # add extra macros from external contributions
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
 
     include(CTest)                 # add cmake testing support
     enable_testing()
@@ -101,23 +116,31 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
         include( ecbuild_check_cxx_source )
     endif()
 
+    if( CMAKE_Fortran_COMPILER_LOADED )
+        include( ecbuild_check_fortran_source )
+    endif()
+
     include( ecbuild_get_date )
     include( ecbuild_add_persistent )
     include( ecbuild_generate_yy )
     include( ecbuild_generate_rpc )
-    include( ecbuild_add_subproject )
     include( ecbuild_add_library )
     include( ecbuild_add_executable )
+    include( ecbuild_get_test_data )
     include( ecbuild_add_test )
     include( ecbuild_add_resources )
+    include( ecbuild_get_resources )
     include( ecbuild_project_files )
     include( ecbuild_declare_project )
     include( ecbuild_install_package )
     include( ecbuild_separate_sources )
+    include( ecbuild_find_package )
     include( ecbuild_use_package )
+    include( ecbuild_add_extra_search_paths )
     include( ecbuild_print_summary )
     include( ecbuild_warn_unused_files )
     include( ecbuild_find_python )
+    include( ecbuild_find_fortranlibs )
     include( ecbuild_enable_fortran )
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
@@ -125,12 +148,13 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
     ############################################################################################
     # kickstart the build system
 
-    include( ecbuild_define_options )  # define build options
-    include( ecbuild_find_packages )   # find packages we depend on
-    include( ecbuild_check_os )        # check for os characteristics
-    include( ecbuild_check_functions ) # check for available functions
-    include( ecbuild_define_paths )    # define installation paths
-    include( ecbuild_links_target )    # define the links target
+    include( ecbuild_define_options )               # define build options
+    include( ecbuild_find_support_packages )        # find packages we depend on
+    include( ecbuild_check_compiler )               # check for compiler characteristics
+    include( ecbuild_check_os )                     # check for os characteristics
+    include( ecbuild_check_functions )              # check for available functions
+    include( ecbuild_define_paths )                 # define installation paths
+    include( ecbuild_links_target )                 # define the links target
 
     ############################################################################################
     # define the build timestamp
