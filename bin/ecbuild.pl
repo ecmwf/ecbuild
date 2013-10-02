@@ -112,6 +112,13 @@ sub chdir_to {
 
 #------------------------------------------------------------------------------
 
+sub bdir {
+    return $options{builddir} if( $options{builddir} ne $default_builddir );
+    return $options{builddir} . "/" . $options{buildtype};
+}
+
+#------------------------------------------------------------------------------
+
 sub execute {
     my $command = shift;
     my $dir = getcwd();
@@ -309,19 +316,17 @@ sub configure() {
 
     chdir_to( $projdir );
 
-    my $bdir  = $options{builddir};
+    my $bdir  = bdir();
     my $btype = $options{buildtype};
 
-    mkpath $bdir unless ( -e $bdir );
+    die "build dir $bdir already exists" if ( -e "$bdir" );
 
-    die "build dir $bdir/$btype already exists" if ( -e "$bdir/$btype" );
-
-    mkpath "$bdir/$btype";    
-    chdir_to( "$bdir/$btype" );
+    mkpath $bdir;    
+    chdir_to( "$bdir" );
 
     print "> configure in $bdir with $btype\n" if($options{debug});
     
-    my $opts = "-DCMAKE_BUILD_TYPE=$btype"; 
+    my $opts = "-DCMAKE_BUILD_TYPE=$btype";
 
     foreach my $kv ( sort keys %cmakevars ) 
     {
@@ -337,14 +342,14 @@ sub configure() {
 
 sub build() {
     
-    my $bdir  = $options{builddir};
+    my $bdir  = bdir();
     my $btype = $options{buildtype};
     
     print "> build in $bdir\n" if($options{debug});
 
-    configure() unless ( -e "$bdir/$btype/CMakeCache.txt" );
+    configure() unless ( -e "$bdir/CMakeCache.txt" );
     
-    chdir_to( "$bdir/$btype" );
+    chdir_to( "$bdir" );
     
     print execute( "make -j4" );
 }
