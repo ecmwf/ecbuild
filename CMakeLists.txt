@@ -33,7 +33,7 @@ add_subdirectory( cmake )
 
 if( NOT ECBUILD_NO_INSTALL )
 
-    install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} FILES_MATCHING PATTERN "*.cmake*" )
+    install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
 
     add_subdirectory( bin )
 
