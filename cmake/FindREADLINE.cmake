@@ -27,8 +27,23 @@ cmake_push_check_state()
   set( CMAKE_REQUIRED_LIBRARIES ${READLINE_LIBRARY} )
   set( CMAKE_REQUIRED_INCLUDES  ${READLINE_INCLUDE_DIR} )
 
-  ecbuild_check_cxx_source_return( "#include <stdio.h>\n#include <readline/readline.h>\n#include <iostream>\nint main(){ std::cout << rl_library_version << std::flush; return 0; }"
-        VAR readline_version OUTPUT __readline_version_out )
+  # sometimes the link might fail missing -ltermcap or -l(n)curses
+  # if we searched before for Curses, then lets try to use it
+  if(CURSES_FOUND)
+      list( APPEND CMAKE_REQUIRED_LIBRARIES ${CURSES_LIBRARIES} )
+      list( APPEND CMAKE_REQUIRED_INCLUDES  ${CURSES_INCLUDE_DIR} )
+  endif()
+
+  ecbuild_check_cxx_source_return(
+     "#include <stdio.h>
+      #include <readline/readline.h>
+      #include <iostream>
+      int main() {
+          std::cout << rl_library_version << std::flush;
+          return 0;
+     }"
+     VAR readline_version
+     OUTPUT __readline_version_out )
 
 cmake_pop_check_state()
 
