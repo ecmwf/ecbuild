@@ -25,6 +25,7 @@ macro( ecbuild_check_cxx_source_return SOURCE )
       message(FATAL_ERROR "The call to ecbuild_check_cxx_source_return() doesn't specify either SOURCE, VAR or OUTPUT")
     endif()
 
+    set( _msg "Testing ${_p_VAR}:" )
 
     if( NOT DEFINED ${_p_VAR} )
 
@@ -56,7 +57,7 @@ macro( ecbuild_check_cxx_source_return SOURCE )
     
         file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_p_VAR}.cxx" "${SOURCE}\n" )
 
-        message( STATUS "Performing test ${_p_VAR}" )
+        message( STATUS "${_msg}" )
         try_run( ${_p_VAR}_EXITCODE ${_p_VAR}_COMPILED
           ${CMAKE_BINARY_DIR}
           ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_p_VAR}.cxx
@@ -67,21 +68,24 @@ macro( ecbuild_check_cxx_source_return SOURCE )
           "${CHECK_CXX_SOURCE_COMPILES_ADD_INCLUDES}"
           COMPILE_OUTPUT_VARIABLE compile_OUTPUT 
           RUN_OUTPUT_VARIABLE     run_OUTPUT )
-    
+   
+	  # debug_var( ${_p_VAR}_COMPILED )
+	  # debug_var( ${_p_VAR}_EXITCODE )
+
         # if it did not compile make the return value fail code of 1
 
         if( NOT ${_p_VAR}_COMPILED )
-          message( STATUS "Test ${_p_VAR} failed to compile" )
+          message( STATUS "${_msg} failed to compile" )
         endif()
 
         if( "${${_p_VAR}_EXITCODE}" MATCHES  "FAILED_TO_RUN" )
-          message( STATUS "Test ${_p_VAR} failed to run" )
+          message( STATUS "${_msg} failed to run" )
         endif()
 
         # if the return value was 0 then it worked
         if( ${_p_VAR}_COMPILED AND "${${_p_VAR}_EXITCODE}" EQUAL 0 )
     
-          message(STATUS "Performing test ${_p_VAR} - Success")
+          message(STATUS "${_msg} Success")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log 
             "Performing C++ SOURCE FILE Test ${_p_VAR} succeded with the following compile output:\n"
             "${compile_OUTPUT}\n" 
@@ -103,7 +107,7 @@ macro( ecbuild_check_cxx_source_return SOURCE )
             set(${_p_OUTPUT} "" CACHE INTERNAL "Test ${_p_VAR} output")
           endif()
     
-          message(STATUS "Performing Test ${_p_VAR} - Failed")
+          message(STATUS "Test ${_p_VAR} - Failed")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log 
             "Performing C++ SOURCE FILE Test ${_p_VAR} failed with the following compile output:\n"
             "${compile_OUTPUT}\n" 
