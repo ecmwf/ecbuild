@@ -34,10 +34,11 @@ macro( ecbuild_find_python )
     # find python executable
 
     if( _p_REQUIRED )
-        list( APPEND _py_args REQUIRED )
+        find_package( PythonInterp ${_py_args} )
+    else()
+        find_package( PythonInterp ${_py_args} REQUIRED )
     endif()
 
-    find_package( PythonInterp ${_py_args} )
 
     # find python version
     # execute_process( COMMAND ${PYTHON_EXECUTABLE} -V ERROR_VARIABLE _version  RESULT_VARIABLE _return ERROR_STRIP_TRAILING_WHITESPACE)
