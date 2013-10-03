@@ -33,12 +33,11 @@ macro( ecbuild_find_python )
 
     # find python executable
 
-    if( _p_REQUIRED )
-        find_package( PythonInterp ${_py_args} )
-    else()
-        find_package( PythonInterp ${_py_args} REQUIRED )
-    endif()
+    find_package( PythonInterp )
 
+    if( NOT PYTHONINTERP_FOUND AND _p_REQUIRED )
+        message( FATAL_ERROR "Failed to find any Python interpreter (REQUIRED)" )
+    endif()
 
     # find python version
     # execute_process( COMMAND ${PYTHON_EXECUTABLE} -V ERROR_VARIABLE _version  RESULT_VARIABLE _return ERROR_STRIP_TRAILING_WHITESPACE)
@@ -59,7 +58,7 @@ macro( ecbuild_find_python )
             if( _p_REQUIRED )
                 message( FATAL_ERROR "Required python version at least ${_p_VERSION} but found only ${PYTHON_VERSION_STRING}" )
             else()
-                message( SEND_ERROR "Looking for python version at least ${_p_VERSION} but found only ${PYTHON_VERSION_STRING}" )
+                message( WARNING "Looking for python version at least ${_p_VERSION} but found only ${PYTHON_VERSION_STRING}\nMarking Python as NOTFOUND" )
             endif()
         endif()
     endif()
