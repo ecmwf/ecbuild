@@ -15,27 +15,27 @@ macro( ecbuild_check_cxx_source_return SOURCE )
     set( single_value_args VAR  OUTPUT )
     set( multi_value_args  INCLUDES LIBS DEFINITIONS )
 
-    cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+    cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-    if(_PAR_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_check_cxx_source_return(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    if(_p_UNPARSED_ARGUMENTS)
+      message(FATAL_ERROR "Unknown keywords given to ecbuild_check_cxx_source_return(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
 
-    if( NOT _PAR_VAR OR NOT _PAR_OUTPUT )
+    if( NOT _p_VAR OR NOT _p_OUTPUT )
       message(FATAL_ERROR "The call to ecbuild_check_cxx_source_return() doesn't specify either SOURCE, VAR or OUTPUT")
     endif()
 
 
-    if( NOT DEFINED ${_PAR_VAR} )
+    if( NOT DEFINED ${_p_VAR} )
 
-        set(MACRO_CHECK_FUNCTION_DEFINITIONS "-D${_PAR_VAR} ${CMAKE_REQUIRED_FLAGS}")
+        set(MACRO_CHECK_FUNCTION_DEFINITIONS "-D${_p_VAR} ${CMAKE_REQUIRED_FLAGS}")
 
         set(CHECK_CXX_SOURCE_COMPILES_ADD_LIBRARIES)
         if(CMAKE_REQUIRED_LIBRARIES)
             list( APPEND __add_libs ${CMAKE_REQUIRED_LIBRARIES} )
         endif()
-        if( _PAR_LIBS )
-            list( APPEND __add_libs ${_PAR_LIBS} )
+        if( _p_LIBS )
+            list( APPEND __add_libs ${_p_LIBS} )
         endif()
         if( __add_libs )
             set(CHECK_CXX_SOURCE_COMPILES_ADD_LIBRARIES "-DLINK_LIBRARIES:STRING=${__add_libs}")
@@ -45,8 +45,8 @@ macro( ecbuild_check_cxx_source_return SOURCE )
         if(CMAKE_REQUIRED_INCLUDES)
             list( APPEND __add_incs ${CMAKE_REQUIRED_INCLUDES} )
         endif()
-        if( _PAR_INCLUDES )
-            list( APPEND __add_incs ${_PAR_INCLUDES} )
+        if( _p_INCLUDES )
+            list( APPEND __add_incs ${_p_INCLUDES} )
         endif()
         if( __add_libs )
             set(CHECK_CXX_SOURCE_COMPILES_ADD_INCLUDES "-DINCLUDE_DIRECTORIES:STRING=${__add_incs}")
@@ -54,12 +54,12 @@ macro( ecbuild_check_cxx_source_return SOURCE )
     
         # write the source file
     
-        file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.cxx" "${SOURCE}\n" )
+        file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_p_VAR}.cxx" "${SOURCE}\n" )
 
-        message( STATUS "Performing Test ${VAR}" )
-        try_run( ${VAR}_EXITCODE ${VAR}_COMPILED
+        message( STATUS "Performing test ${_p_VAR}" )
+        try_run( ${_p_VAR}_EXITCODE ${_p_VAR}_COMPILED
           ${CMAKE_BINARY_DIR}
-          ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.cxx
+          ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_p_VAR}.cxx
           COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
           CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${MACRO_CHECK_FUNCTION_DEFINITIONS}
           -DCMAKE_SKIP_RPATH:BOOL=${CMAKE_SKIP_RPATH}
@@ -69,42 +69,47 @@ macro( ecbuild_check_cxx_source_return SOURCE )
           RUN_OUTPUT_VARIABLE     run_OUTPUT )
     
         # if it did not compile make the return value fail code of 1
-        if( NOT ${_PAR_VAR}_COMPILED )
-          set( ${_PAR_VAR}_EXITCODE 1 )
+
+        if( NOT ${_p_VAR}_COMPILED )
+          message( STATUS "Test ${_p_VAR} failed to compile" )
         endif()
-    
+
+        if( "${${_p_VAR}_EXITCODE}" MATCHES  "FAILED_TO_RUN" )
+          message( STATUS "Test ${_p_VAR} failed to run" )
+        endif()
+
         # if the return value was 0 then it worked
-        if("${${_PAR_VAR}_EXITCODE}" EQUAL 0)
+        if( ${_p_VAR}_COMPILED AND "${${_p_VAR}_EXITCODE}" EQUAL 0 )
     
-          message(STATUS "Performing Test ${_PAR_VAR} - Success")
+          message(STATUS "Performing test ${_p_VAR} - Success")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log 
-            "Performing C++ SOURCE FILE Test ${_PAR_VAR} succeded with the following compile output:\n"
+            "Performing C++ SOURCE FILE Test ${_p_VAR} succeded with the following compile output:\n"
             "${compile_OUTPUT}\n" 
-            "Performing C++ SOURCE FILE Run ${_PAR_VAR} succeded with the following run output:\n"
+            "Performing C++ SOURCE FILE Run ${_p_VAR} succeded with the following run output:\n"
             "${run_OUTPUT}\n" 
-            "Return value: ${${_PAR_VAR}}\n"
+            "Return value: ${${_p_VAR}}\n"
             "Source file was:\n${SOURCE}\n")
 
-          set( ${_PAR_VAR}     1              CACHE INTERNAL "Test ${_PAR_VAR}")
-          set( ${_PAR_OUTPUT} "${run_OUTPUT}" CACHE INTERNAL "Test ${_PAR_VAR} output")
+          set( ${_p_VAR}     1              CACHE INTERNAL "Test ${_p_VAR}")
+          set( ${_p_OUTPUT} "${run_OUTPUT}" CACHE INTERNAL "Test ${_p_VAR} output")
     
         else()
     
-          if(CMAKE_CROSSCOMPILING AND "${${_PAR_VAR}_EXITCODE}" MATCHES  "FAILED_TO_RUN")
-            set(${_PAR_VAR} "${${_PAR_VAR}_EXITCODE}")
+          if(CMAKE_CROSSCOMPILING AND "${${_p_VAR}_EXITCODE}" MATCHES  "FAILED_TO_RUN")
+            set(${_p_VAR} "${${_p_VAR}_EXITCODE}")
             set(${OUTPUT} "")
           else()
-            set(${_PAR_VAR} "" CACHE INTERNAL "Test ${_PAR_VAR}")
-            set(${_PAR_OUTPUT} "" CACHE INTERNAL "Test ${_PAR_VAR} output")
+            set(${_p_VAR} "" CACHE INTERNAL "Test ${_p_VAR}")
+            set(${_p_OUTPUT} "" CACHE INTERNAL "Test ${_p_VAR} output")
           endif()
     
-          message(STATUS "Performing Test ${_PAR_VAR} - Failed")
+          message(STATUS "Performing Test ${_p_VAR} - Failed")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log 
-            "Performing C++ SOURCE FILE Test ${_PAR_VAR} failed with the following compile output:\n"
+            "Performing C++ SOURCE FILE Test ${_p_VAR} failed with the following compile output:\n"
             "${compile_OUTPUT}\n" 
-            "Performing C++ SOURCE FILE Run ${_PAR_VAR} failed with the following run output:\n"
+            "Performing C++ SOURCE FILE Run ${_p_VAR} failed with the following run output:\n"
             "${run_OUTPUT}\n" 
-            "Return value: ${${_PAR_VAR}_EXITCODE}\n"
+            "Return value: ${${_p_VAR}_EXITCODE}\n"
             "Source file was:\n${SOURCE}\n")
         endif()
     
