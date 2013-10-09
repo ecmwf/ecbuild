@@ -51,6 +51,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
                             FindLEX.cmake
                             FindLibGFortran.cmake
                             FindNDBM.cmake
+                            FindTrilinos.cmake
                             FindNetCDF.cmake
                             FindNetCDF3.cmake
                             FindODB.cmake
