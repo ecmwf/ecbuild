@@ -17,13 +17,15 @@
 
 # Try to find Trilinos using Trilinos recommendations
 
+
 ecbuild_add_extra_search_paths( trilinos )
 
 if( DEFINED $ENV{TRILINOS_PATH} )
     find_package(Trilinos PATHS $ENV{TRILINOS_PATH}/lib/cmake/Trilinos $ENV{TRILINOS_PATH}/include )
 endif()
 
-if( DEFINED TRILINOS_PATH )
+if( TRILINOS_PATH )
+	debug_var( TRILINOS_PATH )
     find_package(Trilinos PATHS ${TRILINOS_PATH}/lib/cmake/Trilinos ${TRILINOS_PATH}/include )
 endif()
 

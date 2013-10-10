@@ -50,16 +50,19 @@ macro(_eigen3_check_version)
 
     message(STATUS "Eigen3 version ${EIGEN3_VERSION} found in ${EIGEN3_INCLUDE_DIR}, "
                    "but at least version ${Eigen3_FIND_VERSION} is required")
-  endif(NOT EIGEN3_VERSION_OK)
+  else()
+	set( EIGEN3_VERSION ${EIGEN3_VERSION} CACHE INTERNAL "Eigen3 version" )
+  endif()
+
 endmacro(_eigen3_check_version)
 
-if (EIGEN3_INCLUDE_DIR)
+if(EIGEN3_INCLUDE_DIR)
 
   # in cache already
   _eigen3_check_version()
   set(EIGEN3_FOUND ${EIGEN3_VERSION_OK})
 
-else (EIGEN3_INCLUDE_DIR)
+else(EIGEN3_INCLUDE_DIR)
 
   find_path(EIGEN3_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library
       PATHS
@@ -80,3 +83,4 @@ else (EIGEN3_INCLUDE_DIR)
 
 endif(EIGEN3_INCLUDE_DIR)
 
+set( EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR} )
