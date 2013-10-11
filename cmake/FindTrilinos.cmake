@@ -25,7 +25,6 @@ if( DEFINED $ENV{TRILINOS_PATH} )
 endif()
 
 if( TRILINOS_PATH )
-	debug_var( TRILINOS_PATH )
     find_package(Trilinos PATHS ${TRILINOS_PATH}/lib/cmake/Trilinos ${TRILINOS_PATH}/include )
 endif()
 
@@ -48,5 +47,6 @@ if( Trilinos_FOUND )
         list( APPEND TRILINOS_LIBRARIES ${Trilinos_TPL_LIBRARIES} )
 
     set( TRILINOS_FOUND TRUE )
+	set( TRILINOS_VERSION ${Trilinos_VERSION} )
 
 endif()
