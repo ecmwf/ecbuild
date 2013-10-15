@@ -1,11 +1,10 @@
-===================================================
-EcBuild - ECMWF build system
-===================================================
+============================
+ecbuild - ECMWF build system
+============================
 
-For detailed installation and usage instructions see the Manual.pdf document packaged with these sources.
+Installation and usage instructions can be found at:
 
-An updated version of those instructions can also be found at 
-http://software.ecmwf.int/wiki/display/SUPINF/ECMWF+Build+System
+https://software.ecmwf.int/wiki/display/ECSDK/ecBuild
 
 =============
 QUICK INSTALL
@@ -18,4 +17,3 @@ QUICK INSTALL
 2. Use cmake and point the module path to the installed source.
 
  cmake -DCMAKE_MODULE_PATH=/path/to/install [...]
-
