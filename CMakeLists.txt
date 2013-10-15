@@ -44,6 +44,6 @@ endif()
 ############################################################################################
 # finalize
 
-ecbuild_install_project( NAME ecbuild )
+ecbuild_install_project( NAME ${PROJECT_NAME} )
 
 ecbuild_print_summary()
