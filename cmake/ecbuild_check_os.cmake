@@ -17,7 +17,7 @@ if( NOT CROSS_COMPILING )
 
 	ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}"
 									VAR check_off_t
-									OUTPUT  )
+									OUTPUT __sizeof_off_t )
 
 	if( NOT check_off_t OR NOT check_void_ptr )
 		message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- failed either check_void_ptr or check_off_t" )
