@@ -23,7 +23,7 @@ if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
   message(FATAL_ERROR "${PROJECT_NAME} requires at least CMake ${ECBUILD_CMAKE_MINIMUM} -- you are using ${CMAKE_COMMAND} [${CMAKE_VERSION}]\n Please, get a newer version of CMake @ www.cmake.org" )
 endif()
 
-set( ECBUILD_MACRO_VERSION "1.1" )
+set( ECBUILD_MACRO_VERSION "1.2" )
 
 ############################################################################################
 # language support
@@ -35,142 +35,143 @@ enable_language( C )
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
-    set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
+	set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
 
-    set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
+	set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
 
-    # clear the build dir exported targets file (only on the top project)
+	# clear the build dir exported targets file (only on the top project)
 
-    set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" )
-    file( REMOVE ${TOP_PROJECT_TARGETS_FILE} )
+	set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" )
+	file( REMOVE ${TOP_PROJECT_TARGETS_FILE} )
 
-    # add backport support for versions up too 2.8.4
-    if( ${CMAKE_VERSION} VERSION_LESS "2.8" )
-        set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/2.8" ${CMAKE_MODULE_PATH} )
-    endif()
+	# add backport support for versions up too 2.8.4
+	if( ${CMAKE_VERSION} VERSION_LESS "2.8" )
+		set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/2.8" ${CMAKE_MODULE_PATH} )
+	endif()
 
-    # add extra macros from external contributions
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
+	# add extra macros from external contributions
+	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
 
-    include(CTest)                 # add cmake testing support
-    enable_testing()
+	include(CTest)                 # add cmake testing support
+	enable_testing()
 
-    option( ENABLE_TESTS "enable the unit tests" ON )
+	option( ENABLE_TESTS "enable the unit tests" ON )
 
-    ############################################################################################
-    # define valid build types
+	############################################################################################
+	# define valid build types
 
-    include(ecbuild_define_build_types)
+	include(ecbuild_define_build_types)
 
-    ############################################################################################
-    # add cmake macros
+	############################################################################################
+	# add cmake macros
 
-    include(AddFileDependencies)
+	include(AddFileDependencies)
 
-    include(CheckTypeSize)
-    include(CheckIncludeFile)
-    include(CheckIncludeFiles)
+	include(CheckTypeSize)
+	include(CheckIncludeFile)
+	include(CheckIncludeFiles)
 
-    include(CheckFunctionExists)
-    include(CheckSymbolExists)
+	include(CheckFunctionExists)
+	include(CheckSymbolExists)
 
-    include(CheckCCompilerFlag)
-    include(CheckCSourceCompiles)
-    include(CheckCSourceRuns)
+	include(CheckCCompilerFlag)
+	include(CheckCSourceCompiles)
+	include(CheckCSourceRuns)
 
-    include(CMakeParseArguments)
+	include(CMakeParseArguments)
 
-    # include(CMakePrintSystemInformation) # available in cmake 2.8.4
+	# include(CMakePrintSystemInformation) # available in cmake 2.8.4
 
-    if( CMAKE_CXX_COMPILER_LOADED )
-        include(CheckIncludeFileCXX)
-        include(CheckCXXCompilerFlag)
-        include(CheckCXXSourceCompiles)
-        include(CheckCXXSourceRuns)
-    endif()
+	if( CMAKE_CXX_COMPILER_LOADED )
+		include(CheckIncludeFileCXX)
+		include(CheckCXXCompilerFlag)
+		include(CheckCXXSourceCompiles)
+		include(CheckCXXSourceRuns)
+	endif()
 
-    if( CMAKE_Fortran_COMPILER_LOADED )
-        include(CheckFortranFunctionExists)
-        include(FortranCInterface)
-    endif()
+	if( CMAKE_Fortran_COMPILER_LOADED )
+		include(CheckFortranFunctionExists)
+		include(FortranCInterface)
+	endif()
 
-    include(TestBigEndian)
+	include(TestBigEndian)
 
-    ############################################################################################
-    # backport of cmake > 2.8.4 functions 
+	############################################################################################
+	# backport of cmake > 2.8.4 functions
 
-    if( "${CMAKE_VERSION}" VERSION_LESS "2.8.6" )
-        include( ${CMAKE_CURRENT_LIST_DIR}/2.8/CMakePushCheckState.cmake )
-    else()
-        include(CMakePushCheckState)
-    endif()
+	if( "${CMAKE_VERSION}" VERSION_LESS "2.8.6" )
+		include( ${CMAKE_CURRENT_LIST_DIR}/2.8/CMakePushCheckState.cmake )
+	else()
+		include(CMakePushCheckState)
+	endif()
 
-    ############################################################################################
-    # add our macros
+	############################################################################################
+	# add our macros
 
-    include( ecbuild_debug_var )
+	include( ecbuild_debug_var )
 
-    include( ecbuild_check_c_source )
+	include( ecbuild_check_c_source )
 
-    if( CMAKE_CXX_COMPILER_LOADED )
-        include( ecbuild_check_cxx_source )
-    endif()
+	if( CMAKE_CXX_COMPILER_LOADED )
+		include( ecbuild_check_cxx_source )
+	endif()
 
-    if( CMAKE_Fortran_COMPILER_LOADED )
-        include( ecbuild_check_fortran_source )
-    endif()
+	if( CMAKE_Fortran_COMPILER_LOADED )
+		include( ecbuild_check_fortran_source )
+	endif()
 
-    include( ecbuild_get_date )
-    include( ecbuild_add_persistent )
-    include( ecbuild_generate_yy )
-    include( ecbuild_generate_rpc )
-    include( ecbuild_add_library )
-    include( ecbuild_add_executable )
-    include( ecbuild_get_test_data )
-    include( ecbuild_add_test )
-    include( ecbuild_add_resources )
-    include( ecbuild_get_resources )
-    include( ecbuild_project_files )
-    include( ecbuild_declare_project )
-    include( ecbuild_install_package )
-    include( ecbuild_separate_sources )
-    include( ecbuild_find_package )
-    include( ecbuild_use_package )
-    include( ecbuild_add_extra_search_paths )
-    include( ecbuild_print_summary )
-    include( ecbuild_warn_unused_files )
-    include( ecbuild_find_python )
-    include( ecbuild_find_fortranlibs )
-    include( ecbuild_enable_fortran )
+	include( ecbuild_requires_macro_version )
+	include( ecbuild_get_date )
+	include( ecbuild_add_persistent )
+	include( ecbuild_generate_yy )
+	include( ecbuild_generate_rpc )
+	include( ecbuild_add_library )
+	include( ecbuild_add_executable )
+	include( ecbuild_get_test_data )
+	include( ecbuild_add_test )
+	include( ecbuild_add_resources )
+	include( ecbuild_get_resources )
+	include( ecbuild_project_files )
+	include( ecbuild_declare_project )
+	include( ecbuild_install_package )
+	include( ecbuild_separate_sources )
+	include( ecbuild_find_package )
+	include( ecbuild_use_package )
+	include( ecbuild_add_extra_search_paths )
+	include( ecbuild_print_summary )
+	include( ecbuild_warn_unused_files )
+	include( ecbuild_find_python )
+	include( ecbuild_find_fortranlibs )
+	include( ecbuild_enable_fortran )
 
-    include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
+	include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
-    ############################################################################################
-    # kickstart the build system
+	############################################################################################
+	# kickstart the build system
 
-    include( ecbuild_define_options )               # define build options
-    include( ecbuild_find_support_packages )        # find packages we depend on
-    include( ecbuild_check_compiler )               # check for compiler characteristics
-    include( ecbuild_check_os )                     # check for os characteristics
-    include( ecbuild_check_functions )              # check for available functions
-    include( ecbuild_define_paths )                 # define installation paths
-    include( ecbuild_links_target )                 # define the links target
+	include( ecbuild_define_options )               # define build options
+	include( ecbuild_find_support_packages )        # find packages we depend on
+	include( ecbuild_check_compiler )               # check for compiler characteristics
+	include( ecbuild_check_os )                     # check for os characteristics
+	include( ecbuild_check_functions )              # check for available functions
+	include( ecbuild_define_paths )                 # define installation paths
+	include( ecbuild_links_target )                 # define the links target
 
-    ############################################################################################
-    # define the build timestamp
+	############################################################################################
+	# define the build timestamp
 
-    if( NOT DEFINED EC_BUILD_TIMESTAMP )
-        ecbuild_get_timestamp( EC_BUILD_TIMESTAMP )
-        set( EC_BUILD_TIMESTAMP  "${EC_BUILD_TIMESTAMP}" CACHE INTERNAL "Build timestamp" )
-    endif()
+	if( NOT DEFINED EC_BUILD_TIMESTAMP )
+		ecbuild_get_timestamp( EC_BUILD_TIMESTAMP )
+		set( EC_BUILD_TIMESTAMP  "${EC_BUILD_TIMESTAMP}" CACHE INTERNAL "Build timestamp" )
+	endif()
 
-    ############################################################################################
-    # generate the configuration headers here, so external projects also get them
+	############################################################################################
+	# generate the configuration headers here, so external projects also get them
 
-    configure_file( ${CMAKE_CURRENT_LIST_DIR}/ecbuild_config.h.in     ${CMAKE_BINARY_DIR}/ecbuild_config.h   )
-    configure_file( ${CMAKE_CURRENT_LIST_DIR}/ecbuild_platform.h.in   ${CMAKE_BINARY_DIR}/ecbuild_platform.h )
+	configure_file( ${CMAKE_CURRENT_LIST_DIR}/ecbuild_config.h.in     ${CMAKE_BINARY_DIR}/ecbuild_config.h   )
+	configure_file( ${CMAKE_CURRENT_LIST_DIR}/ecbuild_platform.h.in   ${CMAKE_BINARY_DIR}/ecbuild_platform.h )
 
-    include_directories( ${CMAKE_BINARY_DIR} )
+	include_directories( ${CMAKE_BINARY_DIR} )
 
 endif()
 
