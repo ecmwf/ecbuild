@@ -29,6 +29,10 @@ endif()
 
 debug_var( libgfortran_ )
 
+execute_process( COMMAND "find /usr -iname libgfortran*" OUTPUT_VARIABLE find_out RESULT_VARIABLE find_res )
+debug_var(find_res)
+debug_var(find_out)
+
 include(FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args( LIBGFORTRAN  DEFAULT_MSG LIBGFORTRAN_LIBRARIES  )
