@@ -24,6 +24,8 @@ macro( ecbuild_find_fortranlibs )
       message(FATAL_ERROR "Unknown keywords given to ecbuild_find_python(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
+	if( NOT FORTRANLIBS_FOUND )
+
     # set path from environment variables
 
     foreach( _fortran_lib PGI XLF LIBGFORTRAN )
@@ -84,7 +86,9 @@ macro( ecbuild_find_fortranlibs )
 
     # set found
     if( _flibs_found )
-        set( FORTRANLIBS_FOUND 1 )
+		set( FORTRANLIBS_FOUND 1 CACHE INTERNAL "Fortran libraries found" )
+		set( FORTRANLIBS_NAME ${_flibs_txt}  CACHE INTERNAL "Fortran library name" )
+		set( FORTRAN_LIBRARIES ${FORTRAN_LIBRARIES} CACHE INTERNAL "Fortran libraries" )
         message( STATUS "Found Fortran libraries: ${_flibs_txt}" )
     else()
         set( FORTRANLIBS_FOUND 0 )
@@ -94,5 +98,7 @@ macro( ecbuild_find_fortranlibs )
            message( STATUS "Failed to find Fortran libraries" )
         endif()
     endif()
+
+	endif()
 
 endmacro( ecbuild_find_fortranlibs )
