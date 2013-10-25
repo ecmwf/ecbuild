@@ -29,7 +29,13 @@ endif()
 
 debug_var( libgfortran_ )
 
-execute_process( COMMAND "find /usr -iname libgfortran*" OUTPUT_VARIABLE find_out RESULT_VARIABLE find_res )
+execute_process( COMMAND "find /usr -iname 'libgfortran*'" OUTPUT_VARIABLE find_out RESULT_VARIABLE find_res )
+debug_var(find_res)
+debug_var(find_out)
+execute_process( COMMAND "find /usr/lib -iname 'libgfortran*'" OUTPUT_VARIABLE find_out RESULT_VARIABLE find_res )
+debug_var(find_res)
+debug_var(find_out)
+execute_process( COMMAND "find /usr/lib64 -iname 'libgfortran*'" OUTPUT_VARIABLE find_out RESULT_VARIABLE find_res )
 debug_var(find_res)
 debug_var(find_out)
 
