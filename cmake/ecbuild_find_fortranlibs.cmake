@@ -63,7 +63,7 @@ macro( ecbuild_find_fortranlibs )
         endif()
     endif()
 
-    # default is to search for PGI
+    # default is to search for PGI -> Gfortran -> XLF
 
     if( NOT _flibs_found )
         find_package(PGIFortran)
@@ -71,6 +71,14 @@ macro( ecbuild_find_fortranlibs )
             set( FORTRAN_LIBRARIES ${PGIFORTRAN_LIBRARIES} )
             set( _flibs_found 1 )
             set( _flibs_txt "PGI" )
+        endif()
+    endif()
+
+    if( NOT _flibs_found )
+        if( LIBGFORTRAN_LIBRARIES )
+            set( FORTRAN_LIBRARIES ${LIBGFORTRAN_LIBRARIES} )
+            set( _flibs_found 1 )
+            set( _flibs_txt "gfortran" )
         endif()
     endif()
 
