@@ -15,17 +15,19 @@ endif()
 
 debug_var( LIBGFORTRAN_PATH )
 
-if( DEFINED LIBGFORTRAN_PATH )
-	find_library( libgfortran NAMES gfortran PATHS ${LIBGFORTRAN_PATH} ${LIBGFORTRAN_PATH}/lib64 ${LIBGFORTRAN_PATH}/lib  NO_DEFAULT_PATH )
+if( LIBGFORTRAN_PATH )
+	find_library( libgfortran gfortran PATHS ${LIBGFORTRAN_PATH} PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH )
 endif()
-find_library( libgfortran NAMES gfortran )
-mark_as_advanced( libgfortran )
 
-if( libgfortran )
+find_library( libgfortran_ gfortran )
+
+mark_as_advanced( libgfortran_ )
+
+if( libgfortran_ )
 	set( LIBGFORTRAN_LIBRARIES ${libgfortran} )
 endif()
 
-debug_var( libgfortran )
+debug_var( libgfortran_ )
 
 include(FindPackageHandleStandardArgs)
 
