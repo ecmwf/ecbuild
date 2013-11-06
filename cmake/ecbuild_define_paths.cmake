@@ -21,12 +21,18 @@ set( CMAKE_INSTALL_RPATH_USE_LINK_PATH   TRUE  ) # add the automatic parts to RP
 
 if( ENABLE_RPATHS )
     
-    # set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib") # install with this RPATH
-    # the RPATH to be used when installing, but only if it's not a system directory
-    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${INSTALL_LIB_DIR}" isSystemDir)
-    if("${isSystemDir}" STREQUAL "-1")
-       set(CMAKE_INSTALL_RPATH "${INSTALL_LIB_DIR}")
+    # install with this RPATH 
+    if( IS_ABSOLUTE ${INSTALL_LIB_DIR} )
+        set( CMAKE_INSTALL_RPATH "${INSTALL_LIB_DIR}" )
+    else()
+        set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}" ) 
     endif()
+    
+    # the RPATH to be used when installing, but only if it's not a system directory
+    # list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${INSTALL_LIB_DIR}" isSystemDir)
+    # if("${isSystemDir}" STREQUAL "-1")
+    #    set(CMAKE_INSTALL_RPATH "${INSTALL_LIB_DIR}")
+    # endif()
 
 ENDIF()
 
