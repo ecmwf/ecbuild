@@ -16,7 +16,7 @@ endif()
 debug_var( LIBGFORTRAN_PATH )
 
 if( LIBGFORTRAN_PATH )
-	find_library( libgfortran gfortran PATHS ${LIBGFORTRAN_PATH} PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH )
+	find_library( libgfortran_ gfortran PATHS ${LIBGFORTRAN_PATH} PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH )
 endif()
 
 find_library( libgfortran_ gfortran )
