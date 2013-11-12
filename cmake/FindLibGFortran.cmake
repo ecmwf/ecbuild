@@ -21,13 +21,15 @@ endif()
 
 find_library( GFORTRANLIB gfortran )
 
+debug_var( GFORTRANLIB )
+
 mark_as_advanced( GFORTRANLIB )
 
 if( GFORTRANLIB )
-	set( LIBGFORTRAN_LIBRARIES ${libgfortran} )
+	set( LIBGFORTRAN_LIBRARIES ${GFORTRANLIB} )
 endif()
 
-debug_var( GFORTRANLIB )
+debug_var( LIBGFORTRAN_LIBRARIES )
 
 include(FindPackageHandleStandardArgs)
 
