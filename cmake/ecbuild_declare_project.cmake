@@ -69,6 +69,14 @@ macro( ecbuild_declare_project )
 	set( INSTALL_DATA_DIR    ${${PNAME}_INSTALL_DATA_DIR}    )
 	set( INSTALL_CMAKE_DIR   ${${PNAME}_INSTALL_CMAKE_DIR}   )
 
+	if( ENABLE_RPATHS ) # install with this RPATH
+		if( IS_ABSOLUTE ${INSTALL_LIB_DIR} )
+			set( CMAKE_INSTALL_RPATH "${INSTALL_LIB_DIR}" )
+		else()
+			set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}" )
+		endif()
+	endif()
+
 	# make relative paths absolute  ( needed later on ) and cache them ...
 	foreach( p LIB BIN INCLUDE DATA CMAKE )
 

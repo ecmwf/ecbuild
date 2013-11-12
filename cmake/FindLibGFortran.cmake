@@ -13,23 +13,17 @@ if( NOT DEFINED LIBGFORTRAN_PATH AND DEFINED $ENV{LIBGFORTRAN_PATH} )
 	set( LIBGFORTRAN_PATH $ENV{LIBGFORTRAN_PATH} )
 endif()
 
-debug_var( LIBGFORTRAN_PATH )
-
 if( LIBGFORTRAN_PATH )
 	find_library( GFORTRANLIB gfortran PATHS ${LIBGFORTRAN_PATH} PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH )
 endif()
 
 find_library( GFORTRANLIB gfortran )
 
-debug_var( GFORTRANLIB )
-
 mark_as_advanced( GFORTRANLIB )
 
 if( GFORTRANLIB )
 	set( LIBGFORTRAN_LIBRARIES ${GFORTRANLIB} )
 endif()
-
-debug_var( LIBGFORTRAN_LIBRARIES )
 
 include(FindPackageHandleStandardArgs)
 
