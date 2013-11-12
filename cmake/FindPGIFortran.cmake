@@ -15,6 +15,8 @@
 
 list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 pgf902 pghpf_rpm1 pghpf2 rt pgsse1 pgsse2 ) # better ?                                                    #
 
+set( pgi_fortran_all_libs_found 1 )
+
 foreach( pglib ${pg_libs} )
 
     if( DEFINED PGI_PATH )
@@ -26,6 +28,14 @@ foreach( pglib ${pg_libs} )
 
     if( ${pglib}_lib )
         list( APPEND PGIFORTRAN_LIBRARIES ${${pglib}_lib} )
+	else()
+		set( pgi_fortran_all_libs_found 0 )
     endif()
 
 endforeach()
+
+include(FindPackageHandleStandardArgs)
+
+find_package_handle_standard_args( LIBPGIFORTRAN DEFAULT_MSG pgi_fortran_all_libs_found PGIFORTRAN_LIBRARIES  )
+
+set( LIBPGIFORTRAN_LIBRARIES ${PGIFORTRAN_LIBRARIES} )
