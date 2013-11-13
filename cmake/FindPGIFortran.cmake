@@ -13,23 +13,20 @@
 # list( APPEND pg_libs pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf pgc pgf90 rt pgsse1 pgsse2 )             # mars client linux.2
 # list( APPEND pg_libs pgftnrtl nspgc pgc rt pgsse1 pgsse2 )                                                    # mars client linux.3
 
-list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 pgf902 pghpf_rpm1 pghpf2 rt pgsse1 pgsse2 ) # better ?                                                    #
+list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 pgf902 pghpf_rpm1 pghpf2 pgsse1 pgsse2 ) # better ?                                                    #
 
 set( pgi_fortran_all_libs_found 1 )
 
 foreach( pglib ${pg_libs} )
 
-    if( DEFINED PGI_PATH )
-      find_library( ${pglib}_lib  ${pglib} PATH ${PGI_PATH} ${PGI_PATH}/lib ${PGI_PATH}/libso NO_DEFAULT_PATH )
-      debug_var( ${pglib}_lib )
-    endif()
+	find_library( ${pglib}_lib  ${pglib} PATHS ${PGI_PATH} PATH_SUFFIXES lib libso NO_DEFAULT_PATH )
 
-    find_library( ${pglib}_lib  ${pglib} HINTS /usr/local/apps/pgi/pgi-10.8/linux86-64/10.8 PATH PATH_SUFFIXES lib libso )
+	find_library( ${pglib}_lib  ${pglib} HINTS /usr/local/apps/pgi/pgi-10.8/linux86-64/10.8 PATH PATH_SUFFIXES lib libso )
 
     if( ${pglib}_lib )
         list( APPEND PGIFORTRAN_LIBRARIES ${${pglib}_lib} )
-	else()
-		set( pgi_fortran_all_libs_found 0 )
+#	else()
+#		set( pgi_fortran_all_libs_found 0 )
     endif()
 
 endforeach()
@@ -38,4 +35,8 @@ include(FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args( LIBPGIFORTRAN DEFAULT_MSG pgi_fortran_all_libs_found PGIFORTRAN_LIBRARIES  )
 
-set( LIBPGIFORTRAN_LIBRARIES ${PGIFORTRAN_LIBRARIES} )
+if( LIBPGIFORTRAN_FOUND )
+	find_package( Realtime )
+endif()
+
+set( LIBPGIFORTRAN_LIBRARIES ${PGIFORTRAN_LIBRARIES} ${RT_LIB} )
