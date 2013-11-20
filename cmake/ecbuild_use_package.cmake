@@ -16,17 +16,17 @@ macro( ecbuild_use_package )
     set( single_value_args  PROJECT VERSION )
     set( multi_value_args )
 
-    cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+	cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-    if(_PAR_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_use_package(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+	if(_p_UNPARSED_ARGUMENTS)
+	  message(FATAL_ERROR "Unknown keywords given to ecbuild_use_package(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
 
-    if( NOT _PAR_PROJECT  )
+	if( NOT _p_PROJECT  )
       message(FATAL_ERROR "The call to ecbuild_use_package() doesn't specify the PROJECT.")
     endif()
 
-    if( _PAR_EXACT AND NOT _PAR_VERSION )
+	if( _p_EXACT AND NOT _p_VERSION )
       message(FATAL_ERROR "Call to ecbuild_use_package() requests EXACT but doesn't specify VERSION.")
     endif()
 
@@ -34,14 +34,14 @@ macro( ecbuild_use_package )
 
     # try to find the package as a subproject and build it
 
-    string( TOUPPER ${_PAR_PROJECT} PNAME )
+	string( TOUPPER ${_p_PROJECT} PNAME )
 
     # user defined dir with subprojects
 
     if( NOT DEFINED ${PNAME}_SOURCE AND DEFINED SUBPROJECT_DIRS )
         foreach( dir ${SUBPROJECT_DIRS} )
-            if( EXISTS ${dir}/${_PAR_PROJECT} AND EXISTS ${dir}/${_PAR_PROJECT}/CMakeLists.txt )
-                set( ${PNAME}_SOURCE "${dir}/${_PAR_PROJECT}" )
+			if( EXISTS ${dir}/${_p_PROJECT} AND EXISTS ${dir}/${_p_PROJECT}/CMakeLists.txt )
+				set( ${PNAME}_SOURCE "${dir}/${_p_PROJECT}" )
             endif()
         endforeach()
     endif()
@@ -51,15 +51,15 @@ macro( ecbuild_use_package )
     if( DEFINED ${PNAME}_SOURCE )
 
         if( NOT EXISTS ${${PNAME}_SOURCE} OR NOT EXISTS ${${PNAME}_SOURCE}/CMakeLists.txt )
-            message( FATAL_ERROR "User defined source directory '${${PNAME}_SOURCE}' for project '${_PAR_PROJECT}' does not exist or does not contain a CMakeLists.txt file." )
+			message( FATAL_ERROR "User defined source directory '${${PNAME}_SOURCE}' for project '${_p_PROJECT}' does not exist or does not contain a CMakeLists.txt file." )
         endif()
 
-        set( ${PNAME}_SUBPROJ_DIR "${${PNAME}_SOURCE}" )
+		set( ${PNAME}_subproj_dir_ "${${PNAME}_SOURCE}" )
 
     else() # default is 'dropped in' subdirectory named as project
 
-        if( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_PROJECT} AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_PROJECT}/CMakeLists.txt )
-            set( ${PNAME}_SUBPROJ_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_PROJECT}" )
+		if( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT} AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT}/CMakeLists.txt )
+			set( ${PNAME}_subproj_dir_ "${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT}" )
         endif()
 
     endif()
@@ -70,46 +70,46 @@ macro( ecbuild_use_package )
     set( _do_version_check 0 )
     set( _source_description "" )
 
-    list( FIND ECBUILD_PROJECTS ${_PAR_PROJECT} _ecbuild_project_${PNAME} )
+	list( FIND ECBUILD_PROJECTS ${_p_PROJECT} _ecbuild_project_${PNAME} )
 
     if( NOT _ecbuild_project_${PNAME} EQUAL "-1" )
-        set( ${PNAME}_PREVIOUS_SUBPROJECT 1 )
+		set( ${PNAME}_previous_subproj_ 1 )
     else()
-        set( ${PNAME}_PREVIOUS_SUBPROJECT 0 )
+		set( ${PNAME}_previous_subproj_ 0 )
     endif()
 
     # solve capitalization issues
     
-    if( ${_PAR_PROJECT}_FOUND AND NOT ${PNAME}_FOUND )
+	if( ${_p_PROJECT}_FOUND AND NOT ${PNAME}_FOUND )
         set( ${PNAME}_FOUND 1 ) 
     endif()
-    if( ${PNAME}_FOUND AND NOT ${_PAR_PROJECT}_FOUND )
-        set( ${_PAR_PROJECT}_FOUND 1 ) 
+	if( ${PNAME}_FOUND AND NOT ${_p_PROJECT}_FOUND )
+		set( ${_p_PROJECT}_FOUND 1 )
     endif()
 
     # Case 1) project was NOT added as subproject and is NOT FOUND
 
-    if( NOT ${PNAME}_FOUND AND NOT ${PNAME}_PREVIOUS_SUBPROJECT )
+	if( NOT ${PNAME}_FOUND AND NOT ${PNAME}_previous_subproj_ )
 
             # check if SUBPROJDIR is set
 
-            if( DEFINED ${PNAME}_SUBPROJ_DIR )
+			if( DEFINED ${PNAME}_subproj_dir_ )
 
                 # check version is acceptable
                 set( _just_added 1 )
                 set( _do_version_check 1 )
-                set( _source_description "sub-project ${_PAR_PROJECT} (sources)" )
+				set( _source_description "sub-project ${_p_PROJECT} (sources)" )
 
                 # add as a subproject
 
-                set( ${PNAME}_SUBPROJ_DIR ${${PNAME}_SUBPROJ_DIR} CACHE PATH "Path to ${_PAR_PROJECT} source directory" )
+				set( ${PNAME}_subproj_dir_ ${${PNAME}_subproj_dir_} CACHE PATH "Path to ${_p_PROJECT} source directory" )
 
-                set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${_PAR_PROJECT} CACHE INTERNAL "" )
+				set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${_p_PROJECT} CACHE INTERNAL "" )
 
-                add_subdirectory( ${${PNAME}_SUBPROJ_DIR} ${_PAR_PROJECT} )
+				add_subdirectory( ${${PNAME}_subproj_dir_} ${_p_PROJECT} )
 
                 set( ${PNAME}_FOUND 1 )
-                set( ${_PAR_PROJECT}_VERSION ${${PNAME}_VERSION} )
+				set( ${_p_PROJECT}_VERSION ${${PNAME}_VERSION} )
 
             endif()
 
@@ -117,46 +117,46 @@ macro( ecbuild_use_package )
 
     # Case 2) project was already added as subproject, so is already FOUND -- BUT must check version acceptable
 
-    if( ${PNAME}_PREVIOUS_SUBPROJECT )
+	if( ${PNAME}_previous_subproj_ )
 
         if( NOT ${PNAME}_FOUND )
-            message( FATAL_ERROR "${_PAR_PROJECT} was already included as sub-project but ${PNAME}_FOUND isn't set -- this is likely a BUG in ecbuild" )
+			message( FATAL_ERROR "${_p_PROJECT} was already included as sub-project but ${PNAME}_FOUND isn't set -- this is likely a BUG in ecbuild" )
         endif()
 
         # check version is acceptable
         set( _do_version_check 1 )
-        set( _source_description "already existing sub-project ${_PAR_PROJECT} (sources)" )
+		set( _source_description "already existing sub-project ${_p_PROJECT} (sources)" )
 
     endif()
 
     # Case 3) project was NOT added as subproject, but is FOUND -- so it was previously found as a binary ( either build or install tree )
 
-    if( ${PNAME}_FOUND AND NOT ${PNAME}_PREVIOUS_SUBPROJECT AND NOT _just_added )
+	if( ${PNAME}_FOUND AND NOT ${PNAME}_previous_subproj_ AND NOT _just_added )
 
         # check version is acceptable
         set( _do_version_check 1 )
-        set( _source_description "previously found package ${_PAR_PROJECT} (binaries)" )
+		set( _source_description "previously found package ${_p_PROJECT} (binaries)" )
 
     endif()
 
     # test version for Cases 1,2,3
 
-    # debug_var( _PAR_PROJECT )
-    # debug_var( _PAR_VERSION )
+	# debug_var( _p_PROJECT )
+	# debug_var( _p_VERSION )
     # debug_var( _just_added )
     # debug_var( ${PNAME}_FOUND )
-    # debug_var( ${PNAME}_PREVIOUS_SUBPROJECT )
+	# debug_var( ${PNAME}_previous_subproj_ )
 
-    if( _PAR_VERSION AND _do_version_check )
-            if( _PAR_EXACT )
-                if( NOT ${_PAR_PROJECT}_VERSION VERSION_EQUAL _PAR_VERSION )
-                    message( FATAL_ERROR "${PROJECT_NAME} requires (exactly) ${_PAR_PROJECT} = ${_PAR_VERSION} -- detected as ${_source_description} ${${_PAR_PROJECT}_VERSION}" )
+	if( _p_VERSION AND _do_version_check )
+			if( _p_EXACT )
+				if( NOT ${_p_PROJECT}_VERSION VERSION_EQUAL _p_VERSION )
+					message( FATAL_ERROR "${PROJECT_NAME} requires (exactly) ${_p_PROJECT} = ${_p_VERSION} -- detected as ${_source_description} ${${_p_PROJECT}_VERSION}" )
                 endif()
             else()
-				if( _PAR_VERSION VERSION_LESS ${_PAR_PROJECT}_VERSION OR _PAR_VERSION VERSION_EQUAL ${_PAR_PROJECT}_VERSION )
-                    message( STATUS "${PROJECT_NAME} requires ${_PAR_PROJECT} >= ${_PAR_VERSION} -- detected as ${_source_description} ${${_PAR_PROJECT}_VERSION}" )
+				if( _p_VERSION VERSION_LESS ${_p_PROJECT}_VERSION OR _p_VERSION VERSION_EQUAL ${_p_PROJECT}_VERSION )
+					message( STATUS "${PROJECT_NAME} requires ${_p_PROJECT} >= ${_p_VERSION} -- detected as ${_source_description} ${${_p_PROJECT}_VERSION}" )
 				else()
-                    message( FATAL_ERROR "${PROJECT_NAME} requires ${_PAR_PROJECT} >= ${_PAR_VERSION} -- detected only ${_source_description} ${${_PAR_PROJECT}_VERSION}" )
+					message( FATAL_ERROR "${PROJECT_NAME} requires ${_p_PROJECT} >= ${_p_VERSION} -- detected only ${_source_description} ${${_p_PROJECT}_VERSION}" )
                 endif()
             endif()
     endif()
@@ -167,23 +167,23 @@ macro( ecbuild_use_package )
     if( NOT ${PNAME}_FOUND )
 
         set( _opts )
-        if( _PAR_VERSION )
-            list( APPEND _opts VERSION ${_PAR_VERSION} )
+		if( _p_VERSION )
+			list( APPEND _opts VERSION ${_p_VERSION} )
         endif()
-        if( _PAR_EXACT )
+		if( _p_EXACT )
             list( APPEND _opts EXACT )
         endif()
-        if( _PAR_REQUIRED )
+		if( _p_REQUIRED )
             list( APPEND _opts REQUIRED )
         endif()
     
-        ecbuild_find_package( NAME ${_PAR_PROJECT} ${_opts} )
+		ecbuild_find_package( NAME ${_p_PROJECT} ${_opts} )
 
-        if( ${_PAR_PROJECT}_FOUND )
+		if( ${_p_PROJECT}_FOUND )
 
-            set( ${PNAME}_FOUND ${${_PAR_PROJECT}_FOUND} )
+			set( ${PNAME}_FOUND ${${_p_PROJECT}_FOUND} )
 
-            message( STATUS "[${_PAR_PROJECT}] (${${_PAR_PROJECT}_VERSION})" )
+			message( STATUS "[${_p_PROJECT}] (${${_p_PROJECT}_VERSION})" )
 
             message( STATUS "   ${PNAME}_INCLUDE_DIRS : [${${PNAME}_INCLUDE_DIRS}]" )
             if( ${PNAME}_DEFINITIONS )
