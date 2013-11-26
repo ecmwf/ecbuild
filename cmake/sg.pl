@@ -128,7 +128,7 @@ if(!$c->has_method("describe"))
 {
 print <<"EOF";
 
-void describe(ostream& s,int depth = 0) const { 
+void describe(std::ostream& s,int depth = 0) const {
 	$d;
 }
 
