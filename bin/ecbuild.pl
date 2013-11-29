@@ -35,9 +35,11 @@ my $project = basename($projdir);
 my $default_buildplan = "BuildPlan.txt" ;
 my $default_buildtype = "debug";
 my $default_builddir  = getcwd()."/build";
+my $def_cmakebin = "cmake";
 
 my %options = ( buildplan => $default_buildplan,
                 buildtype => $default_buildtype,
+                cmakebin  => $def_cmakebin,
                 builddir  => $default_builddir,
                 cmakeopts => "",
                 );
@@ -62,6 +64,7 @@ sub parse_commandline() # Parse command line
     'debug',
     'dry-run',
     'prefix=s',
+    'cmakebin=s',
     'builddir=s',
     'buildplan=s',
     'buildtype=s',
@@ -92,6 +95,7 @@ options:
         --builddir          where to build the software [$default_builddir]
         --buildplan         which file to use as build plan [$default_buildplan]
         --buildtype         defines the build type (debug, release, production) [$default_buildtype]
+        --cmakebin          cmake binary to use [$def_cmakebin]
         --cmakeopts         extra cmake options for configure [$default_buildtype]
 
 EXAMPLE:
@@ -335,8 +339,9 @@ sub configure() {
     }
 
     my $cmakeopts = $options{cmakeopts};
+    my $cmakebin  = $options{cmakebin};
 
-    print execute( "cmake $projdir $opts $cmakeopts" );
+    print execute( "$cmakebin $projdir $opts $cmakeopts" );
 }
 
 #------------------------------------------------------------------------------
