@@ -84,10 +84,10 @@ foreach my $c ( @c )
 
 	if(@tmpl)
 	{
-		$spec_type = "string";
+		$spec_type = "std::string";
 		my $x = join("+ ',' + ",  map { "Traits<$_>::name()"; } @tmpl);
 		$spec = <<"EOS";
-		string("$n<\") + $x + ">"
+        std::string("$n<\") + $x + ">"
 EOS
 		$spec =~ s/\n/ /g;
 	}
