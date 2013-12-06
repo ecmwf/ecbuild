@@ -30,6 +30,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_get_resources.cmake
 							ecbuild_get_test_data.cmake
 							ecbuild_install_package.cmake
+							ecbuild_list_extra_search_paths.cmake
 							ecbuild_links_target.cmake
 							ecbuild_print_summary.cmake
 							ecbuild_project_files.cmake

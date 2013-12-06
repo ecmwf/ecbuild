@@ -13,55 +13,15 @@
 #
 # usage: ecbuild_search_paths( netcdf4 )
 
-macro( ecbuild_add_extra_search_paths pkg )
+function( ecbuild_add_extra_search_paths pkg )
 
-    # PKG_PATH (upper case)
+	# debug_var( pkg )
 
-    string( TOUPPER ${pkg} _PKG )
-    if( DEFINED ${_PKG}_PATH )
-        list( APPEND CMAKE_PREFIX_PATH ${${_PKG}_PATH} )
-    endif()
+	ecbuild_list_extra_search_paths( ${pkg} CMAKE_PREFIX_PATH )
 
-    # PKG_PATH (lower case)
+	# debug_var( CMAKE_PREFIX_PATH )
 
-    if( DEFINED ${pkg}_PATH )
-        list( APPEND CMAKE_PREFIX_PATH ${${pkg}_PATH} )
-    endif()
+	set( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE )
 
-    # directories under /usr/local/apps/${pkg}
-
-    foreach( _apps /usr/local/apps/${pkg} )
-
-         file( GLOB ps ${_apps}/[0-9]*)
-         list( SORT ps )
-         list( REVERSE ps ) # reversing will give us the newest versions first
-         foreach( p ${ps} )
-             if( IS_DIRECTORY ${p} )
-                  list( APPEND CMAKE_PREFIX_PATH  ${p} )
-                  if( EXISTS ${p}/LP64 )
-                      list( APPEND CMAKE_PREFIX_PATH ${p}/LP64 )
-                  endif()
-             endif()
-         endforeach()
-
-         foreach( p ${_apps} ${_apps}/current ${_apps}/stable ${_apps}/new ${_apps}/next ${_apps}/prev )
-           if( EXISTS ${p} )
-               list( APPEND CMAKE_PREFIX_PATH ${p} )
-           endif()
-           if( EXISTS ${p}/LP64 )
-               list( APPEND CMAKE_PREFIX_PATH ${p}/LP64 )
-           endif()
-         endforeach()
-
-    endforeach()
-
-    # sanitize the list
-
-    if( CMAKE_PREFIX_PATH )
-        list( REMOVE_DUPLICATES CMAKE_PREFIX_PATH )
-    endif()
-
-#    debug_var( CMAKE_PREFIX_PATH )
-
-endmacro()
+endfunction()
 

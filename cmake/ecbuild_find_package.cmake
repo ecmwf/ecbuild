@@ -47,44 +47,46 @@ macro( ecbuild_find_package )
         set( _quiet QUIET )
     endif()
 
-    # paths @ ECMWF
-    set( _ecmwf_paths )
-    if( EXISTS /usr/local/lib/metaps/lib/${_PAR_NAME} )
-        file( GLOB _ecmwf_paths_metaps "/usr/local/lib/metaps/lib/${_PAR_NAME}/*" ) 
-        list( APPEND _ecmwf_paths ${_ecmwf_paths_metaps} )
-    endif()
-    if( EXISTS /usr/local/apps/${_PAR_NAME} )
-        file( GLOB _ecmwf_paths_apps "/usr/local/apps/${_PAR_NAME}/*" ) 
-        list( APPEND _ecmwf_paths ${_ecmwf_paths_apps} )
-    endif()
-
     # check environment variable
     if( NOT ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
         set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
     endif()
 
-    # search user defined paths first
-    if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR _ecmwf_paths )
+	# search user defined paths first
 
-        if( NOT ${_PAR_NAME}_FOUND )
-            find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} NO_DEFAULT_PATH )
-        endif()
+	if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH )
 
-        if( NOT ${_PAR_NAME}_FOUND )
-            find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} ${_ecmwf_paths} NO_DEFAULT_PATH )
-        endif()
-    
-    endif()
+		# 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
+		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} NO_DEFAULT_PATH )
 
-    # search system paths
+		# 2) search using a file Find<package>.cmake if it exists
+		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} NO_DEFAULT_PATH )
 
-    if( NOT ${_PAR_NAME}_FOUND )
-        find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_quiet} NO_MODULE)
-    endif()
+	endif()
 
-    if( NOT ${_PAR_NAME}_FOUND )
-        find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_quiet} )
-    endif()
+	# search developer cache and recently configured packages in the CMake GUI
+
+	find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH}
+			NO_CMAKE_ENVIRONMENT_PATH
+			NO_SYSTEM_ENVIRONMENT_PATH
+			NO_CMAKE_SYSTEM_PATH
+			NO_CMAKE_SYSTEM_PACKAGE_REGISTRY )
+
+	# search special ECMWF paths
+
+	set( _ecmwf_paths ) # clear variable
+
+	ecbuild_list_extra_search_paths( ${_PAR_NAME} _ecmwf_paths )
+
+	if( _ecmwf_paths )
+		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE PATHS ${_ecmwf_paths} NO_DEFAULT_PATH )
+		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET PATHS ${_ecmwf_paths} NO_DEFAULT_PATH )
+	endif()
+
+	# search system paths
+
+	find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_quiet} NO_MODULE )
+	find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_quiet} )
 
     # check version ...
 
