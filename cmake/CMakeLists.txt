@@ -47,6 +47,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							FindEcLib.cmake
 							FindEcregrid.cmake
 							FindFDB.cmake
+							FindLegacyFDB.cmake
 							Findgrib_api.cmake
 							Findodb_api.cmake
 							FindHPSS.cmake
