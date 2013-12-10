@@ -17,6 +17,16 @@ macro( ecbuild_declare_project )
 	set( ${PROJECT_NAME}_ALL_EXES "" CACHE INTERNAL "" )
 	set( ${PROJECT_NAME}_ALL_LIBS "" CACHE INTERNAL "" )
 
+	# if git project get its HEAD SHA1
+	# leave it here so we may use ${PNAME}_GIT_SHA1 on the version file
+
+	if( EXISTS ${PROJECT_SOURCE_DIR}/.git )
+		get_git_head_revision( GIT_REFSPEC ${PNAME}_GIT_SHA1 )
+		string( SUBSTRING "${${PNAME}_GIT_SHA1}" 0 7 ${PNAME}_GIT_SHA1_SHORT )
+		debug_var( ${PNAME}_GIT_SHA1 )
+		debug_var( ${PNAME}_GIT_SHA1_SHORT )
+	endif()
+
 	# read and parse project version file
 	if( EXISTS ${PROJECT_SOURCE_DIR}/VERSION.cmake )
 		include( ${PROJECT_SOURCE_DIR}/VERSION.cmake )
@@ -45,12 +55,6 @@ macro( ecbuild_declare_project )
 #    debug_var( ${PNAME}_MAJOR_VERSION )
 #    debug_var( ${PNAME}_MINOR_VERSION )
 #    debug_var( ${PNAME}_PATCH_VERSION )
-
-	# if git project get its HEAD SHA1
-
-	if( EXISTS ${PROJECT_SOURCE_DIR}/.git )
-		get_git_head_revision( GIT_REFSPEC ${PNAME}_GIT_SHA1 )
-	endif()
 
 	# user defined project-specific installation paths
 
@@ -103,8 +107,8 @@ macro( ecbuild_declare_project )
 
 	message( STATUS "---------------------------------------------------------" )
 
-	if( DEFINED ${PNAME}_GIT_SHA1 )
-		message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR}) [${${PNAME}_GIT_SHA1}]" )
+	if( ${PNAME}_GIT_SHA1_SHORT )
+		message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR}) [${${PNAME}_GIT_SHA1_SHORT}]" )
 	else()
 		message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR})" )
 	endif()
