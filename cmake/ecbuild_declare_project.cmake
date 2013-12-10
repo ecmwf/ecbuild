@@ -23,8 +23,8 @@ macro( ecbuild_declare_project )
 	if( EXISTS ${PROJECT_SOURCE_DIR}/.git )
 		get_git_head_revision( GIT_REFSPEC ${PNAME}_GIT_SHA1 )
 		string( SUBSTRING "${${PNAME}_GIT_SHA1}" 0 7 ${PNAME}_GIT_SHA1_SHORT )
-		debug_var( ${PNAME}_GIT_SHA1 )
-		debug_var( ${PNAME}_GIT_SHA1_SHORT )
+#		debug_var( ${PNAME}_GIT_SHA1 )
+#		debug_var( ${PNAME}_GIT_SHA1_SHORT )
 	endif()
 
 	# read and parse project version file

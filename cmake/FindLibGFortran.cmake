@@ -7,26 +7,21 @@
 # does it submit to any jurisdiction.
 
 ###############################################################################
-# FORTRAN support
+# gfortran libs
 
-if( NOT DEFINED LIBGFORTRAN_PATH AND DEFINED $ENV{LIBGFORTRAN_PATH} )
-	set( LIBGFORTRAN_PATH $ENV{LIBGFORTRAN_PATH} )
-endif()
+set( __libgfortran_names gfortran libgfortran.so.1 libgfortran.so.3 )
 
-if( LIBGFORTRAN_PATH )
-	find_library( GFORTRANLIB gfortran PATHS ${LIBGFORTRAN_PATH} PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH )
-endif()
+find_library( GFORTRAN_LIB NAMES ${__libgfortran_names}  HINTS ${LIBGFORTRAN_PATH} ENV LIBGFORTRAN_PATH PATHS PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH )
+find_library( GFORTRAN_LIB NAMES ${__libgfortran_names}  PATHS PATH_SUFFIXES lib64 lib )
 
-find_library( GFORTRANLIB gfortran )
+mark_as_advanced( GFORTRAN_LIB )
 
-mark_as_advanced( GFORTRANLIB )
-
-if( GFORTRANLIB )
-	set( LIBGFORTRAN_LIBRARIES ${GFORTRANLIB} )
+if( GFORTRAN_LIB )
+	set( GFORTRAN_LIBRARIES ${GFORTRAN_LIB} )
 endif()
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args( LIBGFORTRAN  DEFAULT_MSG LIBGFORTRAN_LIBRARIES  )
+find_package_handle_standard_args( LIBGFORTRAN  DEFAULT_MSG GFORTRAN_LIBRARIES  )
 
 
