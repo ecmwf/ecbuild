@@ -82,4 +82,5 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							contrib/GetGitRevisionDescription.cmake.in
 							contrib/FindNetCDF4.cmake
 							contrib/FindEigen3.cmake
+							contrib/FindNumPy.cmake
 )
