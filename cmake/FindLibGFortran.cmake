@@ -11,26 +11,33 @@
 
 set( __libgfortran_names gfortran libgfortran.so.1 libgfortran.so.3 )
 
-execute_process(COMMAND "gfortran" "-print-search-dirs"
-    RESULT_VARIABLE _GFORTRAN_SEARCH_SUCCESS
-    OUTPUT_VARIABLE _GFORTRAN_VALUES_OUTPUT
-    ERROR_VARIABLE _GFORTRAN_ERROR_VALUE
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
+# use gfortran to find the library
 
-debug_var(_GFORTRAN_SEARCH_SUCCESS)
-debug_var(_GFORTRAN_VALUES_OUTPUT)
-debug_var(_GFORTRAN_ERROR_VALUE)
+find_program( GFORTRAN_EXECUTABLE gfortran )
 
-if(_GFORTRAN_SEARCH_SUCCESS MATCHES 0)
-    string(REGEX REPLACE ".*libraries: =(.*)" "\\1" _result  ${_GFORTRAN_VALUES_OUTPUT})
-    string(REGEX REPLACE ":" ";" _result  ${_result})
-    debug_var(_result)
+if( GFORTRAN_EXECUTABLE )
 
-    set(_MORE_HINTS ${_result})
+	execute_process(COMMAND ${GFORTRAN_EXECUTABLE} "-print-search-dirs"
+		RESULT_VARIABLE _GFORTRAN_SEARCH_SUCCESS
+		OUTPUT_VARIABLE _GFORTRAN_VALUES_OUTPUT
+		ERROR_VARIABLE _GFORTRAN_ERROR_VALUE
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+#	debug_var(_GFORTRAN_SEARCH_SUCCESS)
+#	debug_var(_GFORTRAN_VALUES_OUTPUT)
+#	debug_var(_GFORTRAN_ERROR_VALUE)
+
+	if(_GFORTRAN_SEARCH_SUCCESS MATCHES 0)
+		string(REGEX REPLACE ".*libraries: =(.*)" "\\1" _result  ${_GFORTRAN_VALUES_OUTPUT})
+		string(REGEX REPLACE ":" ";" _gfortran_hints ${_result} )
+	endif()
+
+	debug_var( _gfortran_hints )
+
 endif()
 
 find_library( GFORTRAN_LIB NAMES ${__libgfortran_names}  HINTS ${LIBGFORTRAN_PATH} ENV LIBGFORTRAN_PATH PATHS PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH )
-find_library( GFORTRAN_LIB NAMES ${__libgfortran_names}  HINTS ${_MORE_HINTS} PATHS PATH_SUFFIXES lib64 lib )
+find_library( GFORTRAN_LIB NAMES ${__libgfortran_names}  HINTS ${_gfortran_hints} PATHS PATH_SUFFIXES lib64 lib )
 
 mark_as_advanced( GFORTRAN_LIB )
 
