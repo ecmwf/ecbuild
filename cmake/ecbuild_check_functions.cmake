@@ -112,20 +112,7 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     check_c_source_compiles( "#include <sys/procfs.h>\nint main(){ return 0; }\n" EC_HAVE_SYSPROCFS )
     # test for backtrace
     check_c_source_compiles( "#include <unistd.h>\n#include <execinfo.h>\n int main(){ void ** buffer; int i = backtrace(buffer, 256); }\n" EC_HAVE_EXECINFO_BACKTRACE )
-    
-    ### asynchronous IO support ##################
-    
-    cmake_push_check_state()
-    
-       if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
-         set(CMAKE_REQUIRED_LIBRARIES ${RT_LIB})
-       endif()
-    
-       check_c_source_compiles( "#include <aio.h>\nint main(){ struct aiocb* aiocbp; int n = aio_write(aiocbp); n = aio_read(aiocbp);  n = aio_fsync(O_SYNC,aiocbp); }\n"  EC_HAVE_AIO )
-       check_c_source_compiles( "#include <aio.h>\nint main(){ struct aiocb64* aiocbp; int n = aio_write64(aiocbp); n = aio_read64(aiocbp); n = aio_fsync64(O_SYNC,aiocbp); }\n" EC_HAVE_AIO64 )
-    
-    cmake_pop_check_state()
-        
+           
     #### reentrant funtions support  #############
 
     # test for gmtime_r

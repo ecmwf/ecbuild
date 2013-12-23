@@ -104,8 +104,8 @@
 
 /* --- asynchronous IO support --- */
 
-#cmakedefine EC_HAVE_AIO
-#cmakedefine EC_HAVE_AIO64
+#cmakedefine EC_HAVE_AIOCB
+#cmakedefine EC_HAVE_AIO64CB
 
 /* --- reentrant funtions support --- */
 

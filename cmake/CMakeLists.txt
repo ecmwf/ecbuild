@@ -23,7 +23,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_find_fortranlibs.cmake
 							ecbuild_find_package.cmake
 							ecbuild_find_python.cmake
-							ecbuild_find_support_packages.cmake
+							ecbuild_find_perl.cmake
 							ecbuild_generate_rpc.cmake
 							ecbuild_generate_yy.cmake
 							ecbuild_get_date.cmake
@@ -40,6 +40,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_use_package.cmake
 							ecbuild_warn_unused_files.cmake
 							FindADSM.cmake
+							FindAIO.cmake
 							FindCMath.cmake
 							FindCairo.cmake
 							FindDl.cmake

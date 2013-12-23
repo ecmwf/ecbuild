@@ -141,7 +141,9 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_add_extra_search_paths )
 	include( ecbuild_print_summary )
 	include( ecbuild_warn_unused_files )
+	include( ecbuild_find_perl )
 	include( ecbuild_find_python )
+	include( ecbuild_find_lexyacc )
 	include( ecbuild_find_fortranlibs )
 	include( ecbuild_enable_fortran )
 
@@ -151,7 +153,6 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	# kickstart the build system
 
 	include( ecbuild_define_options )               # define build options
-	include( ecbuild_find_support_packages )        # find packages we depend on
 	include( ecbuild_check_compiler )               # check for compiler characteristics
 	include( ecbuild_check_os )                     # check for os characteristics
 	include( ecbuild_check_functions )              # check for available functions
