@@ -40,6 +40,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_use_package.cmake
 							ecbuild_warn_unused_files.cmake
 							FindADSM.cmake
+                                                        FindArmadillo.cmake
 							FindCMath.cmake
 							FindCairo.cmake
 							FindDl.cmake
