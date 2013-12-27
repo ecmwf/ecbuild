@@ -9,13 +9,15 @@
 ##############################################################################
 # macro for adding persistent layer object classes
 ##############################################################################
-
+	
 # define the script to build the persistent class information
 set( sg_perl "${CMAKE_CURRENT_LIST_DIR}/sg.pl" CACHE INTERNAL "perl script to generate persistent objects" )
 
 macro( ecbuild_add_persistent )
 
-    set( options ) 
+	ecbuild_find_perl( REQUIRED )
+
+	set( options )
     set( single_value_args SRC_LIST NAMESPACE )
     set( multi_value_args  FILES ) 
 
