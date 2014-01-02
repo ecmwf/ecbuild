@@ -15,6 +15,8 @@ endif()
 
 find_library( RT_LIB rt )
 
+mark_as_advanced( RT_LIB )
+
 include(FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args(REALTIME  DEFAULT_MSG RT_LIB )

@@ -20,6 +20,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_define_options.cmake
 							ecbuild_define_paths.cmake
 							ecbuild_enable_fortran.cmake
+							ecbuild_find_mpi.cmake
 							ecbuild_find_fortranlibs.cmake
 							ecbuild_find_package.cmake
 							ecbuild_find_python.cmake

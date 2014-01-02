@@ -11,7 +11,7 @@
 file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
-#######################################################################################################
+##############################################################################################
 
 # setup library building rpaths (both in build dir and then when installed)
 
@@ -30,3 +30,7 @@ set( CMAKE_INCLUDE_CURRENT_DIR OFF)
 # are prefered over the already installed ones (since cmake 2.4.1)
 
 set( CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON )
+
+##############################################################################################
+
+mark_as_advanced( CMAKE_CODEBLOCKS_EXECUTABLE ) # cmake doesn't hide this variable

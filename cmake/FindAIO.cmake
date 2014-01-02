@@ -21,6 +21,8 @@ endif()
 
 find_path( AIO_INCLUDE_DIRS NAMES aio.h HINTS ENV AIO_PATH ${AIO_PATH} )
 
+mark_as_advanced( AIO_INCLUDE_DIRS )
+
 include(FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args( AIO  DEFAULT_MSG  AIO_INCLUDE_DIRS  )
