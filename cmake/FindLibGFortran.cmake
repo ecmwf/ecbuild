@@ -7,28 +7,46 @@
 # does it submit to any jurisdiction.
 
 ###############################################################################
-# FORTRAN support
+# gfortran libs
 
-if( NOT DEFINED LIBGFORTRAN_PATH AND DEFINED $ENV{LIBGFORTRAN_PATH} )
-	set( LIBGFORTRAN_PATH $ENV{LIBGFORTRAN_PATH} )
+set( __libgfortran_names gfortran libgfortran.so.1 libgfortran.so.3 )
+
+# use gfortran to find the library
+
+find_program( GFORTRAN_EXECUTABLE gfortran )
+
+if( GFORTRAN_EXECUTABLE )
+
+	execute_process(COMMAND ${GFORTRAN_EXECUTABLE} "-print-search-dirs"
+		RESULT_VARIABLE _GFORTRAN_SEARCH_SUCCESS
+		OUTPUT_VARIABLE _GFORTRAN_VALUES_OUTPUT
+		ERROR_VARIABLE _GFORTRAN_ERROR_VALUE
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+#	debug_var(_GFORTRAN_SEARCH_SUCCESS)
+#	debug_var(_GFORTRAN_VALUES_OUTPUT)
+#	debug_var(_GFORTRAN_ERROR_VALUE)
+
+	if(_GFORTRAN_SEARCH_SUCCESS MATCHES 0)
+		string(REGEX REPLACE ".*libraries: =(.*)" "\\1" _result  ${_GFORTRAN_VALUES_OUTPUT})
+		string(REGEX REPLACE ":" ";" _gfortran_hints ${_result} )
+	endif()
+
+	debug_var( _gfortran_hints )
+
 endif()
 
-debug_var( LIBGFORTRAN_PATH )
+find_library( GFORTRAN_LIB NAMES ${__libgfortran_names}  HINTS ${LIBGFORTRAN_PATH} ENV LIBGFORTRAN_PATH PATHS PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH )
+find_library( GFORTRAN_LIB NAMES ${__libgfortran_names}  HINTS ${_gfortran_hints} PATHS PATH_SUFFIXES lib64 lib )
 
-if( DEFINED LIBGFORTRAN_PATH )
-	find_library( libgfortran NAMES gfortran PATHS ${LIBGFORTRAN_PATH} ${LIBGFORTRAN_PATH}/lib64 ${LIBGFORTRAN_PATH}/lib  NO_DEFAULT_PATH )
+mark_as_advanced( GFORTRAN_LIB )
+
+if( GFORTRAN_LIB )
+	set( GFORTRAN_LIBRARIES ${GFORTRAN_LIB} )
 endif()
-find_library( libgfortran NAMES gfortran )
-mark_as_advanced( libgfortran )
-
-if( libgfortran )
-	set( LIBGFORTRAN_LIBRARIES ${libgfortran} )
-endif()
-
-debug_var( libgfortran )
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args( LIBGFORTRAN  DEFAULT_MSG LIBGFORTRAN_LIBRARIES  )
+find_package_handle_standard_args( LIBGFORTRAN  DEFAULT_MSG GFORTRAN_LIBRARIES  )
 
 

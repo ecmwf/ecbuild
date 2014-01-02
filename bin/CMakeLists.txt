@@ -8,4 +8,4 @@ license.pl )
 
 add_custom_target( ecbuild_bin SOURCES ${ecbuild_bin_files} )
 
-install( FILES ${ecbuild_bin_files} DESTINATION ${INSTALL_BIN_DIR} )
+install( PROGRAMS ${ecbuild_bin_files} DESTINATION ${INSTALL_BIN_DIR} )

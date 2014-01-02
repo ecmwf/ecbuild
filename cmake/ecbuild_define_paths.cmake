@@ -19,17 +19,6 @@ set( CMAKE_SKIP_BUILD_RPATH              FALSE ) # use full RPATHs for the build
 set( CMAKE_BUILD_WITH_INSTALL_RPATH      FALSE ) # when building, don't use the install RPATH already (but later on when installing)
 set( CMAKE_INSTALL_RPATH_USE_LINK_PATH   TRUE  ) # add the automatic parts to RPATH which point to dirs outside build tree
 
-if( ENABLE_RPATHS )
-    
-    # set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib") # install with this RPATH
-    # the RPATH to be used when installing, but only if it's not a system directory
-    list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${INSTALL_LIB_DIR}" isSystemDir)
-    if("${isSystemDir}" STREQUAL "-1")
-       set(CMAKE_INSTALL_RPATH "${INSTALL_LIB_DIR}")
-    endif()
-
-ENDIF()
-
 # Always include srcdir and builddir in include path
 # This saves typing ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 # in about every subdir
@@ -40,4 +29,4 @@ set( CMAKE_INCLUDE_CURRENT_DIR OFF)
 # before all other include dirs, so the headers in the sources
 # are prefered over the already installed ones (since cmake 2.4.1)
 
-set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
+set( CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON )

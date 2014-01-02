@@ -66,6 +66,14 @@ if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
 
     endif()
 
+	# The grib_api on macos that comes with 'port' is linked against ghostscript
+	if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+		find_library(GS_LIBRARIES NAMES gs)
+		if( GS_LIBRARIES )
+			list( APPEND GRIB_API_LIBRARIES ${GS_LIBRARIES} )
+		endif()
+	endif()
+
     # find external grib_api
 
     if( NOT DEFINED GRIB_API_PATH AND NOT "$ENV{GRIB_API_PATH}" STREQUAL "" )
@@ -116,7 +124,7 @@ if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
     
     list( APPEND GRIB_API_DEFINITIONS  ${_grib_api_jpg_defs} ${_grib_api_png_defs} )
     list( APPEND GRIB_API_INCLUDE_DIRS ${_grib_api_jpg_incs} ${_grib_api_png_incs} )
-    list( APPEND GRIB_API_LIBRARIES    ${_grib_api_jpg_libs} ${_grib_api_png_libs} )
+	list( APPEND GRIB_API_LIBRARIES    ${_grib_api_jpg_libs} ${_grib_api_png_libs} )
 
     set( grib_api_FOUND ${GRIB_API_FOUND} )
 
