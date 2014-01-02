@@ -324,12 +324,4 @@ if( ${EC_OS_NAME} MATCHES "UNKNOWN" )
 	endif()
 endif()
 
-############################################################################################
-# save final flags to cache
-
-get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
-
-foreach( lang ${langs} )
-	set( EC_${lang}_FLAGS_ALL "${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${EC_BUILD_TYPE}}" CACHE INTERNAL "full ${lang} compilation flags" )
-endforeach()
 

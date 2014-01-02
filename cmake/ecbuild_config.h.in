@@ -8,45 +8,160 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef ecbuild_config_h
-#define ecbuild_config_h
+#ifndef @PROJECT_NAME@_ecbuild_config_h
+#define @PROJECT_NAME@_ecbuild_config_h
 
-#include "ecbuild_platform.h"
+/* cpu arch info */
+
+#cmakedefine EC_BIG_ENDIAN       @EC_BIG_ENDIAN@
+#cmakedefine EC_LITTLE_ENDIAN    @EC_LITTLE_ENDIAN@
+
+/* compiler support */
+
+#cmakedefine EC_HAVE_FUNCTION_DEF
+
+/* os capability checks */
+
+/* --- symbols --- */
+
+#cmakedefine EC_HAVE_FSEEK
+#cmakedefine EC_HAVE_FSEEKO
+#cmakedefine EC_HAVE_FTELLO
+#cmakedefine EC_HAVE_LSEEK
+#cmakedefine EC_HAVE_FTRUNCATE
+#cmakedefine EC_HAVE_OPEN
+#cmakedefine EC_HAVE_FOPEN
+#cmakedefine EC_HAVE_FLOCK
+#cmakedefine EC_HAVE_MMAP
+
+#cmakedefine EC_HAVE_POSIX_MEMALIGN
+
+#cmakedefine EC_HAVE_F_GETLK
+#cmakedefine EC_HAVE_F_SETLKW
+#cmakedefine EC_HAVE_F_SETLK
+
+#cmakedefine EC_HAVE_F_GETLK64
+#cmakedefine EC_HAVE_F_SETLKW64
+#cmakedefine EC_HAVE_F_SETLK64
+
+#cmakedefine EC_HAVE_MAP_ANONYMOUS
+#cmakedefine EC_HAVE_MAP_ANON
+
+/* --- include files --- */
+
+#cmakedefine EC_HAVE_ASSERT_H
+#cmakedefine EC_HAVE_STDLIB_H
+#cmakedefine EC_HAVE_UNISTD_H
+#cmakedefine EC_HAVE_STRING_H
+#cmakedefine EC_HAVE_STRINGS_H
+#cmakedefine EC_HAVE_SYS_STAT_H
+#cmakedefine EC_HAVE_SYS_TIME_H
+#cmakedefine EC_HAVE_SYS_TYPES_H
+#cmakedefine EC_HAVE_MALLOC_H
+#cmakedefine EC_HAVE_SYS_MALLOC_H
+
+#cmakedefine EC_HAVE_MALLOC_H
+#cmakedefine EC_HAVE_SYS_MALLOC_H
+
+#cmakedefine EC_HAVE_SYS_MOUNT_H
+#cmakedefine EC_HAVE_SYS_VFS_H
+
+/* --- capabilities --- */
+
+#cmakedefine EC_STAT_SIZEOF_OFF_T @EC_STAT_SIZEOF_OFF_T@
+
+#cmakedefine EC_HAVE_OFFT
+#cmakedefine EC_HAVE_OFF64T
+
+#cmakedefine EC_HAVE_STRUCT_STAT
+#cmakedefine EC_HAVE_STRUCT_STAT64
+#cmakedefine EC_HAVE_STAT
+#cmakedefine EC_HAVE_STAT64
+#cmakedefine EC_HAVE_FSTAT
+#cmakedefine EC_HAVE_FSTAT64
+
+#cmakedefine EC_HAVE_FSEEKO64
+#cmakedefine EC_HAVE_FTELLO64
+#cmakedefine EC_HAVE_LSEEK64
+#cmakedefine EC_HAVE_OPEN64
+#cmakedefine EC_HAVE_FOPEN64
+#cmakedefine EC_HAVE_FTRUNCATE64
+#cmakedefine EC_HAVE_FLOCK64
+#cmakedefine EC_HAVE_MMAP64
+
+#cmakedefine EC_HAVE_STRUCT_STATVFS
+#cmakedefine EC_HAVE_STRUCT_STATVFS64
+#cmakedefine EC_HAVE_STATVFS
+#cmakedefine EC_HAVE_STATVFS64
+
+#cmakedefine EC_HAVE_FSYNC
+#cmakedefine EC_HAVE_FDATASYNC
+#cmakedefine EC_HAVE_DIRFD
+#cmakedefine EC_HAVE_SYSPROC
+#cmakedefine EC_HAVE_SYSPROCFS
+
+#cmakedefine EC_HAVE_EXECINFO_BACKTRACE
+
+/* --- asynchronous IO support --- */
+
+#cmakedefine EC_HAVE_AIOCB
+#cmakedefine EC_HAVE_AIO64CB
+
+/* --- reentrant funtions support --- */
+
+#cmakedefine EC_HAVE_GMTIME_R
+#cmakedefine EC_HAVE_GETPWUID_R
+#cmakedefine EC_HAVE_GETPWNAM_R
+#cmakedefine EC_HAVE_READDIR_R
+#cmakedefine EC_HAVE_GETHOSTBYNAME_R
+
+/* --- c compiler support --- */
+
+#cmakedefine EC_HAVE_C_INLINE
+
+/* --- c++ compiler support --- */
+
+#cmakedefine EC_HAVE_FUNCTION_DEF
+
+#cmakedefine EC_HAVE_CXXABI_H
+#cmakedefine EC_HAVE_CXX_BOOL
+
+#cmakedefine EC_HAVE_CXX_SSTREAM
 
 /* config info */
 
-#define EC_OS_NAME          "@CMAKE_SYSTEM@"
-#define EC_OS_BITS          @EC_OS_BITS@
-#define EC_OS_BITS_STR      "@EC_OS_BITS@"
-#define EC_OS_STR           "@EC_OS_NAME@.@EC_OS_BITS@"
-#define EC_OS_VERSION       "@CMAKE_SYSTEM_VERSION@"
-#define EC_SYS_PROCESSOR    "@CMAKE_SYSTEM_PROCESSOR@"
+#define @PNAME@_OS_NAME          "@CMAKE_SYSTEM@"
+#define @PNAME@_OS_BITS          @EC_OS_BITS@
+#define @PNAME@_OS_BITS_STR      "@EC_OS_BITS@"
+#define @PNAME@_OS_STR           "@EC_OS_NAME@.@EC_OS_BITS@"
+#define @PNAME@_OS_VERSION       "@CMAKE_SYSTEM_VERSION@"
+#define @PNAME@_SYS_PROCESSOR    "@CMAKE_SYSTEM_PROCESSOR@"
 
-#define EC_BUILD_TIMESTAMP  "@EC_BUILD_TIMESTAMP@"
-#define EC_BUILD_TYPE       "@CMAKE_BUILD_TYPE@"
+#define @PNAME@_BUILD_TIMESTAMP  "@EC_BUILD_TIMESTAMP@"
+#define @PNAME@_BUILD_TYPE       "@CMAKE_BUILD_TYPE@"
 
-#define EC_C_COMPILER_ID      "@CMAKE_C_COMPILER_ID@"
-#define EC_C_COMPILER_VERSION "@CMAKE_C_COMPILER_VERSION@"
+#define @PNAME@_C_COMPILER_ID      "@CMAKE_C_COMPILER_ID@"
+#define @PNAME@_C_COMPILER_VERSION "@CMAKE_C_COMPILER_VERSION@"
 
-#define EC_CXX_COMPILER_ID      "@CMAKE_CXX_COMPILER_ID@"
-#define EC_CXX_COMPILER_VERSION "@CMAKE_CXX_COMPILER_VERSION@"
+#define @PNAME@_CXX_COMPILER_ID      "@CMAKE_CXX_COMPILER_ID@"
+#define @PNAME@_CXX_COMPILER_VERSION "@CMAKE_CXX_COMPILER_VERSION@"
 
-#define EC_C_COMPILER       "@CMAKE_C_COMPILER@"
-#define EC_C_FLAGS          "@EC_C_FLAGS_ALL@"
+#define @PNAME@_C_COMPILER       "@CMAKE_C_COMPILER@"
+#define @PNAME@_C_FLAGS          "@EC_C_FLAGS@"
 
-#define EC_CXX_COMPILER     "@CMAKE_CXX_COMPILER@"
-#define EC_CXX_FLAGS        "@EC_CXX_FLAGS_ALL@"
+#define @PNAME@_CXX_COMPILER     "@CMAKE_CXX_COMPILER@"
+#define @PNAME@_CXX_FLAGS        "@EC_CXX_FLAGS@"
 
 #cmakedefine EC_HAVE_Fortran
 
 #ifdef EC_HAVE_Fortran
 
-#define EC_Fortran_COMPILER_ID      "@CMAKE_Fortran_COMPILER_ID@"
-#define EC_Fortran_COMPILER_VERSION "@CMAKE_Fortran_COMPILER_VERSION@"
+#define @PNAME@_Fortran_COMPILER_ID      "@CMAKE_Fortran_COMPILER_ID@"
+#define @PNAME@_Fortran_COMPILER_VERSION "@CMAKE_Fortran_COMPILER_VERSION@"
 
-#define EC_Fortran_COMPILER "@CMAKE_Fortran_COMPILER@"
-#define EC_Fortran_FLAGS    "@EC_Fortran_FLAGS_ALL@"
+#define @PNAME@_Fortran_COMPILER "@CMAKE_Fortran_COMPILER@"
+#define @PNAME@_Fortran_FLAGS    "@EC_Fortran_FLAGS@"
 
 #endif
 
-#endif /* ecbuild_config_h */
+#endif /* @PROJECT_NAME@_ecbuild_config_h */

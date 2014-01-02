@@ -25,14 +25,9 @@ macro( ecbuild_find_mpi )
       message(FATAL_ERROR "Unknown keywords given to ecbuild_find_mpi(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
-    # get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
-    # foreach( lang ${langs} )
-    #     message( STATUS " ${lang} > ${CMAKE_${lang}_COMPILER_ID} ${CMAKE_${lang}_COMPILER_VERSION} [${CMAKE_${lang}_COMPILER} ${EC_${lang}_FLAGS_ALL}]" )
-    # endforeach()
-
     # if user defined compilers are MPI compliant, then we use them ...
 
-    # C
+	# C compiler
 
 	if( CMAKE_C_COMPILER_LOADED AND NOT MPI_C_COMPILER )
 
@@ -58,7 +53,7 @@ macro( ecbuild_find_mpi )
 
     endif()
 
-    # CXX
+	# CXX compiler
 
 	if( CMAKE_CXX_COMPILER_LOADED AND NOT MPI_CXX_COMPILER )
 
@@ -82,7 +77,7 @@ macro( ecbuild_find_mpi )
 
     endif()
 
-    # Fortran
+	# Fortran compiler
 
 	if( CMAKE_Fortran_COMPILER_LOADED AND NOT MPI_Fortran_COMPILER )
 

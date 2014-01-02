@@ -9,21 +9,23 @@
 ############################################################################################
 # generates the config header fot the project with the system introspection done by CMake
 
-macro( ecbuild_generate_config_headers )
+function( ecbuild_generate_config_headers )
 
     # parse parameters
 
     set( options )
-	set( single_value_args )
+	set( single_value_args DESTINATION )
     set( multi_value_args  )
 
-    cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+	cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_PAR_UNPARSED_ARGUMENTS)
       message(FATAL_ERROR "Unknown keywords given to ecbuild_generate_config_headers(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
 	# generate list of compiler flags
+
+	string( TOUPPER ${PROJECT_NAME} PNAME )
 
 	get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
 
@@ -35,6 +37,11 @@ macro( ecbuild_generate_config_headers )
 
 	# install ecbuild configuration
 
-	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_ecbuild_config.h DESTINATION ${INSTALL_INCLUDE_DIR} )
+	set( _destination ${INSTALL_INCLUDE_DIR} )
+	if( _p_DESTINATION )
+		set( _destination ${_p_DESTINATION} )
+	endif()
 
-endmacro( ecbuild_generate_config_headers )
+	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_ecbuild_config.h DESTINATION ${_destination} )
+
+endfunction( ecbuild_generate_config_headers )
