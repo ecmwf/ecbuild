@@ -31,7 +31,9 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
 
 add_subdirectory( cmake )
 
-if( NOT ECBUILD_NO_INSTALL )
+option( ENABLE_INSTALL "Wether to install ecbuild files" OFF )
+
+if( ENABLE_INSTALL )
 
     install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
 
