@@ -20,10 +20,6 @@ macro( ecbuild_add_cxx11_flags )
 	# 	endif()
 	# endif()
 
-	debug_var( CMAKE_CXX_FLAGS )
-
 	include( ${ECBUILD_MACROS_DIR}/contrib/GreatCMakeCookOff/AddCPP11Flags.cmake )
-
-	debug_var( CMAKE_CXX_FLAGS )
 
 endmacro( ecbuild_add_cxx11_flags )
