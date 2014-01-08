@@ -209,9 +209,14 @@ if( UNIX )
 	### AIX ###
 
 	if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
+	
+		cmake_add_c_flags("-qpic=large")
+		cmake_add_cxx_flags("-qpic=large")
+	
+		set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -bbigtoc" )
 
 		if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
-			set( CMAKE_SHARED_LINKER_FLAGS "-Xlinker -qbigtoc ${CMAKE_SHARED_LINKER_FLAGS}" )
+			set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Xlinker" )
 		endif()
 
 		set( EC_OS_NAME "aix" )
