@@ -29,12 +29,14 @@ endif()
 
 set( CMAKE_EXE_LINKER_FLAGS_PRODUCTION "" CACHE STRING "Flags used for linking binaries during Production builds." FORCE )
 set( CMAKE_SHARED_LINKER_FLAGS_PRODUCTION "" CACHE STRING "Flags used by the shared libraries linker during Production builds." FORCE )
+set( CMAKE_MODULE_LINKER_FLAGS_PRODUCTION "" CACHE STRING "Flags used by the static libraries linker during Production builds." FORCE )
 
 mark_as_advanced(
     CMAKE_CXX_FLAGS_PRODUCTION
     CMAKE_C_FLAGS_PRODUCTION
     CMAKE_EXE_LINKER_FLAGS_PRODUCTION
-    CMAKE_SHARED_LINKER_FLAGS_PRODUCTION )
+	CMAKE_SHARED_LINKER_FLAGS_PRODUCTION
+	CMAKE_MODULE_LINKER_FLAGS_PRODUCTION )
 
 ############################################################################################
 # define default build type
