@@ -37,12 +37,10 @@ macro( ecbuild_print_summary )
 		  message( STATUS " ${lang} > ${CMAKE_${lang}_COMPILER_ID} ${CMAKE_${lang}_COMPILER_VERSION} [${CMAKE_${lang}_COMPILER} ${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
         endforeach()
 
-		if( ( NOT "${CMAKE_EXEC_LINKER_FLAGS}" MATCHES "^[ ]*$" ) OR ( NOT "${CMAKE_EXEC_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" MATCHES "^[ ]*$" ) )
-			message( STATUS " shared exe flags : [${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXEC_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
-        endif()
-		if( ( NOT "${CMAKE_SHARED_LINKER_FLAGS}" MATCHES "^[ ]*$" ) OR ( NOT "${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" MATCHES "^[ ]*$" ) )
-			message( STATUS " shared link flags: [${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
-        endif()
+	message( STATUS "link flags :" )
+	message( STATUS "    exe       : [${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXEC_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
+	message( STATUS "    shared lib: [${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
+	message( STATUS "    static lib: [${CMAKE_MODULE_LINKER_FLAGS} ${CMAKE_MODULE_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
 
         message( STATUS "---------------------------------------------------------" )
 
