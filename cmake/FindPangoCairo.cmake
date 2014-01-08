@@ -56,11 +56,14 @@ else()
         HINTS /usr/local/lib/glib-${GLIB_VERSION} PATH_SUFFIXES include)
 
 
+    find_package(X11)
+
     set(PANGOCAIRO_INCLUDE_DIRS
         ${_PANGOCAIRO_INCLUDE_DIRS}
         ${_CAIRO_INCLUDE_DIRS}
         ${_GLIB_INCLUDE_DIRS_1}
         ${_GLIB_INCLUDE_DIRS_2}
+	${X11_INCLUDE_DIR}
     )
 
 #message(WARNING "===> ${PANGOCAIRO_INCLUDE_DIRS}")
@@ -68,7 +71,6 @@ else()
     find_library( _PANGOCAIRO_LIBRARIES NAMES pangocairo pangocairo-${PANGO_VERSION})
     find_library( _PANGO_LIBRARIES NAMES pango pango-${PANGO_VERSION})
     find_library( _CAIRO_LIBRARIES NAMES cairo)
-    find_library( _X11_LIBRARIES NAMES X11)
     find_library( _GLIB_LIBRARIES NAMES glib-${GLIB_VERSION})
 
     set(PANGOCAIRO_LIBRARIES
@@ -76,7 +78,7 @@ else()
         ${_PANGO_LIBRARIES}
         ${_CAIRO_LIBRARIES}
         ${_GLIB_LIBRARIES}
-        ${_X11_LIBRARIES}
+	${X11_LIBRARIES}
     )
 
 #message(WARNING "===> ${PANGOCAIRO_LIBRARIES}")
