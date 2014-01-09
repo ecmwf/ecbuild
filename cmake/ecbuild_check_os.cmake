@@ -209,10 +209,7 @@ if( UNIX )
 	### AIX ###
 
 	if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
-	
-		cmake_add_c_flags("-qpic=large")
-		cmake_add_cxx_flags("-qpic=large")
-	
+		
 		set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -bbigtoc" )
 
 		if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
@@ -241,6 +238,7 @@ if( UNIX )
 
 		if( CMAKE_C_COMPILER_ID MATCHES "XL" )
 
+			cmake_add_c_flags("-qpic=large")
 #            cmake_add_c_flags("-qweaksymbol")
 
 			if(EC_OS_BITS EQUAL "32" )
@@ -261,6 +259,7 @@ if( UNIX )
 
 		if( CMAKE_CXX_COMPILER_ID MATCHES "XL" )
 
+			cmake_add_cxx_flags("-qpic=large")
 			cmake_add_cxx_flags("-bmaxdata:0x40000000")
 			cmake_add_cxx_flags("-qrtti")
 			cmake_add_cxx_flags("-qfuncsect")
