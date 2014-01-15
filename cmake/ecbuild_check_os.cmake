@@ -209,11 +209,9 @@ if( UNIX )
 	### AIX ###
 
 	if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
-		
-		set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -bbigtoc" )
 
 		if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
-			set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Xlinker" )
+			set( CMAKE_SHARED_LINKER_FLAGS "-Xlinker -qbigtoc ${CMAKE_SHARED_LINKER_FLAGS}" )
 		endif()
 
 		set( EC_OS_NAME "aix" )
@@ -238,7 +236,6 @@ if( UNIX )
 
 		if( CMAKE_C_COMPILER_ID MATCHES "XL" )
 
-			cmake_add_c_flags("-qpic=large")
 #            cmake_add_c_flags("-qweaksymbol")
 
 			if(EC_OS_BITS EQUAL "32" )
@@ -259,7 +256,6 @@ if( UNIX )
 
 		if( CMAKE_CXX_COMPILER_ID MATCHES "XL" )
 
-			cmake_add_cxx_flags("-qpic=large")
 			cmake_add_cxx_flags("-bmaxdata:0x40000000")
 			cmake_add_cxx_flags("-qrtti")
 			cmake_add_cxx_flags("-qfuncsect")
@@ -328,4 +324,12 @@ if( ${EC_OS_NAME} MATCHES "UNKNOWN" )
 	endif()
 endif()
 
+############################################################################################
+# save final flags to cache
+
+get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
+
+foreach( lang ${langs} )
+	set( EC_${lang}_FLAGS_ALL "${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${EC_BUILD_TYPE}}" CACHE INTERNAL "full ${lang} compilation flags" )
+endforeach()
 

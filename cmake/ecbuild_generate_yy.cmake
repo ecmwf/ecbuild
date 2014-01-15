@@ -11,10 +11,6 @@
 
 macro( ecbuild_generate_yy )
 
-	ecbuild_find_lexyacc() # find [ yacc|byson ] and [ lex|flex ]
-
-	ecbuild_find_perl( REQUIRED )
-
     set( options )
     set( single_value_args YYPREFIX YACC LEX )
     set( multi_value_args  DEPENDANT )

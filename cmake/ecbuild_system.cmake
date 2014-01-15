@@ -23,7 +23,7 @@ if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
   message(FATAL_ERROR "${PROJECT_NAME} requires at least CMake ${ECBUILD_CMAKE_MINIMUM} -- you are using ${CMAKE_COMMAND} [${CMAKE_VERSION}]\n Please, get a newer version of CMake @ www.cmake.org" )
 endif()
 
-set( ECBUILD_MACRO_VERSION "1.3" )
+set( ECBUILD_MACRO_VERSION "1.2" )
 
 ############################################################################################
 # language support
@@ -51,9 +51,6 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	# add extra macros from external contributions
 	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
-
-	# would bring FindEigen in, so for the moment keep it out
-	# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/GreatCMakeCookOff" )
 
 	include(CTest)                 # add cmake testing support
 	enable_testing()
@@ -112,13 +109,11 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	# add our macros
 
 	include( ecbuild_debug_var )
-	include( ecbuild_list_macros )
 
 	include( ecbuild_check_c_source )
 
 	if( CMAKE_CXX_COMPILER_LOADED )
 		include( ecbuild_check_cxx_source )
-		include( ecbuild_check_cxx11 )
 	endif()
 
 	if( CMAKE_Fortran_COMPILER_LOADED )
@@ -128,13 +123,11 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_requires_macro_version )
 	include( ecbuild_get_date )
 	include( ecbuild_add_persistent )
-	include( ecbuild_generate_config_headers )
-	include( ecbuild_generate_rpc )
 	include( ecbuild_generate_yy )
+	include( ecbuild_generate_rpc )
 	include( ecbuild_add_library )
 	include( ecbuild_add_executable )
 	include( ecbuild_get_test_data )
-	include( ecbuild_add_cxx11_flags )
 	include( ecbuild_add_test )
 	include( ecbuild_add_resources )
 	include( ecbuild_get_resources )
@@ -148,10 +141,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_add_extra_search_paths )
 	include( ecbuild_print_summary )
 	include( ecbuild_warn_unused_files )
-	include( ecbuild_find_mpi )
-	include( ecbuild_find_perl )
 	include( ecbuild_find_python )
-	include( ecbuild_find_lexyacc )
 	include( ecbuild_find_fortranlibs )
 	include( ecbuild_enable_fortran )
 
@@ -161,6 +151,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	# kickstart the build system
 
 	include( ecbuild_define_options )               # define build options
+	include( ecbuild_find_support_packages )        # find packages we depend on
 	include( ecbuild_check_compiler )               # check for compiler characteristics
 	include( ecbuild_check_os )                     # check for os characteristics
 	include( ecbuild_check_functions )              # check for available functions
@@ -174,6 +165,14 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 		ecbuild_get_timestamp( EC_BUILD_TIMESTAMP )
 		set( EC_BUILD_TIMESTAMP  "${EC_BUILD_TIMESTAMP}" CACHE INTERNAL "Build timestamp" )
 	endif()
+
+	############################################################################################
+	# generate the configuration headers here, so external projects also get them
+
+	configure_file( ${CMAKE_CURRENT_LIST_DIR}/ecbuild_config.h.in     ${CMAKE_BINARY_DIR}/ecbuild_config.h   )
+	configure_file( ${CMAKE_CURRENT_LIST_DIR}/ecbuild_platform.h.in   ${CMAKE_BINARY_DIR}/ecbuild_platform.h )
+
+	include_directories( ${CMAKE_BINARY_DIR} )
 
 endif()
 

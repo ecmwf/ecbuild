@@ -29,14 +29,12 @@ endif()
 
 set( CMAKE_EXE_LINKER_FLAGS_PRODUCTION "" CACHE STRING "Flags used for linking binaries during Production builds." FORCE )
 set( CMAKE_SHARED_LINKER_FLAGS_PRODUCTION "" CACHE STRING "Flags used by the shared libraries linker during Production builds." FORCE )
-set( CMAKE_MODULE_LINKER_FLAGS_PRODUCTION "" CACHE STRING "Flags used by the static libraries linker during Production builds." FORCE )
 
 mark_as_advanced(
     CMAKE_CXX_FLAGS_PRODUCTION
     CMAKE_C_FLAGS_PRODUCTION
     CMAKE_EXE_LINKER_FLAGS_PRODUCTION
-	CMAKE_SHARED_LINKER_FLAGS_PRODUCTION
-	CMAKE_MODULE_LINKER_FLAGS_PRODUCTION )
+    CMAKE_SHARED_LINKER_FLAGS_PRODUCTION )
 
 ############################################################################################
 # define default build type
@@ -48,27 +46,27 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # capitalize the build type for easy use with conditionals
-string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_CAPS )
+string( TOUPPER ${CMAKE_BUILD_TYPE} EC_BUILD_TYPE )
 
 # correct capitatlization of the build type
 
-if( CMAKE_BUILD_TYPE_CAPS STREQUAL "NONE" )
+if( EC_BUILD_TYPE STREQUAL "NONE" )
   set(CMAKE_BUILD_TYPE None CACHE STRING ${_BUILD_TYPE_MSG} FORCE )
 endif()
 
-if( CMAKE_BUILD_TYPE_CAPS STREQUAL "DEBUG" )
+if( EC_BUILD_TYPE STREQUAL "DEBUG" )
   set(CMAKE_BUILD_TYPE Debug CACHE STRING ${_BUILD_TYPE_MSG} FORCE )
 endif()
 
-if( CMAKE_BUILD_TYPE_CAPS STREQUAL "PRODUCTION" )
+if( EC_BUILD_TYPE STREQUAL "PRODUCTION" )
   set(CMAKE_BUILD_TYPE Production CACHE STRING ${_BUILD_TYPE_MSG} FORCE )
 endif()
 
-if( CMAKE_BUILD_TYPE_CAPS STREQUAL "RELEASE" )
+if( EC_BUILD_TYPE STREQUAL "RELEASE" )
   set(CMAKE_BUILD_TYPE Release CACHE STRING ${_BUILD_TYPE_MSG} FORCE )
 endif()
 
-if( CMAKE_BUILD_TYPE_CAPS STREQUAL "RELWITHDEBINFO" )
+if( EC_BUILD_TYPE STREQUAL "RELWITHDEBINFO" )
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING ${_BUILD_TYPE_MSG} FORCE )
 endif()
 

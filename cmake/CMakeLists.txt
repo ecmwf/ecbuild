@@ -1,7 +1,6 @@
 ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 						SOURCES_PACK
 							sg.pl
-							ecbuild_add_cxx11_flags.cmake
 							ecbuild_add_executable.cmake
 							ecbuild_add_extra_search_paths.cmake
 							ecbuild_add_library.cmake
@@ -11,7 +10,6 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_check_c_source.cmake
 							ecbuild_check_compiler.cmake
 							ecbuild_check_cxx_source.cmake
-							ecbuild_check_cxx11.cmake
 							ecbuild_check_fortran_source.cmake
 							ecbuild_check_functions.cmake
 							ecbuild_check_os.cmake
@@ -22,19 +20,16 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_define_options.cmake
 							ecbuild_define_paths.cmake
 							ecbuild_enable_fortran.cmake
-							ecbuild_find_mpi.cmake
 							ecbuild_find_fortranlibs.cmake
 							ecbuild_find_package.cmake
 							ecbuild_find_python.cmake
-							ecbuild_find_perl.cmake
-							ecbuild_generate_config_headers.cmake
+							ecbuild_find_support_packages.cmake
 							ecbuild_generate_rpc.cmake
 							ecbuild_generate_yy.cmake
 							ecbuild_get_date.cmake
 							ecbuild_get_resources.cmake
 							ecbuild_get_test_data.cmake
 							ecbuild_install_package.cmake
-							ecbuild_list_macros.cmake
 							ecbuild_list_extra_search_paths.cmake
 							ecbuild_links_target.cmake
 							ecbuild_print_summary.cmake
@@ -45,8 +40,6 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_use_package.cmake
 							ecbuild_warn_unused_files.cmake
 							FindADSM.cmake
-                            FindArmadillo.cmake
-							FindAIO.cmake
 							FindCMath.cmake
 							FindCairo.cmake
 							FindDl.cmake
@@ -78,6 +71,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							FindXLFortranLibs.cmake
 							FindYACC.cmake
 							ecbuild_config.h.in
+							ecbuild_platform.h.in
 							ecbuild_version.h.in
 							md5.in
 							project-config-version.cmake.in

@@ -97,6 +97,12 @@ macro( ecbuild_declare_project )
 
 	endforeach()
 
+	# install ecbuild configuration
+
+	install( FILES ${CMAKE_BINARY_DIR}/ecbuild_config.h
+				   ${CMAKE_BINARY_DIR}/ecbuild_platform.h
+			 DESTINATION ${INSTALL_INCLUDE_DIR} )
+
 	# print project header
 
 	message( STATUS "---------------------------------------------------------" )
