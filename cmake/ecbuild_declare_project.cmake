@@ -56,22 +56,37 @@ macro( ecbuild_declare_project )
 #    debug_var( ${PNAME}_MINOR_VERSION )
 #    debug_var( ${PNAME}_PATCH_VERSION )
 
-	# user defined project-specific installation paths
+	# install dirs for this project
 
-	set(${PNAME}_INSTALL_LIB_DIR     lib     CACHE PATH "${PNAME} installation directory for libraries")
-	set(${PNAME}_INSTALL_BIN_DIR     bin     CACHE PATH "${PNAME} installation directory for executables")
+	if( NOT DEFINED INSTALL_BIN_DIR )
+		set( INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+	endif()
 
-	set(${PNAME}_INSTALL_INCLUDE_DIR include                      CACHE PATH "${PNAME} installation directory for header files")
-	set(${PNAME}_INSTALL_DATA_DIR    share/${PROJECT_NAME}        CACHE PATH "${PNAME} installation directory for data files")
-	set(${PNAME}_INSTALL_CMAKE_DIR   share/${PROJECT_NAME}/cmake  CACHE PATH "${PNAME} installation directory for CMake files")
+	if( NOT DEFINED INSTALL_LIB_DIR )
+		set( INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+	endif()
 
-	# install dirs local to this project
+	if( NOT DEFINED INSTALL_INCLUDE_DIR )
+		set( INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+	endif()
 
-	set( INSTALL_BIN_DIR     ${${PNAME}_INSTALL_BIN_DIR}     )
-	set( INSTALL_LIB_DIR     ${${PNAME}_INSTALL_LIB_DIR}     )
-	set( INSTALL_INCLUDE_DIR ${${PNAME}_INSTALL_INCLUDE_DIR} )
-	set( INSTALL_DATA_DIR    ${${PNAME}_INSTALL_DATA_DIR}    )
-	set( INSTALL_CMAKE_DIR   ${${PNAME}_INSTALL_CMAKE_DIR}   )
+	if( NOT DEFINED INSTALL_DATA_DIR )
+		set( INSTALL_DATA_DIR share/${PROJECT_NAME} CACHE PATH "Installation directory for data files")
+	endif()
+
+	if( NOT DEFINED INSTALL_CMAKE_DIR )
+		set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake CACHE PATH "Installation directory for CMake files")
+	endif()
+
+	# warnings for non-relocatable projects
+
+	foreach( p LIB BIN INCLUDE DATA CMAKE )
+		if( IS_ABSOLUTE ${INSTALL_${p}_DIR} )
+			message( WARNING "Defining INSTALL_${p}_DIR as absolute path '${INSTALL_${p}_DIR}' makes this build non-relocatable, possibly breaking the installation of RPMS and DEB packages" )
+		endif()
+	endforeach()
+
+	# correctly set CMAKE_INSTALL_RPATH
 
 	if( ENABLE_RPATHS ) # install with this RPATH
 		if( IS_ABSOLUTE ${INSTALL_LIB_DIR} )
@@ -81,7 +96,7 @@ macro( ecbuild_declare_project )
 		endif()
 	endif()
 
-	# make relative paths absolute  ( needed later on ) and cache them ...
+	# make relative paths absolute ( needed later on ) and cache them ...
 	foreach( p LIB BIN INCLUDE DATA CMAKE )
 
 		set( var INSTALL_${p}_DIR )

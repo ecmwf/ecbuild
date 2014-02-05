@@ -7,44 +7,51 @@
 # does it submit to any jurisdiction.
 
 ############################################################################################
-# check size of pointer and off_t
+# check size of pointer
 
-if( NOT CROSS_COMPILING )
-
-	ecbuild_check_c_source_return( "#include <stdio.h>\nint main(){printf(\"%ld\",sizeof(void*));return 0;}"
-								   VAR check_void_ptr
-								   OUTPUT __sizeof_void_ptr )
-
-	ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}"
-									VAR check_off_t
-									OUTPUT __sizeof_off_t )
-
-	if( NOT check_off_t OR NOT check_void_ptr )
-		message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- failed either check_void_ptr or check_off_t" )
-	endif()
-
-else()
-
-	check_type_size( "void *"  VOID_PTR )
-	set( __sizeof_void_ptr ${VOID_PTR} )
-
-	set(CMAKE_EXTRA_INCLUDE_FILES "sys/types.h" )
-	check_type_size("off_t"    OFF_T )
-	set( __sizeof_off_t ${OFF_T} )
-	set(CMAKE_EXTRA_INCLUDE_FILES)
-
+if( NOT DEFINED CMAKE_SIZEOF_VOID_P)
+	message( FATAL_ERROR "CMake could not check sizeof void* to infer addressing mode of the OS -- try to upgrade to a more recent CMake" )
 endif()
 
-math( EXPR EC_OS_BITS "${__sizeof_void_ptr} * 8" )
+math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
 
 # we only support 32 and 64 bit operating systems
 if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
 	message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
 endif()
 
+############################################################################################
+# check architecture architecture
+
+if( NOT EC_SKIP_OS_TYPES_TEST )
+
+	set( EC_SIZEOF_PTR ${CMAKE_SIZEOF_VOID_P} )
+
+	check_type_size( char           EC_SIZEOF_CHAR        )
+	check_type_size( short          EC_SIZEOF_SHORT       )
+	check_type_size( int            EC_SIZEOF_INT         )
+	check_type_size( long           EC_SIZEOF_LONG        )
+	check_type_size( "long long"    EC_SIZEOF_LONG_LONG   )
+	check_type_size( float          EC_SIZEOF_FLOAT       )
+	check_type_size( double         EC_SIZEOF_DOUBLE      )
+	check_type_size( "long double"  EC_SIZEOF_LONG_DOUBLE )
+	check_type_size( size_t         EC_SIZEOF_SIZE_T      )
+	check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
+	check_type_size( off_t          EC_SIZEOF_OFF_T       )
+
+endif()
+
+############################################################################################
+# check for large file support
+
 # ensure we use 64bit access to files even on 32bit os -- aka Large File Support
 # by making off_t 64bit and stat behave as stat64
-if( ENABLE_LARGE_FILE_SUPPORT AND __sizeof_off_t LESS "8" )
+
+if( ENABLE_LARGE_FILE_SUPPORT )
+
+	check_type_size( off_t EC_SIZEOF_OFF_T )
+
+	if( EC_SIZEOF_OFF_T LESS "8" )
 
 	if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
 		add_definitions( -D_FILE_OFFSET_BITS=64 )
@@ -62,36 +69,14 @@ if( ENABLE_LARGE_FILE_SUPPORT AND __sizeof_off_t LESS "8" )
 		endforeach()
 	endif()
 
-	ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}"
-		VAR  check_off_t_final
-		OUTPUT __sizeof_off_t_final )
+#	ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}"
+#		VAR  check_off_t_final
+#		OUTPUT __sizeof_off_t_final )
+#	if( NOT check_off_t_final OR __sizeof_off_t_final LESS "8" )
+#		message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- sizeof off_t [${__sizeof_off_t_final}]" )
+#	endif()
 
-	if( NOT check_off_t_final OR __sizeof_off_t_final LESS "8" )
-		message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- sizeof off_t [${__sizeof_off_t_final}]" )
 	endif()
-
-	set( __sizeof_off_t ${__sizeof_off_t_final} )
-
-endif()
-
-set( EC_SIZEOF_OFF_T ${__sizeof_off_t} )
-
-############################################################################################
-# check architecture architecture
-
-if( NOT EC_SKIP_OS_TYPES_TEST )
-
-	check_type_size( "void *"       EC_SIZEOF_PTR         )
-	check_type_size( char           EC_SIZEOF_CHAR        )
-	check_type_size( short          EC_SIZEOF_SHORT       )
-	check_type_size( int            EC_SIZEOF_INT         )
-	check_type_size( long           EC_SIZEOF_LONG        )
-	check_type_size( "long long"    EC_SIZEOF_LONG_LONG   )
-	check_type_size( float          EC_SIZEOF_FLOAT       )
-	check_type_size( double         EC_SIZEOF_DOUBLE      )
-	check_type_size( "long double"  EC_SIZEOF_LONG_DOUBLE )
-	check_type_size( size_t         EC_SIZEOF_SIZE_T      )
-	check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
 
 endif()
 

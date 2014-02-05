@@ -52,13 +52,6 @@ if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
     check_include_files("sys/param.h;sys/mount.h" EC_HAVE_SYS_MOUNT_H )
     check_include_files("sys/vfs.h"               EC_HAVE_SYS_VFS_H )
 
-    # test for stat vs stat64
-
-    ecbuild_check_c_source_return(
-        "#include <sys/types.h>\n#include <sys/stat.h>\n#include <unistd.h>\n#include <stdio.h>\nint main(){struct stat s;printf(\"%ld\",sizeof(s.st_size));return 0;}" 
-        VAR     EC_STAT_OFF_T
-        OUTPUT  EC_STAT_SIZEOF_OFF_T )
-
     ### capability checks ##################
 
     # test off_t

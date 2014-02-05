@@ -61,12 +61,6 @@ macro( ecbuild_add_library )
 				NOT _PAR_TYPE MATCHES "MODULE" )
 				message( FATAL_ERROR "library type must be one of [ STATIC | SHARED | MODULE ]" )
 			endif()
-	#    else() # default is shared unless -DENABLE_STATIC_LIBS=ON
-	#        if( NOT ENABLE_STATIC_LIBS )
-	#            set( _PAR_TYPE SHARED )
-	#        else()
-	#            set( _PAR_TYPE STATIC )
-	#        endif()
 		endif()
 
 		# add include dirs if defined
@@ -97,8 +91,16 @@ macro( ecbuild_add_library )
 			add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
 		endif()
 
-		# add the library target
 		add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} )
+
+#		# add the library target
+#		if( DEFINED _PAR_TYPE )
+#		else()
+#			string( TOUPPER ${BUILD_SHARED_LIBS} _build_shared_libs )
+#			if( _build_shared_libs STREQUAL "BOTH" )
+#			else()
+#			endif()
+#		endif()
 
 		# add extra dependencies
 		if( DEFINED _PAR_DEPENDS)
