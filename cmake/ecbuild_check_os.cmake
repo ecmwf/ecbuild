@@ -21,6 +21,35 @@ if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
 endif()
 
 ############################################################################################
+# For 64 bit architectures enable position-independent code when building static libraries
+
+if( NOT BUILD_SHARED_LIBS AND ${EC_OS_BITS} EQUAL 64 )
+
+	debug_var( EC_OS_BITS )
+
+	message( STATUS "Using POSITION_INDEPENDENT_CODE to build 64bit static libraries" )
+
+	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+
+#	if( CMAKE_COMPILER_IS_GNUCC )
+#		cmake_add_c_flags("-fPIC")
+#	endif()
+
+#	if( CMAKE_COMPILER_IS_GNUCXX )
+#		cmake_add_cxx_flags("-fPIC")
+#	endif()
+
+#	if( ${CMAKE_C_COMPILER_ID} STREQUAL "Cray" )
+#		cmake_add_c_flags("-hPIC")
+#	endif()
+
+#	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
+#		cmake_add_cxx_flags("-hPIC")
+#	endif()
+
+endif()
+
+############################################################################################
 # check architecture architecture
 
 if( NOT EC_SKIP_OS_TYPES_TEST )

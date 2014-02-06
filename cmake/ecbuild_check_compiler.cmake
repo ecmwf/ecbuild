@@ -86,29 +86,6 @@ if( CMAKE_CXX_COMPILER_LOADED )
 endif()
 
 ############################################################################################
-# For 64 bit architectures enable position-independent code
-
-if( EC_OS_BITS EQUAL "64" OR EC_OS_BITS GREATER "64" )
-
-	if( CMAKE_COMPILER_IS_GNUCC )
-		cmake_add_c_flags("-fPIC")
-	endif()
-
-	if( CMAKE_COMPILER_IS_GNUCXX )
-		cmake_add_cxx_flags("-fPIC")
-	endif()
-
-	if( ${CMAKE_C_COMPILER_ID} STREQUAL "Cray" )
-		cmake_add_c_flags("-hPIC")
-	endif()
-
-	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
-		cmake_add_cxx_flags("-hPIC")
-	endif()
-
-endif()
-
-############################################################################################
 # enable warnings
 
 if( CMAKE_COMPILER_IS_GNUCC )
