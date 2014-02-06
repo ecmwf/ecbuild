@@ -166,7 +166,7 @@ if( UNIX )
 	### APPLE ###
 
 	if( APPLE AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" ) # Mac OS X
-		set( EC_OS_NAME "MacOSX" )
+		set( EC_OS_NAME "macosx" )
 	endif()
 
 	### Linux ###
@@ -194,14 +194,14 @@ if( UNIX )
 	### AIX ###
 
 	if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
-		
+
+		set( EC_OS_NAME "aix" )
+
 		set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -bbigtoc" )
 
 		if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
 			set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Xlinker" )
 		endif()
-
-		set( EC_OS_NAME "aix" )
 
 		if( CMAKE_COMPILER_IS_GNUCC )
 			if( EC_OS_BITS EQUAL "64" )
