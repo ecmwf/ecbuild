@@ -15,7 +15,6 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_check_fortran_source.cmake
 							ecbuild_check_functions.cmake
 							ecbuild_check_os.cmake
-							ecbuild_cmake_macros.cmake
 							ecbuild_debug_var.cmake
 							ecbuild_declare_project.cmake
 							ecbuild_define_build_types.cmake

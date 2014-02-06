@@ -68,17 +68,44 @@ check_c_source_compiles(
 if( CMAKE_CXX_COMPILER_LOADED )
 
     # check for __FUNCTION__
-    check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }" EC_HAVE_FUNCTION_DEF )
+	check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }"
+		EC_HAVE_FUNCTION_DEF )
     
     # check for c++ abi, usually present in GNU compilers
-    check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }" EC_HAVE_CXXABI_H )
+	check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }"
+		EC_HAVE_CXXABI_H )
     
     # check for bool
-    check_cxx_source_compiles( "int main() { bool aflag = true; }" EC_HAVE_CXX_BOOL )
+	check_cxx_source_compiles( "int main() { bool aflag = true; }"
+		EC_HAVE_CXX_BOOL )
     
     # check for sstream
-    check_cxx_source_compiles( "#include <sstream>\nint main() { std::stringstream s; }" EC_HAVE_CXX_SSTREAM )
+	check_cxx_source_compiles( "#include <sstream>\nint main() { std::stringstream s; }"
+		EC_HAVE_CXX_SSTREAM )
     
+endif()
+
+############################################################################################
+# For 64 bit architectures enable position-independent code
+
+if( EC_OS_BITS EQUAL "64" OR EC_OS_BITS GREATER "64" )
+
+	if( CMAKE_COMPILER_IS_GNUCC )
+		cmake_add_c_flags("-fPIC")
+	endif()
+
+	if( CMAKE_COMPILER_IS_GNUCXX )
+		cmake_add_cxx_flags("-fPIC")
+	endif()
+
+	if( ${CMAKE_C_COMPILER_ID} STREQUAL "Cray" )
+		cmake_add_c_flags("-hPIC")
+	endif()
+
+	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
+		cmake_add_cxx_flags("-hPIC")
+	endif()
+
 endif()
 
 ############################################################################################
