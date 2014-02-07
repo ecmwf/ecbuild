@@ -251,6 +251,8 @@ macro( ecbuild_add_test )
               add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ) # run the test that was generated
           endif()
 
+		  add_dependencies( check ${_PAR_TARGET} )
+
           if( DEFINED _PAR_ENVIRONMENT )
               set_tests_properties( ${_PAR_TARGET} PROPERTIES ENVIRONMENT "${_PAR_ENVIRONMENT}")
           endif()

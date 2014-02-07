@@ -21,14 +21,10 @@ if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
 endif()
 
 ############################################################################################
-# For 64 bit architectures enable position-independent code when building static libraries
+# For 64 bit architectures enable PIC (position-independent code)
 
-if( NOT BUILD_SHARED_LIBS AND ${EC_OS_BITS} EQUAL 64 )
-
-	message( STATUS "Using POSITION_INDEPENDENT_CODE to build 64bit static libraries" )
-
+if( ${EC_OS_BITS} EQUAL 64 )
 	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
-
 endif()
 
 ############################################################################################
