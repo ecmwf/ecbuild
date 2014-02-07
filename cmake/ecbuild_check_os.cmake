@@ -25,21 +25,9 @@ endif()
 
 if( NOT BUILD_SHARED_LIBS AND ${EC_OS_BITS} EQUAL 64 )
 
-	debug_var( EC_OS_BITS )
-
 	message( STATUS "Using POSITION_INDEPENDENT_CODE to build 64bit static libraries" )
 
 	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
-
-	# Cray compiler PIC option is not detected by CMake
-
-	if( ${CMAKE_C_COMPILER_ID} STREQUAL "Cray" )
-		cmake_add_c_flags("-hPIC")
-	endif()
-
-	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
-		cmake_add_cxx_flags("-hPIC")
-	endif()
 
 endif()
 

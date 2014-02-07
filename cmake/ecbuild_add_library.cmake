@@ -121,7 +121,23 @@ macro( ecbuild_add_library )
 		  endforeach()
 		endif()
 
+		# FIX: Cray compiler PIC option is not detected by CMake
+
+		get_property( _target_pic TARGET ${_PAR_TARGET} PROPERTY POSITION_INDEPENDENT_CODE )
+		if( _target_pic )
+			if( ${CMAKE_C_COMPILER_ID} STREQUAL "Cray" )
+				set( _PAR_CFLAGS "-hPIC ${_PAR_CFLAGS}" )
+			endif()
+			if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
+				set( _PAR_CXXFLAGS "-hPIC ${_PAR_CXXFLAGS}" )
+			endif()
+			if( ${CMAKE_Fortran_COMPILER_ID} STREQUAL "Cray" )
+				set( _PAR_FFLAGS "-hPIC ${_PAR_FFLAGS}" )
+			endif()
+		endif()
+
 		# add local flags
+
 		if( DEFINED _PAR_CFLAGS )
 			set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
 		endif()
