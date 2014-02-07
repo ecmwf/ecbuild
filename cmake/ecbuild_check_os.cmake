@@ -31,21 +31,15 @@ if( NOT BUILD_SHARED_LIBS AND ${EC_OS_BITS} EQUAL 64 )
 
 	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 
-#	if( CMAKE_COMPILER_IS_GNUCC )
-#		cmake_add_c_flags("-fPIC")
-#	endif()
+	# Cray compiler PIC option is not detected by CMake
 
-#	if( CMAKE_COMPILER_IS_GNUCXX )
-#		cmake_add_cxx_flags("-fPIC")
-#	endif()
+	if( ${CMAKE_C_COMPILER_ID} STREQUAL "Cray" )
+		cmake_add_c_flags("-hPIC")
+	endif()
 
-#	if( ${CMAKE_C_COMPILER_ID} STREQUAL "Cray" )
-#		cmake_add_c_flags("-hPIC")
-#	endif()
-
-#	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
-#		cmake_add_cxx_flags("-hPIC")
-#	endif()
+	if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
+		cmake_add_cxx_flags("-hPIC")
+	endif()
 
 endif()
 
