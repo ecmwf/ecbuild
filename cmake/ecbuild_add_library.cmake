@@ -140,6 +140,15 @@ macro( ecbuild_add_library )
 			endif()
 		endif()
 
+		# filter sources
+
+		ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+
+#		debug_var( ${_PAR_TARGET}_h_srcs )
+#		debug_var( ${_PAR_TARGET}_c_srcs )
+#		debug_var( ${_PAR_TARGET}_cxx_srcs )
+#		debug_var( ${_PAR_TARGET}_f_srcs )
+
 		# add local flags
 
 		if( DEFINED _PAR_CFLAGS )
@@ -157,15 +166,6 @@ macro( ecbuild_add_library )
 		if( DEFINED _PAR_GENERATED )
 			set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
 		endif()
-
-		# filter sources
-
-		ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
-
-#    debug_var( ${_PAR_TARGET}_h_srcs )
-#    debug_var( ${_PAR_TARGET}_c_srcs )
-#    debug_var( ${_PAR_TARGET}_cxx_srcs )
-#    debug_var( ${_PAR_TARGET}_f_srcs )
 
 		# installation
 
