@@ -39,6 +39,23 @@ mark_as_advanced(
 	CMAKE_MODULE_LINKER_FLAGS_PRODUCTION )
 
 ############################################################################################
+# fixes for specific compilers
+
+### remove -Mipa=fast from PGI compilers in RELEASE mode
+
+if( CMAKE_C_COMPILER_ID EQUAL "PGI" )
+  set(CMAKE_C_FLAGS_RELEASE_INIT "-fast -O3")
+endif()
+
+if( CMAKE_CXX_COMPILER_ID EQUAL "PGI" )
+  set(CMAKE_CXX_FLAGS_RELEASE_INIT "-fast -O3")
+endif()
+
+if( CMAKE_Fortran_COMPILER_ID EQUAL "PGI" )
+  set(CMAKE_Fortran_FLAGS_RELEASE_INIT "-fast -O3")
+endif()
+
+############################################################################################
 # define default build type
 
 set( _BUILD_TYPE_MSG "Build type options are: [ None | Debug | Production | Release | RelWithDebInfo ]" )
