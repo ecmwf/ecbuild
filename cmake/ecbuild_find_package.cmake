@@ -42,11 +42,6 @@ macro( ecbuild_find_package )
         endif()
     endif()
 
-    set( _quiet )
-    if( _PAR_QUIET )
-        set( _quiet QUIET )
-    endif()
-
     # check environment variable
     if( NOT ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
         set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
@@ -91,8 +86,8 @@ macro( ecbuild_find_package )
 	# search system paths
 
 	if( NOT ${_PAR_NAME}_FOUND )
-		find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_quiet} NO_MODULE )
-		find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_quiet} )
+		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE )
+		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET )
 	endif()
 
     # check version ...
@@ -132,8 +127,15 @@ macro( ecbuild_find_package )
 
     endif()
 
-    if( NOT ${_PAR_NAME}_FOUND AND _PAR_REQUIRED )
-            message( FATAL_ERROR "${PROJECT_NAME} requires package ${_PAR_NAME} but no suitable version was found" )
-    endif()
+	### final messages
+
+	if( NOT ${_PAR_NAME}_FOUND )
+		if( NOT _PAR_QUIET )
+			message( WARNING "FAILED to find package ${_PAR_NAME}" )
+		endif()
+		if( _PAR_REQUIRED )
+			message( FATAL_ERROR "${PROJECT_NAME} requires package ${_PAR_NAME} but no suitable version was found" )
+		endif()
+	endif()
 
 endmacro()
