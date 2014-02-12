@@ -43,16 +43,16 @@ mark_as_advanced(
 
 ### remove -Mipa=fast from PGI compilers in RELEASE mode
 
-if( CMAKE_C_COMPILER_ID EQUAL "PGI" )
-  set(CMAKE_C_FLAGS_RELEASE_INIT "-fast -O3")
+if( CMAKE_C_COMPILER_ID STREQUAL "PGI" )
+  set(CMAKE_C_FLAGS_RELEASE "-fast -O3")
 endif()
 
-if( CMAKE_CXX_COMPILER_ID EQUAL "PGI" )
-  set(CMAKE_CXX_FLAGS_RELEASE_INIT "-fast -O3")
+if( CMAKE_CXX_COMPILER_ID STREQUAL "PGI" )
+  set(CMAKE_CXX_FLAGS_RELEASE "-fast -O3")
 endif()
 
-if( CMAKE_Fortran_COMPILER_ID EQUAL "PGI" )
-  set(CMAKE_Fortran_FLAGS_RELEASE_INIT "-fast -O3")
+if( CMAKE_Fortran_COMPILER_ID STREQUAL "PGI" )
+  set(CMAKE_Fortran_FLAGS_RELEASE "-fast -O3")
 endif()
 
 ############################################################################################
