@@ -30,8 +30,6 @@ macro( ecbuild_use_package )
       message(FATAL_ERROR "Call to ecbuild_use_package() requests EXACT but doesn't specify VERSION.")
     endif()
 
-    message( STATUS "---------------------------------------------------------" )
-
     # try to find the package as a subproject and build it
 
 	string( TOUPPER ${_p_PROJECT} PNAME )
