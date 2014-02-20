@@ -99,6 +99,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 		include(FortranCInterface)
 	endif()
 
+	include(FeatureSummary)
+
 	include(TestBigEndian)
 
 	############################################################################################
@@ -133,6 +135,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_generate_config_headers )
 	include( ecbuild_generate_rpc )
 	include( ecbuild_generate_yy )
+	include( ecbuild_add_option )
 	include( ecbuild_add_library )
 	include( ecbuild_add_executable )
 	include( ecbuild_get_test_data )

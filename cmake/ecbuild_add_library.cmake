@@ -7,13 +7,13 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding a library
+# auxiliary macro for adding a library
 ##############################################################################
 
-macro( ecbuild_add_library )
+function( ecbuild_add_library_impl )
 
-	set( options NOINSTALL )
-	set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE HEADER_DESTINATION )
+	set( options NOINSTALL AUTO_VERSION )
+	set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE HEADER_DESTINATION VERSION )
 	set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
 	cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -93,15 +93,6 @@ macro( ecbuild_add_library )
 
 		add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} )
 
-#		# add the library target
-#		if( DEFINED _PAR_TYPE )
-#		else()
-#			string( TOUPPER ${BUILD_SHARED_LIBS} _build_shared_libs )
-#			if( _build_shared_libs STREQUAL "BOTH" )
-#			else()
-#			endif()
-#		endif()
-
 		# add extra dependencies
 		if( DEFINED _PAR_DEPENDS)
 		  add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
@@ -133,6 +124,18 @@ macro( ecbuild_add_library )
 			endif()
 			if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
 				set( _PAR_FFLAGS "-fPIC -h PIC ${_PAR_FFLAGS}" )
+			endif()
+		endif()
+
+		# define VERSION if requested
+		if( DEFINED _PAR_VERSION )
+			set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${_PAR_VERSION}" )
+		else()
+			if( _PAR_AUTO_VERSION OR LIBS_VERSION MATCHES "[Aa][Uu][Tt][Oo]")
+				set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}" )
+			endif()
+			if( LIBS_VERSION AND NOT LIBS_VERSION MATCHES "[Aa][Uu][Tt][Oo]" )
+				set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${LIBS_VERSION}" )
 			endif()
 		endif()
 
@@ -269,5 +272,45 @@ macro( ecbuild_add_library )
 	# mark project files
 	ecbuild_declare_project_files( ${_PAR_SOURCES} )
 
-endmacro( ecbuild_add_library  )
+endfunction( ecbuild_add_library_impl  )
 
+##############################################################################
+# auxiliary macro for adding a library
+##############################################################################
+
+macro( ecbuild_add_library )
+
+	set( options  )
+	set( single_value_args TARGET TYPE )
+	set( multi_value_args )
+
+	cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+
+	if( DEFINED _p_TYPE ) # don't do anything if TYPE was specified
+
+		ecbuild_add_library_impl( ${ARGV} )
+
+	else()
+
+		if( NOT DEFINED _p_TARGET )
+			message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the TARGET.")
+		else()
+
+			if( BUILD_SHARED_LIBS MATCHES "[Bb][Oo][Tt][Hh]" ) # build both types
+
+				ecbuild_add_library_impl( TARGET ${_p_TARGET}        TYPE SHARED ${_p_UNPARSED_ARGUMENTS} )
+				ecbuild_add_library_impl( TARGET ${_p_TARGET}-static TYPE STATIC ${_p_UNPARSED_ARGUMENTS} )
+
+				set_target_properties( ${_p_TARGET}-static PROPERTIES OUTPUT_NAME ${_p_TARGET} )
+
+			else()
+
+				ecbuild_add_library_impl( ${ARGV} )
+
+			endif()
+
+		endif()
+
+	endif()
+
+endmacro( ecbuild_add_library )

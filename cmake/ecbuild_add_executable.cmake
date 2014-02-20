@@ -12,8 +12,8 @@
 
 macro( ecbuild_add_executable )
 
-    set( options NOINSTALL )
-    set( single_value_args TARGET COMPONENT LINKER_LANGUAGE )
+	set( options NOINSTALL AUTO_VERSION )
+	set( single_value_args TARGET COMPONENT LINKER_LANGUAGE VERSION )
     set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -109,6 +109,15 @@ macro( ecbuild_add_executable )
         if( DEFINED _PAR_GENERATED )
             set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
         endif()
+
+		# define VERSION if requested
+		if( DEFINED _PAR_VERSION )
+			set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${_PAR_VERSION}" )
+		else()
+			if( _PAR_AUTO_VERSION )
+				set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}" )
+			endif()
+		endif()
     
         # filter sources        
 

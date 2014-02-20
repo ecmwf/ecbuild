@@ -5,6 +5,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_add_executable.cmake
 							ecbuild_add_extra_search_paths.cmake
 							ecbuild_add_library.cmake
+							ecbuild_add_option.cmake
 							ecbuild_add_persistent.cmake
 							ecbuild_add_resources.cmake
 							ecbuild_add_test.cmake
