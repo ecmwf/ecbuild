@@ -34,6 +34,8 @@ macro( ecbuild_add_option )
 
 	option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
 
+	add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}")
+
 	if( ${_p_ADVANCED} )
 		mark_as_advanced( ENABLE_${_p_FEATURE} )
 	endif()

@@ -8,9 +8,16 @@
 
 macro( ecbuild_print_summary )
 
+	message( STATUS "---------------------------------------------------------" )
+	message( STATUS " Project ${PROJECT_NAME} summary" )
+	message( STATUS "---------------------------------------------------------" )
+
     if( EXISTS ${PROJECT_SOURCE_DIR}/project_summary.cmake )
         include( ${PROJECT_SOURCE_DIR}/project_summary.cmake )
     endif()
+
+	feature_summary(	WHAT ALL
+						INCLUDE_QUIET_PACKAGES )
 
     if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
@@ -18,12 +25,12 @@ macro( ecbuild_print_summary )
 
         get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
 
-        message( STATUS "---------------------------------------------------------" )
-        message( STATUS " Build summary" )
-        message( STATUS "---------------------------------------------------------" )
+		message( STATUS "---------------------------------------------------------" )
+		message( STATUS " Build summary" )
+		message( STATUS "---------------------------------------------------------" )
 
-        message( STATUS " operating system : [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )
-        message( STATUS " processor        : [${CMAKE_SYSTEM_PROCESSOR}]" )
+		message( STATUS " operating system : [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )
+		message( STATUS " processor        : [${CMAKE_SYSTEM_PROCESSOR}]" )
         message( STATUS " cmake            : [${CMAKE_COMMAND}] (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION})" )
         message( STATUS " build type       : [${CMAKE_BUILD_TYPE}]" )
         message( STATUS " timestamp        : [${EC_BUILD_TIMESTAMP}]" )

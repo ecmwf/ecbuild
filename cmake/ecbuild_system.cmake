@@ -99,6 +99,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 		include(FortranCInterface)
 	endif()
 
+	include(FeatureSummary)
+
 	include(TestBigEndian)
 
 	############################################################################################
