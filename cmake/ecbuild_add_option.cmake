@@ -54,16 +54,24 @@ macro( ecbuild_add_option )
 
 		foreach( pkg ${_p_REQUIRED_PACKAGES} )
 
-			string( TOUPPER ${pkg} pkgUPPER )
-			string( TOLOWER ${pkg} pkgLOWER )
+			string(REPLACE " " ";" pkglist ${pkg}) # string to list
+
+			list( GET pkglist 0 pkgname ) #  1st entry on list is package name
+
+#			debug_var( pkg )
+#			debug_var( pkglist )
+#			debug_var( pkgname )
+
+			string( TOUPPER ${pkgname} pkgUPPER )
+			string( TOLOWER ${pkgname} pkgLOWER )
 
 			if( NOT ${pkgUPPER}_FOUND )
 
 				ecbuild_add_extra_search_paths( ${pkgLOWER} ) # adds search paths specific to ECMWF
-				find_package( ${pkg} )
+				find_package( ${pkglist} )
 
 				# append to list of third-party libraries (to be forward to other packages
-				list( APPEND ${PNAME}_TPLS ${pkg} )
+				list( APPEND ${PNAME}_TPLS ${pkgname} )
 
 			endif()
 
@@ -71,7 +79,7 @@ macro( ecbuild_add_option )
 
 			if( NOT ${pkgUPPER_FOUND} )
 				set( HAVE_${_p_FEATURE} 0 )
-				list( APPEND _failed_to_find_packages ${pkg} )
+				list( APPEND _failed_to_find_packages ${pkgname} )
 			endif()
 
 		endforeach()
@@ -91,6 +99,10 @@ macro( ecbuild_add_option )
 			endif()
 
 		endif()
+
+	else( ENABLE_${_p_FEATURE} )
+
+		set( HAVE_${_p_FEATURE} 0 )
 
 	endif( ENABLE_${_p_FEATURE} )
 
