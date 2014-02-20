@@ -46,6 +46,11 @@ if( NOT EC_SKIP_OS_TYPES_TEST )
 	check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
 	check_type_size( off_t          EC_SIZEOF_OFF_T       )
 
+	message( STATUS "sizeof" )
+	message( STATUS "  void*  [${EC_SIZEOF_PTR}]  size_t [${EC_SIZEOF_SIZE_T}]  off_t  [${EC_SIZEOF_OFF_T}]   short  [${EC_SIZEOF_SHORT}]" )
+	message( STATUS "  int    [${EC_SIZEOF_INT}]  long   [${EC_SIZEOF_LONG}]  long long   [${EC_SIZEOF_LONG_LONG}]" )
+	message( STATUS "  float  [${EC_SIZEOF_FLOAT}]  double [${EC_SIZEOF_DOUBLE}]  long double [${EC_SIZEOF_LONG_DOUBLE}]" )
+
 endif()
 
 ############################################################################################
@@ -159,6 +164,14 @@ if( NOT EC_SKIP_OS_ENDINESS_TEST )
 	if( "${IEEE_BE}" STREQUAL "" )
 		set( IEEE_LE 0 CACHE INTERNAL "Test IEEE_LE")
 	endif()
+
+	if( EC_BIG_ENDIAN )
+		message( STATUS "System is Big Endian [${EC_BIG_ENDIAN}] IEEE BE [${IEEE_BE}]" )
+	endif()
+	if( EC_LITTLE_ENDIAN )
+		message( STATUS "System is Little Endian [${EC_LITTLE_ENDIAN}] IEEE LE [${IEEE_LE}]" )
+	endif()
+
 endif()
 
 ############################################################################################

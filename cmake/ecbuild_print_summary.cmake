@@ -16,9 +16,6 @@ macro( ecbuild_print_summary )
         include( ${PROJECT_SOURCE_DIR}/project_summary.cmake )
     endif()
 
-	feature_summary(	WHAT ALL
-						INCLUDE_QUIET_PACKAGES )
-
     if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
         ecbuild_define_links_target()
@@ -51,20 +48,14 @@ macro( ecbuild_print_summary )
 
         message( STATUS "---------------------------------------------------------" )
 
-    if( EC_BIG_ENDIAN )
-        message( STATUS " Big endian [${EC_BIG_ENDIAN}] IEEE BE [${IEEE_BE}]" )
-    endif()
-    if( EC_LITTLE_ENDIAN )
-        message( STATUS " Little endian [${EC_LITTLE_ENDIAN}] IEEE LE [${IEEE_LE}]" )
     endif()
 
-        message( STATUS " sizeof - void*  [${EC_SIZEOF_PTR}] - size_t [${EC_SIZEOF_SIZE_T}] - off_t  [${EC_SIZEOF_OFF_T}]" )
-        message( STATUS "        - short  [${EC_SIZEOF_SHORT}] - int    [${EC_SIZEOF_INT}] - long   [${EC_SIZEOF_LONG}] - long long [${EC_SIZEOF_LONG_LONG}]" )
-        message( STATUS "        - float  [${EC_SIZEOF_FLOAT}] - double [${EC_SIZEOF_DOUBLE}] - long double [${EC_SIZEOF_LONG_DOUBLE}]" )
+	### FEATURE SUMMARY
 
-        message( STATUS "---------------------------------------------------------" )
+	feature_summary(	WHAT ALL
+						INCLUDE_QUIET_PACKAGES )
 
-    endif()
+	### WARNINGS
 
     # issue warnings / errors in case there are unused project files
     ecbuild_warn_unused_files()
