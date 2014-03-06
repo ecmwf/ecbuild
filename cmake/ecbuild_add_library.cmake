@@ -288,7 +288,18 @@ macro( ecbuild_add_library )
 
 	if( DEFINED _p_TYPE ) # don't do anything if TYPE was specified
 
-		ecbuild_add_library_impl( ${ARGV} )
+			if( _p_TYPE MATCHES "[Bb][Oo][Tt][Hh]" ) # build both types
+
+				ecbuild_add_library_impl( TARGET ${_p_TARGET}        TYPE SHARED ${_p_UNPARSED_ARGUMENTS} )
+				ecbuild_add_library_impl( TARGET ${_p_TARGET}-static TYPE STATIC ${_p_UNPARSED_ARGUMENTS} )
+
+				set_target_properties( ${_p_TARGET}-static PROPERTIES OUTPUT_NAME ${_p_TARGET} )
+
+			else()
+
+				ecbuild_add_library_impl( ${ARGV} )
+
+			endif()
 
 	else()
 
