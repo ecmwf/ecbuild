@@ -14,7 +14,14 @@ if( EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt ) # check for failed attempts to b
    make sure that source tree is prestine and clean of unintended files, before retrying." )
 endif()
 
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
+get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
+
+if(${srcdir} STREQUAL ${bindir})
+  message("######################################################")
+  message("You are attempting to build in your Source Directory.")
+  message("You must run cmake from a build directory.")
+  message("######################################################")
 	message( FATAL_ERROR "${PROJECT_NAME} requires an out of source build.\n Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
 endif()
 
@@ -34,6 +41,8 @@ enable_language( C )
 ###############################################################################
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+
+	site_name( BUILD_SITE ) # hostname of where we build
 
 	set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
 
@@ -57,10 +66,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	include(CTest)                 # add cmake testing support
 	enable_testing()
-
-	add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} -V)
-
-	option( ENABLE_TESTS "enable the unit tests" ON )
+	add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} -V )
 
 	############################################################################################
 	# define valid build types
@@ -99,7 +105,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 		include(FortranCInterface)
 	endif()
 
-	include(FeatureSummary)
+	include(FeatureSummary) # support features in cmake
 
 	include(TestBigEndian)
 
@@ -171,6 +177,10 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_check_functions )              # check for available functions
 	include( ecbuild_define_paths )                 # define installation paths
 	include( ecbuild_links_target )                 # define the links target
+
+	ecbuild_add_option( FEATURE TESTS
+						DEFAULT ON
+						DESCRIPTION "Enable the unit tests" )
 
 	############################################################################################
 	# define the build timestamp

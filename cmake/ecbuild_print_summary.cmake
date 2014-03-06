@@ -26,7 +26,7 @@ macro( ecbuild_print_summary )
 		message( STATUS " Build summary" )
 		message( STATUS "---------------------------------------------------------" )
 
-		message( STATUS " operating system : [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )
+		message( STATUS " system : [${BUILD_SITE}] [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )
 		message( STATUS " processor        : [${CMAKE_SYSTEM_PROCESSOR}]" )
         message( STATUS " cmake            : [${CMAKE_COMMAND}] (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION})" )
         message( STATUS " build type       : [${CMAKE_BUILD_TYPE}]" )
@@ -38,13 +38,20 @@ macro( ecbuild_print_summary )
         message( STATUS "---------------------------------------------------------" )
 
         foreach( lang ${langs} )
-		  message( STATUS " ${lang} > ${CMAKE_${lang}_COMPILER_ID} ${CMAKE_${lang}_COMPILER_VERSION} [${CMAKE_${lang}_COMPILER} ${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
-        endforeach()
+		  message( STATUS " ${lang} : ${CMAKE_${lang}_COMPILER_ID} ${CMAKE_${lang}_COMPILER_VERSION}"  )
+		  message( STATUS "    compiler   -- ${CMAKE_${lang}_COMPILER} ${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
+		  message( STATUS "    link flags -- ${CMAKE_${lang}_LINK_FLAGS}" )
+		endforeach()
 
+	message( STATUS "ar         : ${CMAKE_AR} ")
 	message( STATUS "link flags :" )
 	message( STATUS "    exe       : [${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXEC_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
 	message( STATUS "    shared lib: [${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
 	message( STATUS "    static lib: [${CMAKE_MODULE_LINKER_FLAGS} ${CMAKE_MODULE_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
+
+	get_directory_property( defs COMPILE_DEFINITIONS )
+
+	message( STATUS "common definitions: ${defs}" )
 
         message( STATUS "---------------------------------------------------------" )
 
