@@ -55,12 +55,16 @@ endif()
 ############################################################################################
 # c compiler tests
 
-check_c_source_compiles( 
-      " typedef int foo_t;
-        static inline foo_t static_foo(){return 0;}
-        foo_t foo(){return 0;}
-        int main(int argc, char *argv[]){return 0;}
-      " EC_HAVE_C_INLINE )
+if( CMAKE_C_COMPILER_LOADED )
+
+	check_c_source_compiles(
+		  " typedef int foo_t;
+			static inline foo_t static_foo(){return 0;}
+			foo_t foo(){return 0;}
+			int main(int argc, char *argv[]){return 0;}
+		  " EC_HAVE_C_INLINE )
+
+endif()
 
 ############################################################################################
 # c++ compiler tests
