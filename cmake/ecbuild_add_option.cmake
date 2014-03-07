@@ -28,6 +28,12 @@ macro( ecbuild_add_option )
 
 	string( TOUPPER ${PROJECT_NAME} PNAME )
 
+	if( ENABLE_${_p_FEATURE} MATCHES "[Aa][Uu][Tt][Oo]" )
+		set( __user_provided_input 0 )
+	else()
+		set( __user_provided_input 1 )
+	endif()
+
 	if( NOT DEFINED _p_DEFAULT )
 		set( _p_DEFAULT AUTO )
 	endif()
@@ -43,12 +49,6 @@ macro( ecbuild_add_option )
 	if( ENABLE_${_p_FEATURE} )
 
 		set( HAVE_${_p_FEATURE} 1 )
-
-		if( ENABLE_${_p_FEATURE} MATCHES "[Aa][Uu][Tt][Oo]" )
-			set( __user_provided_input 0 )
-		else()
-			set( __user_provided_input 1 )
-		endif()
 
 		### search for dependent packages
 

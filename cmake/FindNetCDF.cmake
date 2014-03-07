@@ -59,6 +59,8 @@ if( PREFER_NETCDF4 )
 
     find_package( NetCDF4 )
 
+	set_package_properties( NetCDF4 PROPERTIES TYPE RECOMMENDED PURPOSE "support for NetCDF4 file format" )
+
     if( NETCDF_FOUND AND HDF5_FOUND )
         # list( APPEND NETCDF_DEFINITIONS  ${HDF5_DEFINITIONS} )
         list( APPEND NETCDF_LIBRARIES    ${HDF5_HL_LIBRARIES} ${HDF5_LIBRARIES}  )
@@ -80,5 +82,7 @@ endif()
 if( PREFER_NETCDF3 )
 
     find_package( NetCDF3 )
+
+	set_package_properties( NetCDF3 PROPERTIES TYPE RECOMMENDED PURPOSE "support for NetCDF3 file format" )
 
 endif()

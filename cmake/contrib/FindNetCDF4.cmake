@@ -270,7 +270,7 @@ else()
     endif()
 endif()
 
-find_package_handle_standard_args( NETCDF DEFAULT_MSG
+find_package_handle_standard_args( NETCDF4 DEFAULT_MSG
     NETCDF_LIBRARIES
     NETCDF_INCLUDE_DIRS
 )
@@ -280,6 +280,8 @@ mark_as_advanced(
     NETCDF_LIBRARIES
     NETCDF_LIBRARY_DIRS
 )
+
+set( NETCDF_FOUND ${NETCDF4_FOUND} )
 
 # For backwards compatibility we set NETCDF_INCLUDE_DIR to the value of
 # NETCDF_INCLUDE_DIRS
