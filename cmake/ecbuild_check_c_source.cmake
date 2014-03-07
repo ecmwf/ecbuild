@@ -127,9 +127,9 @@ macro( cmake_add_c_flags m_c_flags )
 
   if( C_FLAG_TEST_${N_CFLAG} )
     set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${m_c_flags}" )
-    message( STATUS "C FLAG [${m_c_flags}] added" )
+	# message( STATUS "C FLAG [${m_c_flags}] added" )
   else()
-    message( STATUS "C FLAG [${m_c_flags}] skipped" )
+	message( WARNING "Unrecognised C flag [${m_c_flags}] -- skipping" )
   endif()
 
 endmacro()

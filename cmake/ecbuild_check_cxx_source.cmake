@@ -136,9 +136,9 @@ macro( cmake_add_cxx_flags m_cxx_flags )
 
   if( CXX_FLAG_TEST_${N_CXXFLAG} )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${m_cxx_flags}" )
-    message( STATUS "C++ FLAG [${m_cxx_flags}] added" )
+	# message( STATUS "C++ FLAG [${m_cxx_flags}] added" )
   else()
-    message( STATUS "C++ FLAG [${m_cxx_flags}] skipped" )
+	message( STATUS "Unrecognised CXX flag [${m_cxx_flags}] -- skipping" )
   endif()
 
 endmacro()
