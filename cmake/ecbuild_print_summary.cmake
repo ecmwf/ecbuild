@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2012 ECMWF.
+# (C) Copyright 1996-2014 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -8,12 +8,14 @@
 
 macro( ecbuild_print_summary )
 
-	message( STATUS "---------------------------------------------------------" )
-	message( STATUS " Project ${PROJECT_NAME} summary" )
-	message( STATUS "---------------------------------------------------------" )
-
     if( EXISTS ${PROJECT_SOURCE_DIR}/project_summary.cmake )
-        include( ${PROJECT_SOURCE_DIR}/project_summary.cmake )
+
+		message( STATUS "---------------------------------------------------------" )
+		message( STATUS " Project ${PROJECT_NAME} summary" )
+		message( STATUS "---------------------------------------------------------" )
+
+		include( ${PROJECT_SOURCE_DIR}/project_summary.cmake )
+
     endif()
 
     if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
@@ -23,31 +25,31 @@ macro( ecbuild_print_summary )
         get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
 
 		message( STATUS "---------------------------------------------------------" )
-		message( STATUS " Build summary" )
+		message( STATUS "Build summary" )
 		message( STATUS "---------------------------------------------------------" )
 
-		message( STATUS " system : [${BUILD_SITE}] [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )
-		message( STATUS " processor        : [${CMAKE_SYSTEM_PROCESSOR}]" )
-        message( STATUS " cmake            : [${CMAKE_COMMAND}] (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION})" )
-        message( STATUS " build type       : [${CMAKE_BUILD_TYPE}]" )
-        message( STATUS " timestamp        : [${EC_BUILD_TIMESTAMP}]" )
-        message( STATUS " install prefix   : [${CMAKE_INSTALL_PREFIX}]" )
+		message( STATUS "system : [${BUILD_SITE}] [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )
+		message( STATUS "processor        : [${CMAKE_SYSTEM_PROCESSOR}]" )
+		message( STATUS "cmake            : [${CMAKE_COMMAND}] (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION})" )
+		message( STATUS "build type       : [${CMAKE_BUILD_TYPE}]" )
+		message( STATUS "timestamp        : [${EC_BUILD_TIMESTAMP}]" )
+		message( STATUS "install prefix   : [${CMAKE_INSTALL_PREFIX}]" )
     if( EC_LINK_DIR )
-        message( STATUS " links prefix     : [${EC_LINK_DIR}]" )
+		message( STATUS "links prefix     : [${EC_LINK_DIR}]" )
     endif()
         message( STATUS "---------------------------------------------------------" )
 
         foreach( lang ${langs} )
-		  message( STATUS " ${lang} : ${CMAKE_${lang}_COMPILER_ID} ${CMAKE_${lang}_COMPILER_VERSION}"  )
-		  message( STATUS "    compiler   -- ${CMAKE_${lang}_COMPILER} ${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
-		  message( STATUS "    link flags -- ${CMAKE_${lang}_LINK_FLAGS}" )
+		  message( STATUS "${lang} -- ${CMAKE_${lang}_COMPILER_ID} ${CMAKE_${lang}_COMPILER_VERSION}"  )
+		  message( STATUS "    compiler   : ${CMAKE_${lang}_COMPILER} ${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
+		  message( STATUS "    link flags : ${CMAKE_${lang}_LINK_FLAGS}" )
 		endforeach()
 
 	message( STATUS "ar         : ${CMAKE_AR} ")
 	message( STATUS "link flags :" )
-	message( STATUS "    exe       : [${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXEC_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
-	message( STATUS "    shared lib: [${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
-	message( STATUS "    static lib: [${CMAKE_MODULE_LINKER_FLAGS} ${CMAKE_MODULE_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
+	message( STATUS "    executable [${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXEC_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
+	message( STATUS "    shared lib [${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
+	message( STATUS "    static lib [${CMAKE_MODULE_LINKER_FLAGS} ${CMAKE_MODULE_LINKER_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}]" )
 
 	get_directory_property( defs COMPILE_DEFINITIONS )
 
@@ -59,8 +61,7 @@ macro( ecbuild_print_summary )
 
 	### FEATURE SUMMARY
 
-	feature_summary(	WHAT ALL
-						INCLUDE_QUIET_PACKAGES )
+	feature_summary( WHAT ALL INCLUDE_QUIET_PACKAGES )
 
 	### WARNINGS
 
@@ -72,7 +73,7 @@ macro( ecbuild_print_summary )
 
         message( STATUS " +++ WARNING +++ WARNING +++ WARNING +++" )
         message( STATUS " +++ " )
-        message( STATUS " +++ This CMake version [${CMAKE_VERSION}] is rather OLD" )
+		message( STATUS " +++ This CMake version [${CMAKE_VERSION}] is rather OLD !!" )
         message( STATUS " +++ " )
         message( STATUS " +++ We work hard to keep CMake backward compatibility (support >= 2.6.4)" )
         message( STATUS " +++ but there are some limits inherent to older versions." )
