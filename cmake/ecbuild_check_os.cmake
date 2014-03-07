@@ -30,10 +30,6 @@ endif()
 ############################################################################################
 # check architecture architecture
 
-debug_var( ENABLE_OS_TYPES_TEST )
-debug_var( ENABLE_OS_ENDINESS_TEST )
-debug_var( ENABLE_OS_FUNCTIONS_TEST )
-
 if( ENABLE_OS_TYPES_TEST )
 
 	set( EC_SIZEOF_PTR ${CMAKE_SIZEOF_VOID_P} )
