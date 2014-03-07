@@ -31,12 +31,11 @@ macro( ecbuild_enable_fortran )
     endif()
 
     if( CMAKE_Fortran_COMPILER_LOADED )
-
         include(CheckFortranFunctionExists)
-        include(FortranCInterface)
-
-        set( EC_HAVE_Fortran 1 )
-
+		if( CMAKE_C_COMPILER_LOADED )
+			include(FortranCInterface)
+		endif()
+		set( EC_HAVE_FORTRAN 1 )
     endif()
 
     if( DEFINED _PAR_MODULE_DIRECTORY )

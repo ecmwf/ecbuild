@@ -150,9 +150,9 @@
 #define @PNAME@_CXX_COMPILER     "@CMAKE_CXX_COMPILER@"
 #define @PNAME@_CXX_FLAGS        "@EC_CXX_FLAGS@"
 
-#cmakedefine EC_HAVE_Fortran
+#cmakedefine EC_HAVE_FORTRAN
 
-#ifdef EC_HAVE_Fortran
+#ifdef EC_HAVE_FORTRAN
 
 #define @PNAME@_Fortran_COMPILER_ID      "@CMAKE_Fortran_COMPILER_ID@"
 #define @PNAME@_Fortran_COMPILER_VERSION "@CMAKE_Fortran_COMPILER_VERSION@"

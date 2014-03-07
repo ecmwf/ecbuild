@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
+########################################################################################################
 # disallow in-source build
 
 if( EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt ) # check for failed attempts to build within the source tree
@@ -25,6 +25,9 @@ if(${srcdir} STREQUAL ${bindir})
 	message( FATAL_ERROR "${PROJECT_NAME} requires an out of source build.\n Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
 endif()
 
+########################################################################################################
+# ecbuild versioning support
+
 set( ECBUILD_CMAKE_MINIMUM "2.8.4" )
 if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
   message(FATAL_ERROR "${PROJECT_NAME} requires at least CMake ${ECBUILD_CMAKE_MINIMUM} -- you are using ${CMAKE_COMMAND} [${CMAKE_VERSION}]\n Please, get a newer version of CMake @ www.cmake.org" )
@@ -32,13 +35,14 @@ endif()
 
 set( ECBUILD_MACRO_VERSION "1.3" )
 
-############################################################################################
+########################################################################################################
 # language support
 
-# need C enabled because we use it to detect some system stuff
-enable_language( C )
+if( ENABLE_OS_TESTS )
+	enable_language( C ) # need C enabled because we use it to detect some system stuff
+endif()
 
-###############################################################################
+########################################################################################################
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
@@ -102,7 +106,10 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	if( CMAKE_Fortran_COMPILER_LOADED )
 		include(CheckFortranFunctionExists)
-		include(FortranCInterface)
+		if( CMAKE_C_COMPILER_LOADED )
+			include(FortranCInterface)
+		endif()
+		set( EC_HAVE_FORTRAN 1 )
 	endif()
 
 	include( CMakeDependentOption ) # make options depend on one another
