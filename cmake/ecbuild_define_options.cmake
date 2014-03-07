@@ -16,3 +16,11 @@ option( ENABLE_WARNINGS         "enable compiler warnings"                      
 option( CHECK_UNUSED_FILES      "check for unused project files"                  ON  )
 
 option( ENABLE_LARGE_FILE_SUPPORT "build with large file support"   ON  )
+
+option( ENABLE_OS_TESTS          "Run all OS tests" ON )
+
+cmake_dependent_option( ENABLE_OS_TYPES_TEST     "Run sizeof tests on C types" ON "ENABLE_OS_TESTS" OFF)
+cmake_dependent_option( ENABLE_OS_ENDINESS_TEST  "Run OS endiness tests"       ON "ENABLE_OS_TESTS" OFF)
+cmake_dependent_option( ENABLE_OS_FUNCTIONS_TEST "Run OS functions tests"      ON "ENABLE_OS_TESTS" OFF)
+
+mark_as_advanced( ENABLE_OS_TYPES_TEST ENABLE_OS_ENDINESS_TEST ENABLE_OS_FUNCTIONS_TEST  )

@@ -105,6 +105,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 		include(FortranCInterface)
 	endif()
 
+	include( CMakeDependentOption ) # make options depend on one another
+
 	include(FeatureSummary) # support features in cmake
 
 	include(TestBigEndian)

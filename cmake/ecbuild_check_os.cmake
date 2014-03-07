@@ -30,7 +30,11 @@ endif()
 ############################################################################################
 # check architecture architecture
 
-if( NOT EC_SKIP_OS_TYPES_TEST )
+debug_var( ENABLE_OS_TYPES_TEST )
+debug_var( ENABLE_OS_ENDINESS_TEST )
+debug_var( ENABLE_OS_FUNCTIONS_TEST )
+
+if( ENABLE_OS_TYPES_TEST )
 
 	set( EC_SIZEOF_PTR ${CMAKE_SIZEOF_VOID_P} )
 
@@ -95,7 +99,7 @@ endif()
 ############################################################################################
 # check endiness
 
-if( NOT EC_SKIP_OS_ENDINESS_TEST )
+if( ENABLE_OS_ENDINESS_TEST )
 
 	test_big_endian( _BIG_ENDIAN )
 

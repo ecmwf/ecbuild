@@ -9,7 +9,7 @@
 ############################################################################################
 # os capability checks
 
-if( NOT EC_SKIP_OS_FUNCTIONS_TEST )
+if( ENABLE_OS_FUNCTIONS_TEST )
     
     ### symbol checks ##################
 
