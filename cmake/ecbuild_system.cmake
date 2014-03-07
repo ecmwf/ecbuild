@@ -36,13 +36,6 @@ endif()
 set( ECBUILD_MACRO_VERSION "1.3" )
 
 ########################################################################################################
-# language support
-
-if( ENABLE_OS_TESTS )
-	enable_language( C ) # need C enabled because we use it to detect some system stuff
-endif()
-
-########################################################################################################
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
@@ -111,8 +104,6 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 		endif()
 		set( EC_HAVE_FORTRAN 1 )
 	endif()
-
-	include( CMakeDependentOption ) # make options depend on one another
 
 	include(FeatureSummary) # support features in cmake
 

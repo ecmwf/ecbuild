@@ -6,6 +6,15 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+###################################################################################################
+# enable C to use in system introspection
+
+debug_var( ENABLE_OS_TESTS )
+
+if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
+	enable_language( C )
+endif()
+
 ############################################################################################
 # try to get compiler version if cmake did not
 
