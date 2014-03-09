@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2012 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -78,6 +78,7 @@ macro( ecbuild_add_option )
 			# we have feature iff all required packages were FOUND
 
 			if( NOT ${pkgUPPER_FOUND} )
+				message( STATUS "Could not find package $pkg required for feature ${_p_FEATURE}" )
 				set( HAVE_${_p_FEATURE} 0 )
 				list( APPEND _failed_to_find_packages ${pkgname} )
 			endif()
