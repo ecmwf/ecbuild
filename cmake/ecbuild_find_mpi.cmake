@@ -96,6 +96,7 @@ macro( ecbuild_find_mpi )
 		if( Fortran_COMPILER_SUPPORTS_MPI )
 			message( STATUS "Fortran compiler supports MPI (F90) -- ${CMAKE_Fortran_COMPILER}" )
 			set( MPI_Fortran_COMPILER ${CMAKE_Fortran_COMPILER} )
+			set( MPI_Fortran_FOUND TRUE )
 		endif()
 
     endif()
@@ -107,5 +108,10 @@ macro( ecbuild_find_mpi )
     # hide these variables from UI
 
     mark_as_advanced( MPI_LIBRARY MPI_EXTRA_LIBRARY )
+
+    # find_package with Cray compiler did not send MPI_Fortran_FOUND
+    if( Fortran_COMPILER_SUPPORTS_MPI )
+    	set( MPI_Fortran_FOUND TRUE )
+    endif()
 
 endmacro( ecbuild_find_mpi )
