@@ -44,6 +44,8 @@ macro( ecbuild_enable_fortran )
         set( CMAKE_Fortran_MODULE_DIRECTORY  ${PROJECT_BINARY_DIR}/fortran CACHE PATH "directory for all fortran modules." )
     endif()
 
+	file( MAKE_DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY} )
+
     include_directories( ${CMAKE_Fortran_MODULE_DIRECTORY} )
 
     install( CODE "EXECUTE_PROCESS (COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${CMAKE_Fortran_MODULE_DIRECTORY}/\${BUILD_TYPE}\" \"${INSTALL_INCLUDE_DIR}\")" )
