@@ -179,6 +179,7 @@ macro( ecbuild_install_project )
 
         set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
 
+		set( BUILD_DIR_EXPORT ON )
         configure_file( "${_template_config}" "${_lname_config}" @ONLY )
 
         file( REMOVE ${_lname_config}.tpls.in )
@@ -219,7 +220,8 @@ macro( ecbuild_install_project )
             endif()
         endforeach()
         
-        configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
+		set( BUILD_DIR_EXPORT OFF )
+		configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
      
         # install the ${LNAME}-config.cmake and ${LNAME}-config-version.cmake
     

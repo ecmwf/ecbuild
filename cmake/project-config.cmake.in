@@ -38,16 +38,10 @@ set( @PNAME@_LIBRARIES        ${@PNAME@_SELF_LIBRARIES}  ${@PNAME@_TPL_LIBRARIES
 
 
 # insert definitions for IMPORTED targets
-# Commented out because in practice this causes a CMake project
-# that builds with this one to see a duplicated set of targets
-# - the ones defined in the install directory and the ones defined
-# in the build directory. This problem probably does not arise
-# if the build directory does not exist.
 
-#if( NOT @PROJECT_NAME@_BINARY_DIR )
-#  include( "@TOP_PROJECT_TARGETS_FILE@" OPTIONAL )
-#endif()
-
+if( @BUILD_DIR_EXPORT@ AND NOT @PROJECT_NAME@_BINARY_DIR )
+  include( "@TOP_PROJECT_TARGETS_FILE@" OPTIONAL )
+endif()
 
 # here goes the imports of the TPL's
 
