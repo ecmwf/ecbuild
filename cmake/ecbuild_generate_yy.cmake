@@ -16,7 +16,7 @@ macro( ecbuild_generate_yy )
 	ecbuild_find_perl( REQUIRED )
 
     set( options )
-    set( single_value_args YYPREFIX YACC LEX )
+	set( single_value_args YYPREFIX YACC LEX LEX_FLAGS YACC_FLAGS FLEX_FLAGS BISON_FLAGS )
     set( multi_value_args  DEPENDANT )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -43,6 +43,24 @@ macro( ecbuild_generate_yy )
 
     set( BASE ${_PAR_YYPREFIX}_${_PAR_YACC} )
 
+	## default flags
+
+	if( NOT _PAR_LEX_FLAGS )
+		set( _PAR_LEX_FLAGS "" )
+	endif()
+
+	if( NOT _PAR_FLEX_FLAGS )
+		set( _PAR_FLEX_FLAGS "-l" )
+	endif()
+
+	if( NOT _PAR_YACC_FLAGS )
+		set( _PAR_YACC_FLAGS "-t" )
+	endif()
+
+	if( NOT _PAR_BISON_FLAGS )
+		set( _PAR_BISON_FLAGS "-t" )
+	endif()
+
 #    debug_var( BASE )
 
     set( ${BASE}yy_tmp_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC}.tmp.c )
@@ -54,16 +72,16 @@ macro( ecbuild_generate_yy )
     add_custom_target( ${_PAR_YYPREFIX}_${DEPENDANT} SOURCES ${_PAR_YACC}.y ${_PAR_LEX}.l )
 
     if( BISON_FOUND )
-		bison_target( ${BASE}_parser  ${_PAR_YACC}.y  ${${BASE}yy_tmp_target} COMPILE_FLAGS -t)
-    else()
-		yacc_target( ${BASE}_parser  ${_PAR_YACC}.y   ${${BASE}yy_tmp_target} COMPILE_FLAGS -t)
+		bison_target( ${BASE}_parser  ${_PAR_YACC}.y  ${${BASE}yy_tmp_target} COMPILE_FLAGS "${_PAR_BISON_FLAGS}" )
+	else()
+		yacc_target( ${BASE}_parser  ${_PAR_YACC}.y   ${${BASE}yy_tmp_target} COMPILE_FLAGS "${_PAR_YACC_FLAGS}" )
     endif()
 
     if( FLEX_FOUND )
-        flex_target(  ${BASE}_scanner ${_PAR_LEX}.l   ${${BASE}yl_tmp_target} COMPILE_FLAGS -l )
+		flex_target(  ${BASE}_scanner ${_PAR_LEX}.l   ${${BASE}yl_tmp_target} COMPILE_FLAGS "${_PAR_FLEX_FLAGS}" )
         add_flex_bison_dependency(${BASE}_scanner ${BASE}_parser)
     else()
-        lex_target(  ${BASE}_scanner ${_PAR_LEX}.l   ${${BASE}yl_tmp_target} )
+		lex_target(  ${BASE}_scanner ${_PAR_LEX}.l   ${${BASE}yl_tmp_target} COMPILE_FLAGS "${_PAR_LEX_FLAGS}" )
         add_lex_yacc_dependency(${BASE}_scanner ${BASE}_parser)
     endif()
 
