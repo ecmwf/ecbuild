@@ -13,11 +13,12 @@ option( BUILD_SHARED_LIBS       "build shared libraries when possible"          
 option( ENABLE_RPATHS           "when installing insert RPATHS into binaries"     ON  )
 option( ENABLE_WARNINGS         "enable compiler warnings"                        OFF )
 
-option( CHECK_UNUSED_FILES      "check for unused project files"                  ON  )
-
 option( ENABLE_LARGE_FILE_SUPPORT "build with large file support"   ON  )
 
 option( ENABLE_OS_TESTS          "Run all OS tests" ON )
+
+option( DEVELOPER_MODE           "activates developer mode"               ON )
+option( CHECK_UNUSED_FILES       "check for unused project files"         ON )
 
 include( CMakeDependentOption ) # make options depend on one another
 

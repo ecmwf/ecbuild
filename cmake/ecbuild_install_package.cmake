@@ -119,7 +119,8 @@ macro( ecbuild_install_project )
     
         set( PACKAGE_VERSION "${${PNAME}_VERSION}" ) 
         
-        configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
+		configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
+		install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
 
         # prepare imutable variables (don't depend on install path)
                         
@@ -179,7 +180,7 @@ macro( ecbuild_install_project )
 
         set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
 
-		set( BUILD_DIR_EXPORT ON )
+		set( _is_build_dir_export ON )
         configure_file( "${_template_config}" "${_lname_config}" @ONLY )
 
         file( REMOVE ${_lname_config}.tpls.in )
@@ -196,7 +197,8 @@ macro( ecbuild_install_project )
 
         if( EXISTS "${_lname_config}.tpls.in" )
             configure_file( "${_lname_config}.tpls.in" "${_lname_config}.tpls" @ONLY )
-        endif()
+			install( FILES "${_lname_config}.tpls" DESTINATION "${INSTALL_CMAKE_DIR}" )
+		endif()
 
         # project-config.cmake @ install tree
         
@@ -220,15 +222,9 @@ macro( ecbuild_install_project )
             endif()
         endforeach()
         
-		set( BUILD_DIR_EXPORT OFF )
+		set( _is_build_dir_export OFF )
 		configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
-     
-        # install the ${LNAME}-config.cmake and ${LNAME}-config-version.cmake
-    
-        install( FILES
-            "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake"
-            "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake"
-            DESTINATION "${INSTALL_CMAKE_DIR}" )
+		install( FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
      
         # install the export
     

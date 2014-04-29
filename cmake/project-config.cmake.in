@@ -39,8 +39,16 @@ set( @PNAME@_LIBRARIES        ${@PNAME@_SELF_LIBRARIES}  ${@PNAME@_TPL_LIBRARIES
 
 # insert definitions for IMPORTED targets
 
-if( @BUILD_DIR_EXPORT@ AND NOT @PROJECT_NAME@_BINARY_DIR )
-  include( "@TOP_PROJECT_TARGETS_FILE@" OPTIONAL )
+if( NOT @PROJECT_NAME@_BINARY_DIR )
+
+	set( IS_BUILD_DIR_EXPORT @_is_build_dir_export@ )
+
+	if( IS_BUILD_DIR_EXPORT )
+		include( "@TOP_PROJECT_TARGETS_FILE@" OPTIONAL )
+	else()
+		include( "${@PNAME@_CMAKE_DIR}/@CMAKE_PROJECT_NAME@-targets.cmake" )
+	endif()
+
 endif()
 
 # here goes the imports of the TPL's
