@@ -50,7 +50,7 @@ macro( ecbuild_add_persistent )
 
       add_custom_command(
         OUTPUT  ${file}.b
-        COMMAND ${sg_perl} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.h ${CMAKE_CURRENT_BINARY_DIR}/${_file_dir} ${_PAR_NAMESPACE}
+		COMMAND ${PERL_EXECUTABLE} ${sg_perl} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.h ${CMAKE_CURRENT_BINARY_DIR}/${_file_dir} ${_PAR_NAMESPACE}
 		DEPENDS ${sg_perl} ${file}.h
         )
       set_source_files_properties( ${file}.h PROPERTIES OBJECT_DEPENDS "${file}.b" )
