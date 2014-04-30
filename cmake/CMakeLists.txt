@@ -9,6 +9,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_findpackage_files
 							ecbuild_add_persistent.cmake
 							ecbuild_add_resources.cmake
 							ecbuild_add_test.cmake
+							ecbuild_append_to_rpath.cmake
 							ecbuild_check_c_source.cmake
 							ecbuild_check_compiler.cmake
 							ecbuild_check_cxx_source.cmake

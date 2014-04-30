@@ -7,7 +7,7 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding a subproject directory
+# function for adding a subproject directory
 ##############################################################################
 
 macro( ecbuild_use_package )
@@ -192,5 +192,11 @@ macro( ecbuild_use_package )
         endif()
 
     endif()
+
+### for when we change this macro to a function()
+#	set_parent_scope( ${PNAME}_FOUND )
+#	set_parent_scope( ${_p_PROJECT}_FOUND )
+#	set_parent_scope( ${PNAME}_VERSION )
+#	set_parent_scope( ${_p_PROJECT}_VERSION )
 
 endmacro()

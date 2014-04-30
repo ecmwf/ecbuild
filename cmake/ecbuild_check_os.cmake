@@ -185,13 +185,13 @@ if( UNIX )
 
 	### APPLE ###
 
-	if( APPLE AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" ) # Mac OS X
+	if( APPLE AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
 		set( EC_OS_NAME "macosx" )
 	endif()
 
 	### Linux ###
 
-	if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" ) # Linux
+	if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
 
 		set( EC_OS_NAME "linux" )
 
@@ -209,6 +209,12 @@ if( UNIX )
 		set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--disable-new-dtags")
 		set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--disable-new-dtags")
 
+	endif()
+
+	### Solaris ###
+
+	if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )
+		set( EC_OS_NAME "solaris" )
 	endif()
 
 	### AIX ###

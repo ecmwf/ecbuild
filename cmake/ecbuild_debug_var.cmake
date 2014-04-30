@@ -7,6 +7,15 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
+# macro for exporting a variable to parent scope
+
+macro( set_parent_scope VAR )
+
+	set( ${VAR} ${${VAR}} PARENT_SCOPE )
+
+endmacro( set_parent_scope )
+
+##############################################################################
 # macro for debugging a cmake variable
 
 macro( debug_var VAR )

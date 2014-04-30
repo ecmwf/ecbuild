@@ -26,8 +26,6 @@ macro( ecbuild_add_option )
 	  message(FATAL_ERROR "The call to ecbuild_add_option() doesn't specify the FEATURE.")
     endif()
 
-	string( TOUPPER ${PROJECT_NAME} PNAME )
-
 	if( ENABLE_${_p_FEATURE} MATCHES "[Aa][Uu][Tt][Oo]" )
 		set( __user_provided_input 0 )
 	else()
@@ -56,11 +54,18 @@ macro( ecbuild_add_option )
 
 			string(REPLACE " " ";" pkglist ${pkg}) # string to list
 
-			list( GET pkglist 0 pkgname ) #  1st entry on list is package name
+			list( GET pkglist 0 pkgname )
+
+			if( pkgname STREQUAL "PROJECT" )  # if 1st entry is PROJECT, then we are looking for a ecbuild project
+				set( pkgproject 1 )
+				list( GET pkglist 1 pkgname )
+			else()                            # else 1st entry is package name
+				set( pkgproject 0 )
+			endif()
 
 #			debug_var( pkg )
 #			debug_var( pkglist )
-#			debug_var( pkgname )
+			debug_var( pkgname )
 
 			string( TOUPPER ${pkgname} pkgUPPER )
 			string( TOLOWER ${pkgname} pkgLOWER )
@@ -68,9 +73,15 @@ macro( ecbuild_add_option )
 			if( NOT ${pkgUPPER}_FOUND )
 
 				ecbuild_add_extra_search_paths( ${pkgLOWER} ) # adds search paths specific to ECMWF
-				find_package( ${pkglist} )
 
-				# append to list of third-party libraries (to be forward to other packages
+				if( pkgproject )
+					ecbuild_use_package( ${pkglist} )
+				else()
+					find_package( ${pkglist} )
+				endif()
+
+				# append to list of third-party libraries (to be forward to other packages )
+				string( TOUPPER ${PROJECT_NAME} PNAME )
 				list( APPEND ${PNAME}_TPLS ${pkgname} )
 
 			endif()
