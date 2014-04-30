@@ -18,6 +18,9 @@ ecbuild_declare_project()
 
 configure_file( cmake/ecbuild_version.h.in ${CMAKE_BINARY_DIR}/ecbuild_version.h  )
 
+ecbuild_add_option( FEATURE INSTALL
+					DEFAULT OFF
+					DESCRIPTION "Wether to install ecbuild files" )
 # contents
 
 ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
@@ -29,18 +32,12 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             COPYING
 )
 
+add_subdirectory( bin )
+add_subdirectory( share )
 add_subdirectory( cmake )
 
-option( ENABLE_INSTALL "Wether to install ecbuild files" OFF )
-
 if( ENABLE_INSTALL )
-
-    install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
-
-    add_subdirectory( bin )
-
-    add_subdirectory( share )
-
+	install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
 endif()
 
 ############################################################################################
