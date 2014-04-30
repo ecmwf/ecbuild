@@ -65,7 +65,7 @@ macro( ecbuild_add_option )
 
 #			debug_var( pkg )
 #			debug_var( pkglist )
-			debug_var( pkgname )
+#			debug_var( pkgname )
 
 			string( TOUPPER ${pkgname} pkgUPPER )
 			string( TOLOWER ${pkgname} pkgLOWER )
