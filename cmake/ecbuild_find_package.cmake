@@ -30,7 +30,7 @@ macro( ecbuild_find_package )
       message(FATAL_ERROR "Call to ecbuild_find_package() requests EXACT but doesn't specify VERSION.")
     endif()
 
-    # debug_var( _PAR_NAME )
+	# debug_var( _PAR_NAME )
 
     string( TOUPPER ${_PAR_NAME} PNAME )
 
@@ -42,10 +42,17 @@ macro( ecbuild_find_package )
         endif()
     endif()
 
-    # check environment variable
+	# check if environment variable is defined
+
     if( NOT ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
         set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
     endif()
+
+	# check developer mode (search in cmake cache )
+
+	if( NOT ${DEVELOPER_MODE} )
+		set( NO_DEV_BUILD_DIRS NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_BUILDS_PATH )
+	endif()
 
 	# search user defined paths first
 
@@ -53,24 +60,18 @@ macro( ecbuild_find_package )
 		if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH )
 
 			# 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
-			find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} NO_DEFAULT_PATH )
+			find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE HINTS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} NO_DEFAULT_PATH )
 
 			# 2) search using a file Find<package>.cmake if it exists
-			find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET PATHS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} NO_DEFAULT_PATH )
+			find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET MODULE )
 
 		endif()
-	endif()
-
-	# check for developer build tree searches ...
-
-	if( NOT ${DEVELOPER_MODE} )
-		set( NO_DEV_BUILD_DIRS NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_BUILDS_PATH )
 	endif()
 
 	# search developer cache and recently configured packages in the CMake GUI
 
 	if( NOT ${_PAR_NAME}_FOUND )
-	
+
 		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE HINTS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH}
 				${NO_DEV_BUILD_DIRS}
 				NO_CMAKE_ENVIRONMENT_PATH
@@ -82,20 +83,25 @@ macro( ecbuild_find_package )
 
 	# search special ECMWF paths
 
-	set( _ecmwf_paths ) # clear variable
+	if( NOT ${_PAR_NAME}_FOUND )
 
-	ecbuild_list_extra_search_paths( ${_PAR_NAME} _ecmwf_paths )
+		set( _ecmwf_paths ) # clear variable
+		ecbuild_list_extra_search_paths( ${_PAR_NAME} _ecmwf_paths )
 
-	if( NOT ${_PAR_NAME}_FOUND AND _ecmwf_paths )
-		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE PATHS ${_ecmwf_paths} NO_DEFAULT_PATH )
-		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET PATHS ${_ecmwf_paths} NO_DEFAULT_PATH )
+		if( _ecmwf_paths )
+			find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE PATHS ${_ecmwf_paths} NO_DEFAULT_PATH )
+		endif()
+
 	endif()
 
 	# search system paths
 
 	if( NOT ${_PAR_NAME}_FOUND )
+
 		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE ${NO_DEV_BUILD_DIRS} )
-		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET ${NO_DEV_BUILD_DIRS} )
+
+		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET MODULE )
+
 	endif()
 
     # check version ...
