@@ -58,8 +58,8 @@ macro( ecbuild_add_option )
 		mark_as_advanced( ENABLE_${_p_FEATURE} )
 	endif()
 
-	debug_var( ENABLE_${_p_FEATURE} )
-	debug_var( ${_p_FEATURE}_user_provided_input )
+	# debug_var( ENABLE_${_p_FEATURE} )
+	# debug_var( ${_p_FEATURE}_user_provided_input )
 
 	if( ENABLE_${_p_FEATURE} )
 
@@ -80,14 +80,16 @@ macro( ecbuild_add_option )
 				set( pkgproject 0 )
 			endif()
 
-			debug_var( pkg )
-			debug_var( pkglist )
-			debug_var( pkgname )
+			# debug_var( pkg )
+			# debug_var( pkglist )
+			# debug_var( pkgname )
 
 			string( TOUPPER ${pkgname} pkgUPPER )
 			string( TOLOWER ${pkgname} pkgLOWER )
 
-			if( NOT ${pkgUPPER}_FOUND )
+			if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
+				set( ${pkgname}_already_found 1 )
+			else()
 
 				ecbuild_add_extra_search_paths( ${pkgLOWER} ) # adds search paths specific to ECMWF
 
@@ -103,12 +105,15 @@ macro( ecbuild_add_option )
 
 			endif()
 
+			# debug_var( ${pkgname}_FOUND  )
 			# debug_var( ${pkgLOWER}_FOUND )
 			# debug_var( ${pkgUPPER}_FOUND )
 
 			# we have feature iff all required packages were FOUND
 
-			if( NOT ${pkgUPPER}_FOUND )
+			if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
+				message( STATUS "Found package ${pkgname} required for feature ${_p_FEATURE}" )
+			else()
 				message( STATUS "Could not find package ${pkgname} required for feature ${_p_FEATURE}" )
 				set( HAVE_${_p_FEATURE} 0 )
 				list( APPEND _failed_to_find_packages ${pkgname} )
