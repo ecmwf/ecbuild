@@ -19,30 +19,47 @@ macro( ecbuild_add_option )
 	cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
 	if( _p_UNPARSED_ARGUMENTS )
-	  message(FATAL_ERROR "Unknown keywords given to ecbuild_add_option(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+	  message(FATAL_ERROR "Unknown keywords given to ecbuild_add_option(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
+
+	# check FEATURE parameter
 
 	if( NOT _p_FEATURE  )
 	  message(FATAL_ERROR "The call to ecbuild_add_option() doesn't specify the FEATURE.")
     endif()
 
-	if( ENABLE_${_p_FEATURE} MATCHES "[Aa][Uu][Tt][Oo]" )
-		set( __user_provided_input 0 )
-	else()
-		set( __user_provided_input 1 )
-	endif()
+	# check DEFAULT parameter
 
 	if( NOT DEFINED _p_DEFAULT )
-		set( _p_DEFAULT AUTO )
+		set( _p_DEFAULT ON )
+	else()
+		if( NOT _p_DEFAULT MATCHES "[Oo][Nn]" AND NOT _p_DEFAULT MATCHES "[Oo][Ff][Ff]" )
+			message(FATAL_ERROR "In macro ecbuild_add_option(), DEFAULT is either ON or OFF: \"${_p_DEFAULT}\"")
+		endif()
 	endif()
 
-	option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
+	# check if user provided value
 
-	add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}")
+	get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE )
+
+	if( NOT "${ENABLE_${_p_FEATURE}}" STREQUAL "" AND _in_cache )
+		set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" )
+	else()
+		set( ${_p_FEATURE}_user_provided_input 0 CACHE BOOL "" )
+	endif()
+
+	mark_as_advanced( ${_p_FEATURE}_user_provided_input )
+
+	# define the option -- for cmake GUI
+
+	option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
 
 	if( ${_p_ADVANCED} )
 		mark_as_advanced( ENABLE_${_p_FEATURE} )
 	endif()
+
+	debug_var( ENABLE_${_p_FEATURE} )
+	debug_var( ${_p_FEATURE}_user_provided_input )
 
 	if( ENABLE_${_p_FEATURE} )
 
@@ -63,9 +80,9 @@ macro( ecbuild_add_option )
 				set( pkgproject 0 )
 			endif()
 
-#			debug_var( pkg )
-#			debug_var( pkglist )
-#			debug_var( pkgname )
+			debug_var( pkg )
+			debug_var( pkglist )
+			debug_var( pkgname )
 
 			string( TOUPPER ${pkgname} pkgUPPER )
 			string( TOLOWER ${pkgname} pkgLOWER )
@@ -86,10 +103,13 @@ macro( ecbuild_add_option )
 
 			endif()
 
+			# debug_var( ${pkgLOWER}_FOUND )
+			# debug_var( ${pkgUPPER}_FOUND )
+
 			# we have feature iff all required packages were FOUND
 
-			if( NOT ${pkgUPPER_FOUND} )
-				message( STATUS "Could not find package $pkg required for feature ${_p_FEATURE}" )
+			if( NOT ${pkgUPPER}_FOUND )
+				message( STATUS "Could not find package ${pkgname} required for feature ${_p_FEATURE}" )
 				set( HAVE_${_p_FEATURE} 0 )
 				list( APPEND _failed_to_find_packages ${pkgname} )
 			endif()
@@ -102,12 +122,13 @@ macro( ecbuild_add_option )
 
 			message( STATUS "Feature ${_p_FEATURE} enabled" )
 
-		else()
+		else() # if user provided input and we cannot satisfy FAIL otherwise WARN
 
-			if( __user_provided_input ) # user provided input and we cannot satisfy, so fail
-				 message( FATAL_ERROR "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
+			if( ${_p_FEATURE}_user_provided_input )
+				message( FATAL_ERROR "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
 			else()
-				 message( STATUS "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
+				message( STATUS "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
+				set( ENABLE_${_p_FEATURE} OFF )
 			endif()
 
 		endif()
@@ -117,5 +138,7 @@ macro( ecbuild_add_option )
 		set( HAVE_${_p_FEATURE} 0 )
 
 	endif( ENABLE_${_p_FEATURE} )
+
+	add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}")
 
 endmacro( ecbuild_add_option  )

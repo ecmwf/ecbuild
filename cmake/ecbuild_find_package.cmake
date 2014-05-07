@@ -42,12 +42,6 @@ macro( ecbuild_find_package )
         endif()
     endif()
 
-	# check if environment variable is defined
-
-    if( NOT ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
-        set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
-    endif()
-
 	# check developer mode (search in cmake cache )
 
 	if( NOT ${DEVELOPER_MODE} )
@@ -57,6 +51,7 @@ macro( ecbuild_find_package )
 	# search user defined paths first
 
 	if( NOT ${_PAR_NAME}_FOUND )
+
 		if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH )
 
 			# 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
@@ -65,14 +60,24 @@ macro( ecbuild_find_package )
 			# 2) search using a file Find<package>.cmake if it exists
 			find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET MODULE )
 
+			if( NOT ${_PAR_NAME}_FOUND )
+				if( ${_PAR_NAME}_PATH )
+					message( FATAL_ERROR "${_PAR_NAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found" )
+				endif()
+				if( ${PNAME}_PATH )
+					message( FATAL_ERROR "${PNAME}_PATH was provided by user but package ${PNAME} wasn't found" )
+				endif()
+			endif()
+
 		endif()
+
 	endif()
 
 	# search developer cache and recently configured packages in the CMake GUI
 
 	if( NOT ${_PAR_NAME}_FOUND )
 
-		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE HINTS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH}
+		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE HINTS ENV ${PNAME}_PATH
 				${NO_DEV_BUILD_DIRS}
 				NO_CMAKE_ENVIRONMENT_PATH
 				NO_SYSTEM_ENVIRONMENT_PATH
