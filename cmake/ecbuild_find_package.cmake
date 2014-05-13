@@ -50,30 +50,37 @@ macro( ecbuild_find_package )
 
 	# search user defined paths first
 
-	if( NOT ${_PAR_NAME}_FOUND )
+	if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH )
 
-		if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH )
+		# debug_var( ${_PAR_NAME}_PATH )
+		# debug_var( ${PNAME}_PATH )
 
-			# 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
-			find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE HINTS ${${_PAR_NAME}_PATH} ${${PNAME}_PATH} NO_DEFAULT_PATH )
+		# 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
 
-			# 2) search using a file Find<package>.cmake if it exists
-			find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET MODULE )
+		if( NOT ${_PAR_NAME}_FOUND )
+			find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET HINTS ${${PNAME}_PATH} ${_PAR_NAME}_PATH NO_DEFAULT_PATH )
+		endif()
 
-			if( NOT ${_PAR_NAME}_FOUND )
-				if( ${_PAR_NAME}_PATH )
-					message( FATAL_ERROR "${_PAR_NAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found" )
-				endif()
-				if( ${PNAME}_PATH )
-					message( FATAL_ERROR "${PNAME}_PATH was provided by user but package ${PNAME} wasn't found" )
-				endif()
+		# 2) search using a file Find<package>.cmake if it exists ( macro should itself take *_PATH into account )
+
+		if( NOT ${_PAR_NAME}_FOUND )
+			find_package( ${_PAR_NAME} ${_${PNAME}_version} MODULE QUIET )
+		endif()
+
+		# is <package>_PATH was given and we don't find anything then we FAIL
+
+		if( NOT ${_PAR_NAME}_FOUND )
+			if( ${_PAR_NAME}_PATH )
+				message( FATAL_ERROR "${_PAR_NAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found" )
 			endif()
-
+			if( ${PNAME}_PATH )
+				message( FATAL_ERROR "${PNAME}_PATH was provided by user but package ${PNAME} wasn't found" )
+			endif()
 		endif()
 
 	endif()
 
-	# search developer cache and recently configured packages in the CMake GUI
+	# 3) search developer cache and recently configured packages in the CMake GUI
 
 	if( NOT ${_PAR_NAME}_FOUND )
 
@@ -86,7 +93,7 @@ macro( ecbuild_find_package )
 
 	endif()
 
-	# search special ECMWF paths
+	# 4) search special ECMWF paths
 
 	if( NOT ${_PAR_NAME}_FOUND )
 
@@ -99,17 +106,23 @@ macro( ecbuild_find_package )
 
 	endif()
 
-	# search system paths
+	# 5) search system paths, for <package>-config.cmake
 
 	if( NOT ${_PAR_NAME}_FOUND )
 
 		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE ${NO_DEV_BUILD_DIRS} )
 
+	endif()
+
+	# 6) search system paths, using Find<package>.cmake if it exists
+
+	if( NOT ${_PAR_NAME}_FOUND )
+
 		find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET MODULE )
 
 	endif()
 
-    # check version ...
+    # check version found is acceptable
 
     if( ${_PAR_NAME}_FOUND )
         set( _version_acceptable 1 )
