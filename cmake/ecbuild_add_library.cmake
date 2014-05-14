@@ -163,6 +163,11 @@ function( ecbuild_add_library_impl )
 			set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
 		endif()
 
+		# set linker language
+		if( DEFINED _PAR_LINKER_LANGUAGE )
+			set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+		endif()
+
 		# installation
 
 		if( NOT _PAR_NOINSTALL )
@@ -261,11 +266,6 @@ function( ecbuild_add_library_impl )
 
 		# append to the list of this project targets
 		set( ${PROJECT_NAME}_ALL_LIBS ${${PROJECT_NAME}_ALL_LIBS} ${_PAR_TARGET} CACHE INTERNAL "" )
-
-		# set linker language
-		if( DEFINED _PAR_LINKER_LANGUAGE )
-			set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
-		endif()
 
 	endif()
 
