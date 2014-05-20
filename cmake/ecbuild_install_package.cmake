@@ -178,10 +178,11 @@ macro( ecbuild_install_project )
             endif()
         endforeach()
 
-        if( EXISTS "${PROJECT_SOURCE_DIR}/${LNAME}-import.cmake.in" )
-          configure_file( "${PROJECT_SOURCE_DIR}/${LNAME}-import.cmake.in" "${PROJECT_BINARY_DIR}/${LNAME}-import.cmake" @ONLY )
-          set( CONF_IMPORT_FILE "${PROJECT_BINARY_DIR}/${LNAME}-import.cmake" )
-        endif()
+		set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
+		if( EXISTS "${CONF_IMPORT_FILE}.in" )
+			configure_file( "${CONF_IMPORT_FILE}.in" "${CONF_IMPORT_FILE}" @ONLY )
+			install( FILES "${CONF_IMPORT_FILE}" DESTINATION "${INSTALL_CMAKE_DIR}" )
+		endif()
 
         set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
 
