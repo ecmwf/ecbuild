@@ -12,7 +12,7 @@
 
 macro( ecbuild_add_test )
 
-	set( options           BOOST BOOST_HEADER )
+	set( options           BOOST )
     set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE )
     set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
@@ -84,19 +84,11 @@ macro( ecbuild_add_test )
 	# boost unit test linking to unit_test lib ?
 
 	if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
-		if( Boost_UNIT_TEST_FRAMEWORK_LIBRARY AND Boost_TEST_EXEC_MONITOR_LIBRARY )
-			message( STATUS "${_PAR_TARGET} is a Boost unit test" )
-			include_directories( ${Boost_INCLUDE_DIRS} )
+		if( EC_BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+			include_directories( ${ECBUILD_BOOST_HEADER_DIR} )
 		else()
-		   set( _${_PAR_TARGET}_condition FALSE )
-		   message( WARNING "${_PAR_TARGET} test deactivated -- Boost unit test framework not available" )
+			include_directories( ${Boost_INCLUDE_DIRS} )
 		endif()
-	endif()
-
-	# boost unit test header only ?
-
-	if( _PAR_BOOST_HEADER AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
-		include_directories( ${ECBUILD_BOOST_HEADER_DIR} )
 	endif()
 
 	### enable the tests
@@ -180,7 +172,7 @@ macro( ecbuild_add_test )
                 endif()
 
                 # add test libraries
-                if( _PAR_BOOST )
+				if( _PAR_BOOST AND EC_BOOST_UNIT_TEST_FRAMEWORK_COMPILED )
                     target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
                 endif()
         
