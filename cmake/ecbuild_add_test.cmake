@@ -106,7 +106,7 @@ macro( ecbuild_add_test )
 	# boost unit test linking to unit_test lib ?
 
 	if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
-		if( EC_BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+		if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
 			include_directories( ${ECBUILD_BOOST_HEADER_DIR} )
 		else()
 			include_directories( ${Boost_INCLUDE_DIRS} )
@@ -194,7 +194,7 @@ macro( ecbuild_add_test )
                 endif()
 
                 # add test libraries
-				if( _PAR_BOOST AND EC_BOOST_UNIT_TEST_FRAMEWORK_COMPILED )
+				if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_LINKED )
                     target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
                 endif()
         
@@ -217,7 +217,10 @@ macro( ecbuild_add_test )
                 if( DEFINED _PAR_DEFINITIONS )
                     get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
                     list( APPEND _target_defs ${_PAR_DEFINITIONS} )
-                    set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
+					if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+						list( APPEND _target_defs BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+					endif()
+					set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
                 endif()
         
                 # set build location to local build dir
