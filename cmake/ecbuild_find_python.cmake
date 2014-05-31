@@ -16,7 +16,6 @@
 #   PYTHON_LIBRARIES
 #   PYTHON_SITE_PACKAGES
 
-
 macro( ecbuild_find_python )
 
     # parse parameters
