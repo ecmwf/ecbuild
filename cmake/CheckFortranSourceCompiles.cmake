@@ -58,7 +58,7 @@ if("${VAR}" MATCHES "^${VAR}$")
     file(WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.f90"
       "${SOURCE}\n")
 
-    message(STATUS "Performing Test ${VAR}")
+    # message(STATUS "Performing Test ${VAR}")
     try_compile(${VAR}
       ${CMAKE_BINARY_DIR}
       ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.f90
@@ -76,13 +76,13 @@ if("${VAR}" MATCHES "^${VAR}$")
 
     if(${VAR})
       set(${VAR} 1 CACHE INTERNAL "Test ${VAR}")
-      message(STATUS "Performing Test ${VAR} - Success")
+      # message(STATUS "Performing Test ${VAR} - Success")
       file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
         "Performing Fortran SOURCE FILE Test ${VAR} succeded with the following output:\n"
         "${OUTPUT}\n"
         "Source file was:\n${SOURCE}\n")
     else()
-      message(STATUS "Performing Test ${VAR} - Failed")
+      # message(STATUS "Performing Test ${VAR} - Failed")
       set(${VAR} "" CACHE INTERNAL "Test ${VAR}")
       file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
         "Performing Fortran SOURCE FILE Test ${VAR} failed with the following output:\n"

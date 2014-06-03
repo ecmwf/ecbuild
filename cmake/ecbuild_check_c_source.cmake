@@ -117,6 +117,12 @@ endmacro()
 
 macro( cmake_add_c_flags m_c_flags )
 
+  set( options )
+  set( single_value_args BUILD )
+  set( multi_value_args )
+
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+
   if( NOT DEFINED N_CFLAG )
     set( N_CFLAG 0 )
   endif()
@@ -126,8 +132,12 @@ macro( cmake_add_c_flags m_c_flags )
   check_c_compiler_flag( ${m_c_flags} C_FLAG_TEST_${N_CFLAG} )
 
   if( C_FLAG_TEST_${N_CFLAG} )
-    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${m_c_flags}" )
-	# message( STATUS "C FLAG [${m_c_flags}] added" )
+    if( _PAR_BUILD )
+      set( CMAKE_C_FLAGS_${_PAR_BUILD} "${CMAKE_C_FLAGS_${_PAR_BUILD}} ${m_c_flags}" )
+    else()
+      set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${m_c_flags}" )
+      # message( STATUS "C FLAG [${m_c_flags}] added" )
+    endif()
   else()
 	message( WARNING "Unrecognised C flag [${m_c_flags}] -- skipping" )
   endif()
