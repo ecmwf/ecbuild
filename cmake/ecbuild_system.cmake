@@ -178,10 +178,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_check_functions )              # check for available functions
 	include( ecbuild_define_paths )                 # define installation paths
 	include( ecbuild_links_target )                 # define the links target
-
-	ecbuild_add_option( FEATURE TESTS
-						DEFAULT ON
-						DESCRIPTION "Enable the unit tests" )
+	include( ecbuild_setup_test_framework )         # setup test framework
 
 	############################################################################################
 	# define the build timestamp
