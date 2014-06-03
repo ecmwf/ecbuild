@@ -43,7 +43,8 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 				set( _done 0 )
 
 				if( EC_OS_NAME STREQUAL "macosx" )
-					_path_append( CMAKE_INSTALL_RPATH "@loader_path/../${RPATH_DIR}" )
+					set( CMAKE_INSTALL_NAME_DIR "@loader_path/../${RPATH_DIR}" )
+				    _path_append( CMAKE_INSTALL_RPATH "@loader_path/../${RPATH_DIR}" )
 					set( _done 1 )
 				endif()
 

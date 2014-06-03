@@ -23,7 +23,7 @@ set( CMAKE_INSTALL_RPATH_USE_LINK_PATH   TRUE  ) # add the automatic parts to RP
 # This saves typing ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 # in about every subdir
 
-set( CMAKE_INCLUDE_CURRENT_DIR OFF)
+set( CMAKE_INCLUDE_CURRENT_DIR OFF )
 
 # put the include dirs which are in the source or build tree
 # before all other include dirs, so the headers in the sources
