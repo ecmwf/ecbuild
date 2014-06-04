@@ -64,7 +64,15 @@ macro( ecbuild_print_summary )
 
 	### FEATURE SUMMARY
 
-	feature_summary( WHAT ALL INCLUDE_QUIET_PACKAGES )
+  if( ${CMAKE_VERSION} VERSION_LESS "2.8.6" )
+    debug_var( CMAKE_VERSION )
+    message( STATUS without include_quiet )
+    feature_summary( WHAT ALL )
+  else()
+    debug_var( CMAKE_VERSION )
+    message( STATUS with include_quiet )
+    feature_summary( WHAT ALL INCLUDE_QUIET_PACKAGES )
+  endif()
 
 	### WARNINGS
 
