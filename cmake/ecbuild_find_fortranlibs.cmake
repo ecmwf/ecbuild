@@ -66,7 +66,8 @@ macro( ecbuild_find_fortranlibs )
 
 		### default is to search for gfortran
 
-		if( NOT WITH_PGI_FORTRAN AND NOT WITH_LIBGFORTRAN AND NOT WITH_XL_FORTRAN )
+		if( NOT WITH_PGI_FORTRAN AND NOT WITH_LIBGFORTRAN AND NOT WITH_XL_FORTRAN
+			AND NOT DEFINED PGI_PATH AND NOT DEFINED LIBGFORTRAN_PATH AND NOT DEFINED XLF_PATH )
 			message( WARNING "Finding fortran libs for unspecified Fortran compiler: default search [ gfortran ]" )
 			set( WITH_LIBGFORTRAN 1 )
 		endif()
