@@ -90,16 +90,6 @@ macro( ecbuild_declare_project )
 		endif()
 	endforeach()
 
-	# correctly set CMAKE_INSTALL_RPATH
-
-	if( ENABLE_RPATHS )
-
-		ecbuild_append_to_rpath( ${INSTALL_LIB_DIR} )
-
-	endif()
-
-#	debug_var( CMAKE_INSTALL_RPATH )
-
 	# make relative paths absolute ( needed later on ) and cache them ...
 	foreach( p LIB BIN INCLUDE DATA CMAKE )
 
@@ -115,6 +105,20 @@ macro( ecbuild_declare_project )
 #        debug_var( ${PNAME}_FULL_INSTALL_${p}_DIR )
 
 	endforeach()
+
+	# correctly set CMAKE_INSTALL_RPATH
+
+	if( ENABLE_RPATHS )
+
+		file( RELATIVE_PATH relative_rpath ${${PNAME}_FULL_INSTALL_BIN_DIR} ${${PNAME}_FULL_INSTALL_LIB_DIR} )
+
+#		debug_var( relative_rpath )
+
+		ecbuild_append_to_rpath( ${relative_rpath} )
+
+	endif()
+
+#	debug_var( CMAKE_INSTALL_RPATH )
 
 	# print project header
 
