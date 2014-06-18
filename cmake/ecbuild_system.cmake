@@ -45,6 +45,10 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
 
+	include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
+
+	message( STATUS "ecbuild '${ecbuild_VERSION_STR}' @ ${ECBUILD_MACROS_DIR}" )
+
 	# clear the build dir exported targets file (only on the top project)
 
 	set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" )
