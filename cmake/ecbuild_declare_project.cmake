@@ -110,12 +110,23 @@ macro( ecbuild_declare_project )
 
 	if( ENABLE_RPATHS )
 
-		file( RELATIVE_PATH relative_rpath ${${PNAME}_FULL_INSTALL_BIN_DIR} ${${PNAME}_FULL_INSTALL_LIB_DIR} )
+		if( ENABLE_RELATIVE_RPATHS )
 
-#		debug_var( relative_rpath )
+			file( RELATIVE_PATH relative_rpath ${${PNAME}_FULL_INSTALL_BIN_DIR} ${${PNAME}_FULL_INSTALL_LIB_DIR} )
+	#		debug_var( relative_rpath )
 
-		ecbuild_append_to_rpath( ${relative_rpath} )
+			ecbuild_append_to_rpath( ${relative_rpath} )
 
+		else() # make rpaths absolute
+
+		    if( IS_ABSOLUTE ${INSTALL_LIB_DIR} )
+		        ecbuild_append_to_rpath( "${INSTALL_LIB_DIR}" )
+		    else()
+		        ecbuild_append_to_rpath( "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}" ) 
+		    endif()
+
+		endif()
+    
 	endif()
 
 #	debug_var( CMAKE_INSTALL_RPATH )

@@ -58,6 +58,11 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 					set( _done 1 )
 				endif()
 
+				if( EC_OS_NAME STREQUAL "aix" ) # always relative to exectuable path
+					_path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" ) 
+					set( _done 1 )
+				endif()
+
 				# fallback
 
 				if( NOT _done )

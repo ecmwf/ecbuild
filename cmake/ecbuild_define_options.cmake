@@ -11,6 +11,7 @@
 option( BUILD_SHARED_LIBS       "build shared libraries when possible"            ON  )
 
 option( ENABLE_RPATHS           "when installing insert RPATHS into binaries"     ON  )
+option( ENABLE_RELATIVE_RPATHS  "use relative RPATHS, including build dir"        ON  )
 option( ENABLE_WARNINGS         "enable compiler warnings"                        OFF )
 
 option( ENABLE_LARGE_FILE_SUPPORT "build with large file support"   ON  )
