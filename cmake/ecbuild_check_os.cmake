@@ -321,33 +321,27 @@ if( UNIX )
 
 endif()
 
-### Windows -- are you sure?
+### Cygwin
 
-if( WIN32 )
+if( ${CMAKE_SYSTEM_NAME} MATCHES "CYGWIN" )
 
-	### Cygwin
-
-	if( CYGWIN )
-
-		set( EC_OS_NAME "cygwin" )
-		message( WARNING "Building on Cygwin should work but is untested -- proceed at your own risk" )
-
-	else()
-
-		message( FATAL_ERROR "ecBuild can only build on Windows using Cygwin" )
-
-	endif()
+	set( EC_OS_NAME "cygwin" )
+	message( WARNING "Building on Cygwin should work but is untested" )
 
 endif()
 
 ### final warning / error
 
 if( ${EC_OS_NAME} MATCHES "UNKNOWN" )
+
 	if( DISABLE_OS_CHECK )
-		message( WARNING "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]" )
+		message( WARNING "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]"
+						 " -- DISABLE_OS_CHECK is ON so proceeding at your own risk ..." )
 	else()
-		message( FATAL_ERROR "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]" )
+		message( FATAL_ERROR "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]"
+							 " -- refusing to continue. Disable this check with -DDISABLE_OS_CHECK=ON" )
 	endif()
+
 endif()
 
 
