@@ -32,7 +32,7 @@ function( _download_test_data _p_NAME _p_DIRNAME )
         if( WGET_PROGRAM )
 
            add_custom_command( OUTPUT ${_p_NAME}
-               COMMAND ${WGET_PROGRAM} -nv --fail -O ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
+               COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
 
         endif()
 
