@@ -76,28 +76,21 @@ if( ENABLE_LARGE_FILE_SUPPORT )
 
 	if( EC_SIZEOF_OFF_T LESS "8" )
 
-	if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-		add_definitions( -D_FILE_OFFSET_BITS=64 )
-	endif()
+		if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+			add_definitions( -D_FILE_OFFSET_BITS=64 )
+		endif()
 
-	if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
-		add_definitions( -D_LARGE_FILES=64 )
-	endif()
+		if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
+			add_definitions( -D_LARGE_FILES=64 )
+		endif()
 
-	get_directory_property( __compile_defs COMPILE_DEFINITIONS )
+		get_directory_property( __compile_defs COMPILE_DEFINITIONS )
 
-	if( __compile_defs )
-		foreach( def ${__compile_defs} )
-			list( APPEND CMAKE_REQUIRED_DEFINITIONS -D${def} )
-		endforeach()
-	endif()
-
-#	ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}"
-#		VAR  check_off_t_final
-#		OUTPUT __sizeof_off_t_final )
-#	if( NOT check_off_t_final OR __sizeof_off_t_final LESS "8" )
-#		message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- sizeof off_t [${__sizeof_off_t_final}]" )
-#	endif()
+		if( __compile_defs )
+			foreach( def ${__compile_defs} )
+				list( APPEND CMAKE_REQUIRED_DEFINITIONS -D${def} )
+			endforeach()
+		endif()
 
 	endif()
 
