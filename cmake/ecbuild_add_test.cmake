@@ -227,6 +227,10 @@ macro( ecbuild_add_test )
                 # not the project base as defined for libs and execs
                 set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
 
+				# whatever project settings are, we always build tests with the build_rpath, not the install_rpath
+				set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
+				set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
+
                 # set linker language
                 if( DEFINED _PAR_LINKER_LANGUAGE )
                     set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
