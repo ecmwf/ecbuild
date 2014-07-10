@@ -12,14 +12,14 @@
 set( EC_ALL_EXES "" CACHE INTERNAL "" )
 set( EC_ALL_LIBS "" CACHE INTERNAL "" )
 
-macro( ecbuild_link_exe TARGET  FILENAME )
+macro( ecbuild_link_exe TARGET  FILENAME FILEPATH )
 
     if( DEFINED EC_LINK_DIR )
        add_custom_target(${TARGET}_link
           COMMAND ${CMAKE_COMMAND} -E make_directory ${EC_LINK_DIR}
           COMMAND ${CMAKE_COMMAND} -E make_directory ${EC_LINK_DIR}/bin
           COMMAND ${CMAKE_COMMAND} -E remove ${EC_LINK_DIR}/bin/${FILENAME}
-          COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/bin/${FILENAME} ${EC_LINK_DIR}/bin/${FILENAME}
+          COMMAND ${CMAKE_COMMAND} -E create_symlink ${FILEPATH} ${EC_LINK_DIR}/bin/${FILENAME}
           DEPENDS ${TARGET}
           COMMENT "link ${EC_LINK_DIR}/bin/${FILENAME}" )
     endif()
@@ -31,14 +31,14 @@ endmacro( ecbuild_link_exe  )
 ###############################################################################
 # macro for adding a link to library on a development system
 
-macro( ecbuild_link_lib  TARGET  FILENAME )
+macro( ecbuild_link_lib  TARGET FILENAME FILEPATH )
 
     if( DEFINED EC_LINK_DIR )
        add_custom_target(${TARGET}_link
           COMMAND ${CMAKE_COMMAND} -E make_directory ${EC_LINK_DIR}
           COMMAND ${CMAKE_COMMAND} -E make_directory ${EC_LINK_DIR}/lib
           COMMAND ${CMAKE_COMMAND} -E remove ${EC_LINK_DIR}/lib/${FILENAME}
-          COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/${FILENAME} ${EC_LINK_DIR}/lib/${FILENAME}
+          COMMAND ${CMAKE_COMMAND} -E create_symlink ${FILEPATH} ${EC_LINK_DIR}/lib/${FILENAME}
           DEPENDS ${TARGET}
           COMMENT "link ${EC_LINK_DIR}/lib/${FILENAME}" )
     endif()

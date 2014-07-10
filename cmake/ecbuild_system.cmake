@@ -67,7 +67,6 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	include(CTest)                 # add cmake testing support
 	enable_testing()
-	add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} -V )
 
 	############################################################################################
 	# define valid build types
