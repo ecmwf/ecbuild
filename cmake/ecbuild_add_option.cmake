@@ -46,7 +46,6 @@ macro( ecbuild_add_option )
       file( APPEND ${_feature_condition_file} " ${term}")
     endforeach()
     file( APPEND ${_feature_condition_file} " )\n    set(_${_p_FEATURE}_condition TRUE)\n  else()\n    set(_${_p_FEATURE}_condition FALSE)\n  endif()\n")
-    debug_var( _feature_condition_file )
     include( ${_feature_condition_file} )
   else()
     set( _${_p_FEATURE}_condition TRUE )
@@ -73,17 +72,9 @@ macro( ecbuild_add_option )
 		mark_as_advanced( ENABLE_${_p_FEATURE} )
 	endif()
 
-	# debug_var( ENABLE_${_p_FEATURE} )
-	# debug_var( ${_p_FEATURE}_user_provided_input )
-
-  debug_var( _${_p_FEATURE}_condition )
-  debug_var( ENABLE_${_p_FEATURE} )
-
   if( ENABLE_${_p_FEATURE} )
 
-
     set( HAVE_${_p_FEATURE} 1 )
-    debug_var( HAVE_${_p_FEATURE} )
 
     if( _${_p_FEATURE}_condition )
 
