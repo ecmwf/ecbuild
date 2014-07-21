@@ -21,7 +21,7 @@ if( ENABLE_RELATIVE_RPATHS )
     # use full RPATHs for the build tree
     set( CMAKE_SKIP_BUILD_RPATH              FALSE  ) 
     # when building, use the install RPATH immedietly
-    set( CMAKE_BUILD_WITH_INSTALL_RPATH      TRUE  ) 
+	set( CMAKE_BUILD_WITH_INSTALL_RPATH      TRUE  )
 else()
     # use full RPATHs for the build tree
     set( CMAKE_SKIP_BUILD_RPATH              FALSE  ) 
