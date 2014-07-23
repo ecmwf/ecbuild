@@ -154,7 +154,10 @@ macro( ecbuild_add_executable )
 
             export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
 
-         endif()
+		else()
+				set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
+				set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
+		endif()
     
         # add definitions to compilation
         if( DEFINED _PAR_DEFINITIONS )
