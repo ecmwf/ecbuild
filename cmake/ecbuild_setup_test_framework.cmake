@@ -27,13 +27,12 @@ if( ENABLE_TESTS )
 
 	else()
 
+		message( WARNING "Boost unit test framework -- NOT FOUND" )
+
 		set( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY 1 )
 
-		list( APPEND ECBUILD_BOOST_HEADER_DIRS "${CMAKE_CURRENT_LIST_DIR}/contrib/boost-1.55/include" )
-
-		# comment out this when ecbuild paks boost unit test inside...
-		message( WARNING "Boost unit test framework -- NOT FOUND : deactivating tests, ENABLE_TESTS = OFF" )
-		set( ENABLE_TESTS OFF )
+		# comment out this when ecbuild packs boost unit test inside...
+		# list( APPEND ECBUILD_BOOST_HEADER_DIRS "${CMAKE_CURRENT_LIST_DIR}/contrib/boost-1.55/include" )
 
 	endif()
 
