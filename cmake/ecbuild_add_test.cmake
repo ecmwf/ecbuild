@@ -212,16 +212,19 @@ macro( ecbuild_add_test )
                     set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
                 endif()
 
-        
-                # add definitions to compilation
+       
+                # modify definitions to compilation ( -D... )
+                get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
+
                 if( DEFINED _PAR_DEFINITIONS )
-                    get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
                     list( APPEND _target_defs ${_PAR_DEFINITIONS} )
-					if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-						list( APPEND _target_defs BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-					endif()
-					set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
                 endif()
+				
+				if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+					list( APPEND _target_defs BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+				endif()
+
+			    set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
         
                 # set build location to local build dir
                 # not the project base as defined for libs and execs
@@ -257,7 +260,7 @@ macro( ecbuild_add_test )
       # we build a phony target to trigger the dependency downloads
       if( DEFINED _PAR_COMMAND )
 
-          add_custom_target( ${_PAR_TARGET}.x ALL COMMAND touch ${_PAR_TARGET}.x )
+          add_custom_target( ${_PAR_TARGET}.x ALL COMMAND ${CMAKE_COMMAND} -E touch ${_PAR_TARGET}.x )
 
           if( DEFINED _PAR_DEPENDS)
              add_dependencies( ${_PAR_TARGET}.x ${_PAR_DEPENDS} )
