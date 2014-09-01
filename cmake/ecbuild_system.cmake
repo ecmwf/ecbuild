@@ -39,7 +39,11 @@ set( ECBUILD_MACRO_VERSION "1.3" )
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
-	site_name( BUILD_SITE ) # hostname of where we build
+	# hostname of where we build
+
+	site_name( BUILD_SITE )
+	mark_as_advanced( BUILD_SITE )
+	mark_as_advanced( BUILD_TESTING )
 
 	set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
 
