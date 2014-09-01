@@ -11,15 +11,22 @@
 option( BUILD_SHARED_LIBS       "build shared libraries when possible"            ON  )
 
 option( ENABLE_RPATHS           "when installing insert RPATHS into binaries"     ON  )
-option( ENABLE_RELATIVE_RPATHS  "use relative RPATHS, including build dir"        ON  )
+option( ENABLE_RELATIVE_RPATHS  "try to use relative RPATHS, including build dir" ON  )
 option( ENABLE_WARNINGS         "enable compiler warnings"                        OFF )
 
 option( ENABLE_LARGE_FILE_SUPPORT "build with large file support"   ON  )
 
+mark_as_advanced( ENABLE_LARGE_FILE_SUPPORT )
+
 option( ENABLE_OS_TESTS          "Run all OS tests" ON )
+
+mark_as_advanced( ENABLE_OS_TESTS )
 
 option( DEVELOPER_MODE           "activates developer mode"               OFF )
 option( CHECK_UNUSED_FILES       "check for unused project files"         ON )
+
+mark_as_advanced( DEVELOPER_MODE  )
+mark_as_advanced( CHECK_UNUSED_FILES  )
 
 include( CMakeDependentOption ) # make options depend on one another
 

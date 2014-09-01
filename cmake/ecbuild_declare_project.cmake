@@ -82,6 +82,12 @@ macro( ecbuild_declare_project )
 		set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake CACHE PATH "Installation directory for CMake files")
 	endif()
 
+		mark_as_advanced( INSTALL_BIN_DIR )
+		mark_as_advanced( INSTALL_LIB_DIR )
+		mark_as_advanced( INSTALL_INCLUDE_DIR )
+		mark_as_advanced( INSTALL_DATA_DIR )
+		mark_as_advanced( INSTALL_CMAKE_DIR )
+
 	# warnings for non-relocatable projects
 
 	foreach( p LIB BIN INCLUDE DATA CMAKE )
