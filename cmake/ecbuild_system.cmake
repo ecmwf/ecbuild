@@ -51,7 +51,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
-	message( STATUS "ecbuild '${ecbuild_VERSION_STR}' @ ${ECBUILD_MACROS_DIR}" )
+	message( STATUS "ecbuild ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
+	message( STATUS "cmake   ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
 
 	# clear the build dir exported targets file (only on the top project)
 
