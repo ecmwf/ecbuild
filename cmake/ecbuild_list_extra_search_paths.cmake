@@ -18,9 +18,10 @@ function( ecbuild_list_extra_search_paths pkg var )
 	# debug_var( pkg )
 	# debug_var( var )
 
+	string( TOUPPER ${pkg} _PKG )
+
 	# PKG_PATH (upper case)
 
-	string( TOUPPER ${pkg} _PKG )
 	if( DEFINED ${_PKG}_PATH )
 		list( APPEND ${var} ${${_PKG}_PATH} )
 	endif()
@@ -29,6 +30,13 @@ function( ecbuild_list_extra_search_paths pkg var )
 
 	if( DEFINED ${pkg}_PATH )
 		list( APPEND ${var} ${${pkg}_PATH} )
+	endif()
+
+	# fixes BOOST_ROOT taking precedence on the search for location
+	if( ${pkg} STREQUAL "boost" )
+		if( BOOST_ROOT OR BOOSTROOT OR DEFINED ENV{BOOST_ROOT} OR DEFINED ENV{BOOSTROOT} )
+			set( CMAKE_PREFIX_PATH ${BOOST_ROOT} ${BOOSTROOT} $ENV{BOOST_ROOT} $ENV{BOOSTROOT} ${CMAKE_PREFIX_PATH} )
+		endif()
 	endif()
 
 	# directories under /usr/local/apps/${pkg}

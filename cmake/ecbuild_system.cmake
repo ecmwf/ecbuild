@@ -39,11 +39,20 @@ set( ECBUILD_MACRO_VERSION "1.3" )
 # include our cmake macros, but only do so if this is the top project
 if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
-	site_name( BUILD_SITE ) # hostname of where we build
+	# hostname of where we build
+
+	site_name( BUILD_SITE )
+	mark_as_advanced( BUILD_SITE )
+	mark_as_advanced( BUILD_TESTING )
 
 	set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
 
 	set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
+
+	include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
+
+	message( STATUS "ecbuild ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
+	message( STATUS "cmake   ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
 
 	# clear the build dir exported targets file (only on the top project)
 
@@ -63,7 +72,6 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	include(CTest)                 # add cmake testing support
 	enable_testing()
-	add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} -V )
 
 	############################################################################################
 	# define valid build types
@@ -178,10 +186,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_check_functions )              # check for available functions
 	include( ecbuild_define_paths )                 # define installation paths
 	include( ecbuild_links_target )                 # define the links target
-
-	ecbuild_add_option( FEATURE TESTS
-						DEFAULT ON
-						DESCRIPTION "Enable the unit tests" )
+	include( ecbuild_setup_test_framework )         # setup test framework
 
 	############################################################################################
 	# define the build timestamp

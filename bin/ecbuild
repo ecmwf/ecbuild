@@ -2,4 +2,4 @@
 
 INSTALL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cmake -DCMAKE_MODULE_PATH=$INSTALL_DIR/../share/ecbuild/cmake $@
+cmake -DCMAKE_MODULE_PATH=$INSTALL_DIR/../share/ecbuild/cmake "$@"

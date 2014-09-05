@@ -25,18 +25,27 @@ macro( ecbuild_print_summary )
         get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
 
 		message( STATUS "---------------------------------------------------------" )
-		message( STATUS "Build summary" )
+		if( NOT ${DEVELOPER_MODE} )
+			message( STATUS "Build summary" )
+		else()
+			message( STATUS "Build summary -- ( DEVELOPER_MODE )" )
+		endif()
 		message( STATUS "---------------------------------------------------------" )
 
 		message( STATUS "system : [${BUILD_SITE}] [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )
 		message( STATUS "processor        : [${CMAKE_SYSTEM_PROCESSOR}]" )
-		message( STATUS "cmake            : [${CMAKE_COMMAND}] (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION})" )
+		if( EC_BIG_ENDIAN )
+			message( STATUS "endiness         : Big Endian -- IEEE [${IEEE_BE}]" )
+		endif()
+		if( EC_LITTLE_ENDIAN )
+			message( STATUS "endiness         : Little Endian -- IEEE [${IEEE_LE}]" )
+		endif()
 		message( STATUS "build type       : [${CMAKE_BUILD_TYPE}]" )
 		message( STATUS "timestamp        : [${EC_BUILD_TIMESTAMP}]" )
 		message( STATUS "install prefix   : [${CMAKE_INSTALL_PREFIX}]" )
-    if( EC_LINK_DIR )
-		message( STATUS "links prefix     : [${EC_LINK_DIR}]" )
-    endif()
+		if( EC_LINK_DIR )
+			message( STATUS "links prefix     : [${EC_LINK_DIR}]" )
+		endif()
         message( STATUS "---------------------------------------------------------" )
 
         foreach( lang ${langs} )
@@ -64,7 +73,14 @@ macro( ecbuild_print_summary )
 
 	### FEATURE SUMMARY
 
-	feature_summary( WHAT ALL INCLUDE_QUIET_PACKAGES )
+	  # debug_var( CMAKE_VERSION )
+	  if( ${CMAKE_VERSION} VERSION_LESS "2.8.6" )
+		message( STATUS "without include_quiet" )
+		feature_summary( WHAT ALL )
+	  else()
+		message( STATUS "with include_quiet" )
+		feature_summary( WHAT ALL INCLUDE_QUIET_PACKAGES )
+	  endif()
 
 	### WARNINGS
 

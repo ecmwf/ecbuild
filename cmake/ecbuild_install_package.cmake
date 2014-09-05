@@ -32,11 +32,11 @@ macro( ecbuild_install_project )
     
     # components
 
-#    if( DEFINED _PAR_COMPONENTS )
-#        set(CPACK_COMPONENTS_ALL   "${_PAR_COMPONENTS}")
-#    else()
-#        set(CPACK_COMPONENTS_ALL   "${PROJECT_NAME}")
-#    endif()
+    #    if( DEFINED _PAR_COMPONENTS )
+    #        set(CPACK_COMPONENTS_ALL   "${_PAR_COMPONENTS}")
+    #    else()
+    #        set(CPACK_COMPONENTS_ALL   "${PROJECT_NAME}")
+    #    endif()
     
     # name, version, etc ...
 
@@ -47,10 +47,10 @@ macro( ecbuild_install_project )
 
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "ECMWF") # required for DEB
 
-#    set(CPACK_ARCHIVE_COMPONENT_INSTALL "ON")
-#    set(CPACK_RPM_COMPONENT_INSTALL "ON")
+    #    set(CPACK_ARCHIVE_COMPONENT_INSTALL "ON")
+    #    set(CPACK_RPM_COMPONENT_INSTALL "ON")
 
-#    set(CPACK_GENERATOR        "TGZ;RPM;DEB")
+    #    set(CPACK_GENERATOR        "TGZ;RPM;DEB")
     set(CPACK_GENERATOR        "TGZ")
     set(CPACK_SOURCE_GENERATOR "TGZ")
     set(CPACK_PACKAGE_VENDOR   "ECMWF")
@@ -97,6 +97,37 @@ macro( ecbuild_install_project )
 
     ### EXPORTS ########################################################
  
+
+    foreach( _tpl ${${PNAME}_TPLS} )
+        string( TOUPPER ${_tpl} _TPL )
+
+        if( ${_tpl}_INCLUDE_DIRS )
+            list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIRS} )
+        elseif( ${_tpl}_INCLUDE_DIR )
+            list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIR} )
+        elseif( ${_TPL}_INCLUDE_DIRS )
+            list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_TPL}_INCLUDE_DIRS} )
+        elseif( ${_TPL}_INCLUDE_DIR )
+            list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_TPL}_INCLUDE_DIR} )
+        endif()
+
+        if( ${_tpl}_LIBRARIES )
+            list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_tpl}_LIBRARIES} )
+        elseif( ${_tpl}_LIBRARY )
+            list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_tpl}_LIBRARY} )
+        elseif( ${_TPL}_LIBRARIES )
+            list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_TPL}_LIBRARIES} )
+        elseif( ${_TPL}_LIBRARY )
+            list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_TPL}_LIBRARY} )
+        endif()
+
+        if( ${_tpl}_DEFINITIONS )
+            list( APPEND ${PNAME}_TPL_DEFINITIONS ${${_tpl}_DEFINITIONS} )
+        elseif( ${_TPL}_DEFINITIONS )
+            list( APPEND ${PNAME}_TPL_DEFINITIONS ${${_TPL}_DEFINITIONS} )
+        endif()
+    endforeach()
+
     # TOP-LEVEL PROJECT EXPORT
 
     if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
@@ -119,11 +150,16 @@ macro( ecbuild_install_project )
     
         set( PACKAGE_VERSION "${${PNAME}_VERSION}" ) 
         
-		configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
-		install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
+        configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
+        install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
 
         # prepare imutable variables (don't depend on install path)
-                        
+
+        set( CONF_PACKAGES "" )
+        if( ${PNAME}_PACKAGES )
+          set( CONF_PACKAGES ${${PNAME}_PACKAGES} )
+        endif()
+
         set( CONF_LIBRARIES ${${PROJECT_NAME}_ALL_LIBS} )
         if( ${PNAME}_LIBRARIES )
             set( CONF_LIBRARIES ${${PNAME}_LIBRARIES} )
@@ -135,26 +171,10 @@ macro( ecbuild_install_project )
         endif()
 
         set( CONF_TPL_LIBRARIES   "" )
-        set( CONF_TPL_DEFINITIONS "" )
-        foreach( _tpl ${${PNAME}_TPLS} )
-            string( TOUPPER ${_tpl} TPL )
-            if( ${_tpl}_INCLUDE_DIRS )
-                list( APPEND CONF_TPL_LIBRARIES   ${${_tpl}_LIBRARIES} )
-            elseif( ${_tpl}_INCLUDE_DIR )
-                list( APPEND CONF_TPL_LIBRARIES   ${${_tpl}_LIBRARY} )
-            elseif( ${TPL}_LIBRARIES )
-                list( APPEND CONF_TPL_LIBRARIES   ${${TPL}_LIBRARIES} )
-            elseif( ${TPL}_INCLUDE_DIR )
-                list( APPEND CONF_TPL_LIBRARIES   ${${TPL}_LIBRARY} )
-            endif()
+        if( ${PNAME}_TPL_LIBRARIES )
+           set( CONF_TPL_LIBRARIES ${${PNAME}_TPL_LIBRARIES} )
+        endif()
 
-            if( ${_tpl}_DEFINITIONS )
-                list( APPEND CONF_TPL_DEFINITIONS ${${_tpl}_DEFINITIONS} )
-            elseif( ${TPL}_DEFINITIONS )
-                list( APPEND CONF_TPL_DEFINITIONS ${${TPL}_DEFINITIONS} )
-            endif()
-        endforeach()
-   
         # project-config.cmake @ build tree
 
         set( CONF_TPLS ${${PNAME}_TPLS} )
@@ -178,9 +198,17 @@ macro( ecbuild_install_project )
             endif()
         endforeach()
 
+        set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
+        if( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
+            configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
+                            "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
+            install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
+                     DESTINATION "${INSTALL_CMAKE_DIR}" )
+        endif()
+
         set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
 
-		set( _is_build_dir_export ON )
+        set( _is_build_dir_export ON )
         configure_file( "${_template_config}" "${_lname_config}" @ONLY )
 
         file( REMOVE ${_lname_config}.tpls.in )
@@ -188,17 +216,17 @@ macro( ecbuild_install_project )
         foreach( _tpl ${${PNAME}_TPLS} )
             string( TOUPPER ${_tpl} TPL )
             if( ${TPL}_IMPORT_FILE )
-                 set( __import_file "${${TPL}_IMPORT_FILE}" )
-                 file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_IMPORT_FILE )\n" )
-                 file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
-                 file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
+                set( __import_file "${${TPL}_IMPORT_FILE}" )
+                file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_IMPORT_FILE )\n" )
+                file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
+                file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
             endif()
         endforeach()
 
         if( EXISTS "${_lname_config}.tpls.in" )
             configure_file( "${_lname_config}.tpls.in" "${_lname_config}.tpls" @ONLY )
-			install( FILES "${_lname_config}.tpls" DESTINATION "${INSTALL_CMAKE_DIR}" )
-		endif()
+            install( FILES "${_lname_config}.tpls" DESTINATION "${INSTALL_CMAKE_DIR}" )
+        endif()
 
         # project-config.cmake @ install tree
         
@@ -209,7 +237,7 @@ macro( ecbuild_install_project )
         foreach( _tpl ${${PNAME}_TPLS} )
             string( TOUPPER ${_tpl} TPL )
             if( ${TPL}_FULL_INSTALL_INCLUDE_DIR )
-                list( APPEND CONF_TPL_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
+                 list( APPEND CONF_TPL_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
             endif()
             if( ${_tpl}_INCLUDE_DIRS )
                 list( APPEND CONF_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIRS} )
@@ -222,9 +250,9 @@ macro( ecbuild_install_project )
             endif()
         endforeach()
         
-		set( _is_build_dir_export OFF )
-		configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
-		install( FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
+        set( _is_build_dir_export OFF )
+        configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
+        install( FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
      
         # install the export
     
@@ -232,25 +260,20 @@ macro( ecbuild_install_project )
             install( EXPORT ${PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
     
-    else() ### SUB-PROJECT EXPORT
+    else()
 
-        set( ${PNAME}_FOUND  TRUE  PARENT_SCOPE )
-        set( ${PROJECT_NAME}_FOUND  TRUE  PARENT_SCOPE )
-
-        set( ${PNAME}_VERSION ${${PNAME}_VERSION} PARENT_SCOPE )
-        set( ${PROJECT_NAME}_VERSION ${${PNAME}_VERSION} PARENT_SCOPE )
-
-        if( ${PNAME}_INCLUDE_DIRS )
-            set( ${PNAME}_INCLUDE_DIRS ${${PNAME}_INCLUDE_DIRS} PARENT_SCOPE )
-        endif()
-        
-        if( ${PNAME}_LIBRARIES )
-            set( ${PNAME}_LIBRARIES ${${PNAME}_LIBRARIES} PARENT_SCOPE )
-        endif()
-                
-        if( ${PNAME}_DEFINITIONS )
-            set( ${PNAME}_DEFINITIONS ${${PNAME}_DEFINITIONS} PARENT_SCOPE )
-        endif()
+        set( ${PNAME}_FOUND             TRUE                          PARENT_SCOPE )
+        set( ${PROJECT_NAME}_FOUND      TRUE                          PARENT_SCOPE )
+        set( ${PNAME}_VERSION           ${${PNAME}_VERSION}           PARENT_SCOPE )
+        set( ${PROJECT_NAME}_VERSION    ${${PNAME}_VERSION}           PARENT_SCOPE )
+        set( ${PNAME}_INCLUDE_DIRS      ${${PNAME}_INCLUDE_DIRS}      PARENT_SCOPE )
+        set( ${PNAME}_LIBRARIES         ${${PNAME}_LIBRARIES}         PARENT_SCOPE )
+        set( ${PNAME}_DEFINITIONS       ${${PNAME}_DEFINITIONS}       PARENT_SCOPE )
+        set( ${PNAME}_PACKAGES          ${${PNAME}_PACKAGES}          PARENT_SCOPE )
+        set( ${PNAME}_TPLS              ${${PNAME}_TPLS}              PARENT_SCOPE )
+        set( ${PNAME}_TPL_LIBRARIES     ${${PNAME}_TPL_LIBRARIES}     PARENT_SCOPE )
+        set( ${PNAME}_TPL_DEFINITIONS   ${${PNAME}_TPL_DEFINITIONS}   PARENT_SCOPE )
+        set( ${PNAME}_TPL_INCLUDE_DIRS  ${${PNAME}_TPL_INCLUDE_DIRS}  PARENT_SCOPE )
 
     endif()
 

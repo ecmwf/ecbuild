@@ -1,2 +1,1 @@
-set( ${PROJECT_NAME}_VERSION_STR  "1.3.2" )
-
+cmake/VERSION.cmake

@@ -154,7 +154,10 @@ macro( ecbuild_add_executable )
 
             export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
 
-         endif()
+		else()
+				set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
+				set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
+		endif()
     
         # add definitions to compilation
         if( DEFINED _PAR_DEFINITIONS )
@@ -168,22 +171,12 @@ macro( ecbuild_add_executable )
             set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
         endif()
 
-        # paths to target
-        get_target_property(EXE_FILENAME ${_PAR_TARGET} OUTPUT_NAME)
-        if( NOT EXE_FILENAME )
-            set( EXE_FILENAME ${_PAR_TARGET} )
-        endif()
-
         # make sure target is removed before - some problems with AIX
-        add_custom_command(
-              TARGET ${_PAR_TARGET}
-              PRE_BUILD
-              COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME}
-        )
+        add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
     
         # for the links target
         if( NOT _PAR_NOINSTALL )
-            ecbuild_link_exe( ${_PAR_TARGET} ${EXE_FILENAME} )
+            ecbuild_link_exe( ${_PAR_TARGET} $<TARGET_FILE_NAME:${_PAR_TARGET}> $<TARGET_FILE:${_PAR_TARGET}>  )
         endif()
 
         # append to the list of this project targets

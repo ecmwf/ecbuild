@@ -10,10 +10,23 @@
 # macro for adding a test
 ##############################################################################
 
+# Arguments:
+#  TARGET : name of test
+#  ENABLED [optional]: (default ON)
+#  COMMAND [optional]: Run command instead of executable
+#  TYPE [optional]: EXE / SCRIPT / PYTHON  (default EXE)
+#  MPI [optional]: number of mpi-tasks to use. If greater than 1,
+#                  and MPI is not available, the test is disabled
+#  SOURCES: sources to be compiled
+#  LIBS: Libraries needed for linking
+#  INCLUDES: Extra include directories
+#  DEPENDS: Add explicit dependency to other targets
+#  ARGS: Command-line arguments to COMMAND OR TARGET
+
 macro( ecbuild_add_test )
 
     set( options           BOOST )
-    set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE )
+    set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI )
     set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -23,6 +36,15 @@ macro( ecbuild_add_test )
     endif()
 
     set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+
+    # Check for MPI
+    if(_PAR_MPI)
+      if( (_PAR_MPI GREATER 1) AND ( (NOT HAVE_MPI) OR (NOT MPIEXEC) ) )
+        set( _PAR_ENABLED 0 )
+      endif()
+    else()
+      set( _PAR_MPI 1 )
+    endif()
 
     # default is enabled
     if( NOT DEFINED _PAR_ENABLED )
@@ -81,18 +103,17 @@ macro( ecbuild_add_test )
         set( _${_PAR_TARGET}_condition TRUE )
     endif()
 
-    # boost unit test ?
+	# boost unit test linking to unit_test lib ?
 
-    if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
-        if( Boost_UNIT_TEST_FRAMEWORK_LIBRARY AND Boost_TEST_EXEC_MONITOR_LIBRARY )
-           message( STATUS "${_PAR_TARGET} is a Boost unit test" )
-        else()
-           set( _${_PAR_TARGET}_condition FALSE )
-           message( WARNING "${_PAR_TARGET} test deactivated -- Boost unit test framework not available" )
-        endif()
-    endif()
+	if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
+		if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+			include_directories( ${ECBUILD_BOOST_HEADER_DIRS} )
+		else()
+			include_directories( ${ECBUILD_BOOST_HEADER_DIRS} ${Boost_INCLUDE_DIRS} )
+		endif()
+	endif()
 
-    ### enable the tests
+	### enable the tests
 
     if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
 
@@ -173,7 +194,7 @@ macro( ecbuild_add_test )
                 endif()
 
                 # add test libraries
-                if( _PAR_BOOST )
+				if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_LINKED )
                     target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
                 endif()
         
@@ -191,17 +212,27 @@ macro( ecbuild_add_test )
                     set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
                 endif()
 
-        
-                # add definitions to compilation
+       
+                # modify definitions to compilation ( -D... )
+                get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
+
                 if( DEFINED _PAR_DEFINITIONS )
-                    get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
                     list( APPEND _target_defs ${_PAR_DEFINITIONS} )
-                    set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
                 endif()
+				
+				if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+					list( APPEND _target_defs BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+				endif()
+
+			    set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
         
                 # set build location to local build dir
                 # not the project base as defined for libs and execs
                 set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+
+				# whatever project settings are, we always build tests with the build_rpath, not the install_rpath
+				set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
+				set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
 
                 # set linker language
                 if( DEFINED _PAR_LINKER_LANGUAGE )
@@ -216,6 +247,9 @@ macro( ecbuild_add_test )
                       COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME}
                 )
 
+				set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
+				set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
+
       endif() # _PAR_SOURCES
 
       if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET ) # in the absence of target, we use the command as a name
@@ -226,7 +260,7 @@ macro( ecbuild_add_test )
       # we build a phony target to trigger the dependency downloads
       if( DEFINED _PAR_COMMAND )
 
-          add_custom_target( ${_PAR_TARGET}.x ALL COMMAND touch ${_PAR_TARGET}.x )
+          add_custom_target( ${_PAR_TARGET}.x ALL COMMAND ${CMAKE_COMMAND} -E touch ${_PAR_TARGET}.x )
 
           if( DEFINED _PAR_DEPENDS)
              add_dependencies( ${_PAR_TARGET}.x ${_PAR_DEPENDS} )
@@ -241,6 +275,15 @@ macro( ecbuild_add_test )
         list( APPEND TEST_ARGS ${_PAR_ARGS} )
       endif()
 
+      # Wrap with MPIEXEC
+      if( HAVE_MPI AND MPIEXEC )
+        if( DEFINED _PAR_COMMAND )
+          set( _PAR_COMMAND ${MPIEXEC} -n ${_PAR_MPI} ${_PAR_COMMAND} )
+        else()
+          set( _PAR_COMMAND ${MPIEXEC} -n ${_PAR_MPI} ${_PAR_TARGET} )
+        endif()
+      endif()
+
       ### define the test
 
       if( _PAR_ENABLED ) # we can disable and still build it but not run it with 'make tests'
@@ -250,8 +293,6 @@ macro( ecbuild_add_test )
           else()
               add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ) # run the test that was generated
           endif()
-
-		  add_dependencies( check ${_PAR_TARGET} )
 
           if( DEFINED _PAR_ENVIRONMENT )
               set_tests_properties( ${_PAR_TARGET} PROPERTIES ENVIRONMENT "${_PAR_ENVIRONMENT}")

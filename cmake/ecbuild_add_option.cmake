@@ -13,30 +13,43 @@
 macro( ecbuild_add_option )
 
 	set( options ADVANCED )
-	set( single_value_args FEATURE DEFAULT DESCRIPTION )
-	set( multi_value_args  REQUIRED_PACKAGES )
+  set( single_value_args FEATURE DEFAULT DESCRIPTION )
+  set( multi_value_args  REQUIRED_PACKAGES CONDITION )
 
 	cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-	if( _p_UNPARSED_ARGUMENTS )
+  if( _p_UNPARSED_ARGUMENTS )
 	  message(FATAL_ERROR "Unknown keywords given to ecbuild_add_option(): \"${_p_UNPARSED_ARGUMENTS}\"")
-    endif()
+  endif()
 
 	# check FEATURE parameter
 
-	if( NOT _p_FEATURE  )
+  if( NOT _p_FEATURE  )
 	  message(FATAL_ERROR "The call to ecbuild_add_option() doesn't specify the FEATURE.")
-    endif()
+  endif()
 
 	# check DEFAULT parameter
 
-	if( NOT DEFINED _p_DEFAULT )
+  if( NOT DEFINED _p_DEFAULT )
 		set( _p_DEFAULT ON )
-	else()
+  else()
 		if( NOT _p_DEFAULT MATCHES "[Oo][Nn]" AND NOT _p_DEFAULT MATCHES "[Oo][Ff][Ff]" )
 			message(FATAL_ERROR "In macro ecbuild_add_option(), DEFAULT is either ON or OFF: \"${_p_DEFAULT}\"")
 		endif()
 	endif()
+
+  # check CONDITION parameter
+  if( DEFINED _p_CONDITION )
+    set(_feature_condition_file "${CMAKE_CURRENT_BINARY_DIR}/set_${_p_FEATURE}_condition.cmake")
+    file( WRITE  ${_feature_condition_file} "  if( ")
+    foreach( term ${_p_CONDITION} )
+      file( APPEND ${_feature_condition_file} " ${term}")
+    endforeach()
+    file( APPEND ${_feature_condition_file} " )\n    set(_${_p_FEATURE}_condition TRUE)\n  else()\n    set(_${_p_FEATURE}_condition FALSE)\n  endif()\n")
+    include( ${_feature_condition_file} )
+  else()
+    set( _${_p_FEATURE}_condition TRUE )
+  endif()
 
 	# check if user provided value
 
@@ -50,6 +63,7 @@ macro( ecbuild_add_option )
 
 	mark_as_advanced( ${_p_FEATURE}_user_provided_input )
 
+
 	# define the option -- for cmake GUI
 
 	option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
@@ -58,68 +72,70 @@ macro( ecbuild_add_option )
 		mark_as_advanced( ENABLE_${_p_FEATURE} )
 	endif()
 
-	# debug_var( ENABLE_${_p_FEATURE} )
-	# debug_var( ${_p_FEATURE}_user_provided_input )
+  if( ENABLE_${_p_FEATURE} )
 
-	if( ENABLE_${_p_FEATURE} )
+    set( HAVE_${_p_FEATURE} 1 )
 
-		set( HAVE_${_p_FEATURE} 1 )
+    if( _${_p_FEATURE}_condition )
 
-		### search for dependent packages
+      ### search for dependent packages
 
-		foreach( pkg ${_p_REQUIRED_PACKAGES} )
+      foreach( pkg ${_p_REQUIRED_PACKAGES} )
 
-			string(REPLACE " " ";" pkglist ${pkg}) # string to list
+        string(REPLACE " " ";" pkglist ${pkg}) # string to list
 
-			list( GET pkglist 0 pkgname )
+        list( GET pkglist 0 pkgname )
 
-			if( pkgname STREQUAL "PROJECT" )  # if 1st entry is PROJECT, then we are looking for a ecbuild project
-				set( pkgproject 1 )
-				list( GET pkglist 1 pkgname )
-			else()                            # else 1st entry is package name
-				set( pkgproject 0 )
-			endif()
+        if( pkgname STREQUAL "PROJECT" )  # if 1st entry is PROJECT, then we are looking for a ecbuild project
+          set( pkgproject 1 )
+          list( GET pkglist 1 pkgname )
+        else()                            # else 1st entry is package name
+          set( pkgproject 0 )
+        endif()
 
-			# debug_var( pkg )
-			# debug_var( pkglist )
-			# debug_var( pkgname )
+        # debug_var( pkg )
+        # debug_var( pkglist )
+        # debug_var( pkgname )
 
-			string( TOUPPER ${pkgname} pkgUPPER )
-			string( TOLOWER ${pkgname} pkgLOWER )
+        string( TOUPPER ${pkgname} pkgUPPER )
+        string( TOLOWER ${pkgname} pkgLOWER )
 
-			if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
-				set( ${pkgname}_already_found 1 )
-			else()
+        if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
+          set( ${pkgname}_already_found 1 )
+        else()
 
-				ecbuild_add_extra_search_paths( ${pkgLOWER} ) # adds search paths specific to ECMWF
+          ecbuild_add_extra_search_paths( ${pkgLOWER} ) # adds search paths specific to ECMWF
 
-				if( pkgproject )
-					ecbuild_use_package( ${pkglist} )
-				else()
-					find_package( ${pkglist} )
-				endif()
+          if( pkgproject )
+            ecbuild_use_package( ${pkglist} )
+          else()
+            find_package( ${pkglist} )
+          endif()
 
-				# append to list of third-party libraries (to be forward to other packages )
-				string( TOUPPER ${PROJECT_NAME} PNAME )
-				list( APPEND ${PNAME}_TPLS ${pkgname} )
+          # append to list of third-party libraries (to be forward to other packages )
+          string( TOUPPER ${PROJECT_NAME} PNAME )
+          list( APPEND ${PNAME}_TPLS ${pkgname} )
 
-			endif()
+        endif()
 
-			# debug_var( ${pkgname}_FOUND  )
-			# debug_var( ${pkgLOWER}_FOUND )
-			# debug_var( ${pkgUPPER}_FOUND )
+        # debug_var( ${pkgname}_FOUND  )
+        # debug_var( ${pkgLOWER}_FOUND )
+        # debug_var( ${pkgUPPER}_FOUND )
 
-			# we have feature iff all required packages were FOUND
+        # we have feature iff all required packages were FOUND
 
-			if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
-				message( STATUS "Found package ${pkgname} required for feature ${_p_FEATURE}" )
-			else()
-				message( STATUS "Could not find package ${pkgname} required for feature ${_p_FEATURE}" )
-				set( HAVE_${_p_FEATURE} 0 )
-				list( APPEND _failed_to_find_packages ${pkgname} )
-			endif()
+        if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
+          message( STATUS "Found package ${pkgname} required for feature ${_p_FEATURE}" )
+        else()
+          message( STATUS "Could not find package ${pkgname} required for feature ${_p_FEATURE}" )
+          set( HAVE_${_p_FEATURE} 0 )
+          list( APPEND _failed_to_find_packages ${pkgname} )
+        endif()
 
-		endforeach()
+      endforeach()
+    else()
+      set( HAVE_${_p_FEATURE} 0 )
+    endif()
 
 		# FINAL CHECK
 
@@ -130,7 +146,11 @@ macro( ecbuild_add_option )
 		else() # if user provided input and we cannot satisfy FAIL otherwise WARN
 
 			if( ${_p_FEATURE}_user_provided_input )
-				message( FATAL_ERROR "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
+        if( _${_p_FEATURE}_condition )
+          message( FATAL_ERROR "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
+        else()
+          message( FATAL_ERROR "Feature ${_p_FEATURE} cannot be enabled -- following condition was not met: ${_p_CONDITION}" )
+        endif()
 			else()
 				message( STATUS "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
 				set( ENABLE_${_p_FEATURE} OFF )
@@ -138,11 +158,11 @@ macro( ecbuild_add_option )
 
 		endif()
 
-	else( ENABLE_${_p_FEATURE} )
+  else( ENABLE_${_p_FEATURE} )
 
 		set( HAVE_${_p_FEATURE} 0 )
 
-	endif( ENABLE_${_p_FEATURE} )
+  endif( ENABLE_${_p_FEATURE} )
 
 	add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}")
 

@@ -46,10 +46,21 @@ if( ENABLE_OS_TYPES_TEST )
 	check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
 	check_type_size( off_t          EC_SIZEOF_OFF_T       )
 
-	message( STATUS "system sizeof:" )
-	message( STATUS "  void*  [${EC_SIZEOF_PTR}]  size_t [${EC_SIZEOF_SIZE_T}]  off_t  [${EC_SIZEOF_OFF_T}]   short  [${EC_SIZEOF_SHORT}]" )
-	message( STATUS "  int    [${EC_SIZEOF_INT}]  long   [${EC_SIZEOF_LONG}]  long long   [${EC_SIZEOF_LONG_LONG}]" )
-	message( STATUS "  float  [${EC_SIZEOF_FLOAT}]  double [${EC_SIZEOF_DOUBLE}]  long double [${EC_SIZEOF_LONG_DOUBLE}]" )
+#	message( STATUS "sizeof void*  [${EC_SIZEOF_PTR}]" )
+#	message( STATUS "sizeof off_t  [${EC_SIZEOF_OFF_T}]" )
+#	message( STATUS "sizeof int    [${EC_SIZEOF_INT}]" )
+#	message( STATUS "sizeof short  [${EC_SIZEOF_SHORT}]" )
+#	message( STATUS "sizeof long   [${EC_SIZEOF_LONG}]" )
+#	message( STATUS "sizeof size_t [${EC_SIZEOF_SIZE_T}]" )
+#	message( STATUS "sizeof float  [${EC_SIZEOF_FLOAT}]" )
+#	message( STATUS "sizeof double [${EC_SIZEOF_DOUBLE}]" )
+#	message( STATUS "sizeof long long   [${EC_SIZEOF_LONG_LONG}]" )
+#	message( STATUS "sizeof long double [${EC_SIZEOF_LONG_DOUBLE}]" )
+
+#	message( STATUS "system sizeof :" )
+#	message( STATUS "  void*  [${EC_SIZEOF_PTR}]  size_t [${EC_SIZEOF_SIZE_T}]  off_t  [${EC_SIZEOF_OFF_T}]   short  [${EC_SIZEOF_SHORT}]" )
+#	message( STATUS "  int    [${EC_SIZEOF_INT}]  long   [${EC_SIZEOF_LONG}]  long long   [${EC_SIZEOF_LONG_LONG}]" )
+#	message( STATUS "  float  [${EC_SIZEOF_FLOAT}]  double [${EC_SIZEOF_DOUBLE}]  long double [${EC_SIZEOF_LONG_DOUBLE}]" )
 
 endif()
 
@@ -65,28 +76,21 @@ if( ENABLE_LARGE_FILE_SUPPORT )
 
 	if( EC_SIZEOF_OFF_T LESS "8" )
 
-	if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-		add_definitions( -D_FILE_OFFSET_BITS=64 )
-	endif()
+		if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+			add_definitions( -D_FILE_OFFSET_BITS=64 )
+		endif()
 
-	if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
-		add_definitions( -D_LARGE_FILES=64 )
-	endif()
+		if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
+			add_definitions( -D_LARGE_FILES=64 )
+		endif()
 
-	get_directory_property( __compile_defs COMPILE_DEFINITIONS )
+		get_directory_property( __compile_defs COMPILE_DEFINITIONS )
 
-	if( __compile_defs )
-		foreach( def ${__compile_defs} )
-			list( APPEND CMAKE_REQUIRED_DEFINITIONS -D${def} )
-		endforeach()
-	endif()
-
-#	ecbuild_check_c_source_return( "#include <stdio.h>\n#include <sys/types.h>\nint main(){printf(\"%ld\",sizeof(off_t));return 0;}"
-#		VAR  check_off_t_final
-#		OUTPUT __sizeof_off_t_final )
-#	if( NOT check_off_t_final OR __sizeof_off_t_final LESS "8" )
-#		message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- sizeof off_t [${__sizeof_off_t_final}]" )
-#	endif()
+		if( __compile_defs )
+			foreach( def ${__compile_defs} )
+				list( APPEND CMAKE_REQUIRED_DEFINITIONS -D${def} )
+			endforeach()
+		endif()
 
 	endif()
 
@@ -163,13 +167,6 @@ if( ENABLE_OS_ENDINESS_TEST )
 
 	if( "${IEEE_BE}" STREQUAL "" )
 		set( IEEE_LE 0 CACHE INTERNAL "Test IEEE_LE")
-	endif()
-
-	if( EC_BIG_ENDIAN )
-		message( STATUS "system is Big Endian [${EC_BIG_ENDIAN}] IEEE BE [${IEEE_BE}]" )
-	endif()
-	if( EC_LITTLE_ENDIAN )
-		message( STATUS "system is Little Endian [${EC_LITTLE_ENDIAN}] IEEE LE [${IEEE_LE}]" )
 	endif()
 
 endif()
@@ -310,33 +307,27 @@ if( UNIX )
 
 endif()
 
-### Windows -- are you sure?
+### Cygwin
 
-if( WIN32 )
+if( ${CMAKE_SYSTEM_NAME} MATCHES "CYGWIN" )
 
-	### Cygwin
-
-	if( CYGWIN )
-
-		set( EC_OS_NAME "cygwin" )
-		message( WARNING "Building on Cygwin should work but is untested -- proceed at your own risk" )
-
-	else()
-
-		message( FATAL_ERROR "ecBuild can only build on Windows using Cygwin" )
-
-	endif()
+	set( EC_OS_NAME "cygwin" )
+	message( WARNING "Building on Cygwin should work but is untested" )
 
 endif()
 
 ### final warning / error
 
 if( ${EC_OS_NAME} MATCHES "UNKNOWN" )
+
 	if( DISABLE_OS_CHECK )
-		message( WARNING "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]" )
+		message( WARNING "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]"
+						 " -- DISABLE_OS_CHECK is ON so proceeding at your own risk ..." )
 	else()
-		message( FATAL_ERROR "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]" )
+		message( FATAL_ERROR "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]"
+							 " -- refusing to continue. Disable this check with -DDISABLE_OS_CHECK=ON" )
 	endif()
+
 endif()
 
 

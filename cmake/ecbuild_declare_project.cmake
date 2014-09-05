@@ -82,6 +82,12 @@ macro( ecbuild_declare_project )
 		set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake CACHE PATH "Installation directory for CMake files")
 	endif()
 
+		mark_as_advanced( INSTALL_BIN_DIR )
+		mark_as_advanced( INSTALL_LIB_DIR )
+		mark_as_advanced( INSTALL_INCLUDE_DIR )
+		mark_as_advanced( INSTALL_DATA_DIR )
+		mark_as_advanced( INSTALL_CMAKE_DIR )
+
 	# warnings for non-relocatable projects
 
 	foreach( p LIB BIN INCLUDE DATA CMAKE )
@@ -89,16 +95,6 @@ macro( ecbuild_declare_project )
 			message( WARNING "Defining INSTALL_${p}_DIR as absolute path '${INSTALL_${p}_DIR}' makes this build non-relocatable, possibly breaking the installation of RPMS and DEB packages" )
 		endif()
 	endforeach()
-
-	# correctly set CMAKE_INSTALL_RPATH
-
-	if( ENABLE_RPATHS )
-
-		ecbuild_append_to_rpath( ${INSTALL_LIB_DIR} )
-
-	endif()
-
-#	debug_var( CMAKE_INSTALL_RPATH )
 
 	# make relative paths absolute ( needed later on ) and cache them ...
 	foreach( p LIB BIN INCLUDE DATA CMAKE )
@@ -115,6 +111,31 @@ macro( ecbuild_declare_project )
 #        debug_var( ${PNAME}_FULL_INSTALL_${p}_DIR )
 
 	endforeach()
+
+	# correctly set CMAKE_INSTALL_RPATH
+
+	if( ENABLE_RPATHS )
+
+		if( ENABLE_RELATIVE_RPATHS )
+
+			file( RELATIVE_PATH relative_rpath ${${PNAME}_FULL_INSTALL_BIN_DIR} ${${PNAME}_FULL_INSTALL_LIB_DIR} )
+	#		debug_var( relative_rpath )
+
+			ecbuild_append_to_rpath( ${relative_rpath} )
+
+		else() # make rpaths absolute
+
+		    if( IS_ABSOLUTE ${INSTALL_LIB_DIR} )
+		        ecbuild_append_to_rpath( "${INSTALL_LIB_DIR}" )
+		    else()
+		        ecbuild_append_to_rpath( "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}" ) 
+		    endif()
+
+		endif()
+    
+	endif()
+
+#	debug_var( CMAKE_INSTALL_RPATH )
 
 	# print project header
 
