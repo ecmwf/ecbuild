@@ -111,6 +111,11 @@ macro( ecbuild_add_test )
 		else()
 			include_directories( ${ECBUILD_BOOST_HEADER_DIRS} ${Boost_INCLUDE_DIRS} )
 		endif()
+
+		if( NOT HAVE_BOOST_UNIT_TEST )
+			set( _${_PAR_TARGET}_condition FALSE )
+		endif()
+
 	endif()
 
 	### enable the tests
