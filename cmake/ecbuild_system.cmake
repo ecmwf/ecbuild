@@ -19,10 +19,10 @@ get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
 
 if(${srcdir} STREQUAL ${bindir})
   message("######################################################")
-  message("You are attempting to build in your Source Directory.")
-  message("You must run cmake from a build directory.")
+  message("You are attempting to build in your source directory (${srcdir}).")
+  message("You must run cmake from a different build directory.")
   message("######################################################")
-	message( FATAL_ERROR "${PROJECT_NAME} requires an out of source build.\n Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
+  message( FATAL_ERROR "${PROJECT_NAME} requires an out of source build.\n Please create a separate build directory and run 'cmake path/to/project [options]' from there.")
 endif()
 
 ########################################################################################################
@@ -33,7 +33,9 @@ if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
   message(FATAL_ERROR "${PROJECT_NAME} requires at least CMake ${ECBUILD_CMAKE_MINIMUM} -- you are using ${CMAKE_COMMAND} [${CMAKE_VERSION}]\n Please, get a newer version of CMake @ www.cmake.org" )
 endif()
 
-set( ECBUILD_MACRO_VERSION "1.3" )
+set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
+
+include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
 ########################################################################################################
 # include our cmake macros, but only do so if this is the top project
@@ -46,10 +48,6 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	mark_as_advanced( BUILD_TESTING )
 
 	set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
-
-	set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
-
-	include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
 	message( STATUS "ecbuild ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
 	message( STATUS "cmake   ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
@@ -72,6 +70,9 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	include(CTest)                 # add cmake testing support
 	enable_testing()
+
+	# keep this until we modify the meaning to 'check' if installation worked
+	add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} -V )
 
 	############################################################################################
 	# define valid build types
