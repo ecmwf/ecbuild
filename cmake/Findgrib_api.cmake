@@ -80,17 +80,27 @@ if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
         list( APPEND GRIB_API_PATH "$ENV{GRIB_API_PATH}" )
     endif()
 
+    if( NOT DEFINED GRIB_API_DIR AND NOT "$ENV{GRIB_API_DIR}" STREQUAL "" )
+        set( GRIB_API_DIR "$ENV{GRIB_API_DIR}" )
+    endif()
+
+    list( APPEND GRIB_API_PATH ${GRIB_API_DIR} )
+
     if( DEFINED GRIB_API_PATH )
         find_path(GRIB_API_INCLUDE_DIR NAMES grib_api.h PATHS ${GRIB_API_PATH} ${GRIB_API_PATH}/include PATH_SUFFIXES grib_api  NO_DEFAULT_PATH)
         find_library(GRIB_API_LIBRARY  NAMES grib_api   PATHS ${GRIB_API_PATH} ${GRIB_API_PATH}/lib     PATH_SUFFIXES grib_api  NO_DEFAULT_PATH)
+        find_library(GRIB_API_LIB_F90  NAMES grib_api_f90 PATHS ${GRIB_API_PATH} ${GRIB_API_PATH}/lib     PATH_SUFFIXES grib_api  NO_DEFAULT_PATH)
+        find_library(GRIB_API_LIB_F77  NAMES grib_api_f77 PATHS ${GRIB_API_PATH} ${GRIB_API_PATH}/lib     PATH_SUFFIXES grib_api  NO_DEFAULT_PATH)
         find_program(GRIB_API_INFO     NAMES grib_info  PATHS ${GRIB_API_PATH} ${GRIB_API_PATH}/bin     PATH_SUFFIXES grib_api  NO_DEFAULT_PATH)
     endif()
     
     find_path(GRIB_API_INCLUDE_DIR NAMES grib_api.h PATHS PATH_SUFFIXES grib_api )
     find_library( GRIB_API_LIBRARY NAMES grib_api   PATHS PATH_SUFFIXES grib_api )
+    find_library( GRIB_API_LIB_F90 NAMES grib_api_f90 PATHS PATH_SUFFIXES grib_api )
+    find_library( GRIB_API_LIB_F77 NAMES grib_api_f77 PATHS PATH_SUFFIXES grib_api )
     find_program(GRIB_API_INFO     NAMES grib_info  PATHS PATH_SUFFIXES grib_api )
     
-    set( GRIB_API_LIBRARIES    ${GRIB_API_LIBRARY} )
+    list( APPEND GRIB_API_LIBRARIES    ${GRIB_API_LIBRARY} ${GRIB_API_LIB_F90} ${GRIB_API_LIB_F77} )
     set( GRIB_API_INCLUDE_DIRS ${GRIB_API_INCLUDE_DIR} )
 
     if( GRIB_API_INFO )
