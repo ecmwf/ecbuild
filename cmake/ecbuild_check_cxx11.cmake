@@ -15,8 +15,8 @@ function( ecbuild_check_cxx11 )
 	# parse parameters
 
 	set( options PRINT )
-	set( single_value_args FEATURES REQUIRED )
-	set( multi_value_args  )
+	set( single_value_args )
+	set( multi_value_args   FEATURES REQUIRED )
 
 	cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
