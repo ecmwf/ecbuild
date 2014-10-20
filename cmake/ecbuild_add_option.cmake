@@ -68,10 +68,6 @@ macro( ecbuild_add_option )
 
 	option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
 
-	if( ${_p_ADVANCED} )
-		mark_as_advanced( ENABLE_${_p_FEATURE} )
-	endif()
-
   if( ENABLE_${_p_FEATURE} )
 
     set( HAVE_${_p_FEATURE} 1 )
@@ -164,6 +160,10 @@ macro( ecbuild_add_option )
 
   endif( ENABLE_${_p_FEATURE} )
 
-	add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}")
+	if( ${_p_ADVANCED} )
+		mark_as_advanced( ENABLE_${_p_FEATURE} )
+	else()
+		add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}")
+	endif()
 
 endmacro( ecbuild_add_option  )
