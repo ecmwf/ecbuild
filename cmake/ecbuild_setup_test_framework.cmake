@@ -15,7 +15,7 @@ if( ENABLE_TESTS )
 	set( Boost_USE_MULTITHREADED  ON )
 #   set( Boost_DEBUG              ON )
 
-	find_package( Boost 1.47.0 COMPONENTS unit_test_framework test_exec_monitor )
+	find_package( Boost 1.47.0 COMPONENTS unit_test_framework )
 
 	set( ECBUILD_BOOST_HEADER_DIRS "${CMAKE_CURRENT_LIST_DIR}/include" )
 
