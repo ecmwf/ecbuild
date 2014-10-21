@@ -74,6 +74,10 @@ macro( ecbuild_install_project )
 
     # set(CPACK_PACKAGE_EXECUTABLES ${ECBUILD_ALL_EXES})
 
+	list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES
+	   "${PROJECT_SOURCE_DIR}" "."
+	   "${ECBUILD_MACROS_DIR}" "cmake/" )
+
 	# what to pack and not
 
     set(CPACK_SOURCE_IGNORE_FILES
