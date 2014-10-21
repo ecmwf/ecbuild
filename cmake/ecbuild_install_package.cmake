@@ -68,13 +68,13 @@ macro( ecbuild_install_project )
     if( EXISTS ${PROJECT_SOURCE_DIR}/INSTALL )
         set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/INSTALL")
     endif()
-    if( EXISTS ${PROJECT_SOURCE_DIR}/LICENSE )
+	if( EXISTS ${PROJECT_SOURCE_DIR}/LICENSE )
         set(CPACK_RESOURCE_FILE_LICENSE    "${PROJECT_SOURCE_DIR}/LICENSE")
     endif()
 
     # set(CPACK_PACKAGE_EXECUTABLES ${ECBUILD_ALL_EXES})
-    
-    # what to pack and not
+
+	# what to pack and not
 
     set(CPACK_SOURCE_IGNORE_FILES
         /build/
