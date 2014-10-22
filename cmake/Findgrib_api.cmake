@@ -80,12 +80,6 @@ if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
         list( APPEND GRIB_API_PATH "$ENV{GRIB_API_PATH}" )
     endif()
 
-    if( NOT DEFINED GRIB_API_DIR AND NOT "$ENV{GRIB_API_DIR}" STREQUAL "" )
-        set( GRIB_API_DIR "$ENV{GRIB_API_DIR}" )
-    endif()
-
-    list( APPEND GRIB_API_PATH ${GRIB_API_DIR} )
-
     if( DEFINED GRIB_API_PATH )
         find_path(GRIB_API_INCLUDE_DIR NAMES grib_api.h PATHS ${GRIB_API_PATH} ${GRIB_API_PATH}/include PATH_SUFFIXES grib_api  NO_DEFAULT_PATH)
         find_library(GRIB_API_LIBRARY  NAMES grib_api   PATHS ${GRIB_API_PATH} ${GRIB_API_PATH}/lib     PATH_SUFFIXES grib_api  NO_DEFAULT_PATH)
