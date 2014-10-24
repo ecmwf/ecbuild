@@ -9,12 +9,15 @@
 #Sets:
 # CMATH_LIBRARIES      = the library to link against (RT etc)
 
-if( DEFINED CMATH_PATH )
+IF(UNIX)
+ if( DEFINED CMATH_PATH )
     find_library(CMATH_LIBRARIES m PATHS ${CMATH_PATH}/lib NO_DEFAULT_PATH )
-endif()
+ endif()
 
-find_library(CMATH_LIBRARIES m )
+ find_library(CMATH_LIBRARIES m )
 
-include(FindPackageHandleStandardArgs)
+ include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args(CMATH  DEFAULT_MSG CMATH_LIBRARIES )
+ find_package_handle_standard_args(CMATH  DEFAULT_MSG CMATH_LIBRARIES )
+
+ENDIF(UNIX)
