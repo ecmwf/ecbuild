@@ -41,6 +41,8 @@ function( ecbuild_list_extra_search_paths pkg var )
 
 	# directories under /usr/local/apps/${pkg}
 
+	if( NOT SKIP_USR_LOCAL_APPS )
+
 	foreach( _apps /usr/local/apps/${pkg} /usr/local/lib/metaps/lib/${pkg} )
 
 		if( EXISTS ${_apps} )
@@ -69,6 +71,8 @@ function( ecbuild_list_extra_search_paths pkg var )
 		endif()
 
 	endforeach()
+
+	endif( NOT SKIP_USR_LOCAL_APPS )
 
 	# sanitize the list
 
