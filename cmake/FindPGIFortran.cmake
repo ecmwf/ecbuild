@@ -9,15 +9,17 @@
 ###############################################################################
 # FORTRAN support
 
-# list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl  pgftnrtl nspgc pgc rt pgsse1 pgsse2 ) # init
-# list( APPEND pg_libs pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf pgc pgf90 rt pgsse1 pgsse2 )             # mars client linux.2
-# list( APPEND pg_libs pgftnrtl nspgc pgc rt pgsse1 pgsse2 )                                                    # mars client linux.3
+# set( PGIFORTRAN_SEARCH_LIBS pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl  pgftnrtl nspgc pgc rt pgsse1 pgsse2 ) # init
+# set( PGIFORTRAN_SEARCH_LIBS pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf pgc pgf90 rt pgsse1 pgsse2 )             # mars client linux.2
+# set( PGIFORTRAN_SEARCH_LIBS pgftnrtl nspgc pgc rt pgsse1 pgsse2 )                                                    # mars client linux.3
 
-list( APPEND pg_libs pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 pgf902 pghpf_rpm1 pghpf2 pgsse1 pgsse2 ) # better ?                                                    #
+if( NOT DEFINED PGIFORTRAN_SEARCH_LIBS )
+	set( PGIFORTRAN_SEARCH_LIBS pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 pgf902 pghpf_rpm1 pghpf2 pgsse1 pgsse2 ) # better ?                                                    #
+endif()
 
 set( pgi_fortran_all_libs_found 1 )
 
-foreach( pglib ${pg_libs} )
+foreach( pglib ${PGIFORTRAN_SEARCH_LIBS} )
 
 	find_library( ${pglib}_lib  ${pglib} PATHS ${PGI_PATH} PATH_SUFFIXES lib libso NO_DEFAULT_PATH )
 
