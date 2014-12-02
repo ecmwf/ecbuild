@@ -26,7 +26,7 @@ macro(ecbuild_get_timestamp RESULT)
         execute_process(COMMAND "date" "+%Y/%m/%d/%H/%M/%S" OUTPUT_VARIABLE _timestamp)
         string(REGEX REPLACE "(....)/(..)/(..)/(..)/(..)/(..).*" "\\1\\2\\3\\4\\5\\6" ${RESULT} ${_timestamp})
     else()
-        message(SEND_ERROR "timestamp not implemented")
+        message(WARNING "This is NOT UNIX - timestamp not implemented")
     endif()
 endmacro(ecbuild_get_timestamp)
 

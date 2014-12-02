@@ -22,8 +22,9 @@ function( _download_test_data _p_NAME _p_DIRNAME )
 
     if( CURL_PROGRAM )
 
-        add_custom_command( OUTPUT ${_p_NAME}
-            COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
+		add_custom_command( OUTPUT ${_p_NAME}
+			COMMENT "downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
+			COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
 
     else()
 
@@ -31,8 +32,9 @@ function( _download_test_data _p_NAME _p_DIRNAME )
 
         if( WGET_PROGRAM )
 
-           add_custom_command( OUTPUT ${_p_NAME}
-               COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
+		   add_custom_command( OUTPUT ${_p_NAME}
+				COMMENT "downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
+				COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
 
         endif()
 
@@ -139,7 +141,7 @@ function( ecbuild_get_test_data )
 
         if( _p_SHA1 )
 
-            message( STATUS " ---  computing SHA1 sum [${_p_SHA1}]" )
+#            message( STATUS " ---  computing SHA1 sum [${_p_SHA1}]" )
 
             find_program( SHASUM NAMES sha1sum shasum )
             if( SHASUM )
