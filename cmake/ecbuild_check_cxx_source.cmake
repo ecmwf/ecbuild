@@ -49,7 +49,7 @@ macro( ecbuild_check_cxx_source_return SOURCE )
         if( _p_INCLUDES )
             list( APPEND __add_incs ${_p_INCLUDES} )
         endif()
-        if( __add_libs )
+		if( __add_incs )
             set(CHECK_CXX_SOURCE_COMPILES_ADD_INCLUDES "-DINCLUDE_DIRECTORIES:STRING=${__add_incs}")
         endif()
     
