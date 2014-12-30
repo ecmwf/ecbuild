@@ -155,6 +155,7 @@ macro( ecbuild_add_executable )
             export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
 
 		else()
+				# NOINSTALL targets are always built the build_rpath, not the install_rpath
 				set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
 				set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
 		endif()
