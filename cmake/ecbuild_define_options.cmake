@@ -45,8 +45,6 @@ if( POLICY CMP0042 )
 endif()
 
 # inside if() don't dereference variables if they are quoted e.g. "VAR", only dereference with "${VAR}"
-debug_var( CMAKE_PROJECT_NAME )
 if( POLICY CMP0054 )
-debug_var( CMAKE_PROJECT_NAME )
 	cmake_policy( SET CMP0054 NEW )
 endif()
