@@ -22,6 +22,9 @@ option( ENABLE_OS_TESTS          "Run all OS tests" ON )
 
 mark_as_advanced( ENABLE_OS_TESTS )
 
+option ( ENABLE_FORTRAN_C_INTERFACE "Enable Fortran/C Interface" ON )
+mark_as_advanced( ENABLE_FORTRAN_C_INTERFACE )
+
 option( DEVELOPER_MODE           "activates developer mode"               OFF )
 option( CHECK_UNUSED_FILES       "check for unused project files"         ON )
 

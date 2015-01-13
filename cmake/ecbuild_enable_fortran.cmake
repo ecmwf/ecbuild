@@ -32,7 +32,7 @@ macro( ecbuild_enable_fortran )
 
     if( CMAKE_Fortran_COMPILER_LOADED )
         include(CheckFortranFunctionExists)
-		if( CMAKE_C_COMPILER_LOADED )
+		if( CMAKE_C_COMPILER_LOADED AND ENABLE_FORTRAN_C_INTERFACE )
 			include(FortranCInterface)
 		endif()
 		set( EC_HAVE_FORTRAN 1 )

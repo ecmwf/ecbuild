@@ -118,7 +118,7 @@ endmacro()
 macro( cmake_add_c_flags m_c_flags )
 
   set( options )
-  set( single_value_args BUILD )
+  set( single_value_args BUILD NAME )
   set( multi_value_args )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -129,9 +129,16 @@ macro( cmake_add_c_flags m_c_flags )
 
   math( EXPR N_CFLAG '${N_CFLAG}+1' )
 
-  check_c_compiler_flag( ${m_c_flags} C_FLAG_TEST_${N_CFLAG} )
+  if( DEFINED _PAR_NAME )
+    check_c_compiler_flag( ${m_c_flags} ${_PAR_NAME} )
+    set( _RESULT ${${_PAR_NAME}} )
+  else()
+    check_c_compiler_flag( ${m_c_flags} C_FLAG_TEST_${N_CFLAG} )
+    set( _RESULT ${C_FLAG_TEST_${N_CFLAG}} )
+  endif()
 
-  if( C_FLAG_TEST_${N_CFLAG} )
+  
+  if( _RESULT )
     if( _PAR_BUILD )
       set( CMAKE_C_FLAGS_${_PAR_BUILD} "${CMAKE_C_FLAGS_${_PAR_BUILD}} ${m_c_flags}" )
     else()
