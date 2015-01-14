@@ -186,3 +186,38 @@ macro( ecbuild_find_omp )
 
 endmacro( ecbuild_find_omp )
 
+macro( ecbuild_enable_omp )
+
+  ecbuild_find_omp()
+
+  if( OMP_C_FOUND )
+    list( APPEND CMAKE_C_FLAGS ${OMP_C_FLAGS} )
+  endif()
+
+  if( OMP_CXX_FOUND )
+    list( APPEND CMAKE_CXX_FLAGS ${OMP_CXX_FLAGS} )
+  endif()
+
+  if( OMP_Fortran_FOUND )
+      list( APPEND CMAKE_Fortran_FLAGS ${OMP_Fortran_FLAGS} )
+  endif()
+
+endmacro( ecbuild_enable_omp )
+
+macro( ecbuild_enable_ompstubs )
+
+  ecbuild_find_omp()
+
+  if( OMPSTUBS_C_FOUND )
+    list( APPEND CMAKE_C_FLAGS ${OMPSTUBS_C_FLAGS} )
+  endif()
+
+  if( OMPSTUBS_CXX_FOUND )
+    list( APPEND CMAKE_CXX_FLAGS ${OMPSTUBS_CXX_FLAGS} )
+  endif()
+
+  if( OMPSTUBS_Fortran_FOUND )
+      list( APPEND CMAKE_Fortran_FLAGS ${OMPSTUBS_Fortran_FLAGS} )
+  endif()
+
+endmacro( ecbuild_enable_ompstubs )
