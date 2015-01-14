@@ -117,37 +117,41 @@ endmacro()
 
 macro( cmake_add_c_flags m_c_flags )
 
-  set( options )
-  set( single_value_args BUILD NAME )
-  set( multi_value_args )
+  set( _flags ${m_c_flags} )
 
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+  if( _flags AND CMAKE_C_COMPILER_LOADED )
+    set( options )
+    set( single_value_args BUILD NAME )
+    set( multi_value_args )
 
-  if( NOT DEFINED N_CFLAG )
-    set( N_CFLAG 0 )
-  endif()
+    cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-  math( EXPR N_CFLAG '${N_CFLAG}+1' )
-
-  if( DEFINED _PAR_NAME )
-    check_c_compiler_flag( ${m_c_flags} ${_PAR_NAME} )
-    set( _RESULT ${${_PAR_NAME}} )
-  else()
-    check_c_compiler_flag( ${m_c_flags} C_FLAG_TEST_${N_CFLAG} )
-    set( _RESULT ${C_FLAG_TEST_${N_CFLAG}} )
-  endif()
-
-  
-  if( _RESULT )
-    if( _PAR_BUILD )
-      set( CMAKE_C_FLAGS_${_PAR_BUILD} "${CMAKE_C_FLAGS_${_PAR_BUILD}} ${m_c_flags}" )
-    else()
-      set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${m_c_flags}" )
-      # message( STATUS "C FLAG [${m_c_flags}] added" )
+    if( NOT DEFINED N_CFLAG )
+      set( N_CFLAG 0 )
     endif()
-  else()
-	message( WARNING "Unrecognised C flag [${m_c_flags}] -- skipping" )
-  endif()
 
+    math( EXPR N_CFLAG '${N_CFLAG}+1' )
+
+    if( DEFINED _PAR_NAME )
+      check_c_compiler_flag( ${_flags} ${_PAR_NAME} )
+      set( _RESULT ${${_PAR_NAME}} )
+    else()
+      check_c_compiler_flag( ${_flags} C_FLAG_TEST_${N_CFLAG} )
+      set( _RESULT ${C_FLAG_TEST_${N_CFLAG}} )
+    endif()
+
+    
+    if( _RESULT )
+      if( _PAR_BUILD )
+        set( CMAKE_C_FLAGS_${_PAR_BUILD} "${CMAKE_C_FLAGS_${_PAR_BUILD}} ${_flags}" )
+      else()
+        set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${_flags}" )
+        # message( STATUS "C FLAG [${_flags}] added" )
+      endif()
+    else()
+  	message( WARNING "Unrecognised C flag [${_flags}] -- skipping" )
+    endif()
+  endif()
+  unset( _flags )
 endmacro()
 

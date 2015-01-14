@@ -126,29 +126,33 @@ endmacro()
 
 macro( cmake_add_cxx_flags m_cxx_flags )
 
-  set( options )
-  set( single_value_args BUILD )
-  set( multi_value_args )
+  set( _flags ${m_cxx_flags} )
+  if( _flags AND CMAKE_CXX_COMPILER_LOADED )
+    set( options )
+    set( single_value_args BUILD )
+    set( multi_value_args )
 
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+    cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-  if( NOT DEFINED N_CXXFLAG )
-    set( N_CXXFLAG 0 )
-  endif()
-
-  math( EXPR N_CXXFLAG '${N_CXXFLAG}+1' )
-
-  check_cxx_compiler_flag( ${m_cxx_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
-
-  if( CXX_FLAG_TEST_${N_CXXFLAG} )
-    if( _PAR_BUILD )
-      set( CMAKE_CXX_FLAGS_${_PAR_BUILD} "${CMAKE_CXX_FLAGS_${_PAR_BUILD}} ${m_cxx_flags}" )
-    else()
-      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${m_cxx_flags}" )
-      # message( STATUS "C++ FLAG [${m_cxx_flags}] added" )
+    if( NOT DEFINED N_CXXFLAG )
+      set( N_CXXFLAG 0 )
     endif()
-  else()
-	message( STATUS "Unrecognised CXX flag [${m_cxx_flags}] -- skipping" )
+
+    math( EXPR N_CXXFLAG '${N_CXXFLAG}+1' )
+
+    check_cxx_compiler_flag( ${_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
+
+    if( CXX_FLAG_TEST_${N_CXXFLAG} )
+      if( _PAR_BUILD )
+        set( CMAKE_CXX_FLAGS_${_PAR_BUILD} "${CMAKE_CXX_FLAGS_${_PAR_BUILD}} ${_flags}" )
+      else()
+        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_flags}" )
+        # message( STATUS "C++ FLAG [${_flags}] added" )
+      endif()
+    else()
+      message( STATUS "Unrecognised CXX flag [${_flags}] -- skipping" )
+    endif()
   endif()
+  unset( _flags )
 
 endmacro()

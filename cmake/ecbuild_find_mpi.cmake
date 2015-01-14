@@ -119,3 +119,40 @@ macro( ecbuild_find_mpi )
     endif()
 
 endmacro( ecbuild_find_mpi )
+
+
+macro( ecbuild_enable_mpi )
+
+    set( options REQUIRED )
+    set( single_value_args )
+    set( multi_value_args  )
+
+    cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+
+    if(_PAR_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "Unknown keywords given to ecbuild_find_mpi(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    endif()
+
+
+    if( NOT _PAR_REQUIRED )
+       ecbuild_find_mpi()
+    else()
+       ecbuild_find_mpi( REQUIRED )
+    endif()
+
+    if( MPI_C_FOUND AND NOT C_COMPILER_SUPPORTS_MPI )
+        cmake_add_c_flags("${MPI_C_COMPILE_FLAGS}")
+        include_directories(${MPI_C_INCLUDE_PATH})
+    endif()
+
+    if( MPI_CXX_FOUND AND NOT CXX_COMPILER_SUPPORTS_MPI )
+        cmake_add_cxx_flags("${MPI_CXX_COMPILE_FLAGS}")
+        include_directories(${MPI_CXX_INCLUDE_PATH})
+    endif()
+
+    if( MPI_Fortran_FOUND AND NOT Fortran_COMPILER_SUPPORTS_MPI )
+        cmake_add_fortran_flags("${MPI_Fortran_COMPILE_FLAGS}")
+        include_directories(${MPI_Fortran_INCLUDE_PATH})
+    endif()
+
+endmacro( ecbuild_enable_mpi )
