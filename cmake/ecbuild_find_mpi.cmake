@@ -103,10 +103,10 @@ macro( ecbuild_find_mpi )
 
     # canonical MPI search
 
-    if( DEFINED _PAR_REQUIRED )
-	   find_package( MPI QUIET REQUIRED )
-    else()
+    if( NOT _PAR_REQUIRED )
        find_package( MPI QUIET )
+    else()
+       find_package( MPI QUIET REQUIRED )
     endif()
 
     # hide these variables from UI
