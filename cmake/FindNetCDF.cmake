@@ -123,6 +123,7 @@ if( PREFER_NETCDF4 )
     # Find NetCDF4
 
     ecbuild_add_extra_search_paths( netcdf4 )
+    ecbuild_add_extra_search_paths( netcdf ) # fallback to netcdf search paths
 
     find_package( NetCDF4 )
 
