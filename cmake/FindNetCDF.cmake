@@ -169,7 +169,9 @@ if( PREFER_NETCDF3 )
         set( NETCDF_Fortran 1 )
     endif()
 
-    
+    ecbuild_add_extra_search_paths( netcdf3 )
+    ecbuild_add_extra_search_paths( netcdf ) # fallback to netcdf search paths
+
     find_package( NetCDF3 )
 
 	set_package_properties( NetCDF3 PROPERTIES TYPE RECOMMENDED PURPOSE "support for NetCDF3 file format" )
