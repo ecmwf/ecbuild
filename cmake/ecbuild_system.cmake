@@ -107,6 +107,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	endif()
 
 	if( CMAKE_Fortran_COMPILER_LOADED )
+        set( CMAKE_Fortran_MODULE_DIRECTORY  ${CMAKE_BINARY_DIR}/module CACHE PATH "directory for all fortran modules." )
 		include(CheckFortranFunctionExists)
 		if( CMAKE_C_COMPILER_LOADED AND ENABLE_FORTRAN_C_INTERFACE )
 			include(FortranCInterface)

@@ -39,9 +39,9 @@ macro( ecbuild_enable_fortran )
     endif()
 
     if( DEFINED _PAR_MODULE_DIRECTORY )
-        set( CMAKE_Fortran_MODULE_DIRECTORY  ${_PAR_MODULE_DIRECTORY} CACHE PATH "directory for all fortran modules." )
+        set( CMAKE_Fortran_MODULE_DIRECTORY  ${_PAR_MODULE_DIRECTORY} )
     else()
-        set( CMAKE_Fortran_MODULE_DIRECTORY  ${PROJECT_BINARY_DIR}/fortran CACHE PATH "directory for all fortran modules." )
+        set( CMAKE_Fortran_MODULE_DIRECTORY  ${CMAKE_BINARY_DIR}/module CACHE PATH "directory for all fortran modules." )
     endif()
 
 	file( MAKE_DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY} )
