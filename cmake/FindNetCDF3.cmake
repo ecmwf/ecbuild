@@ -10,6 +10,7 @@
 #
 # Input:
 #  * NETCDF_PATH - user defined path where to search for the library first
+#  * NETCDF_DIR  - user defined path where to search for the library first
 #  * NETCDF_CXX  - if to search also for netcdf_c++ wrapper library
 #  * NETCDF_Fortran  - if to search also for netcdff wrapper library
 #
@@ -20,11 +21,24 @@
 
 ### TODO: generalize this into a macro for all ecbuild
 
+if( DEFINED $ENV{NETCDF_PATH} )
+    list( APPEND CMAKE_PREFIX_PATH  $ENV{NETCDF_PATH} )
+endif()
+
+if( DEFINED $ENV{NETCDF_DIR} )
+    list( APPEND CMAKE_PREFIX_PATH  $ENV{NETCDF_DIR} )
+endif()
+
 if( DEFINED NETCDF_PATH )
     list( APPEND _netcdf_incs ${NETCDF_PATH} ${NETCDF_PATH}/include )
     list( APPEND _netcdf_libs ${NETCDF_PATH} ${NETCDF_PATH}/lib )
 endif()
 	
+if( DEFINED NETCDF_DIR )
+    list( APPEND _netcdf_incs ${NETCDF_DIR} ${NETCDF_DIR}/include )
+    list( APPEND _netcdf_libs ${NETCDF_DIR} ${NETCDF_DIR}/lib )
+endif()
+
 foreach( _h /usr/local/apps/netcdf )
 
 	if( EXISTS ${_h} )

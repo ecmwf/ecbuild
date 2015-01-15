@@ -12,6 +12,7 @@
 #
 # Input:
 #  * NETCDF_PATH    - user defined path where to search for the library first
+#  * NETCDF_DIR     - user defined path where to search for the library first
 #  * NETCDF_CXX     - if to search also for netcdf_c++ wrapper library
 #  * NETCDF_Fortran - if to search also for netcdff wrapper library
 #
@@ -19,7 +20,6 @@
 #  NETCDF_FOUND - System has NetCDF
 #  NETCDF_DEFINITIONS
 #  NETCDF_INCLUDE_DIRS - The NetCDF include directories
-#  NETCDF_LIBRARIES - The libraries needed to use NetCDF
 #  NETCDF_LIBRARIES - The libraries needed to use NetCDF
 
 # default is netcdf4
@@ -44,20 +44,50 @@ if( PREFER_NETCDF4 )
 
     ## hdf5
 
+    if( DEFINED ENV{HDF5_PATH} )
+        set( HDF5_ROOT "$ENV{HDF5_PATH}" )
+        list( APPEND CMAKE_PREFIX_PATH  $ENV{HDF5_PATH} )
+    endif()
+
+    if( DEFINED ENV{HDF5_DIR} )
+        set( HDF5_ROOT "$ENV{HDF5_DIR}" )
+        list( APPEND CMAKE_PREFIX_PATH  $ENV{HDF5_DIR} )
+    endif()
+
+    if( DEFINED HDF5_PATH )
+        set( HDF5_ROOT "${HDF5_PATH}" )
+        list( APPEND CMAKE_PREFIX_PATH  ${HDF5_PATH} )
+    endif()
+
+    if( DEFINED HDF5_DIR )
+        set( HDF5_ROOT "${HDF5_DIR}" )
+        list( APPEND CMAKE_PREFIX_PATH  ${HDF5_DIR} )
+    endif()
+
     ecbuild_add_extra_search_paths( hdf5 )
 
-    find_package( HDF5 COMPONENTS C CXX Fortran HL Fortran_HL )
+    find_package( HDF5 COMPONENTS C CXX Fortran HL Fortran_HL QUIET )
 
     ## netcdf4
 
-    if( DEFINED $ENV{NETCDF_PATH} )
+    if( DEFINED ENV{NETCDF_PATH} )
         set( NETCDF_ROOT "$ENV{NETCDF_PATH}" )
         list( APPEND CMAKE_PREFIX_PATH  $ENV{NETCDF_PATH} )
+    endif()
+
+    if( DEFINED ENV{NETCDF_DIR} )
+        set( NETCDF_ROOT "$ENV{NETCDF_DIR}" )
+        list( APPEND CMAKE_PREFIX_PATH  $ENV{NETCDF_DIR} )
     endif()
 
     if( DEFINED NETCDF_PATH )
         set( NETCDF_ROOT "${NETCDF_PATH}" )
         list( APPEND CMAKE_PREFIX_PATH  ${NETCDF_PATH} )
+    endif()
+
+    if( DEFINED NETCDF_DIR )
+        set( NETCDF_ROOT "${NETCDF_DIR}" )
+        list( APPEND CMAKE_PREFIX_PATH  ${NETCDF_DIR} )
     endif()
 
     # CONFIGURE the NETCDF_FIND_COMPONENTS variable
