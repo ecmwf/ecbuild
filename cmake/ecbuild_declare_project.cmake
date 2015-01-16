@@ -119,7 +119,7 @@ macro( ecbuild_declare_project )
 		if( ENABLE_RELATIVE_RPATHS )
 
 			file( RELATIVE_PATH relative_rpath ${${PNAME}_FULL_INSTALL_BIN_DIR} ${${PNAME}_FULL_INSTALL_LIB_DIR} )
-	#		debug_var( relative_rpath )
+			# debug_var( relative_rpath )
 
 			ecbuild_append_to_rpath( ${relative_rpath} )
 
@@ -135,7 +135,7 @@ macro( ecbuild_declare_project )
     
 	endif()
 
-#	debug_var( CMAKE_INSTALL_RPATH )
+	# debug_var( CMAKE_INSTALL_RPATH )
 
 	# print project header
 

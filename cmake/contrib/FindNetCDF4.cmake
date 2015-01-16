@@ -102,11 +102,9 @@ set(HAS_HDF5 FALSE)
 
 if(${output} STREQUAL yes)
   set(HAS_HDF5 TRUE)
-  if(NETCDF_FIND_QUIETLY OR NOT NETCDF_FIND_REQUIRED)
-    find_package(HDF5)
-  else()
-    find_package(HDF5 REQUIRED)
-  endif()
+  set(HDF5_FIND_QUIETLY ${NETCDF_FIND_QUIETLY})
+  set(HDF5_FIND_REQUIRED ${NETCDF_FIND_REQUIRED})
+  find_package(HDF5)
 #        list( APPEND NETCDF_LIBRARIES_DEBUG
 #            ${HDF5_LIBRARIES_DEBUG} )
 #        list( APPEND NETCDF_LIBRARIES_RELEASE
@@ -270,6 +268,8 @@ else()
     endif()
 endif()
 
+set( NETCDF4_FIND_QUIETLY ${NETCDF_FIND_QUIETLY} )
+set( NETCDF4_FIND_REQUIRED ${NETCDF_FIND_REQUIRED} )
 find_package_handle_standard_args( NETCDF4 DEFAULT_MSG
     NETCDF_LIBRARIES
     NETCDF_INCLUDE_DIRS

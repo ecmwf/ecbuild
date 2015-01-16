@@ -10,7 +10,9 @@
 #
 # Input:
 #  * NETCDF_PATH - user defined path where to search for the library first
+#  * NETCDF_DIR  - user defined path where to search for the library first
 #  * NETCDF_CXX  - if to search also for netcdf_c++ wrapper library
+#  * NETCDF_Fortran  - if to search also for netcdff wrapper library
 #
 # Output:
 #  NETCDF_FOUND - System has NetCDF
@@ -19,11 +21,24 @@
 
 ### TODO: generalize this into a macro for all ecbuild
 
+if( DEFINED $ENV{NETCDF_PATH} )
+    list( APPEND CMAKE_PREFIX_PATH  $ENV{NETCDF_PATH} )
+endif()
+
+if( DEFINED $ENV{NETCDF_DIR} )
+    list( APPEND CMAKE_PREFIX_PATH  $ENV{NETCDF_DIR} )
+endif()
+
 if( DEFINED NETCDF_PATH )
     list( APPEND _netcdf_incs ${NETCDF_PATH} ${NETCDF_PATH}/include )
     list( APPEND _netcdf_libs ${NETCDF_PATH} ${NETCDF_PATH}/lib )
 endif()
 	
+if( DEFINED NETCDF_DIR )
+    list( APPEND _netcdf_incs ${NETCDF_DIR} ${NETCDF_DIR}/include )
+    list( APPEND _netcdf_libs ${NETCDF_DIR} ${NETCDF_DIR}/lib )
+endif()
+
 foreach( _h /usr/local/apps/netcdf )
 
 	if( EXISTS ${_h} )
@@ -55,7 +70,9 @@ find_library( NETCDF_LIBRARY  netcdf  PATHS ${_netcdf_libs} PATH_SUFFIXES ${_ncd
 set( NETCDF_LIBRARIES    ${NETCDF_LIBRARY} )
 set( NETCDF_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR} )
 
-include(FindPackageHandleStandardArgs)
+mark_as_advanced(NETCDF_INCLUDE_DIR NETCDF_LIBRARY )
+
+list( APPEND NETCDF_REQUIRED_VARS NETCDF_LIBRARY NETCDF_INCLUDE_DIR )
 
 if( NETCDF_CXX )
 
@@ -70,16 +87,43 @@ if( NETCDF_CXX )
     list( APPEND NETCDF_INCLUDE_DIRS ${NETCDF_CXX_INCLUDE_DIR} )
     list( APPEND NETCDF_LIBRARIES    ${NETCDF_CXX_LIBRARY} )
 
-	find_package_handle_standard_args( NETCDF3  DEFAULT_MSG NETCDF_LIBRARY NETCDF_CXX_LIBRARY NETCDF_INCLUDE_DIR NETCDF_CXX_INCLUDE_DIR )
+    list( APPEND NETCDF_REQUIRED_VARS NETCDF_CXX_INCLUDE_DIR NETCDF_CXX_LIBRARY )
 
-    mark_as_advanced(NETCDF_INCLUDE_DIR NETCDF_CXX_LIBRARY )
-
-else()
-
-	find_package_handle_standard_args( NETCDF3  DEFAULT_MSG NETCDF_LIBRARY NETCDF_INCLUDE_DIR)
+    mark_as_advanced(NETCDF_CXX_INCLUDE_DIR NETCDF_CXX_LIBRARY )
 
 endif()
 
+if( NETCDF_Fortran )
+
+    find_path( NETCDF_Fortran_INCLUDE_DIR netcdf.mod PATHS ${_netcdf_incs} PATH_SUFFIXES ${_ncdf_sfx} NO_DEFAULT_PATH)
+    find_path( NETCDF_Fortran_INCLUDE_DIR netcdf.mod PATHS ${_netcdf_incs} PATH_SUFFIXES ${_ncdf_sfx} )
+
+    set( _ncdf_fortran netcdff )
+
+    find_library( NETCDF_Fortran_LIBRARY NAMES ${_ncdf_fortran} PATHS ${_netcdf_libs} PATH_SUFFIXES ${_ncdf_sfx} NO_DEFAULT_PATH )
+    find_library( NETCDF_Fortran_LIBRARY NAMES ${_ncdf_fortran} PATHS ${_netcdf_libs} PATH_SUFFIXES ${_ncdf_sfx} )
+
+    list( APPEND NETCDF_INCLUDE_DIRS ${NETCDF_Fortran_INCLUDE_DIR} )
+    list( APPEND NETCDF_LIBRARIES    ${NETCDF_Fortran_LIBRARY} )
+
+    list( APPEND NETCDF_REQUIRED_VARS NETCDF_Fortran_INCLUDE_DIR NETCDF_Fortran_LIBRARY )
+
+    mark_as_advanced(NETCDF_Fortran_INCLUDE_DIR NETCDF_Fortran_LIBRARY )
+
+endif()
+
+list( REMOVE_DUPLICATES NETCDF_INCLUDE_DIRS )
+
+include(FindPackageHandleStandardArgs)
+
+if( NETCDF_FIND_QUIETLY )
+  set( NETCDF3_FIND_QUIETLY ${NETCDF_FIND_QUIETLY} )
+endif()
+if( NETCDF_FIND_REQUIRED )
+  set( NETCDF3_FIND_REQUIRED ${NETCDF_FIND_REQUIRED} )
+endif()
+
+find_package_handle_standard_args( NETCDF3  DEFAULT_MSG ${NETCDF_REQUIRED_VARS} )
+
 set( NETCDF_FOUND ${NETCDF3_FOUND} )
 
-mark_as_advanced(NETCDF_INCLUDE_DIR NETCDF_LIBRARY )

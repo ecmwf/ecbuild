@@ -17,14 +17,13 @@ file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
 set( CMAKE_INSTALL_RPATH_USE_LINK_PATH   TRUE  ) # add the automatic parts to RPATH which point to dirs outside build tree
 
+# use RPATHs for the build tree
+set( CMAKE_SKIP_BUILD_RPATH              FALSE  )
+
 if( ENABLE_RELATIVE_RPATHS )
-    # use full RPATHs for the build tree
-    set( CMAKE_SKIP_BUILD_RPATH              FALSE  ) 
     # when building, use the install RPATH immedietly
 	set( CMAKE_BUILD_WITH_INSTALL_RPATH      TRUE  )
 else()
-    # use full RPATHs for the build tree
-    set( CMAKE_SKIP_BUILD_RPATH              FALSE  ) 
     # when building, don't use the install RPATH yet, but later on when installing
     set( CMAKE_BUILD_WITH_INSTALL_RPATH      FALSE  ) 
 endif()

@@ -62,7 +62,7 @@ endif()
 ############################################################################################
 # c compiler tests
 
-if( CMAKE_C_COMPILER_LOADED )
+if( CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
 
 	check_c_source_compiles(
 		  " typedef int foo_t;
@@ -76,7 +76,7 @@ endif()
 ############################################################################################
 # c++ compiler tests
 
-if( CMAKE_CXX_COMPILER_LOADED )
+if( CMAKE_CXX_COMPILER_LOADED AND ENABLE_OS_TESTS )
 
     # check for __FUNCTION__
 	check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }"
@@ -105,6 +105,7 @@ if( CMAKE_COMPILER_IS_GNUCC )
 
     if( ENABLE_WARNINGS )
         cmake_add_c_flags("-Wall")
+        cmake_add_c_flags("-pedantic")
         #    cmake_add_c_flags("-Wextra")
     endif()
 

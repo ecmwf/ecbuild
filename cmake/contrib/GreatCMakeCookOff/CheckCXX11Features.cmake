@@ -19,6 +19,10 @@
 # Further Modifications by RSDT@UCL
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
 
+if( POLICY CMP0054 )
+	cmake_policy( SET CMP0054 NEW )
+endif()
+
 set(CPP11_FEATURE_CHECK_DIR ${CMAKE_CURRENT_LIST_DIR}/cpp11
     CACHE INTERNAL "c++11 file directory")
 

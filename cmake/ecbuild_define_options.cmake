@@ -22,6 +22,9 @@ option( ENABLE_OS_TESTS          "Run all OS tests" ON )
 
 mark_as_advanced( ENABLE_OS_TESTS )
 
+option ( ENABLE_FORTRAN_C_INTERFACE "Enable Fortran/C Interface" ON )
+mark_as_advanced( ENABLE_FORTRAN_C_INTERFACE )
+
 option( DEVELOPER_MODE           "activates developer mode"               OFF )
 option( CHECK_UNUSED_FILES       "check for unused project files"         ON )
 
@@ -38,7 +41,13 @@ mark_as_advanced( ENABLE_OS_TYPES_TEST ENABLE_OS_ENDINESS_TEST ENABLE_OS_FUNCTIO
 
 # set policies
 
-if( NOT "${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" VERSION_LESS 3.0 ) # cmake >= 3.0
+# for macosx use @rpath in a target’s install name
+if( POLICY CMP0042 )
 	cmake_policy( SET CMP0042 NEW )
 	set( CMAKE_MACOSX_RPATH ON )
+endif()
+
+# inside if() don't dereference variables if they are quoted e.g. "VAR", only dereference with "${VAR}"
+if( POLICY CMP0054 )
+	cmake_policy( SET CMP0054 NEW )
 endif()

@@ -119,30 +119,37 @@ endmacro()
 include( CheckFortranCompilerFlag )
 macro( cmake_add_fortran_flags m_fortran_flags )
 
-  set( options )
-  set( single_value_args BUILD )
-  set( multi_value_args )
+  set( _flags ${m_fortran_flags} )
 
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+  if( _flags AND CMAKE_Fortran_COMPILER_LOADED )
 
-  if( NOT DEFINED N_FortranFLAG )
-    set( N_FortranFLAG 0 )
-  endif()
+    set( options )
+    set( single_value_args BUILD )
+    set( multi_value_args )
 
-  math( EXPR N_FortranFLAG '${N_FortranFLAG}+1' )
+    cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-  check_fortran_compiler_flag( ${m_fortran_flags} Fortran_FLAG_TEST_${N_FortranFLAG} )
-
-  if( Fortran_FLAG_TEST_${N_FortranFLAG} )
-    if( _PAR_BUILD )
-      set( CMAKE_Fortran_FLAGS_${_PAR_BUILD} "${CMAKE_Fortran_FLAGS_${_PAR_BUILD}} ${m_fortran_flags}" )
-    else()
-      set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${m_fortran_flags}" )
-      # message( STATUS "Fortran FLAG [${m_fortran_flags}] added" )
+    if( NOT DEFINED N_FortranFLAG )
+      set( N_FortranFLAG 0 )
     endif()
-  else()
-    message( STATUS "Unrecognised Fortran flag [${m_fortran_flags}] -- skipping" )
+
+    math( EXPR N_FortranFLAG '${N_FortranFLAG}+1' )
+
+    check_fortran_compiler_flag( ${_flags} Fortran_FLAG_TEST_${N_FortranFLAG} )
+
+    if( Fortran_FLAG_TEST_${N_FortranFLAG} )
+      if( _PAR_BUILD )
+        set( CMAKE_Fortran_FLAGS_${_PAR_BUILD} "${CMAKE_Fortran_FLAGS_${_PAR_BUILD}} ${_flags}" )
+      else()
+        set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${_flags}" )
+        # message( STATUS "Fortran FLAG [${_flags}] added" )
+      endif()
+    else()
+      message( STATUS "Unrecognised Fortran flag [${_flags}] -- skipping" )
+    endif()
   endif()
+
+  unset( _flags )
 
 endmacro()
 
