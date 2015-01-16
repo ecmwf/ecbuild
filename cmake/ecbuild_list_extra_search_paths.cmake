@@ -11,7 +11,7 @@
 # macro for adding search paths to CMAKE_PREFIX_PATH
 # for example the ECMWF /usr/local/apps paths
 #
-# usage: ecbuild_search_paths( netcdf4 )
+# usage: ecbuild_list_extra_search_paths( netcdf4 VARIABLE )
 
 function( ecbuild_list_extra_search_paths pkg var )
 
@@ -20,59 +20,70 @@ function( ecbuild_list_extra_search_paths pkg var )
 
 	string( TOUPPER ${pkg} _PKG )
 
+	# ENV PKG_PATH (upper case)
+
+	if( DEFINED ENV{${_PKG}_PATH} AND EXISTS $ENV{${_PKG}_PATH}  )
+		list( APPEND ${var} $ENV{${_PKG}_PATH} )
+	endif()
+
 	# PKG_PATH (upper case)
 
-	if( DEFINED ${_PKG}_PATH )
+	if( DEFINED ${_PKG}_PATH AND EXISTS ${_PKG}_PATH )
 		list( APPEND ${var} ${${_PKG}_PATH} )
 	endif()
 
-	# PKG_PATH (lower case)
+	# pkg_PATH (lower case)
 
-	if( DEFINED ${pkg}_PATH )
+	if( DEFINED ${pkg}_PATH AND EXISTS ${pkg}_PATH  )
 		list( APPEND ${var} ${${pkg}_PATH} )
 	endif()
 
-	# fixes BOOST_ROOT taking precedence on the search for location
-	if( ${pkg} STREQUAL "boost" )
-		if( BOOST_ROOT OR BOOSTROOT OR DEFINED ENV{BOOST_ROOT} OR DEFINED ENV{BOOSTROOT} )
-			set( CMAKE_PREFIX_PATH ${BOOST_ROOT} ${BOOSTROOT} $ENV{BOOST_ROOT} $ENV{BOOSTROOT} ${CMAKE_PREFIX_PATH} )
-		endif()
+	# ENV PKG_DIR (upper case)
+
+	if( DEFINED ENV{${_PKG}_DIR} AND EXISTS $ENV{${_PKG}_DIR}  )
+		list( APPEND ${var} $ENV{${_PKG}_DIR} )
+	endif()
+
+	# ENV pkg_DIR (lower case)
+
+	if( DEFINED ENV{${pkg}_DIR} AND EXISTS $ENV{${pkg}_DIR} )
+		list( APPEND ${var} $ENV{${pkg}_DIR} )
 	endif()
 
 	# directories under /usr/local/apps/${pkg}
 
-	if( NOT SKIP_USR_LOCAL_APPS )
+	if( SEARCH_ECMWF_PATHS )
 
-	foreach( _apps /usr/local/apps/${pkg} /usr/local/lib/metaps/lib/${pkg} )
+		foreach( _apps /usr/local/apps/${pkg} /usr/local/lib/metaps/lib/${pkg} )
 
-		if( EXISTS ${_apps} )
+			if( EXISTS ${_apps} )
 
-			 file( GLOB ps ${_apps}/[0-9]* )
-			 list( SORT ps )
-			 list( REVERSE ps ) # reversing will give us the newest versions first
-			 foreach( p ${ps} )
-				 if( IS_DIRECTORY ${p} )
-					  list( APPEND ${var}  ${p} )
-					  if( EXISTS ${p}/LP64 )
-						  list( APPEND ${var} ${p}/LP64 )
-					  endif()
-				 endif()
-			 endforeach()
+				 file( GLOB ps ${_apps}/[0-9]* )
+				 list( SORT ps )
+				 list( REVERSE ps ) # reversing will give us the newest versions first
+				 foreach( p ${ps} )
+					 if( IS_DIRECTORY ${p} )
+						  list( APPEND ${var}  ${p} )
+						  if( EXISTS ${p}/LP64 )
+							  list( APPEND ${var} ${p}/LP64 )
+						  endif()
+					 endif()
+				 endforeach()
 
-			 foreach( p ${_apps} ${_apps}/current ${_apps}/stable ${_apps}/new ${_apps}/next ${_apps}/prev )
-			   if( EXISTS ${p} )
-				   list( APPEND ${var} ${p} )
-			   endif()
-			   if( EXISTS ${p}/LP64 )
-				   list( APPEND ${var} ${p}/LP64 )
-			   endif()
-			 endforeach()
+				 foreach( p ${_apps} ${_apps}/current ${_apps}/stable ${_apps}/new ${_apps}/next ${_apps}/prev )
+				   if( EXISTS ${p} )
+					   list( APPEND ${var} ${p} )
+				   endif()
+				   if( EXISTS ${p}/LP64 )
+					   list( APPEND ${var} ${p}/LP64 )
+				   endif()
+				 endforeach()
 
-		endif()
+			endif()
 
-	endforeach()
+		endforeach()
 
-	endif( NOT SKIP_USR_LOCAL_APPS )
+	endif( SEARCH_ECMWF_PATHS )
 
 	# sanitize the list
 
@@ -84,7 +95,7 @@ function( ecbuild_list_extra_search_paths pkg var )
 
 	set( ${var} ${${var}} PARENT_SCOPE )
 
-#	debug_var( ${var} )
+# debug_var( ${var} )
 
 endfunction()
 
