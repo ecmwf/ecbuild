@@ -96,7 +96,6 @@ function( ecbuild_add_library_impl )
 		# set OUTPUT_NAME
 
 		if( DEFINED _PAR_OUTPUT_NAME )
-			debug_var( _PAR_OUTPUT_NAME )
 			set_target_properties( ${_PAR_TARGET} PROPERTIES OUTPUT_NAME ${_PAR_OUTPUT_NAME} )
 		endif()
 
