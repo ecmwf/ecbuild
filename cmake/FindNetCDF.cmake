@@ -85,7 +85,7 @@ if( PREFER_NETCDF4 )
 
     ecbuild_add_extra_search_paths( netcdf4 )
 
-    message( "NETCDF CMAKE_PREFIX_PATH = [${CMAKE_PREFIX_PATH}]")
+    # message( "NETCDF CMAKE_PREFIX_PATH = [${CMAKE_PREFIX_PATH}]")
     # debug_var( NETCDF_ROOT )
     # debug_var( NETCDF_FIND_COMPONENTS )
     # debug_var( NETCDF_FIND_QUIETLY )
@@ -101,9 +101,9 @@ if( PREFER_NETCDF4 )
       list( REMOVE_DUPLICATES NETCDF_Fortran_LIBRARIES )
     endif()
 
-    debug_var( NETCDF_Fortran_LIBRARIES )
-    debug_var( NETCDF_C_LIBRARIES )
-    debug_var( NETCDF_CXX_LIBRARIES )
+    # debug_var( NETCDF_Fortran_LIBRARIES )
+    # debug_var( NETCDF_C_LIBRARIES )
+    # debug_var( NETCDF_CXX_LIBRARIES )
 
 
 	set_package_properties( NetCDF4 PROPERTIES TYPE RECOMMENDED PURPOSE "support for NetCDF4 file format" )
@@ -128,11 +128,11 @@ endif()
 
 if( PREFER_NETCDF3 )
 
-    message( "LOOKING FOR NETCDF3" )
+    # message( "LOOKING FOR NETCDF3" )
 
-    debug_var( NetCDF_FIND_COMPONENTS )
-    debug_var( NetCDF_FIND_QUIETLY )
-    debug_var( NetCDF_FIND_REQUIRED )
+    # debug_var( NetCDF_FIND_COMPONENTS )
+    # debug_var( NetCDF_FIND_QUIETLY )
+    # debug_var( NetCDF_FIND_REQUIRED )
 
 	list(FIND NetCDF_FIND_COMPONENTS "CXX" _index)
 	if(${_index} GREATER -1)
