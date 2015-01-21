@@ -13,7 +13,7 @@
 function( ecbuild_add_library_impl )
 
 	set( options NOINSTALL AUTO_VERSION )
-	set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE HEADER_DESTINATION VERSION )
+	set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE HEADER_DESTINATION VERSION OUTPUT_NAME )
 	set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
 	cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -92,6 +92,13 @@ function( ecbuild_add_library_impl )
 		endif()
 
 		add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} )
+
+		# set OUTPUT_NAME
+
+		if( DEFINED _PAR_OUTPUT_NAME )
+			debug_var( _PAR_OUTPUT_NAME )
+			set_target_properties( ${_PAR_TARGET} PROPERTIES OUTPUT_NAME ${_PAR_OUTPUT_NAME} )
+		endif()
 
 		# add extra dependencies
 		if( DEFINED _PAR_DEPENDS)
@@ -283,9 +290,7 @@ macro( ecbuild_add_library )
 			if( _p_TYPE MATCHES "[Bb][Oo][Tt][Hh]" ) # build both types
 
 				ecbuild_add_library_impl( TARGET ${_p_TARGET}        TYPE SHARED ${_p_UNPARSED_ARGUMENTS} )
-				ecbuild_add_library_impl( TARGET ${_p_TARGET}-static TYPE STATIC ${_p_UNPARSED_ARGUMENTS} )
-
-				set_target_properties( ${_p_TARGET}-static PROPERTIES OUTPUT_NAME ${_p_TARGET} )
+				ecbuild_add_library_impl( TARGET ${_p_TARGET}-static TYPE STATIC ${_p_UNPARSED_ARGUMENTS} OUTPUT_NAME ${_p_TARGET} )
 
 			else()
 
