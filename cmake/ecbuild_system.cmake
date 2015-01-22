@@ -177,6 +177,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_find_lexyacc )
 	include( ecbuild_find_fortranlibs )
 	include( ecbuild_enable_fortran )
+	include( ecbuild_bundle )
 
 	include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
