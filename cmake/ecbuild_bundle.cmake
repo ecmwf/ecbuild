@@ -118,8 +118,6 @@ macro( ecbuild_git )
           endif()
         endif()
 
-        debug_here( _current_tag )
-
     endif()
 
     if( DEFINED _PAR_BRANCH AND NOT "${_current_branch}" STREQUAL "${_PAR_BRANCH}" )
