@@ -92,19 +92,13 @@ macro( ecbuild_git )
           message(STATUS "git rev-parse --abbrev-ref HEAD on ${_PAR_DIR} failed:\n ${error}")
         endif()
 
-        # execute_process(
-        #   COMMAND ${GIT_EXECUTABLE} name-rev --tags --name-only ${_sha1}
-        #   OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
-        #   WORKING_DIRECTORY "${ABS_PAR_DIR}" )
-        # if( nok OR _current_tag STREQUAL "" )
-        #   message(STATUS "git name-rev --tags --name-only on ${_PAR_DIR} failed:\n ${error}")
-        # endif()
-
         # message(STATUS "git describe --exact-match --abbrev=0 @ ${ABS_PAR_DIR}")
         execute_process(
           COMMAND ${GIT_EXECUTABLE} describe --exact-match --abbrev=0
-          OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
+          OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error 
+          OUTPUT_STRIP_TRAILING_WHITESPACE  ERROR_STRIP_TRAILING_WHITESPACE
           WORKING_DIRECTORY "${ABS_PAR_DIR}" )
+
         if( error MATCHES "no tag exactly matches" )
           unset( _current_tag )
         else()
@@ -112,6 +106,19 @@ macro( ecbuild_git )
             message(STATUS "git describe --exact-match --abbrev=0 on ${_PAR_DIR} failed:\n ${error}")
           endif()
         endif()
+
+        if( NOT _current_tag ) # try nother method
+        # message(STATUS "git name-rev --tags --name-only @ ${ABS_PAR_DIR}")
+          execute_process(
+            COMMAND ${GIT_EXECUTABLE} name-rev --tags --name-only ${_sha1}
+            OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
+            WORKING_DIRECTORY "${ABS_PAR_DIR}" )
+          if( nok OR _current_tag STREQUAL "" )
+            message(STATUS "git name-rev --tags --name-only on ${_PAR_DIR} failed:\n ${error}")
+          endif()
+        endif()
+
+        debug_here( _current_tag )
 
     endif()
 
