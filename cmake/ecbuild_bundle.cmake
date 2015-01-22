@@ -1,14 +1,12 @@
 # Manages an external git repository
 # Usage:
-# git(DIR <directory> URL <giturl> [BRANCH <gitbranch>] [TAG <gittag>] [NO_HISTORY] [UPDATE] )
+# git(DIR <directory> URL <giturl> [BRANCH <gitbranch>] [TAG <gittag>] [UPDATE] )
 #
 # Arguments:
 #  - DIR: directory name where repo will be cloned to
 #  - URL: location of origin git repository
 #  - BRANCH (optional): Branch to clone
 #  - TAG (optional): Tag or commit-id to checkout 
-#          NOTE -- this clones entire history and overrides NO_HISTORY option
-#  - NO_HISTORY (optional) : Option that only makes a shallow clone
 #  - UPDATE (optional) : Option to try to update every cmake run
 
 macro( debug_here VAR )
@@ -39,7 +37,7 @@ endif()
 
 macro( ecbuild_git )
 
-  set( options NO_HISTORY UPDATE )
+  set( options UPDATE )
   set( single_value_args PROJECT DIR URL TAG BRANCH )
   set( multi_value_args )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
@@ -54,25 +52,16 @@ macro( ecbuild_git )
 
   if( ECBUILD_GIT )
 
-    get_filename_component( _PAR_DIR "${_PAR_DIR}" ABSOLUTE )
-    get_filename_component( PARENT_DIR "${_PAR_DIR}/.." ABSOLUTE )
+    get_filename_component( ABS_PAR_DIR "${_PAR_DIR}" ABSOLUTE )
+    get_filename_component( PARENT_DIR  "${_PAR_DIR}/.." ABSOLUTE )
 
     ### clone if no directory
 
     if( NOT EXISTS "${_PAR_DIR}" )
 
-      set( clone_args )
-      if( DEFINED _PAR_BRANCH )
-        set( clone_args -b ${_PAR_BRANCH} )
-      endif()
-      # default is with history
-      if( DEFINED _PAR_NO_HISTORY )
-        list( APPEND clone_args --single-branch --depth=1 )
-      endif()
-
       message( STATUS "Cloning ${_PAR_PROJECT} from ${_PAR_URL} into ${_PAR_DIR}...")
       execute_process(
-        COMMAND ${GIT_EXECUTABLE} "clone" ${_PAR_URL} ${clone_args} ${_PAR_DIR} ${depth} "-q"
+        COMMAND ${GIT_EXECUTABLE} "clone" ${_PAR_URL} ${clone_args} ${_PAR_DIR} "-q"
         RESULT_VARIABLE nok ERROR_VARIABLE error
         WORKING_DIRECTORY "${PARENT_DIR}")
       if(nok)
@@ -89,72 +78,58 @@ macro( ecbuild_git )
 
         execute_process(
           COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
-          OUTPUT_VARIABLE _sha1 RESULT_VARIABLE nok ERROR_VARIABLE error
-          WORKING_DIRECTORY "${_PAR_DIR}" )
+          OUTPUT_VARIABLE _sha1 RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
+          WORKING_DIRECTORY "${ABS_PAR_DIR}" )
         if(nok)
           message(STATUS "git rev-parse HEAD of ${_PAR_DIR} failed:\n ${error}")
         endif()
 
         execute_process(
-          COMMAND ${GIT_EXECUTABLE} describe --tags --dirty=-dirty
-          OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
-          WORKING_DIRECTORY "${_PAR_DIR}" )
-        if(nok)
-          message(STATUS "git describe --tags --dirty=-dirty of ${_PAR_DIR} failed:\n ${error}")
+          COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
+          OUTPUT_VARIABLE _current_branch RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
+          WORKING_DIRECTORY "${ABS_PAR_DIR}" )
+        if( nok OR _current_branch STREQUAL "" )
+          message(STATUS "git rev-parse --abbrev-ref HEAD of ${_PAR_DIR} failed:\n ${error}")
         endif()
 
-        debug_here( _sha1 )
-        debug_here( _current_tag )
+
+        execute_process(
+          COMMAND ${GIT_EXECUTABLE} name-rev --tags --name-only ${_sha1}
+          OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
+          WORKING_DIRECTORY "${ABS_PAR_DIR}" )
+        if( nok OR _current_tag STREQUAL "" )
+          message(STATUS "git name-rev --tags --name-only of ${_PAR_DIR} failed:\n ${error}")
+        endif()
 
     endif()
 
-    if( DEFINED _PAR_BRANCH )
-
-      unset( ${_PAR_PROJECT}_GIT_TAG CACHE )
-    
-      if( NOT DEFINED ${_PAR_PROJECT}_GIT_BRANCH )
-        set( ${_PAR_PROJECT}_GIT_BRANCH ${_PAR_BRANCH} CACHE INTERNAL ""  )
-      endif()
-
-      if( NOT "${${_PAR_PROJECT}_GIT_BRANCH}" STREQUAL "${_PAR_BRANCH}" )
-        set( ${_PAR_PROJECT}_GIT_BRANCH ${_PAR_BRANCH} CACHE INTERNAL "" )
+    if( DEFINED _PAR_BRANCH AND NOT "${_current_branch}" STREQUAL "${_PAR_BRANCH}" )
         set( _PAR_UPDATE TRUE )
-      endif()
-
     endif()
 
-	  if( DEFINED _PAR_TAG )
-
-      unset( ${_PAR_PROJECT}_GIT_BRANCH CACHE )
-
-      set( _PAR_NO_HISTORY FALSE )
-
-      if( NOT DEFINED ${_PAR_PROJECT}_GIT_TAG )
-        set( ${_PAR_PROJECT}_GIT_TAG ${_PAR_TAG} CACHE INTERNAL ""  )
-      endif()
-
-      if( NOT "${${_PAR_PROJECT}_GIT_TAG}" STREQUAL "${_PAR_TAG}" )
-        set( ${_PAR_PROJECT}_GIT_TAG ${_PAR_TAG} CACHE INTERNAL "" )
+	  if( DEFINED _PAR_TAG AND NOT "${_current_tag}" STREQUAL "${_PAR_TAG}" )
         set( _PAR_UPDATE TRUE )
-      endif()
-
-      if( NOT "${_current_tag}" STREQUAL "${_PAR_TAG}" )
-        set( _PAR_UPDATE TRUE )
-      endif()
-
     endif()
 
     ### updates
 
     if( _PAR_UPDATE AND IS_DIRECTORY "${_PAR_DIR}/.git" )
 
+        debug_here( ABS_PAR_DIR )
+        debug_here( _sha1 )
+        debug_here( _current_branch )
+        debug_here( _current_tag )
+      debug_here( _PAR_TAG )
+      debug_here( _PAR_BRANCH )
+      debug_here( _PAR_UPDATE )
+
       if( DEFINED _PAR_TAG ) #############################################################################
 
               message(STATUS "Updating ${_PAR_PROJECT} to TAG ${_PAR_TAG}...")
 
-              execute_process(COMMAND "${GIT_EXECUTABLE}" fetch --all -q
+              execute_process(COMMAND "${GIT_EXECUTABLE}" fetch --all --tags -q
                 RESULT_VARIABLE nok ERROR_VARIABLE error
-                WORKING_DIRECTORY "${_PAR_DIR}")
+                WORKING_DIRECTORY "${ABS_PAR_DIR}")
               if(nok)
                 message(STATUS "Update of ${_PAR_DIR} to TAG ${_PAR_TAG} failed:\n ${error}")
               endif()
@@ -162,7 +137,7 @@ macro( ecbuild_git )
               execute_process(
                 COMMAND "${GIT_EXECUTABLE}" checkout -q "${_PAR_TAG}"
                 RESULT_VARIABLE nok ERROR_VARIABLE error
-                WORKING_DIRECTORY "${_PAR_DIR}"
+                WORKING_DIRECTORY "${ABS_PAR_DIR}"
                 )
               if(nok)
                 message(FATAL_ERROR "git checkout ${_PAR_TAG} of ${_PAR_DIR} failed: ${error}\n")
@@ -175,14 +150,14 @@ macro( ecbuild_git )
 
           execute_process(COMMAND "${GIT_EXECUTABLE}" checkout -q "${_PAR_BRANCH}"
             RESULT_VARIABLE nok ERROR_VARIABLE error
-            WORKING_DIRECTORY "${_PAR_DIR}")
+            WORKING_DIRECTORY "${ABS_PAR_DIR}")
           if(nok)
             message(STATUS "Checkout of ${_PAR_PROJECT} to branch ${_PAR_BRANCH} failed:\n ${error}")
           endif()
         
           execute_process(COMMAND "${GIT_EXECUTABLE}" pull -q
             RESULT_VARIABLE nok ERROR_VARIABLE error
-            WORKING_DIRECTORY "${_PAR_DIR}")
+            WORKING_DIRECTORY "${ABS_PAR_DIR}")
           if(nok)
             message(STATUS "Update of ${_PAR_PROJECT} to branch ${_PAR_BRANCH} failed:\n ${error}")
           endif()
@@ -195,9 +170,10 @@ macro( ecbuild_git )
 
       add_custom_target( update_${_PAR_PROJECT}
                          COMMAND "${GIT_EXECUTABLE}" pull -q
-                         WORKING_DIRECTORY "${_PAR_DIR}"
+                         WORKING_DIRECTORY "${ABS_PAR_DIR}"
                          COMMENT "Updating ${_PAR_PROJECT} to head of BRANCH ${_PAR_BRANCH}" )
-      list( APPEND update_targets update_${_PAR_PROJECT} )
+
+      list( APPEND git_update_targets git_update_${_PAR_PROJECT} )
 
     endif()
 
@@ -224,11 +200,11 @@ macro( ecbuild_bundle_initialize )
 
   ecmwf_stash( PROJECT ecbuild DIR ${PROJECT_SOURCE_DIR}/ecbuild   STASH "ecsdk/ecbuild" BRANCH develop )
 
-  list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake" )
+  set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake;${CMAKE_MODULE_PATH}" )
 
   include( ecbuild_system )
 
-  ecbuild_requires_macro_version( 1.3 )
+  ecbuild_requires_macro_version( 1.5 )
   ecbuild_declare_project()
 
   if( EXISTS "${PROJECT_SOURCE_DIR}/README.md" )
