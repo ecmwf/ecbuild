@@ -81,7 +81,7 @@ macro( ecbuild_git )
           OUTPUT_VARIABLE _sha1 RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
           WORKING_DIRECTORY "${ABS_PAR_DIR}" )
         if(nok)
-          message(STATUS "git rev-parse HEAD of ${_PAR_DIR} failed:\n ${error}")
+          message(STATUS "git rev-parse HEAD on ${_PAR_DIR} failed:\n ${error}")
         endif()
 
         execute_process(
@@ -89,16 +89,28 @@ macro( ecbuild_git )
           OUTPUT_VARIABLE _current_branch RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
           WORKING_DIRECTORY "${ABS_PAR_DIR}" )
         if( nok OR _current_branch STREQUAL "" )
-          message(STATUS "git rev-parse --abbrev-ref HEAD of ${_PAR_DIR} failed:\n ${error}")
+          message(STATUS "git rev-parse --abbrev-ref HEAD on ${_PAR_DIR} failed:\n ${error}")
         endif()
 
+        # execute_process(
+        #   COMMAND ${GIT_EXECUTABLE} name-rev --tags --name-only ${_sha1}
+        #   OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
+        #   WORKING_DIRECTORY "${ABS_PAR_DIR}" )
+        # if( nok OR _current_tag STREQUAL "" )
+        #   message(STATUS "git name-rev --tags --name-only on ${_PAR_DIR} failed:\n ${error}")
+        # endif()
 
+        # message(STATUS "git describe --exact-match --abbrev=0 @ ${ABS_PAR_DIR}")
         execute_process(
-          COMMAND ${GIT_EXECUTABLE} name-rev --tags --name-only ${_sha1}
+          COMMAND ${GIT_EXECUTABLE} describe --exact-match --abbrev=0
           OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
           WORKING_DIRECTORY "${ABS_PAR_DIR}" )
-        if( nok OR _current_tag STREQUAL "" )
-          message(STATUS "git name-rev --tags --name-only of ${_PAR_DIR} failed:\n ${error}")
+        if( error MATCHES "no tag exactly matches" )
+          unset( _current_tag )
+        else()
+          if( nok )
+            message(STATUS "git describe --exact-match --abbrev=0 on ${_PAR_DIR} failed:\n ${error}")
+          endif()
         endif()
 
     endif()
@@ -115,13 +127,13 @@ macro( ecbuild_git )
 
     if( _PAR_UPDATE AND IS_DIRECTORY "${_PAR_DIR}/.git" )
 
-        debug_here( ABS_PAR_DIR )
-        debug_here( _sha1 )
-        debug_here( _current_branch )
-        debug_here( _current_tag )
-      debug_here( _PAR_TAG )
-      debug_here( _PAR_BRANCH )
-      debug_here( _PAR_UPDATE )
+      # debug_here( ABS_PAR_DIR )
+      # debug_here( _sha1 )
+      # debug_here( _current_branch )
+      # debug_here( _current_tag )
+      # debug_here( _PAR_TAG )
+      # debug_here( _PAR_BRANCH )
+      # debug_here( _PAR_UPDATE )
 
       if( DEFINED _PAR_TAG ) #############################################################################
 
@@ -131,7 +143,7 @@ macro( ecbuild_git )
                 RESULT_VARIABLE nok ERROR_VARIABLE error
                 WORKING_DIRECTORY "${ABS_PAR_DIR}")
               if(nok)
-                message(STATUS "Update of ${_PAR_DIR} to TAG ${_PAR_TAG} failed:\n ${error}")
+                message(STATUS "git fetch --all --tags in ${_PAR_DIR} failed:\n ${error}")
               endif()
             
               execute_process(
@@ -140,7 +152,7 @@ macro( ecbuild_git )
                 WORKING_DIRECTORY "${ABS_PAR_DIR}"
                 )
               if(nok)
-                message(FATAL_ERROR "git checkout ${_PAR_TAG} of ${_PAR_DIR} failed: ${error}\n")
+                message(FATAL_ERROR "git checkout ${_PAR_TAG} on ${_PAR_DIR} failed: ${error}\n")
               endif()
 
 
@@ -152,14 +164,14 @@ macro( ecbuild_git )
             RESULT_VARIABLE nok ERROR_VARIABLE error
             WORKING_DIRECTORY "${ABS_PAR_DIR}")
           if(nok)
-            message(STATUS "Checkout of ${_PAR_PROJECT} to branch ${_PAR_BRANCH} failed:\n ${error}")
+            message(STATUS "git checkout ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
           endif()
         
           execute_process(COMMAND "${GIT_EXECUTABLE}" pull -q
             RESULT_VARIABLE nok ERROR_VARIABLE error
             WORKING_DIRECTORY "${ABS_PAR_DIR}")
           if(nok)
-            message(STATUS "Update of ${_PAR_PROJECT} to branch ${_PAR_BRANCH} failed:\n ${error}")
+            message(STATUS "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
           endif()
         
       endif() ####################################################################################
@@ -171,7 +183,7 @@ macro( ecbuild_git )
       add_custom_target( update_${_PAR_PROJECT}
                          COMMAND "${GIT_EXECUTABLE}" pull -q
                          WORKING_DIRECTORY "${ABS_PAR_DIR}"
-                         COMMENT "Updating ${_PAR_PROJECT} to head of BRANCH ${_PAR_BRANCH}" )
+                         COMMENT "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR}" )
 
       list( APPEND git_update_targets git_update_${_PAR_PROJECT} )
 
