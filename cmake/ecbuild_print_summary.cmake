@@ -67,9 +67,7 @@ macro( ecbuild_print_summary )
 
 	message( STATUS "common definitions: ${defs}" )
 
-        message( STATUS "---------------------------------------------------------" )
-
-    endif()
+	message( STATUS "---------------------------------------------------------" )
 
 	### FEATURE SUMMARY
 
@@ -111,5 +109,7 @@ macro( ecbuild_print_summary )
         message( STATUS " +++ WARNING +++ WARNING +++ WARNING +++" )
 
     endif()
+
+	endif( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 endmacro( ecbuild_print_summary )
