@@ -151,6 +151,7 @@ macro( ecbuild_enable_mpi )
     endif()
 
     if( MPI_Fortran_FOUND AND NOT Fortran_COMPILER_SUPPORTS_MPI )
+        include(ecbuild_check_fortran_source)
         cmake_add_fortran_flags("${MPI_Fortran_COMPILE_FLAGS}")
         include_directories(${MPI_Fortran_INCLUDE_PATH})
     endif()
