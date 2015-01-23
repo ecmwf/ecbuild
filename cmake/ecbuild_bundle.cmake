@@ -10,7 +10,7 @@
 #  - UPDATE (optional) : Option to try to update every cmake run
 
 macro( debug_here VAR )
-  message( STATUS "${VAR} [${${VAR}}]")
+  message( STATUS " >>>>> ${VAR} [${${VAR}}]")
 endmacro()
 
 include(CMakeParseArguments)
@@ -130,12 +130,12 @@ macro( ecbuild_git )
 
 	if( DEFINED _PAR_BRANCH )
 
-	  add_custom_target( update_${_PAR_PROJECT}
+	  add_custom_target( git_update_${_PAR_PROJECT}
 						 COMMAND "${GIT_EXECUTABLE}" pull -q
 						 WORKING_DIRECTORY "${ABS_PAR_DIR}"
 						 COMMENT "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR}" )
 
-	  list( APPEND git_update_targets git_update_${_PAR_PROJECT} )
+	  set( git_update_targets "git_update_${_PAR_PROJECT};${git_update_targets}" )
 
 	endif()
 
@@ -215,13 +215,14 @@ endmacro()
 
 macro( ecbuild_bundle_initialize )
 
-  ecmwf_stash( PROJECT ecbuild DIR ${PROJECT_SOURCE_DIR}/ecbuild   STASH "ecsdk/ecbuild" BRANCH develop )
+  ecmwf_stash( PROJECT ecbuild DIR ${PROJECT_SOURCE_DIR}/ecbuild STASH "ecsdk/ecbuild" BRANCH develop )
 
   set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake;${CMAKE_MODULE_PATH}" )
 
   include( ecbuild_system )
 
   ecbuild_requires_macro_version( 1.5 )
+
   ecbuild_declare_project()
 
   if( EXISTS "${PROJECT_SOURCE_DIR}/README.md" )
@@ -246,6 +247,8 @@ macro( ecbuild_bundle )
 endmacro()
 
 macro( ecbuild_bundle_finalize )
+
+debug_here( git_update_targets )
 
   add_custom_target( update DEPENDS ${git_update_targets} )
 
