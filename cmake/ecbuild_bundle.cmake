@@ -52,6 +52,8 @@ macro( ecbuild_git )
 
   if( ECBUILD_GIT )
 
+    set( _needs_switch 0 )
+
     get_filename_component( ABS_PAR_DIR "${_PAR_DIR}" ABSOLUTE )
     get_filename_component( PARENT_DIR  "${_PAR_DIR}/.." ABSOLUTE )
 
@@ -68,7 +70,7 @@ macro( ecbuild_git )
         message(FATAL_ERROR "${_PAR_DIR} git clone failed: ${error}\n")
       endif()
       message( STATUS "${_PAR_DIR} retrieved.")
-      set( _PAR_UPDATE TRUE )
+      set( _needs_switch 1 )
     
     endif()
 
@@ -121,14 +123,14 @@ macro( ecbuild_git )
     endif()
 
     if( DEFINED _PAR_BRANCH AND NOT "${_current_branch}" STREQUAL "${_PAR_BRANCH}" )
-        set( _PAR_UPDATE TRUE )
+      set( _needs_switch 1 )
     endif()
 
 	  if( DEFINED _PAR_TAG AND NOT "${_current_tag}" STREQUAL "${_PAR_TAG}" )
-        set( _PAR_UPDATE TRUE )
+      set( _needs_switch 1 )
     endif()
 
-	if( DEFINED _PAR_BRANCH )
+	if( DEFINED _PAR_BRANCH AND _PAR_UPDATE )
 
 	  add_custom_target( git_update_${_PAR_PROJECT}
 						 COMMAND "${GIT_EXECUTABLE}" pull -q
@@ -141,58 +143,65 @@ macro( ecbuild_git )
 
     ### updates
 
-    if( _PAR_UPDATE AND IS_DIRECTORY "${_PAR_DIR}/.git" )
+    if( _needs_switch AND IS_DIRECTORY "${_PAR_DIR}/.git" )
 
-      # debug_here( ABS_PAR_DIR )
-      # debug_here( _sha1 )
-      # debug_here( _current_branch )
-      # debug_here( _current_tag )
-      # debug_here( _PAR_TAG )
-      # debug_here( _PAR_BRANCH )
-      # debug_here( _PAR_UPDATE )
+      debug_here( ABS_PAR_DIR )
+      debug_here( _sha1 )
+      debug_here( _current_branch )
+      debug_here( _current_tag )
+      debug_here( _PAR_TAG )
+      debug_here( _PAR_BRANCH )
+      debug_here( _needs_switch )
+      debug_here( _PAR_UPDATE )
 
-      if( DEFINED _PAR_TAG ) #############################################################################
+      if( DEFINED _PAR_BRANCH )
+        set ( _gitref ${_PAR_BRANCH} )
+        message(STATUS "Updating ${_PAR_PROJECT} to head of BRANCH ${_PAR_BRANCH}...")
+      else()
+        message(STATUS "Updating ${_PAR_PROJECT} to TAG ${_PAR_TAG}...")
+        set ( _gitref ${_PAR_TAG} )
+      endif()
 
-              message(STATUS "Updating ${_PAR_PROJECT} to TAG ${_PAR_TAG}...")
+      # fetching latest tags and branches
 
-              execute_process(COMMAND "${GIT_EXECUTABLE}" fetch --all --tags -q
-                RESULT_VARIABLE nok ERROR_VARIABLE error
-                WORKING_DIRECTORY "${ABS_PAR_DIR}")
-              if(nok)
-                message(STATUS "git fetch --all --tags in ${_PAR_DIR} failed:\n ${error}")
-              endif()
-            
-              execute_process(
-                COMMAND "${GIT_EXECUTABLE}" checkout -q "${_PAR_TAG}"
-                RESULT_VARIABLE nok ERROR_VARIABLE error
-                WORKING_DIRECTORY "${ABS_PAR_DIR}"
-                )
-              if(nok)
-                message(FATAL_ERROR "git checkout ${_PAR_TAG} on ${_PAR_DIR} failed: ${error}\n")
-              endif()
+      message(STATUS "git fetch --all @ ${ABS_PAR_DIR}")
+      execute_process(COMMAND "${GIT_EXECUTABLE}" fetch --all -q
+        RESULT_VARIABLE nok ERROR_VARIABLE error
+        WORKING_DIRECTORY "${ABS_PAR_DIR}")
+      if(nok)
+        message(STATUS "git fetch --all in ${_PAR_DIR} failed:\n ${error}")
+      endif()
 
+      message(STATUS "git fetch --all --tags @ ${ABS_PAR_DIR}")
+      execute_process(COMMAND "${GIT_EXECUTABLE}" fetch --all --tags -q
+        RESULT_VARIABLE nok ERROR_VARIABLE error
+        WORKING_DIRECTORY "${ABS_PAR_DIR}")
+      if(nok)
+        message(STATUS "git fetch --all --tags in ${_PAR_DIR} failed:\n ${error}")
+      endif()
 
-      else() ####################################################################################
+      # checking out gitref
 
-          message(STATUS "Updating ${_PAR_PROJECT} to head of BRANCH ${_PAR_BRANCH}...")
+      message(STATUS "git checkout ${_gitref} @ ${ABS_PAR_DIR}")
+      execute_process(COMMAND "${GIT_EXECUTABLE}" checkout -q "${_gitref}"
+        RESULT_VARIABLE nok ERROR_VARIABLE error
+        WORKING_DIRECTORY "${ABS_PAR_DIR}")
+      if(nok)
+        message(FATAL_ERROR "git checkout ${_gitref} on ${_PAR_DIR} failed:\n ${error}")
+      endif()
 
-          execute_process(COMMAND "${GIT_EXECUTABLE}" checkout -q "${_PAR_BRANCH}"
-            RESULT_VARIABLE nok ERROR_VARIABLE error
-            WORKING_DIRECTORY "${ABS_PAR_DIR}")
-          if(nok)
-            message(STATUS "git checkout ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
-          endif()
-        
-          execute_process(COMMAND "${GIT_EXECUTABLE}" pull -q
-            RESULT_VARIABLE nok ERROR_VARIABLE error
-            WORKING_DIRECTORY "${ABS_PAR_DIR}")
-          if(nok)
-            message(STATUS "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
-          endif()
+      if( DEFINED _PAR_BRANCH AND _PAR_UPDATE ) #############################################################################
+          
+            execute_process(COMMAND "${GIT_EXECUTABLE}" pull -q
+              RESULT_VARIABLE nok ERROR_VARIABLE error
+              WORKING_DIRECTORY "${ABS_PAR_DIR}")
+            if(nok)
+              message(STATUS "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
+            endif()
         
       endif() ####################################################################################
 
-    endif( _PAR_UPDATE AND IS_DIRECTORY "${_PAR_DIR}/.git" )
+    endif( _needs_switch AND IS_DIRECTORY "${_PAR_DIR}/.git" )
 
   endif( ECBUILD_GIT ) 
 
