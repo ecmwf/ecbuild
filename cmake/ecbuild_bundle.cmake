@@ -236,6 +236,8 @@ endmacro()
 
 macro( ecbuild_bundle_initialize )
 
+  include( local-config.cmake OPTIONAL )
+
   ecmwf_stash( PROJECT ecbuild DIR ${PROJECT_SOURCE_DIR}/ecbuild STASH "ecsdk/ecbuild" BRANCH develop )
 
   set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake;${CMAKE_MODULE_PATH}" )
@@ -245,6 +247,12 @@ macro( ecbuild_bundle_initialize )
   ecbuild_requires_macro_version( 1.5 )
 
   ecbuild_declare_project()
+
+  file( GLOB local_config_files "*local-config.cmake" )
+
+  debug_here( ${local_config_files} )
+
+  ecbuild_dont_pack( FILES ${local_config_files} )
 
   if( EXISTS "${PROJECT_SOURCE_DIR}/README.md" )
     add_custom_target( ${PROJECT_NAME}_readme SOURCES "${PROJECT_SOURCE_DIR}/README.md" )
@@ -259,8 +267,8 @@ macro( ecbuild_bundle )
   set( options )
   set( single_value_args PROJECT )
   set( multi_value_args )
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
-  
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )  
+
   ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} ${_PAR_UNPARSED_ARGUMENTS} )
   
   ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
@@ -268,8 +276,6 @@ macro( ecbuild_bundle )
 endmacro()
 
 macro( ecbuild_bundle_finalize )
-
-debug_here( git_update_targets )
 
   add_custom_target( update DEPENDS ${git_update_targets} )
 
