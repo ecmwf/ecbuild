@@ -1,5 +1,3 @@
-add_custom_target( ecbuild_share SOURCES ecmwf_license_header.txt )
+ecbuild_dont_pack( DIRS ecbuild/cmake )
 
-# if( ENABLE_INSTALL )
-#	install( FILES ecmwf_license_header.txt DESTINATION ${INSTALL_DATA_DIR} )
-# endif()
+ecbuild_add_resource( target ecbuild_share PACK ecmwf_license_header.txt ecbuild/cmake )
