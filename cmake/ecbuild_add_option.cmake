@@ -166,4 +166,10 @@ macro( ecbuild_add_option )
 		add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}")
 	endif()
 
+  if( HAVE_${_p_FEATURE} )
+    string( TOUPPER PNAME ${PROJECT_NAME} )
+    set( ${PNAME}_HAVE_${_p_FEATURE} 1 )
+    set( ${PNAME}_FEATURES "${${PNAME}_FEATURES};${PNAME}_HAVE_${_p_FEATURE}" CACHE INTERNAL "" )
+  endif()
+
 endmacro( ecbuild_add_option  )
