@@ -12,7 +12,7 @@
 #  * NETCDF_PATH - user defined path where to search for the library first
 #  * NETCDF_DIR  - user defined path where to search for the library first
 #  * NETCDF_CXX  - if to search also for netcdf_c++ wrapper library
-#  * NETCDF_Fortran  - if to search also for netcdff wrapper library
+#  * NETCDF_Fortran  - if to search also for netcdf wrapper library
 #
 # Output:
 #  NETCDF_FOUND - System has NetCDF
@@ -98,7 +98,7 @@ if( NETCDF_Fortran )
     find_path( NETCDF_Fortran_INCLUDE_DIR netcdf.mod PATHS ${_netcdf_incs} PATH_SUFFIXES ${_ncdf_sfx} NO_DEFAULT_PATH)
     find_path( NETCDF_Fortran_INCLUDE_DIR netcdf.mod PATHS ${_netcdf_incs} PATH_SUFFIXES ${_ncdf_sfx} )
 
-    set( _ncdf_fortran netcdff )
+    set( _ncdf_fortran netcdf )
 
     find_library( NETCDF_Fortran_LIBRARY NAMES ${_ncdf_fortran} PATHS ${_netcdf_libs} PATH_SUFFIXES ${_ncdf_sfx} NO_DEFAULT_PATH )
     find_library( NETCDF_Fortran_LIBRARY NAMES ${_ncdf_fortran} PATHS ${_netcdf_libs} PATH_SUFFIXES ${_ncdf_sfx} )
