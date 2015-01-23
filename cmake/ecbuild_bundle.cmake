@@ -128,6 +128,17 @@ macro( ecbuild_git )
         set( _PAR_UPDATE TRUE )
     endif()
 
+	if( DEFINED _PAR_BRANCH )
+
+	  add_custom_target( update_${_PAR_PROJECT}
+						 COMMAND "${GIT_EXECUTABLE}" pull -q
+						 WORKING_DIRECTORY "${ABS_PAR_DIR}"
+						 COMMENT "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR}" )
+
+	  list( APPEND git_update_targets git_update_${_PAR_PROJECT} )
+
+	endif()
+
     ### updates
 
     if( _PAR_UPDATE AND IS_DIRECTORY "${_PAR_DIR}/.git" )
@@ -182,17 +193,6 @@ macro( ecbuild_git )
       endif() ####################################################################################
 
     endif( _PAR_UPDATE AND IS_DIRECTORY "${_PAR_DIR}/.git" )
-
-    if( DEFINED _PAR_BRANCH )
-
-      add_custom_target( update_${_PAR_PROJECT}
-                         COMMAND "${GIT_EXECUTABLE}" pull -q
-                         WORKING_DIRECTORY "${ABS_PAR_DIR}"
-                         COMMENT "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR}" )
-
-      list( APPEND git_update_targets git_update_${_PAR_PROJECT} )
-
-    endif()
 
   endif( ECBUILD_GIT ) 
 
