@@ -246,8 +246,11 @@ macro( ecbuild_bundle )
 endmacro()
 
 macro( ecbuild_bundle_finalize )
-  add_custom_target( update
-                     DEPENDS ${update_targets} )
+
+  add_custom_target( update DEPENDS ${git_update_targets} )
+
   ecbuild_install_project( NAME ${CMAKE_PROJECT_NAME} )
+
   ecbuild_print_summary()
+
 endmacro()
