@@ -19,7 +19,6 @@ get_filename_component(@PNAME@_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 set( @PNAME@_SELF_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@" )
 set( @PNAME@_SELF_DEFINITIONS  "@CONF_DEFINITIONS@" )
 set( @PNAME@_SELF_LIBRARIES    "@CONF_LIBRARIES@" )
-set( @PNAME@_SELF_PACKAGES     "@CONF_PACKAGES@" )
 
 set( @PNAME@_TPLS              "@CONF_TPLS@" )
 set( @PNAME@_TPL_INCLUDE_DIRS  "@CONF_TPL_INCLUDE_DIRS@" )
@@ -36,8 +35,12 @@ list( APPEND @PNAME@_INCLUDE_DIRS ${@PNAME@_TPL_INCLUDE_DIRS} )
 
 set( @PNAME@_DEFINITIONS      ${@PNAME@_SELF_DEFINITIONS} ${@PNAME@_TPL_DEFINITIONS} )
 set( @PNAME@_LIBRARIES        ${@PNAME@_SELF_LIBRARIES}   ${@PNAME@_TPL_LIBRARIES}   )
-set( @PNAME@_PACKAGES         ${@PNAME@_SELF_PACKAGES}                               )
 
+# define the features provided by the package
+set( @PNAME@_FEATURES    "@CONF_FEATURES@" )
+foreach( _f ${@PNAME@_FEATURES} )
+	set( ${_f} 1 )
+endforeach()
 
 if( EXISTS ${@PNAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@ )
   set( @PNAME@_IMPORT_FILE "${@PNAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@" )

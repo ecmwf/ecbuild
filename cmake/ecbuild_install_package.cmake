@@ -159,9 +159,9 @@ macro( ecbuild_install_project )
 
         # prepare imutable variables (don't depend on install path)
 
-        set( CONF_PACKAGES "" )
-        if( ${PNAME}_PACKAGES )
-          set( CONF_PACKAGES ${${PNAME}_PACKAGES} )
+        set( CONF_FEATURES "" )
+        if( ${PNAME}_FEATURES )
+          set( CONF_FEATURES ${${PNAME}_FEATURES} )
         endif()
 
         set( CONF_LIBRARIES ${${PROJECT_NAME}_ALL_LIBS} )
