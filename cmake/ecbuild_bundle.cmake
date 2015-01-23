@@ -250,9 +250,7 @@ macro( ecbuild_bundle_initialize )
 
   file( GLOB local_config_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *local-config.cmake )
 
-  ecbuild_add_resources( TARGET ecbuild_bundle_dont_pack 
-      DONT_PACK "${local_config_files}"
-      DONT_PACK_DIRS ecbuild )
+  ecbuild_add_resources( TARGET ecbuild_bundle_dont_pack DONT_PACK "${local_config_files}" )
 
   if( EXISTS "${PROJECT_SOURCE_DIR}/README.md" )
     add_custom_target( ${PROJECT_NAME}_readme SOURCES "${PROJECT_SOURCE_DIR}/README.md" )
