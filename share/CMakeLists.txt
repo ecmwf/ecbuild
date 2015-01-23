@@ -1,3 +1,3 @@
-ecbuild_dont_pack( DIRS ecbuild/cmake )
-
-ecbuild_add_resource( target ecbuild_share PACK ecmwf_license_header.txt ecbuild/cmake )
+ecbuild_add_resources( TARGET ecbuild_share 
+	SOURCE_PACK ecmwf_license_header.txt
+	DONT_PACK_DIRS ecbuild/cmake )
