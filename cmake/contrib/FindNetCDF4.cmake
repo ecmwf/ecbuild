@@ -148,10 +148,10 @@ else()
 
     set( NETCDF_C_LIBRARY_NAMES netcdf)
     set( NETCDF_CXX_LIBRARY_NAMES netcdf_c++ ${NETCDF_C_LIBRARY_NAMES} )
-    set( NETCDF_FORTRAN_LIBRARY_NAMES netcdf ${NETCDF_C_LIBRARY_NAMES})
+    set( NETCDF_FORTRAN_LIBRARY_NAMES netcdff ${NETCDF_C_LIBRARY_NAMES})
     set( NETCDF_F90_LIBRARY_NAMES ${NETCDF_FORTRAN_LIBRARY_NAMES} )
 
-    set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.mod typesizes.mod netcdf netcdf netcdf_c++)
+    set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.mod typesizes.mod netcdf netcdff netcdf_c++)
 
     foreach( LANGUAGE ${NETCDF_LANGUAGE_BINDINGS} )
       # debug_var(LANGUAGE)
