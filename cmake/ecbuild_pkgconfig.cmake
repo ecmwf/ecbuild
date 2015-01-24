@@ -233,7 +233,7 @@ endfunction(ecbuild_pkgconfig_include)
 macro( ecbuild_pkgconfig )
 
   set( options REQUIRES )
-  set( single_value_args FILENAME NAME TEMPLATE URL DESCRIPTION )
+  set( single_value_args FILEPATH NAME TEMPLATE URL DESCRIPTION )
   set( multi_value_args LIBRARIES IGNORE_INCLUDE_DIRS IGNORE_LIBRARIES )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -270,16 +270,16 @@ macro( ecbuild_pkgconfig )
     set( PKGCONFIG_NAME ${_PAR_NAME} )
   endif()
 
-  if( NOT _PAR_FILENAME )
-    set( _PAR_FILENAME "${PKGCONFIG_NAME}.pc" )
+  if( NOT _PAR_FILEPATH )
+    set( _PAR_FILEPATH "${PKGCONFIG_NAME}.pc" )
   endif()
 
   set( PKGCONFIG_VERSION ${${PNAME}_VERSION} )
   set( PKGCONFIG_DESCRIPTION ${_PAR_DESCRIPTION} )
   set( PKGCONFIG_URL ${_PAR_URL} )
 
-  configure_file( ${_PAR_TEMPLATE} "${CMAKE_BINARY_DIR}/${_PAR_FILENAME}" @ONLY )
-  message( STATUS "pkg-config file created: ${_PAR_FILENAME}" )
+  configure_file( ${_PAR_TEMPLATE} "${CMAKE_BINARY_DIR}/${_PAR_FILEPATH}" @ONLY )
+  message( STATUS "pkg-config file created: ${_PAR_FILEPATH}" )
   unset( PKGCONFIG_NAME )
   unset( PKGCONFIG_DESCRIPTION )
   unset( PKGCONFIG_VERSION )
@@ -292,7 +292,7 @@ macro( ecbuild_pkgconfig )
   unset( PKGCONFIG_INCLUDE_DIRS )
   unset( PKGCONFIG_DEPENDS )
 
-  install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILENAME}
+  install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILEPATH}
            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${LNAME}/pkgconfig
            COMPONENT utilities )
 
