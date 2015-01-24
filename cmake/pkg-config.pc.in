@@ -1,0 +1,29 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+
+exec_prefix=${prefix}
+
+libdir=${prefix}/lib
+
+includedir=${prefix}/include
+
+ccompiler=@CMAKE_C_COMPILER@
+
+cxxcompiler=@CMAKE_CXX_COMPILER@
+
+fcompiler=@CMAKE_Fortran_COMPILER@
+
+libs=-L${libdir} @PKGCONFIG_LIBS@
+
+cflags=-I${includedir} @PKGCONFIG_CFLAGS@
+
+fflags=-I${includedir} @PKGCONFIG_FFLAGS@
+
+
+Name: @PKGCONFIG_NAME@
+Description: @PKGCONFIG_DESCRIPTION@
+URL: @PKGCONFIG_URL@
+Version: @PKGCONFIG_VERSION@
+Libs: ${libs}
+Requires: @PKGCONFIG_REQUIRES@
+Cflags: ${cflags}
+Fflags: ${fflags}
