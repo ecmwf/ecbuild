@@ -122,52 +122,63 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
   set( _libraries ${${libraries}} )
   set( _ignore_libs ${${ignore_libs}} )
 
-  foreach( _lib ${_libraries})
+  foreach( _lib ${_libraries} )
 
     unset( _name )
     unset( _dir  )
 
-    if( ${_lib} MATCHES "-l.+" )
-
-      string( REGEX REPLACE "^-l" "" _name ${_lib} )
-
-    else()
-
+    if( ${_lib} MATCHES ".+/Frameworks/.+" )
+      
       get_filename_component( _name ${_lib} NAME_WE )
-      get_filename_component( _dir  ${_lib} PATH )
+      list( APPEND _pkgconfig_libs "-framework ${_name}" )
+      
+    else()
+    
+      if( ${_lib} MATCHES "-l.+" )
 
-      if( NOT _name )
-        set( _name ${_lib} )
-      endif()
-
-      string( REGEX REPLACE "^lib" "" _name ${_name} )
-
-      if( "${_dir}" STREQUAL "/usr/lib" )
-        unset( _dir )
-      endif()
-      if( "${_dir}" STREQUAL "/usr/lib64" )
-        unset( _dir )
-      endif()
-    endif()
-
-    set( _set_append TRUE )
-      foreach( _ignore ${_ignore_libs} )
-        if( "${_name}" STREQUAL "${_ignore}" )
-          set( _set_append FALSE )
-        endif()
-    endforeach()
-
-    if( _set_append )
- 
-      if( _dir )
-        list( APPEND _pkgconfig_libs "-L${_dir}" "-l${_name}" )   
+        string( REGEX REPLACE "^-l" "" _name ${_lib} )      
+      
       else()
-        list( APPEND _pkgconfig_libs "-l${_name}" )
+
+
+        get_filename_component( _name ${_lib} NAME_WE )
+        get_filename_component( _dir  ${_lib} PATH )
+
+        if( NOT _name )
+          set( _name ${_lib} )
+        endif()
+
+        string( REGEX REPLACE "^lib" "" _name ${_name} )
+
+        if( "${_dir}" STREQUAL "/usr/lib" )
+          unset( _dir )
+        endif()
+        if( "${_dir}" STREQUAL "/usr/lib64" )
+          unset( _dir )
+        endif()
+
       endif()
 
-    endif()
+      set( _set_append TRUE )
+        foreach( _ignore ${_ignore_libs} )
+          if( "${_name}" STREQUAL "${_ignore}" )
+            set( _set_append FALSE )
+          endif()
+      endforeach()
 
-    endforeach()
+      if( _set_append )
+ 
+        if( _dir )
+          list( APPEND _pkgconfig_libs "-L${_dir}" "-l${_name}" )   
+        else()
+          list( APPEND _pkgconfig_libs "-l${_name}" )
+        endif()
+
+      endif()
+      
+    endif( ${_lib} MATCHES ".+\/Frameworks\/.+" )
+    
+  endforeach( _lib ${_libraries} )
 
   if( _pkgconfig_libs )
     list( REMOVE_DUPLICATES _pkgconfig_libs )
