@@ -9,9 +9,10 @@
 ############################################################################################
 # check size of pointer
 
-if( NOT DEFINED CMAKE_SIZEOF_VOID_P)
+if( NOT DEFINED CMAKE_SIZEOF_VOID_P )
 	message( FATAL_ERROR "CMake could not check sizeof void* to infer addressing mode of the OS -- try to upgrade to a more recent CMake" )
 endif()
+ecbuild_cache_var( CMAKE_SIZEOF_VOID_P )
 
 math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
 
@@ -34,17 +35,17 @@ if( ENABLE_OS_TYPES_TEST )
 
 	set( EC_SIZEOF_PTR ${CMAKE_SIZEOF_VOID_P} )
 
-	check_type_size( char           EC_SIZEOF_CHAR        )
-	check_type_size( short          EC_SIZEOF_SHORT       )
-	check_type_size( int            EC_SIZEOF_INT         )
-	check_type_size( long           EC_SIZEOF_LONG        )
-	check_type_size( "long long"    EC_SIZEOF_LONG_LONG   )
-	check_type_size( float          EC_SIZEOF_FLOAT       )
-	check_type_size( double         EC_SIZEOF_DOUBLE      )
-	check_type_size( "long double"  EC_SIZEOF_LONG_DOUBLE )
-	check_type_size( size_t         EC_SIZEOF_SIZE_T      )
-	check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
-	check_type_size( off_t          EC_SIZEOF_OFF_T       )
+  ecbuild_cache_check_type_size( char           EC_SIZEOF_CHAR        )
+  ecbuild_cache_check_type_size( short          EC_SIZEOF_SHORT       )
+	ecbuild_cache_check_type_size( int            EC_SIZEOF_INT         )
+	ecbuild_cache_check_type_size( long           EC_SIZEOF_LONG        )
+	ecbuild_cache_check_type_size( "long long"    EC_SIZEOF_LONG_LONG   )
+	ecbuild_cache_check_type_size( float          EC_SIZEOF_FLOAT       )
+	ecbuild_cache_check_type_size( double         EC_SIZEOF_DOUBLE      )
+	ecbuild_cache_check_type_size( "long double"  EC_SIZEOF_LONG_DOUBLE )
+	ecbuild_cache_check_type_size( size_t         EC_SIZEOF_SIZE_T      )
+	ecbuild_cache_check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
+	ecbuild_cache_check_type_size( off_t          EC_SIZEOF_OFF_T       )
 
 #	message( STATUS "sizeof void*  [${EC_SIZEOF_PTR}]" )
 #	message( STATUS "sizeof off_t  [${EC_SIZEOF_OFF_T}]" )
@@ -72,7 +73,7 @@ endif()
 
 if( ENABLE_LARGE_FILE_SUPPORT )
 
-	check_type_size( off_t EC_SIZEOF_OFF_T )
+  ecbuild_cache_check_type_size( off_t EC_SIZEOF_OFF_T )
 
 	if( EC_SIZEOF_OFF_T LESS "8" )
 
@@ -101,73 +102,83 @@ endif()
 
 if( ENABLE_OS_ENDINESS_TEST )
 
-	test_big_endian( _BIG_ENDIAN )
+  if( NOT DEFINED EC_BIG_ENDIAN AND NOT DEFINED EC_LITTLE_ENDIAN )
+  	test_big_endian( _BIG_ENDIAN )
 
-	if( _BIG_ENDIAN )
-		set( EC_BIG_ENDIAN    1 )
-	else()
-		set( EC_LITTLE_ENDIAN 1 )
-	endif()
+  	if( _BIG_ENDIAN )
+  		set( EC_BIG_ENDIAN    1 )
+  	else()
+  		set( EC_LITTLE_ENDIAN 1 )
+  	endif()
+  endif()
+  ecbuild_cache_var( EC_BIG_ENDIAN )
+  ecbuild_cache_var( EC_LITTLE_ENDIAN )
 
-	check_c_source_runs(
-		 "int compare(unsigned char* a,unsigned char* b) {
-		   while(*a != 0) if (*(b++)!=*(a++)) return 1;
-		   return 0;
-		 }
-		 int main(int argc,char** argv) {
-		   unsigned char dc[]={0x30,0x61,0xDE,0x80,0x93,0x67,0xCC,0xD9,0};
-		   double da=1.23456789e-75;
-		   unsigned char* ca;
+  if( NOT DEFINED IEEE_BE )
+  	check_c_source_runs(
+  		 "int compare(unsigned char* a,unsigned char* b) {
+  		   while(*a != 0) if (*(b++)!=*(a++)) return 1;
+  		   return 0;
+  		 }
+  		 int main(int argc,char** argv) {
+  		   unsigned char dc[]={0x30,0x61,0xDE,0x80,0x93,0x67,0xCC,0xD9,0};
+  		   double da=1.23456789e-75;
+  		   unsigned char* ca;
 
-		   unsigned char fc[]={0x05,0x83,0x48,0x22,0};
-		   float fa=1.23456789e-35;
+  		   unsigned char fc[]={0x05,0x83,0x48,0x22,0};
+  		   float fa=1.23456789e-35;
 
-		   if (sizeof(double)!=8) return 1;
+  		   if (sizeof(double)!=8) return 1;
 
-		   ca=(unsigned char*)&da;
-		   if (compare(dc,ca)) return 1;
+  		   ca=(unsigned char*)&da;
+  		   if (compare(dc,ca)) return 1;
 
-		   if (sizeof(float)!=4) return 1;
+  		   if (sizeof(float)!=4) return 1;
 
-		   ca=(unsigned char*)&fa;
-		   if (compare(fc,ca)) return 1;
+  		   ca=(unsigned char*)&fa;
+  		   if (compare(fc,ca)) return 1;
 
-		   return 0;
-		 }" IEEE_BE )
+  		   return 0;
+  		 }" IEEE_BE )
 
-	if( "${IEEE_BE}" STREQUAL "" )
-		set( IEEE_BE 0 CACHE INTERNAL "Test IEEE_BE")
-	endif()
+  	if( "${IEEE_BE}" STREQUAL "" )
+  		set( IEEE_BE 0 CACHE INTERNAL "Test IEEE_BE")
+  	endif()
+  endif()
+  ecbuild_cache_var( IEEE_BE )
 
-	check_c_source_runs(
-		 "int compare(unsigned char* a,unsigned char* b) {
-		   while(*a != 0) if (*(b++)!=*(a++)) return 1;
-		   return 0;
-		 }
-		 int main(int argc,char** argv) {
-		   unsigned char dc[]={0xD9,0xCC,0x67,0x93,0x80,0xDE,0x61,0x30,0};
-		   double da=1.23456789e-75;
-		   unsigned char* ca;
+    if( NOT DEFINED IEEE_LE )
+  	check_c_source_runs(
+  		 "int compare(unsigned char* a,unsigned char* b) {
+  		   while(*a != 0) if (*(b++)!=*(a++)) return 1;
+  		   return 0;
+  		 }
+  		 int main(int argc,char** argv) {
+  		   unsigned char dc[]={0xD9,0xCC,0x67,0x93,0x80,0xDE,0x61,0x30,0};
+  		   double da=1.23456789e-75;
+  		   unsigned char* ca;
 
-		   unsigned char fc[]={0x22,0x48,0x83,0x05,0};
-		   float fa=1.23456789e-35;
+  		   unsigned char fc[]={0x22,0x48,0x83,0x05,0};
+  		   float fa=1.23456789e-35;
 
-		   if (sizeof(double)!=8) return 1;
+  		   if (sizeof(double)!=8) return 1;
 
-		   ca=(unsigned char*)&da;
-		   if (compare(dc,ca)) return 1;
+  		   ca=(unsigned char*)&da;
+  		   if (compare(dc,ca)) return 1;
 
-		   if (sizeof(float)!=4) return 1;
+  		   if (sizeof(float)!=4) return 1;
 
-		   ca=(unsigned char*)&fa;
-		   if (compare(fc,ca)) return 1;
+  		   ca=(unsigned char*)&fa;
+  		   if (compare(fc,ca)) return 1;
 
-		   return 0;
-		 }" IEEE_LE )
+  		   return 0;
+  		 }" IEEE_LE )
 
-	if( "${IEEE_BE}" STREQUAL "" )
-		set( IEEE_LE 0 CACHE INTERNAL "Test IEEE_LE")
-	endif()
+  	if( "${IEEE_BE}" STREQUAL "" )
+  		set( IEEE_LE 0 CACHE INTERNAL "Test IEEE_LE")
+  	endif()
+  endif()
+  ecbuild_cache_var( IEEE_LE )
 
 endif()
 

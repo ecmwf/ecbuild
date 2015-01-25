@@ -176,7 +176,7 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
       endif()
       
-    endif( ${_lib} MATCHES ".+\/Frameworks\/.+" )
+    endif( ${_lib} MATCHES ".+/Frameworks/.+" )
     
   endforeach( _lib ${_libraries} )
 

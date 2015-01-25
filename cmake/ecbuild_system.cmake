@@ -49,9 +49,14 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
 
-	message( STATUS "ecbuild ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
-	message( STATUS "cmake   ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
-
+	message( STATUS "ecbuild   ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
+	message( STATUS "cmake     ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
+  message( STATUS "toolchain ${CMAKE_TOOLCHAIN_FILE}" )
+  if( ECBUILD_CACHE )
+    include( ${ECBUILD_CACHE} )
+      message( STATUS "cache     ${ECBUILD_CACHE}" )
+  endif()
+  message( STATUS "---------------------------------------------------------" )
 	# clear the build dir exported targets file (only on the top project)
 
 	set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" )
@@ -180,12 +185,13 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_enable_fortran )
 	include( ecbuild_bundle )
 	include( ecbuild_pkgconfig )
+	include( ecbuild_cache )
 
 	include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
 	############################################################################################
 	# kickstart the build system
-
+  
 	include( ecbuild_define_options )               # define build options
 	include( ecbuild_check_compiler )               # check for compiler characteristics
 	include( ecbuild_check_os )                     # check for os characteristics
@@ -193,7 +199,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_define_paths )                 # define installation paths
 	include( ecbuild_links_target )                 # define the links target
 	include( ecbuild_setup_test_framework )         # setup test framework
-
+  
 	############################################################################################
 	# define the build timestamp
 
