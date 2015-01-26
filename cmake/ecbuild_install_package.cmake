@@ -134,7 +134,7 @@ macro( ecbuild_install_project )
 
     # TOP-LEVEL PROJECT EXPORT
 
-    if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
         # exports the package for use from the build-tree -- inserts <package> into the CMake user package registry
     
@@ -263,7 +263,7 @@ macro( ecbuild_install_project )
         # install the export
     
         if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
-            install( EXPORT ${PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
+            install( EXPORT ${CMAKE_PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
     
     else()
