@@ -155,7 +155,8 @@ macro( ecbuild_install_project )
         set( PACKAGE_VERSION "${${PNAME}_VERSION}" ) 
         
         configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
-        install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
+
+		install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
 
         # prepare imutable variables (don't depend on install path)
 
@@ -203,6 +204,7 @@ macro( ecbuild_install_project )
         endforeach()
 
         set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
+
         if( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
             configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
                             "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )

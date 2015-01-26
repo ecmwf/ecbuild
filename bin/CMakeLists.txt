@@ -2,7 +2,6 @@ list( APPEND ecbuild_bin_files
 ecbuild
 git-meld
 git-mproj
-ecbuild.pl
 check_install.sh 
 apply_license.sh
 license.pl )
