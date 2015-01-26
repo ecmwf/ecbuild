@@ -139,11 +139,15 @@ macro( ecbuild_use_package )
 
     # test version for Cases 1,2,3
 
-	# debug_var( _p_PROJECT )
-	# debug_var( _p_VERSION )
-    # debug_var( _just_added )
-    # debug_var( ${PNAME}_FOUND )
-	# debug_var( ${PNAME}_previous_subproj_ )
+# debug_var( _p_PROJECT )
+# debug_var( _p_VERSION )
+# debug_var( ${PNAME}_VERSION )
+# debug_var( ${_p_PROJECT}_VERSION )
+# debug_var( _just_added )
+# debug_var( _do_version_check )
+# debug_var( _source_description )
+# debug_var( ${PNAME}_FOUND )
+# debug_var( ${PNAME}_previous_subproj_ )
 
 	if( _p_VERSION AND _do_version_check )
 			if( _p_EXACT )

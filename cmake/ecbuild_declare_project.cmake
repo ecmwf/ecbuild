@@ -50,9 +50,9 @@ macro( ecbuild_declare_project )
 
 	string( REGEX REPLACE "^([0-9]+).*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
 
-	set( ${PNAME}_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" )
+	set( ${PNAME}_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}" CACHE INTERNAL "package ${PNAME} version" )
 
-	set( ${PNAME}_VERSION_STR "${${PROJECT_NAME}_VERSION_STR}" ) # ignore caps
+	set( ${PNAME}_VERSION_STR "${${PROJECT_NAME}_VERSION_STR}" CACHE INTERNAL "package ${PNAME} version string" ) # ignore caps
 
 #    debug_var( ${PNAME}_VERSION )
 #    debug_var( ${PNAME}_VERSION_STR )
