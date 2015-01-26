@@ -9,10 +9,7 @@
 ############################################################################################
 # check size of pointer
 
-if( NOT DEFINED CMAKE_SIZEOF_VOID_P )
-	message( FATAL_ERROR "CMake could not check sizeof void* to infer addressing mode of the OS -- try to upgrade to a more recent CMake" )
-endif()
-ecbuild_cache_var( CMAKE_SIZEOF_VOID_P )
+ecbuild_cache_check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
 
 math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
 
@@ -20,6 +17,7 @@ math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
 if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
 	message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
 endif()
+ecbuild_cache_var( EC_OS_BITS )
 
 ############################################################################################
 # For 64 bit architectures enable PIC (position-independent code)
@@ -29,14 +27,14 @@ if( ${EC_OS_BITS} EQUAL 64 )
 endif()
 
 ############################################################################################
-# check architecture architecture
+# check architecture
 
 if( ENABLE_OS_TYPES_TEST )
 
 	set( EC_SIZEOF_PTR ${CMAKE_SIZEOF_VOID_P} )
-
-  ecbuild_cache_check_type_size( char           EC_SIZEOF_CHAR        )
-  ecbuild_cache_check_type_size( short          EC_SIZEOF_SHORT       )
+	ecbuild_cache_var( EC_SIZEOF_PTR )
+    ecbuild_cache_check_type_size( char           EC_SIZEOF_CHAR        )
+    ecbuild_cache_check_type_size( short          EC_SIZEOF_SHORT       )
 	ecbuild_cache_check_type_size( int            EC_SIZEOF_INT         )
 	ecbuild_cache_check_type_size( long           EC_SIZEOF_LONG        )
 	ecbuild_cache_check_type_size( "long long"    EC_SIZEOF_LONG_LONG   )
