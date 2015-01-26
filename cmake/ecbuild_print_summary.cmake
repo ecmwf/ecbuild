@@ -18,7 +18,9 @@ macro( ecbuild_print_summary )
 
     endif()
 
-    if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+	
+		debug_var( PROJECT_SOURCE_DIR )
 
         ecbuild_define_links_target()
 
@@ -110,6 +112,6 @@ macro( ecbuild_print_summary )
 
     endif()
 
-	endif( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+    endif( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
 endmacro( ecbuild_print_summary )
