@@ -8,7 +8,8 @@
 
 
 set( ecbuild_cache_file ${CMAKE_BINARY_DIR}/ecbuild-cache.cmake )
-file(WRITE ${ecbuild_cache_file} "# ecbuild toolchain file\n\n")
+
+file(WRITE ${ecbuild_cache_file} "# ecbuild cache file\n\n")
 
 function( ecbuild_cache_var var )
   if( NOT ${var} )

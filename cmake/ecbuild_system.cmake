@@ -51,14 +51,18 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	message( STATUS "ecbuild   ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
 	message( STATUS "cmake     ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
-  if( CMAKE_TOOLCHAIN_FILE )
-    message( STATUS "toolchain ${CMAKE_TOOLCHAIN_FILE}" )
-  endif()
-  if( ECBUILD_CACHE )
-    include( ${ECBUILD_CACHE} )
+
+	if( CMAKE_TOOLCHAIN_FILE )
+		message( STATUS "toolchain ${CMAKE_TOOLCHAIN_FILE}" )
+	endif()
+
+	if( ECBUILD_CACHE )
+		include( ${ECBUILD_CACHE} )
       message( STATUS "cache     ${ECBUILD_CACHE}" )
-  endif()
-  message( STATUS "---------------------------------------------------------" )
+	endif()
+
+	message( STATUS "---------------------------------------------------------" )
+
 	# clear the build dir exported targets file (only on the top project)
 
 	set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" )
