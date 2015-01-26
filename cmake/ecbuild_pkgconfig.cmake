@@ -234,7 +234,7 @@ macro( ecbuild_pkgconfig )
 
   set( options REQUIRES )
   set( single_value_args FILEPATH NAME TEMPLATE URL DESCRIPTION )
-  set( multi_value_args LIBRARIES IGNORE_INCLUDE_DIRS IGNORE_LIBRARIES )
+  set( multi_value_args LIBRARIES IGNORE_INCLUDE_DIRS IGNORE_LIBRARIES VARIABLES )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -253,11 +253,10 @@ macro( ecbuild_pkgconfig )
   ecbuild_library_dependencies( _libraries LIBRARIES )
   ecbuild_include_dependencies( _include_dirs LIBRARIES )
 
-  debug_var( _libraries )
 
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS _libraries _PAR_IGNORE_LIBRARIES )
   ecbuild_pkgconfig_include( PKGCONFIG_CFLAGS _include_dirs _PAR_IGNORE_INCLUDE_DIRS )
-  debug_var( PKGCONFIG_LIBS )
+
   unset( _libraries )
   unset( _include_dirs )
 
@@ -278,6 +277,13 @@ macro( ecbuild_pkgconfig )
   set( PKGCONFIG_DESCRIPTION ${_PAR_DESCRIPTION} )
   set( PKGCONFIG_URL ${_PAR_URL} )
 
+  if( _PAR_VARIABLES )
+    set( PKGCONFIG_VARIABLES "### Features:\n")
+    foreach( _var ${_PAR_VARIABLES} )
+      set( PKGCONFIG_VARIABLES "${PKGCONFIG_VARIABLES}\n${_var}=${${_var}}" )
+    endforeach()
+  endif()
+
   configure_file( ${_PAR_TEMPLATE} "${CMAKE_BINARY_DIR}/${_PAR_FILEPATH}" @ONLY )
   message( STATUS "pkg-config file created: ${_PAR_FILEPATH}" )
   unset( PKGCONFIG_NAME )
@@ -291,6 +297,7 @@ macro( ecbuild_pkgconfig )
   unset( PKGCONFIG_REQUIRES )
   unset( PKGCONFIG_INCLUDE_DIRS )
   unset( PKGCONFIG_DEPENDS )
+  unset( PKGCONFIG_VARIABLES )
 
   install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILEPATH}
            DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${LNAME}/pkgconfig
