@@ -43,7 +43,7 @@ ecmwf_add_test( TARGET   test_foo
                 SOURCES  test.cc
                 LIBS     foo )
 
-if( NOT ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
   set( FOO_INCLUDE_DIRS   ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE )
   set( FOO_LIBRARIES      foo  PARENT_SCOPE )
   set( FOO_FOUND          TRUE PARENT_SCOPE )

@@ -37,9 +37,11 @@ set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuil
 
 include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
+include( ecbuild_policies )
+
 ########################################################################################################
 # include our cmake macros, but only do so if this is the top project
-if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
 	# hostname of where we build
 
