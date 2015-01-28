@@ -140,9 +140,11 @@ macro( cmake_add_cxx_flags m_cxx_flags )
 
     math( EXPR N_CXXFLAG '${N_CXXFLAG}+1' )
 
-    check_cxx_compiler_flag( ${_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
+    if( NOT ECBUILD_TRUST_FLAGS )
+      check_cxx_compiler_flag( ${_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
+    endif()
 
-    if( CXX_FLAG_TEST_${N_CXXFLAG} )
+    if( CXX_FLAG_TEST_${N_CXXFLAG} OR ECBUILD_TRUST_FLAGS )
       if( _PAR_BUILD )
         set( CMAKE_CXX_FLAGS_${_PAR_BUILD} "${CMAKE_CXX_FLAGS_${_PAR_BUILD}} ${_flags}" )
       else()

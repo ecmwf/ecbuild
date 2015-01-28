@@ -8,6 +8,9 @@ CMAKE_FORCE_C_COMPILER       ( cc  Cray )
 CMAKE_FORCE_CXX_COMPILER     ( CC  Cray )
 CMAKE_FORCE_Fortran_COMPILER ( ftn Cray )
 
+set( ECBUILD_FIND_MPI OFF )
+set( ECBUILD_TRUST_FLAGS ON )
+
 ####################################################################
 # FLAGS COMMON TO ALL BUILD TYPES
 ####################################################################
@@ -15,6 +18,13 @@ CMAKE_FORCE_Fortran_COMPILER ( ftn Cray )
 set( CMAKE_C_FLAGS       "-lhugetlbfs" )
 set( CMAKE_CXX_FLAGS     "-lhugetlbfs" )
 set( CMAKE_Fortran_FLAGS "-lhugetlbfs -emf -rmoid" )
+
+set( OMP_C_FLAGS             "-homp" )
+set( OMP_CXX_FLAGS           "-homp" )
+set( OMP_Fortran_FLAGS       "-homp" )
+set( OMPSTUBS_C_FLAGS        "-hnoomp" )
+set( OMPSTUBS_CXX_FLAGS      "-hnoomp" )
+set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
 
 ####################################################################
 # BIT REPRODUCIBLE FLAGS
@@ -44,8 +54,8 @@ set( CMAKE_Fortran_FLAGS_DEBUG  "-O0 -Gfast -Ktrap=fp" )
 # LINK FLAGS
 ####################################################################
 
-set( CMAKE_C_LINK_FLAGS        "-Wl,-Map,loadmap" )
-set( CMAKE_CXX_LINK_FLAGS      "-Wl,-Map,loadmap" )
+set( CMAKE_C_LINK_FLAGS        "-Wl,-Map,loadmap -Wl,--as-needed,-lmpichf90_cray,--no-as-needed " )
+set( CMAKE_CXX_LINK_FLAGS      "-Wl,-Map,loadmap -Wl,--as-needed,-lmpichf90_cray,--no-as-needed " )
 set( CMAKE_Fortran_LINK_FLAGS  "-Wl,-Map,loadmap" )
 
 ####################################################################

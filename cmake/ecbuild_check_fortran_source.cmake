@@ -135,9 +135,11 @@ macro( cmake_add_fortran_flags m_fortran_flags )
 
     math( EXPR N_FortranFLAG '${N_FortranFLAG}+1' )
 
-    check_fortran_compiler_flag( ${_flags} Fortran_FLAG_TEST_${N_FortranFLAG} )
+    if( NOT ECBUILD_TRUST_FLAGS )
+      check_fortran_compiler_flag( ${_flags} Fortran_FLAG_TEST_${N_FortranFLAG} )
+    endif()
 
-    if( Fortran_FLAG_TEST_${N_FortranFLAG} )
+    if( Fortran_FLAG_TEST_${N_FortranFLAG} OR ECBUILD_TRUST_FLAGS )
       if( _PAR_BUILD )
         set( CMAKE_Fortran_FLAGS_${_PAR_BUILD} "${CMAKE_Fortran_FLAGS_${_PAR_BUILD}} ${_flags}" )
       else()

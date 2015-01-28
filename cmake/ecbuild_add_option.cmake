@@ -68,7 +68,12 @@ macro( ecbuild_add_option )
 
 	option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
 
-  if( ENABLE_${_p_FEATURE} )
+  set( _do_search ${ENABLE_${_p_FEATURE}} )
+  if( _p_FEATURE STREQUAL "OMP" )
+    set( _do_search TRUE )
+  endif()
+
+  if( _do_search  )
 
     set( HAVE_${_p_FEATURE} 1 )
 
@@ -105,7 +110,20 @@ macro( ecbuild_add_option )
           if( pkgproject )
             ecbuild_use_package( ${pkglist} )
           else()
-            find_package( ${pkglist} )
+            if( pkgname STREQUAL "MPI" )
+              set( _find_args ${pkglist} )
+              list( REMOVE_ITEM _find_args "MPI" )
+              ecbuild_find_mpi( ${_find_args} )
+            elseif( pkgname STREQUAL "OMP" )
+              set( _find_args ${pkglist} )
+              list( REMOVE_ITEM _find_args "OMP" )
+              if( NOT ENABLE_${_p_FEATURE} )
+                list( APPEND _find_args STUBS )
+              endif()
+              ecbuild_find_omp( ${_find_args} )
+            else()
+              find_package( ${pkglist} )
+            endif()
           endif()
 
           # append to list of third-party libraries (to be forward to other packages )
@@ -118,7 +136,7 @@ macro( ecbuild_add_option )
         # debug_var( ${pkgLOWER}_FOUND )
         # debug_var( ${pkgUPPER}_FOUND )
 
-        # we have feature iff all required packages were FOUND
+        # we have feature if all required packages were FOUND
 
         if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
           message( STATUS "Found package ${pkgname} required for feature ${_p_FEATURE}" )
@@ -154,11 +172,12 @@ macro( ecbuild_add_option )
 
 		endif()
 
-  else( ENABLE_${_p_FEATURE} )
+  else( _do_search )
 
 		set( HAVE_${_p_FEATURE} 0 )
 
-  endif( ENABLE_${_p_FEATURE} )
+  endif( _do_search )
+
 
 	if( ${_p_ADVANCED} )
 		mark_as_advanced( ENABLE_${_p_FEATURE} )

@@ -189,6 +189,9 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_find_lexyacc )
 	include( ecbuild_find_fortranlibs )
 	include( ecbuild_enable_fortran )
+	include( ecbuild_check_c_source )
+	include( ecbuild_check_cxx_source )
+	include( ecbuild_check_fortran_source )
 	include( ecbuild_bundle )
 	include( ecbuild_pkgconfig )
 	include( ecbuild_cache )
@@ -197,7 +200,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	############################################################################################
 	# kickstart the build system
-  
+
+  	ecbuild_prepare_cache()
 	include( ecbuild_define_options )               # define build options
 	include( ecbuild_check_compiler )               # check for compiler characteristics
 	include( ecbuild_check_os )                     # check for os characteristics
@@ -205,7 +209,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_define_paths )                 # define installation paths
 	include( ecbuild_links_target )                 # define the links target
 	include( ecbuild_setup_test_framework )         # setup test framework
-  
+ 	ecbuild_flush_cache()
+
 	############################################################################################
 	# define the build timestamp
 
@@ -213,6 +218,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 		ecbuild_get_timestamp( EC_BUILD_TIMESTAMP )
 		set( EC_BUILD_TIMESTAMP  "${EC_BUILD_TIMESTAMP}" CACHE INTERNAL "Build timestamp" )
 	endif()
+
+	message( STATUS "---------------------------------------------------------" )
 
 endif()
 
