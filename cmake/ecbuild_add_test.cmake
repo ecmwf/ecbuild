@@ -106,13 +106,14 @@ macro( ecbuild_add_test )
 	# boost unit test linking to unit_test lib ?
 
 	if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
-		if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-			include_directories( ${ECBUILD_BOOST_HEADER_DIRS} )
+		
+		if( HAVE_BOOST_UNIT_TEST )
+			if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+				include_directories( ${ECBUILD_BOOST_HEADER_DIRS} )
+			else()
+				include_directories( ${ECBUILD_BOOST_HEADER_DIRS} ${Boost_INCLUDE_DIRS} )
+			endif()
 		else()
-			include_directories( ${ECBUILD_BOOST_HEADER_DIRS} ${Boost_INCLUDE_DIRS} )
-		endif()
-
-		if( NOT HAVE_BOOST_UNIT_TEST )
 			set( _${_PAR_TARGET}_condition FALSE )
 		endif()
 
@@ -199,7 +200,7 @@ macro( ecbuild_add_test )
                 endif()
 
                 # add test libraries
-				if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_LINKED )
+				if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_LINKED AND HAVE_BOOST_UNIT_TEST )
                     target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
                 endif()
         
