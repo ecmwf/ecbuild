@@ -20,8 +20,6 @@ macro( ecbuild_print_summary )
 
     if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 	
-		debug_var( PROJECT_SOURCE_DIR )
-
         ecbuild_define_links_target()
 
         get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
