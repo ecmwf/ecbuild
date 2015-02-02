@@ -63,17 +63,6 @@ function( ecbuild_add_library_impl )
 			endif()
 		endif()
 
-		# add include dirs if defined
-		if( DEFINED _PAR_INCLUDES )
-		  list( REMOVE_DUPLICATES _PAR_INCLUDES )
-		  foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
-			if( path )
-			  include_directories( ${path} )
-	#        else()
-	#          message( WARNING "Path ${path} was skipped" )
-			endif()
-		  endforeach()
-		endif()
 
 		# add persistent layer files
 		if( DEFINED _PAR_PERSISTENT )
@@ -114,6 +103,18 @@ function( ecbuild_add_library_impl )
 			  target_link_libraries( ${_PAR_TARGET} ${lib} )
 			else()
 #              message( WARNING "Lib ${lib} was skipped" )
+			endif()
+		  endforeach()
+		endif()
+
+		# add include dirs if defined
+		if( DEFINED _PAR_INCLUDES )
+		  list( REMOVE_DUPLICATES _PAR_INCLUDES )
+		  foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
+			if( path )
+			  target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
+	#        else()
+	#          message( WARNING "Path ${path} was skipped" )
 			endif()
 		  endforeach()
 		endif()
