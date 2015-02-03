@@ -8,11 +8,13 @@ fcompiler=@CMAKE_Fortran_COMPILER@
 
 libs=-L${libdir} @PKGCONFIG_LIBS@
 
+libs_private=@PKGCONFIG_LIBS_PRIVATE@
+
 cflags=-I${includedir} @PKGCONFIG_CFLAGS@
 
-fflags=-I${includedir} @PKGCONFIG_FFLAGS@
+fflags=@CMAKE_Fortran_MODPATH_FLAG@${includedir} @PKGCONFIG_FFLAGS@
 
-@PKGCONFIG_VARIABLES@ 
+@PKGCONFIG_VARIABLES@
 
 #====================================================================
 Name: @PKGCONFIG_NAME@
@@ -20,7 +22,9 @@ Description: @PKGCONFIG_DESCRIPTION@
 URL: @PKGCONFIG_URL@
 Version: @PKGCONFIG_VERSION@
 Libs: ${libs}
+Libs.private: ${libs_private}
 Requires: @PKGCONFIG_REQUIRES@
+Requires.private: @PKGCONFIG_REQUIRES_PRIVATE@
 Cflags: ${cflags}
 Fflags: ${fflags}
 #====================================================================

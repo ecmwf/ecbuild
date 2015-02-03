@@ -9,9 +9,9 @@
 #############################################################################################
 #
 # MACRO ecbuild_pkgconfig
-# 
+#
 # This macro creates a pkg-config file for the current project
-# 
+#
 # It takes following optional arguments:
 #
 #  - FILENAME
@@ -31,7 +31,7 @@
 #
 #  - DESCRIPTION
 #       The description of the package
-#       
+#
 #  - LIBRARIES
 #       The package libraries. Default is ${UPPERCASE_PROJECT_NAME}_LIBRARIES
 #       This is e.g. of the form "eckit;eckit_geometry"
@@ -51,6 +51,7 @@ function( ecbuild_library_dependencies dependencies libraries )
 
     if( TARGET ${_lib} ) # check if this is an existing target
 
+      message( " is target " )
       set( _imported 0 )
       get_property( _imported TARGET ${_lib} PROPERTY IMPORTED )
 
@@ -66,7 +67,7 @@ function( ecbuild_library_dependencies dependencies libraries )
 
         list( APPEND _location ${_lib} )
         get_property( _deps TARGET ${_lib} PROPERTY LINK_LIBRARIES )
-     
+
       endif()
 
       ecbuild_library_dependencies( _deps_location _deps )
@@ -128,16 +129,16 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
     unset( _dir  )
 
     if( ${_lib} MATCHES ".+/Frameworks/.+" )
-      
+
       get_filename_component( _name ${_lib} NAME_WE )
       list( APPEND _pkgconfig_libs "-framework ${_name}" )
-      
+
     else()
-    
+
       if( ${_lib} MATCHES "-l.+" )
 
-        string( REGEX REPLACE "^-l" "" _name ${_lib} )      
-      
+        string( REGEX REPLACE "^-l" "" _name ${_lib} )
+
       else()
 
 
@@ -167,23 +168,23 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
       endforeach()
 
       if( _set_append )
- 
+
         if( _dir )
-          list( APPEND _pkgconfig_libs "-L${_dir}" "-l${_name}" )   
+          list( APPEND _pkgconfig_libs "-L${_dir}" "-l${_name}" )
         else()
           list( APPEND _pkgconfig_libs "-l${_name}" )
         endif()
 
       endif()
-      
+
     endif( ${_lib} MATCHES ".+/Frameworks/.+" )
-    
+
   endforeach( _lib ${_libraries} )
 
   if( _pkgconfig_libs )
     list( REMOVE_DUPLICATES _pkgconfig_libs )
     string( REPLACE ";" " " _pkgconfig_libs "${_pkgconfig_libs}" )
-  
+
     set( ${pkgconfig_libs} ${_pkgconfig_libs} PARENT_SCOPE )
   endif()
 
@@ -230,7 +231,7 @@ endfunction(ecbuild_pkgconfig_include)
 
 #############################################################################################
 
-macro( ecbuild_pkgconfig )
+function( ecbuild_pkgconfig )
 
   set( options REQUIRES )
   set( single_value_args FILEPATH NAME TEMPLATE URL DESCRIPTION )
@@ -250,11 +251,34 @@ macro( ecbuild_pkgconfig )
     set( LIBRARIES ${_PAR_LIBRARIES} )
   endif()
 
+  if( CMAKE_CXX_COMPILER_LOADED )
+   set( _linker_lang CXX )
+  elseif( CMAKE_C_COMPILER_LOADED )
+   set( _linker_lang C )
+  elseif( CMAKE_Fortran_COMPILER_LOADED )
+   set( _linker_lang Fortran )
+  endif()
+
+  debug_var( _linker_lang )
+  debug_var( CMAKE_SHARED_LIBRARY_RUNTIME_${_linker_lang}_FLAG )
+  debug_var( CMAKE_SHARED_LIBRARY_RUNTIME_${_linker_lang}_FLAG_SEP )
+
+  if( NOT CMAKE_Fortran_MODPATH_FLAG )
+    set( CMAKE_Fortran_MODPATH_FLAG "-I" )
+  endif()
+  debug_var( CMAKE_Fortran_MODPATH_FLAG )
+  debug_var( CMAKE_C_IMPLICIT_LINK_LIBRARIES )
+  debug_var( CMAKE_CXX_IMPLICIT_LINK_LIBRARIES )
+  debug_var( CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES )
+  ecbuild_pkgconfig_libs( PKGCONFIG_LIBS LIBRARIES _PAR_IGNORE_LIBRARIES )
+
   ecbuild_library_dependencies( _libraries LIBRARIES )
+  foreach( _lib ${LIBRARIES} )
+    list( REMOVE_ITEM _libraries ${_lib} )
+  endforeach()
   ecbuild_include_dependencies( _include_dirs LIBRARIES )
 
-
-  ecbuild_pkgconfig_libs( PKGCONFIG_LIBS _libraries _PAR_IGNORE_LIBRARIES )
+  ecbuild_pkgconfig_libs( PKGCONFIG_LIBS_PRIVATE _libraries _PAR_IGNORE_LIBRARIES )
   ecbuild_pkgconfig_include( PKGCONFIG_CFLAGS _include_dirs _PAR_IGNORE_INCLUDE_DIRS )
 
   unset( _libraries )
@@ -286,21 +310,9 @@ macro( ecbuild_pkgconfig )
 
   configure_file( ${_PAR_TEMPLATE} "${CMAKE_BINARY_DIR}/${_PAR_FILEPATH}" @ONLY )
   message( STATUS "pkg-config file created: ${_PAR_FILEPATH}" )
-  unset( PKGCONFIG_NAME )
-  unset( PKGCONFIG_DESCRIPTION )
-  unset( PKGCONFIG_VERSION )
-  unset( PKGCONFIG_URL )
-  unset( PKGCONFIG_LIBS )
-  unset( PKGCONFIG_CFLAGS )
-  unset( PKGCONFIG_FFLAGS )
-  unset( PKGCONFIG_FFLAGS )
-  unset( PKGCONFIG_REQUIRES )
-  unset( PKGCONFIG_INCLUDE_DIRS )
-  unset( PKGCONFIG_DEPENDS )
-  unset( PKGCONFIG_VARIABLES )
 
   install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILEPATH}
-           DESTINATION ${CMAKE_INSTALL_PREFIX}/share/${LNAME}/pkgconfig
+           DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/
            COMPONENT utilities )
 
-endmacro(ecbuild_pkgconfig)
+endfunction(ecbuild_pkgconfig)

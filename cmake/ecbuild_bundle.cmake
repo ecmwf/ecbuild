@@ -6,9 +6,9 @@
 #  - DIR: directory name where repo will be cloned to
 #  - URL: location of origin git repository
 #  - BRANCH (optional): Branch to clone
-#  - TAG (optional): Tag or commit-id to checkout 
+#  - TAG (optional): Tag or commit-id to checkout
 #  - UPDATE (optional) : Option to try to update every cmake run
-#  - NOREMOTE (optional) : Option to avoid remote operations that require network 
+#  - NOREMOTE (optional) : Option to avoid remote operations that require network
 #                          changes to tags that havent been fetched might fail
 
 macro( debug_here VAR )
@@ -77,12 +77,12 @@ macro( ecbuild_git )
       endif()
       message( STATUS "${_PAR_DIR} retrieved.")
       set( _needs_switch 1 )
-    
+
     endif()
 
     ### check current tag and sha1
 
-    if( IS_DIRECTORY "${_PAR_DIR}/.git" ) 
+    if( IS_DIRECTORY "${_PAR_DIR}/.git" )
 
         execute_process(
           COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
@@ -100,14 +100,14 @@ macro( ecbuild_git )
           message(STATUS "git rev-parse --abbrev-ref HEAD on ${_PAR_DIR} failed:\n ${error}")
         endif()
 
-        # message(STATUS "git describe --exact-match --abbrev=0 @ ${ABS_PAR_DIR}")
+        #message(STATUS "git describe --exact-match --abbrev=0 @ ${ABS_PAR_DIR}")
         execute_process(
           COMMAND ${GIT_EXECUTABLE} describe --exact-match --abbrev=0
-          OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error 
+          OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error
           OUTPUT_STRIP_TRAILING_WHITESPACE  ERROR_STRIP_TRAILING_WHITESPACE
           WORKING_DIRECTORY "${ABS_PAR_DIR}" )
 
-        if( error MATCHES "no tag exactly matches" )
+        if( error MATCHES "no tag exactly matches" OR error MATCHES "No names found" )
           unset( _current_tag )
         else()
           if( nok )
@@ -116,7 +116,7 @@ macro( ecbuild_git )
         endif()
 
         if( NOT _current_tag ) # try nother method
-        # message(STATUS "git name-rev --tags --name-only @ ${ABS_PAR_DIR}")
+          #message(STATUS "git name-rev --tags --name-only @ ${ABS_PAR_DIR}")
           execute_process(
             COMMAND ${GIT_EXECUTABLE} name-rev --tags --name-only ${_sha1}
             OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -132,20 +132,20 @@ macro( ecbuild_git )
       set( _needs_switch 1 )
     endif()
 
-	  if( DEFINED _PAR_TAG AND NOT "${_current_tag}" STREQUAL "${_PAR_TAG}" )
+    if( DEFINED _PAR_TAG AND NOT "${_current_tag}" STREQUAL "${_PAR_TAG}" )
       set( _needs_switch 1 )
     endif()
 
-	if( DEFINED _PAR_BRANCH AND _PAR_UPDATE AND NOT _PAR_NOREMOTE )
+    if( DEFINED _PAR_BRANCH AND _PAR_UPDATE AND NOT _PAR_NOREMOTE )
 
-	  add_custom_target( git_update_${_PAR_PROJECT}
-						 COMMAND "${GIT_EXECUTABLE}" pull -q
-						 WORKING_DIRECTORY "${ABS_PAR_DIR}"
-						 COMMENT "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR}" )
+      add_custom_target( git_update_${_PAR_PROJECT}
+                         COMMAND "${GIT_EXECUTABLE}" pull -q
+                         WORKING_DIRECTORY "${ABS_PAR_DIR}"
+                         COMMENT "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR}" )
 
-	  set( git_update_targets "git_update_${_PAR_PROJECT};${git_update_targets}" )
+      set( git_update_targets "git_update_${_PAR_PROJECT};${git_update_targets}" )
 
-	endif()
+    endif()
 
     ### updates
 
@@ -203,19 +203,19 @@ macro( ecbuild_git )
       endif()
 
       if( DEFINED _PAR_BRANCH AND _PAR_UPDATE ) #############################################################################
-          
+
             execute_process(COMMAND "${GIT_EXECUTABLE}" pull -q
               RESULT_VARIABLE nok ERROR_VARIABLE error
               WORKING_DIRECTORY "${ABS_PAR_DIR}")
             if(nok)
               message(STATUS "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
             endif()
-        
+
       endif() ####################################################################################
 
     endif( _needs_switch AND IS_DIRECTORY "${_PAR_DIR}/.git" )
 
-  endif( ECBUILD_GIT ) 
+  endif( ECBUILD_GIT )
 
 endmacro()
 
@@ -265,10 +265,10 @@ macro( ecbuild_bundle )
   set( options )
   set( single_value_args PROJECT )
   set( multi_value_args )
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )  
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
   ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} ${_PAR_UNPARSED_ARGUMENTS} )
-  
+
   ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
 
 endmacro()
