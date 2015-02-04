@@ -29,6 +29,10 @@ macro( lookup_omp_flags )
   #include <omp.h>
   int main() {
   #ifdef _OPENMP
+    #pragma omp parallel
+    {
+      int id = omp_get_thread_num();
+    }
     return 0;
   #else
     breaks_on_purpose
@@ -41,11 +45,17 @@ macro( lookup_omp_flags )
   # sample C openmp source code to test
   set(_OMPSTUBS_C_TEST_SOURCE
   "
+  // Include must be found
   #include <omp.h>
   int main() {
   #ifdef _OPENMP
     breaks_on_purpose
   #else
+    #pragma omp parallel
+    {
+      // This pragma should have passed compilation
+      int id = 0;
+    }
     return 0;
   #endif
   }
@@ -66,10 +76,10 @@ endmacro()
 
 
 # MACRO ecbuild_find_omp
-# 
+#
 # ecbuild_find_omp( COMPONENTS C CXX Fortran
 #                   STUBS )
-# Sets following variables 
+# Sets following variables
 #   - OMP_FOUND
 #   - OMP_<lang>_FOUND
 #   - OMP_<lang>_FLAGS
