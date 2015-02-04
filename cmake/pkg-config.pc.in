@@ -2,17 +2,20 @@ prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include
+fmoddir=${prefix}/include
 ccompiler=@CMAKE_C_COMPILER@
 cxxcompiler=@CMAKE_CXX_COMPILER@
 fcompiler=@CMAKE_Fortran_COMPILER@
 
-libs=-L${libdir} @PKGCONFIG_LIBS@
+rpath=@RPATH_FLAG@${libdir}
+
+libs=-L${libdir} ${rpath} @PKGCONFIG_LIBS@
 
 libs_private=@PKGCONFIG_LIBS_PRIVATE@
 
 cflags=-I${includedir} @PKGCONFIG_CFLAGS@
 
-fflags=@CMAKE_Fortran_MODPATH_FLAG@${includedir} @PKGCONFIG_FFLAGS@
+fflags=@CMAKE_Fortran_MODPATH_FLAG@${fmoddir} @PKGCONFIG_FFLAGS@
 
 @PKGCONFIG_VARIABLES@
 

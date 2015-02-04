@@ -51,7 +51,6 @@ function( ecbuild_library_dependencies dependencies libraries )
 
     if( TARGET ${_lib} ) # check if this is an existing target
 
-      message( " is target " )
       set( _imported 0 )
       get_property( _imported TARGET ${_lib} PROPERTY IMPORTED )
 
@@ -259,17 +258,12 @@ function( ecbuild_pkgconfig )
    set( _linker_lang Fortran )
   endif()
 
-  debug_var( _linker_lang )
-  debug_var( CMAKE_SHARED_LIBRARY_RUNTIME_${_linker_lang}_FLAG )
-  debug_var( CMAKE_SHARED_LIBRARY_RUNTIME_${_linker_lang}_FLAG_SEP )
+  set( RPATH_FLAG ${CMAKE_SHARED_LIBRARY_RUNTIME_${_linker_lang}_FLAG} )
 
   if( NOT CMAKE_Fortran_MODPATH_FLAG )
     set( CMAKE_Fortran_MODPATH_FLAG "-I" )
   endif()
-  debug_var( CMAKE_Fortran_MODPATH_FLAG )
-  debug_var( CMAKE_C_IMPLICIT_LINK_LIBRARIES )
-  debug_var( CMAKE_CXX_IMPLICIT_LINK_LIBRARIES )
-  debug_var( CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES )
+
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS LIBRARIES _PAR_IGNORE_LIBRARIES )
 
   ecbuild_library_dependencies( _libraries LIBRARIES )
