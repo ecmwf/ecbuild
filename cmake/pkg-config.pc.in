@@ -3,9 +3,9 @@ exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include
 fmoddir=${prefix}/include
-ccompiler=@CMAKE_C_COMPILER@
-cxxcompiler=@CMAKE_CXX_COMPILER@
-fcompiler=@CMAKE_Fortran_COMPILER@
+CC=@CMAKE_C_COMPILER@
+CXX=@CMAKE_CXX_COMPILER@
+FC=@CMAKE_Fortran_COMPILER@
 
 rpath=@RPATH_FLAG@${libdir}
 
