@@ -294,6 +294,7 @@ function( ecbuild_pkgconfig )
   set( PKGCONFIG_VERSION ${${PNAME}_VERSION} )
   set( PKGCONFIG_DESCRIPTION ${_PAR_DESCRIPTION} )
   set( PKGCONFIG_URL ${_PAR_URL} )
+  set( PKGCONFIG_GIT_SHA1 ${${PNAME}_GIT_SHA1} )
 
   if( _PAR_VARIABLES )
     set( PKGCONFIG_VARIABLES "### Features:\n")
