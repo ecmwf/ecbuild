@@ -238,13 +238,13 @@ macro( ecbuild_bundle_initialize )
 
   include( local-config.cmake OPTIONAL )
 
-  ecmwf_stash( PROJECT ecbuild DIR ${PROJECT_SOURCE_DIR}/ecbuild STASH "ecsdk/ecbuild" BRANCH develop )
+  # ecmwf_stash( PROJECT ecbuild DIR ${PROJECT_SOURCE_DIR}/ecbuild STASH "ecsdk/ecbuild" BRANCH develop )
 
-  set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake;${CMAKE_MODULE_PATH}" )
+  # set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ecbuild/cmake;${CMAKE_MODULE_PATH}" )
 
   include( ecbuild_system )
 
-  ecbuild_requires_macro_version( 1.5 )
+  ecbuild_requires_macro_version( 1.6 )
 
   ecbuild_declare_project()
 
