@@ -50,7 +50,7 @@ macro( ecbuild_find_package )
 
 	# search user defined paths first
 
-	if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH )
+	if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR OR ${PNAME}_DIR )
 
 		# debug_var( ${_PAR_NAME}_PATH )
 		# debug_var( ${PNAME}_PATH )
@@ -58,7 +58,9 @@ macro( ecbuild_find_package )
 		# 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
 
 		if( NOT ${_PAR_NAME}_FOUND )
-			find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET HINTS ${${PNAME}_PATH} ${_PAR_NAME}_PATH NO_DEFAULT_PATH )
+			find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET 
+                HINTS ${${PNAME}_PATH} ${_PAR_NAME}_PATH ${${PNAME}_DIR} ${${_PAR_NAME}_DIR} 
+                NO_DEFAULT_PATH )
 		endif()
 
 		# 2) search using a file Find<package>.cmake if it exists ( macro should itself take *_PATH into account )
@@ -74,7 +76,7 @@ macro( ecbuild_find_package )
 				message( FATAL_ERROR "${_PAR_NAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found" )
 			endif()
 			if( ${PNAME}_PATH )
-				message( FATAL_ERROR "${PNAME}_PATH was provided by user but package ${PNAME} wasn't found" )
+				message( FATAL_ERROR "${PNAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found" )
 			endif()
 		endif()
 
@@ -137,12 +139,16 @@ macro( ecbuild_find_package )
                     if( _PAR_VERSION VERSION_LESS ${_PAR_NAME}_VERSION OR _PAR_VERSION VERSION_EQUAL ${_PAR_NAME}_VERSION )
                         set( _version_acceptable 1 )
                     else()
-                        message( WARNING "${PROJECT_NAME} requires ${_PAR_NAME} >= ${_PAR_VERSION} -- found ${${_PAR_NAME}_VERSION}" )
+                        if( NOT _PAR_QUIET )
+                            message( WARNING "${PROJECT_NAME} requires ${_PAR_NAME} >= ${_PAR_VERSION} -- found ${${_PAR_NAME}_VERSION}" )
+                        endif()
                         set( _version_acceptable 0 )
                     endif()
                 endif()
             else()
-                message( WARNING "${PROJECT_NAME} found ${_PAR_NAME} but no version information, so cannot check if satisfies ${_PAR_VERSION}" )
+                if( NOT _PAR_QUIET )
+                    message( WARNING "${PROJECT_NAME} found ${_PAR_NAME} but no version information, so cannot check if satisfies ${_PAR_VERSION}" )
+                endif()
                 set( _version_acceptable 0 )
             endif()
         endif()
@@ -153,7 +159,9 @@ macro( ecbuild_find_package )
         if( _version_acceptable )
             set( ${PNAME}_FOUND ${${_PAR_NAME}_FOUND} )
         else()
-        	message( WARNING "${PROJECT_NAME} found ${_PAR_NAME} but with unsuitable version" )
+            if( NOT _PAR_QUIET )
+                message( WARNING "${PROJECT_NAME} found ${_PAR_NAME} but with unsuitable version" )
+            endif()
             set( ${PNAME}_FOUND 0 )
             set( ${_PAR_NAME}_FOUND 0 )
         endif()
@@ -164,10 +172,17 @@ macro( ecbuild_find_package )
 
 	if( NOT ${_PAR_NAME}_FOUND )
 		if( _PAR_REQUIRED )
-			message( FATAL_ERROR "${PROJECT_NAME} FAILED to find REQUIRED package ${_PAR_NAME} -- Provide location with -D${PNAME}_PATH=/..." )
+			message( FATAL_ERROR
+              "    ${PROJECT_NAME} FAILED to find REQUIRED package ${_PAR_NAME}"
+              "    Provide location with \"-D ${PNAME}_DIR=/...\"\n"
+              "    or export ${PNAME}_DIR in environment"
+            )
 		else()
 			if( NOT _PAR_QUIET )
-				message( WARNING "${PROJECT_NAME} couldn't find package ${_PAR_NAME} -- Provide location with -D${PNAME}_PATH=/..." )
+				message( STATUS
+                      "${PROJECT_NAME} couldn't find package ${_PAR_NAME}.\n"
+                      "      Provide location with \"-D ${PNAME}_DIR=/...\"\n"
+                      "      or export ${PNAME}_DIR in environment" )
 			endif()
 		endif()
 	endif()
