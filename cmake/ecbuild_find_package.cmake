@@ -58,8 +58,8 @@ macro( ecbuild_find_package )
 		# 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
 
 		if( NOT ${_PAR_NAME}_FOUND )
-			find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET 
-                HINTS ${${PNAME}_PATH} ${_PAR_NAME}_PATH ${${PNAME}_DIR} ${${_PAR_NAME}_DIR} 
+			find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET
+                HINTS ${${PNAME}_PATH} ${_PAR_NAME}_PATH ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}
                 NO_DEFAULT_PATH )
 		endif()
 
