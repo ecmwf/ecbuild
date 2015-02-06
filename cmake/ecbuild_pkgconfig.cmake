@@ -309,7 +309,6 @@ function( ecbuild_pkgconfig )
 
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS_PRIVATE _libraries _PAR_IGNORE_LIBRARIES )
 
-  debug_var( _PAR_NO_PRIVATE_INCLUDE_DIRS )
   if( NOT _PAR_NO_PRIVATE_INCLUDE_DIRS )  
     ecbuild_include_dependencies( _include_dirs LIBRARIES )
     ecbuild_pkgconfig_include( PKGCONFIG_CFLAGS _include_dirs _PAR_IGNORE_INCLUDE_DIRS )
