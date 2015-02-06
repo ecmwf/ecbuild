@@ -14,30 +14,41 @@
 #
 # It takes following optional arguments:
 #
-#  - FILENAME
+#  - FILENAME <filename>
 #       The file that will be generated. Default value is the lowercase
 #       name of the project with suffix ".pc" is used
 #
-#  - NAME
+#  - NAME <name>
 #       The name to be given to the package. Default value is the lowercase
 #       name of the project
 #
-#  - TEMPLATE
+#  - TEMPLATE <template>
 #       The template configuration file to use. This is useful to create more
 #       custom pkg-config files. Default is ${ECBUILD_CMAKE_DIR}/pkg-config.pc.in
 #
-#  - URL
-#       The url of the package
+#  - URL <url>
+#       The url of the package. Default is ${UPPERCASE_PROJECT_NAME}_URL
 #
-#  - DESCRIPTION
-#       The description of the package
+#  - DESCRIPTION <description>
+#       The description of the package. Default is ${UPPERCASE_PROJECT_NAME}_DESCRIPTION
 #
-#  - LIBRARIES
+#  - LIBRARIES <libraries>
 #       The package libraries. Default is ${UPPERCASE_PROJECT_NAME}_LIBRARIES
 #       This is e.g. of the form "eckit;eckit_geometry"
 #
-#  - DEPENDENCIES
-#       The third party dependencies. Default is ${UPPERCASE_PROJECT_NAME}_TPLS
+#  - IGNORE_INCLUDE_DIRS <include_dirs>
+#       Ignore specified include directories
+#
+#  - IGNORE_LIBRARIES <libraries>
+#       Ignore specified libraries
+#
+#  - LANGUAGES <languages>
+#       List of languages used. If none given, all CMake_<lang>_COMPILER_LOAED languages
+#       are added. Accepted languages: C CXX Fortran
+#
+#  - NO_PRIVATE_INCLUDE_DIRS
+#       Don't add include dirs of dependencies to Cflags. This is mainly useful
+#       for Fortran only packages, when only the modules need to be added to Cflags
 #
 #############################################################################################
 
@@ -232,9 +243,9 @@ endfunction(ecbuild_pkgconfig_include)
 
 function( ecbuild_pkgconfig )
 
-  set( options REQUIRES )
+  set( options REQUIRES NO_PRIVATE_INCLUDE_DIRS )
   set( single_value_args FILEPATH NAME TEMPLATE URL DESCRIPTION )
-  set( multi_value_args LIBRARIES IGNORE_INCLUDE_DIRS IGNORE_LIBRARIES VARIABLES )
+  set( multi_value_args LIBRARIES IGNORE_INCLUDE_DIRS IGNORE_LIBRARIES VARIABLES LANGUAGES )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -244,6 +255,29 @@ function( ecbuild_pkgconfig )
   if(_PAR_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "Unknown keywords given to ecbuild_add_executable(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
+
+  unset( PKGCONFIG_LANGUAGES )
+  if( NOT _PAR_LANGUAGES )
+    if( CMAKE_C_COMPILER_LOADED )
+      list( APPEND PKGCONFIG_LANGUAGES C )
+    endif()
+    if( CMAKE_CXX_COMPILER_LOADED )
+      list( APPEND PKGCONFIG_LANGUAGES CXX )
+    endif()
+    if( CMAKE_Fortran_COMPILER_LOADED )
+      list( APPEND PKGCONFIG_LANGUAGES Fortran )
+    endif()
+  else()
+    foreach( _lang ${_PAR_LANGUAGES} )
+      if( CMAKE_${_lang}_COMPILER_LOADED )
+        list( APPEND PKGCONFIG_LANGUAGES ${_lang} )
+      endif()
+    endforeach()
+  endif()
+
+  foreach( _lang ${PKGCONFIG_LANGUAGES} )
+    set( PKGCONFIG_HAVE_${_lang} 1 )
+  endforeach()
 
   set( LIBRARIES ${${PNAME}_LIBRARIES} )
   if( _PAR_LIBRARIES )
@@ -260,8 +294,10 @@ function( ecbuild_pkgconfig )
 
   set( RPATH_FLAG ${CMAKE_SHARED_LIBRARY_RUNTIME_${_linker_lang}_FLAG} )
 
-  if( NOT CMAKE_Fortran_MODPATH_FLAG )
-    set( CMAKE_Fortran_MODPATH_FLAG "-I" )
+  set( PKGCONFIG_MOD_FLAG ${CMAKE_Fortran_MODPATH_FLAG} )
+
+  if( NOT PKGCONFIG_MOD_FLAG )
+    set( PKGCONFIG_MOD_FLAG "-I" )
   endif()
 
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS LIBRARIES _PAR_IGNORE_LIBRARIES )
@@ -270,13 +306,19 @@ function( ecbuild_pkgconfig )
   foreach( _lib ${LIBRARIES} )
     list( REMOVE_ITEM _libraries ${_lib} )
   endforeach()
-  ecbuild_include_dependencies( _include_dirs LIBRARIES )
 
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS_PRIVATE _libraries _PAR_IGNORE_LIBRARIES )
-  ecbuild_pkgconfig_include( PKGCONFIG_CFLAGS _include_dirs _PAR_IGNORE_INCLUDE_DIRS )
 
-  unset( _libraries )
-  unset( _include_dirs )
+  debug_var( _PAR_NO_PRIVATE_INCLUDE_DIRS )
+  if( NOT _PAR_NO_PRIVATE_INCLUDE_DIRS )  
+    ecbuild_include_dependencies( _include_dirs LIBRARIES )
+    ecbuild_pkgconfig_include( PKGCONFIG_CFLAGS _include_dirs _PAR_IGNORE_INCLUDE_DIRS )
+  endif()
+
+  set( PKGCONFIG_INCLUDE "-I\${includedir}" )
+  if( PKGCONFIG_HAVE_Fortran )
+    set( PKGCONFIG_INCLUDE "${PKGCONFIG_INCLUDE} ${PKGCONFIG_MOD_FLAG}\${fmoddir}" )
+  endif()
 
   if( NOT _PAR_TEMPLATE )
     set( _PAR_TEMPLATE "${ECBUILD_MACROS_DIR}/pkg-config.pc.in" )
@@ -291,15 +333,23 @@ function( ecbuild_pkgconfig )
     set( _PAR_FILEPATH "${PKGCONFIG_NAME}.pc" )
   endif()
 
+  set( PKGCONFIG_DESCRIPTION ${${PNAME}_DESCRIPTION} )
+  if( _PAR_DESCRIPTION )
+    set( PKGCONFIG_DESCRIPTION ${_PAR_DESCRIPTION} )
+  endif()
+
+  set( PKGCONFIG_URL ${${PNAME}_URL} )
+  if( _PAR_URL )
+    set( PKGCONFIG_URL ${_PAR_URL} )
+  endif()
+
   set( PKGCONFIG_VERSION ${${PNAME}_VERSION} )
-  set( PKGCONFIG_DESCRIPTION ${_PAR_DESCRIPTION} )
-  set( PKGCONFIG_URL ${_PAR_URL} )
-  set( PKGCONFIG_GIT_SHA1 ${${PNAME}_GIT_SHA1} )
+  set( PKGCONFIG_GIT_TAG ${${PNAME}_GIT_SHA1} )  # For now set it to a commit id
 
   if( _PAR_VARIABLES )
-    set( PKGCONFIG_VARIABLES "### Features:\n")
+    set( PKGCONFIG_VARIABLES "\n### Features:\n\n")
     foreach( _var ${_PAR_VARIABLES} )
-      set( PKGCONFIG_VARIABLES "${PKGCONFIG_VARIABLES}\n${_var}=${${_var}}" )
+      set( PKGCONFIG_VARIABLES "${PKGCONFIG_VARIABLES}${_var}=${${_var}}\n" )
     endforeach()
   endif()
 
