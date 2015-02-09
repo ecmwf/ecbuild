@@ -26,7 +26,7 @@
 macro( ecbuild_add_test )
 
     set( options           BOOST )
-    set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI )
+    set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI WORKING_DIRECTORY )
     set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -295,13 +295,17 @@ macro( ecbuild_add_test )
       if( _PAR_ENABLED ) # we can disable and still build it but not run it with 'make tests'
 
           if( DEFINED _PAR_COMMAND )
-              add_test( ${_PAR_TARGET} ${_PAR_COMMAND} ${TEST_ARGS} ) # run a command as test
+              add_test( ${_PAR_TARGET} ${_PAR_COMMAND} ${TEST_ARGS} ${_working_dir} ) # run a command as test
           else()
-              add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ) # run the test that was generated
+              add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ${_working_dir} ) # run the test that was generated
           endif()
 
           if( DEFINED _PAR_ENVIRONMENT )
               set_tests_properties( ${_PAR_TARGET} PROPERTIES ENVIRONMENT "${_PAR_ENVIRONMENT}")
+          endif()
+
+          if( DEFINED _PAR_WORKING_DIRECTORY )
+              set_tests_properties( ${_PAR_TARGET} PROPERTIES WORKING_DIRECTORY "${_PAR_WORKING_DIRECTORY}")
           endif()
 
       endif()
