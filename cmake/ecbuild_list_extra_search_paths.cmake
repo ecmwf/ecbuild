@@ -20,21 +20,28 @@ function( ecbuild_list_extra_search_paths pkg var )
 
 	string( TOUPPER ${pkg} _PKG )
 
+	# PKG_PATH (upper case)
+
+	if( DEFINED ${_PKG}_PATH AND EXISTS ${${_PKG}_PATH} )
+		message( "${_PKG}_PATH ${${_PKG}_PATH} exists " )
+		list( APPEND ${var} ${${_PKG}_PATH} )
+	endif()
+
 	# ENV PKG_PATH (upper case)
 
 	if( DEFINED ENV{${_PKG}_PATH} AND EXISTS $ENV{${_PKG}_PATH}  )
 		list( APPEND ${var} $ENV{${_PKG}_PATH} )
 	endif()
 
-	# PKG_PATH (upper case)
-
-	if( DEFINED ${_PKG}_PATH AND EXISTS ${_PKG}_PATH )
-		list( APPEND ${var} ${${_PKG}_PATH} )
-	endif()
-
 	# pkg_PATH (lower case)
 
-	if( DEFINED ${pkg}_PATH AND EXISTS ${pkg}_PATH  )
+	if( DEFINED ${pkg}_PATH AND EXISTS ${${pkg}_PATH} )
+		list( APPEND ${var} ${${pkg}_PATH} )
+	endif()
+
+	# ENV pkg_PATH (lower case)
+
+	if( DEFINED ${pkg}_PATH AND EXISTS ${${pkg}_PATH} )
 		list( APPEND ${var} ${${pkg}_PATH} )
 	endif()
 
