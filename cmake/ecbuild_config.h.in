@@ -57,12 +57,11 @@
 #cmakedefine EC_HAVE_SYS_STAT_H
 #cmakedefine EC_HAVE_SYS_TIME_H
 #cmakedefine EC_HAVE_SYS_TYPES_H
-#cmakedefine EC_HAVE_MALLOC_H
-#cmakedefine EC_HAVE_SYS_MALLOC_H
 
 #cmakedefine EC_HAVE_MALLOC_H
 #cmakedefine EC_HAVE_SYS_MALLOC_H
 
+#cmakedefine EC_HAVE_SYS_PARAM_H
 #cmakedefine EC_HAVE_SYS_MOUNT_H
 #cmakedefine EC_HAVE_SYS_VFS_H
 

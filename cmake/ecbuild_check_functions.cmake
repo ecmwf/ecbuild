@@ -49,8 +49,9 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     ecbuild_cache_check_include_files( malloc.h       EC_HAVE_MALLOC_H      )
     ecbuild_cache_check_include_files( sys/malloc.h   EC_HAVE_SYS_MALLOC_H  )
     
-    ecbuild_cache_check_include_files("sys/param.h;sys/mount.h" EC_HAVE_SYS_MOUNT_H )
-    ecbuild_cache_check_include_files("sys/vfs.h"               EC_HAVE_SYS_VFS_H )
+    ecbuild_cache_check_include_files( sys/param.h    EC_HAVE_SYS_PARAM_H   )
+    ecbuild_cache_check_include_files( sys/mount.h    EC_HAVE_SYS_MOUNT_H   )
+    ecbuild_cache_check_include_files( sys/vfs.h      EC_HAVE_SYS_VFS_H     )
 
     ### capability checks ##################
 
