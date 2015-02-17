@@ -70,8 +70,11 @@ function( ecbuild_library_dependencies dependencies libraries )
       if( _imported )
 
         get_property( _location TARGET ${_lib} PROPERTY LOCATION )
-        get_property( _config   TARGET ${_lib} PROPERTY IMPORTED_CONFIGURATIONS )
+        get_property( _configs   TARGET ${_lib} PROPERTY IMPORTED_CONFIGURATIONS )
+        list( REVERSE _configs )
+        list( GET _configs 0 _config)
         get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config} )
+        get_property( _locimp   TARGET ${_lib} PROPERTY IMPORTED_LOCATION_${_config} )
 
       else()
 
@@ -309,7 +312,7 @@ function( ecbuild_pkgconfig )
 
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS_PRIVATE _libraries _PAR_IGNORE_LIBRARIES )
 
-  if( NOT _PAR_NO_PRIVATE_INCLUDE_DIRS )  
+  if( NOT _PAR_NO_PRIVATE_INCLUDE_DIRS )
     ecbuild_include_dependencies( _include_dirs LIBRARIES )
     ecbuild_pkgconfig_include( PKGCONFIG_CFLAGS _include_dirs _PAR_IGNORE_INCLUDE_DIRS )
   endif()
