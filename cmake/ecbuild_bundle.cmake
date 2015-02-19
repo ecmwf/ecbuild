@@ -23,18 +23,18 @@ if( ECBUILD_GIT )
 
   find_package(Git)
 
-  if( NOT ECMWF_USER )
-    set( ECMWF_USER $ENV{USER} CACHE STRING "ECMWF git user" )
-  endif()
+  set( ECMWF_USER $ENV{USER} CACHE STRING "ECMWF git user" )
+  set( ECMWF_GIT  SSH        CACHE STRING "ECMWF git protocol" )
 
-  set( ECMWF_GIT_SSH   "ssh://git@software.ecmwf.int:7999" CACHE STRING "ECMWF ssh address" )
-  set( ECMWF_GIT_HTTPS "https://${ECMWF_USER}@software.ecmwf.int/stash/scm" CACHE STRING "ECMWF https address" )
+  set( ECMWF_GIT_SSH   "ssh://git@software.ecmwf.int:7999"                  CACHE INTERNAL "ECMWF ssh address" )
+  set( ECMWF_GIT_HTTPS "https://${ECMWF_USER}@software.ecmwf.int/stash/scm" CACHE INTERNAL "ECMWF https address" )
 
-  if( NOT ECMWF_GIT OR ECMWF_GIT MATCHES "[Ss][Ss][Hh]" )
-    set( ECMWF_GIT_ADDRESS ${ECMWF_GIT_SSH} CACHE STRING "ECMWF stash" )
+  if( ECMWF_GIT MATCHES "[Ss][Ss][Hh]" )
+    set( ECMWF_GIT_ADDRESS ${ECMWF_GIT_SSH} CACHE INTERNAL "" )
   else()
-    set( ECMWF_GIT_ADDRESS ${ECMWF_GIT_HTTPS} CACHE STRING "ECMWF stash" )
+    set( ECMWF_GIT_ADDRESS ${ECMWF_GIT_HTTPS} CACHE INTERNAL "" )
   endif()
+  
 endif()
 
 macro( ecbuild_git )
