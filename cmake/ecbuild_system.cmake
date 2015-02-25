@@ -37,7 +37,26 @@ set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuil
 
 include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
-include( ecbuild_policies )
+# define cmake policies
+
+if( POLICY CMP0011 )
+	cmake_policy( SET CMP0011 OLD )
+endif()
+
+# for macosx use @rpath in a target’s install name
+
+if( POLICY CMP0042 )
+	cmake_policy( SET CMP0042 NEW )
+	set( CMAKE_MACOSX_RPATH ON )
+endif()
+
+# inside if() don't dereference variables if they are quoted 
+# e.g. "VAR" is not dereferenced 
+#      "${VAR}" is dereference only once
+
+if( POLICY CMP0054 )
+	cmake_policy( SET CMP0054 NEW )
+endif()
 
 ########################################################################################################
 # include our cmake macros, but only do so if this is the top project

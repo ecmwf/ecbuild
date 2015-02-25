@@ -38,16 +38,3 @@ cmake_dependent_option( ENABLE_OS_ENDINESS_TEST  "Run OS endiness tests"       O
 cmake_dependent_option( ENABLE_OS_FUNCTIONS_TEST "Run OS functions tests"      ON "ENABLE_OS_TESTS" OFF)
 
 mark_as_advanced( ENABLE_OS_TYPES_TEST ENABLE_OS_ENDINESS_TEST ENABLE_OS_FUNCTIONS_TEST  )
-
-# set policies
-
-# for macosx use @rpath in a target’s install name
-if( POLICY CMP0042 )
-	cmake_policy( SET CMP0042 NEW )
-	set( CMAKE_MACOSX_RPATH ON )
-endif()
-
-# inside if() don't dereference variables if they are quoted e.g. "VAR", only dereference with "${VAR}"
-if( POLICY CMP0054 )
-	cmake_policy( SET CMP0054 NEW )
-endif()

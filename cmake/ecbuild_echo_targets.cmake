@@ -9,6 +9,8 @@
 
 function(echo_target_property tgt prop)
  
+  cmake_policy(PUSH)
+
   if( POLICY CMP0026 )
     cmake_policy( SET CMP0026 OLD)
   endif()
@@ -27,9 +29,7 @@ function(echo_target_property tgt prop)
     message("")
   #endif()
 
-  if( POLICY CMP0026 )
-    cmake_policy( SET CMP0026 NEW )
-  endif()
+  cmake_policy(POP)
 
 endfunction()
  
