@@ -46,6 +46,12 @@ if( POLICY CMP0011 )
 	cmake_policy( SET CMP0011 OLD )
 endif()
 
+# Allow use of the LOCATION target property.
+
+if( POLICY CMP0026 )
+	cmake_policy( SET CMP0026 OLD )
+endif()
+
 # for macosx use @rpath in a target’s install name
 
 if( POLICY CMP0042 )
