@@ -37,7 +37,10 @@ set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuil
 
 include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
+########################################################################################################
 # define cmake policies
+
+# Included scripts do automatic cmake_policy PUSH and POP
 
 if( POLICY CMP0011 )
 	cmake_policy( SET CMP0011 OLD )
@@ -48,6 +51,30 @@ endif()
 if( POLICY CMP0042 )
 	cmake_policy( SET CMP0042 NEW )
 	set( CMAKE_MACOSX_RPATH ON )
+endif()
+
+# Error on non-existent target in get_target_property
+
+if( POLICY CMP0045 )
+	cmake_policy( SET CMP0045 NEW )
+endif()
+
+# Error on non-existent target in get_target_property
+
+if( POLICY CMP0046 )
+	cmake_policy( SET CMP0046 NEW )
+endif()
+
+# Error on non-existent dependency in add_dependencies
+
+if( POLICY CMP0046 )
+	cmake_policy( SET CMP0050 NEW )
+endif()
+
+# Reject source and build dirs in installed INTERFACE_INCLUDE_DIRECTORIES
+
+if( POLICY CMP0052 )
+	cmake_policy( SET CMP0052 NEW )
 endif()
 
 # inside if() don't dereference variables if they are quoted 
