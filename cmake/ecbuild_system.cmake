@@ -37,6 +37,8 @@ set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuil
 
 include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
+set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
+
 ########################################################################################################
 # define cmake policies
 
