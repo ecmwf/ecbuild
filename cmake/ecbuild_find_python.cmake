@@ -89,8 +89,8 @@ macro( ecbuild_find_python )
                             OUTPUT_STRIP_TRAILING_WHITESPACE
                             ERROR_QUIET)
 
-#           debug_var(PYTHON_LIBRARIES)
-#           debug_var(PYTHON_INCLUDE_DIR)
+            debug_var(PYTHON_LIBRARIES)
+            debug_var(PYTHON_INCLUDE_DIR)
 
             string(REGEX REPLACE "^[-I]" "" PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
             string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
