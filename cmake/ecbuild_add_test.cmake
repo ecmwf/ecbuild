@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2014 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -42,8 +42,9 @@ macro( ecbuild_add_test )
       if( (_PAR_MPI GREATER 1) AND ( (NOT HAVE_MPI) OR (NOT MPIEXEC) ) )
         set( _PAR_ENABLED 0 )
       endif()
-    else()
-      set( _PAR_MPI 1 )
+      if( (_PAR_MPI EQUAL 1) AND (NOT HAVE_MPI) )
+        set( _PAR_MPI 0 )
+      endif()
     endif()
 
     # default is enabled
@@ -106,7 +107,7 @@ macro( ecbuild_add_test )
 	# boost unit test linking to unit_test lib ?
 
 	if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
-		
+
 		if( HAVE_BOOST_UNIT_TEST )
 			if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
 				include_directories( ${ECBUILD_BOOST_HEADER_DIRS} )
@@ -156,7 +157,7 @@ macro( ecbuild_add_test )
       # build executable
 
       if( DEFINED _PAR_SOURCES )
-    
+
                 # add include dirs if defined
                 if( DEFINED _PAR_INCLUDES )
                   list(REMOVE_DUPLICATES _PAR_INCLUDES )
@@ -166,7 +167,7 @@ macro( ecbuild_add_test )
                     endif()
                   endforeach()
                 endif()
-        
+
                 # add persistent layer files
                 if( DEFINED _PAR_PERSISTENT )
 		            if( DEFINED PERSISTENT_NAMESPACE )
@@ -175,16 +176,16 @@ macro( ecbuild_add_test )
                 		ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
             		endif()
                 endif()
-        
+
                 # add the test target
-                
+
                 add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} )
-        
+
                 # add extra dependencies
                 if( DEFINED _PAR_DEPENDS)
                   add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
                 endif()
-        
+
                 # add the link libraries
                 if( DEFINED _PAR_LIBS )
                   list(REMOVE_DUPLICATES _PAR_LIBS )
@@ -203,7 +204,7 @@ macro( ecbuild_add_test )
 				if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_LINKED AND HAVE_BOOST_UNIT_TEST )
                     target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
                 endif()
-        
+
                 # add local flags
                 if( DEFINED _PAR_CFLAGS )
                     set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
@@ -218,20 +219,20 @@ macro( ecbuild_add_test )
                     set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
                 endif()
 
-       
+
                 # modify definitions to compilation ( -D... )
                 get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
 
                 if( DEFINED _PAR_DEFINITIONS )
                     list( APPEND _target_defs ${_PAR_DEFINITIONS} )
                 endif()
-				
+
 				if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
 					list( APPEND _target_defs BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
 				endif()
 
 			    set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
-        
+
                 # set build location to local build dir
                 # not the project base as defined for libs and execs
                 set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
@@ -244,7 +245,7 @@ macro( ecbuild_add_test )
                 if( DEFINED _PAR_LINKER_LANGUAGE )
                     set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
                 endif()
-        
+
                 # make sure target is removed before - some problems with AIX
                 get_target_property(EXE_FILENAME ${_PAR_TARGET} OUTPUT_NAME)
                 add_custom_command(
@@ -274,7 +275,7 @@ macro( ecbuild_add_test )
 
       endif()
 
-    
+
       # define the arguments
       set( TEST_ARGS "" )
       if( DEFINED _PAR_ARGS  )
@@ -282,7 +283,7 @@ macro( ecbuild_add_test )
       endif()
 
       # Wrap with MPIEXEC
-      if( HAVE_MPI AND MPIEXEC )
+      if( _PAR_MPI )
         if( DEFINED _PAR_COMMAND )
           set( _PAR_COMMAND ${MPIEXEC} -n ${_PAR_MPI} ${_PAR_COMMAND} )
         else()
@@ -309,7 +310,7 @@ macro( ecbuild_add_test )
           endif()
 
       endif()
-    
+
       # add to the overall list of tests
       list( APPEND ECBUILD_ALL_TESTS ${_PAR_TARGET} )
       list( REMOVE_DUPLICATES ECBUILD_ALL_TESTS )
