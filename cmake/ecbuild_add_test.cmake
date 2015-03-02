@@ -20,14 +20,15 @@
 #  SOURCES: sources to be compiled
 #  LIBS: Libraries needed for linking
 #  INCLUDES: Extra include directories
-#  DEPENDS: Add explicit dependency to other targets
+#  DEPENDS: Add explicit dependency to other targets (for building)
+#  TEST_DEPENDS: add explicity dependency on another test running before
 #  ARGS: Command-line arguments to COMMAND OR TARGET
 
 macro( ecbuild_add_test )
 
     set( options           BOOST )
     set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI WORKING_DIRECTORY )
-    set( multi_value_args  SOURCES LIBS INCLUDES DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
+    set( multi_value_args  SOURCES LIBS INCLUDES TEST_DEPENDS DEPENDS ARGS PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -307,6 +308,10 @@ macro( ecbuild_add_test )
 
           if( DEFINED _PAR_WORKING_DIRECTORY )
               set_tests_properties( ${_PAR_TARGET} PROPERTIES WORKING_DIRECTORY "${_PAR_WORKING_DIRECTORY}")
+          endif()
+
+          if( DEFINED _PAR_TEST_DEPENDS )
+              set_tests_properties( ${_PAR_TARGET} PROPERTIES DEPENDS "${_PAR_TEST_DEPENDS}")
           endif()
 
       endif()
