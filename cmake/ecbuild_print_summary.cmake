@@ -18,8 +18,8 @@ macro( ecbuild_print_summary )
 
     endif()
 
-    if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
-
+    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+	
         ecbuild_define_links_target()
 
         get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
@@ -67,18 +67,14 @@ macro( ecbuild_print_summary )
 
 	message( STATUS "common definitions: ${defs}" )
 
-        message( STATUS "---------------------------------------------------------" )
-
-    endif()
+	message( STATUS "---------------------------------------------------------" )
 
 	### FEATURE SUMMARY
 
 	  # debug_var( CMAKE_VERSION )
 	  if( ${CMAKE_VERSION} VERSION_LESS "2.8.6" )
-		message( STATUS "without include_quiet" )
 		feature_summary( WHAT ALL )
 	  else()
-		message( STATUS "with include_quiet" )
 		feature_summary( WHAT ALL INCLUDE_QUIET_PACKAGES )
 	  endif()
 
@@ -113,5 +109,7 @@ macro( ecbuild_print_summary )
         message( STATUS " +++ WARNING +++ WARNING +++ WARNING +++" )
 
     endif()
+
+    endif( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
 endmacro( ecbuild_print_summary )

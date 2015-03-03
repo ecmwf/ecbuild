@@ -11,7 +11,7 @@
 
 macro( ecbuild_warn_unused_files )
 
-    if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} ) # only for top level project
+    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME ) # only for top level project
     
       # if cache file with unused files exists remove it
       set( UNUSED_FILE "${CMAKE_BINARY_DIR}/UnusedFiles.txt" )

@@ -1,5 +1,267 @@
 #!/bin/bash
 
-INSTALL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+usage()
+{
+  echo "Usage: ecbuild [--help] [--version]"
+  exit $1
+}
 
-cmake -DCMAKE_MODULE_PATH=$INSTALL_DIR/../share/ecbuild/cmake "$@"
+help()
+{
+    cat <<EOF
+USAGE:
+
+  ecbuild [--help] [--version] [--toolchains]
+  ecbuild [option...] [--] [cmake-argument...] <path-to-source>
+  ecbuild [option...] [--] [cmake-argument...] <path-to-existing-build>
+
+DESCRIPTION:
+
+  ecbuild is a build system based on CMake, but providing a lot of macro's
+  to make it easier to work with. Upon execution,
+  the equivalent cmake command is printed.
+
+  ecbuild/cmake must be called from an out-of-source build directory and
+  forbids in-source builds.
+
+SYNOPSIS:
+
+    --help         Display this help
+    --version      Display ecbuild version
+    --toolchains   Display list of pre-installed toolchains (see below)
+
+
+Available values for "option":
+
+    --prefix=<prefix>
+          Set the install path to <prefix>.
+          Equivalent to cmake argument "-D CMAKE_INSTALL_PREFIX=<prefix>"
+
+    --build=<build-type>
+          Set the build-type to <build-type>.
+          Equivalent to cmake argument "-D CMAKE_BUILD_TYPE=<build-type>"
+          <build-type> can be any of:
+             - debug : Lowest optimization level, useful for debugging
+             - release : Highest optimization level, for best performance
+             - bit : Highest optimization level while staying bit-reproducible
+             - ...others depending on project
+
+    --static
+          Build static libraries.
+          Equivalent to "-D BUILD_SHARED_LIBS=OFF"
+
+    --dynamic
+          Build dynamic libraries (usually the default).
+          Equivalent to "-D BUILD_SHARED_LIBS=ON"
+
+    --toolchain=<toolchain>
+          Use a platform specific toolchain, containing settings such
+          as compilation flags, locations of commonly used dependencies.
+          <toolchain> can be the path to a custom toolchain file, or a 
+          pre-installed toolchain provided with ecbuild. For a list of 
+          pre-installed toolchains, run "ecbuild --toolchains".
+          Equivalent to cmake argument "-D CMAKE_TOOLCHAIN_FILE=<toolchain-file>"
+
+    --cache=<ecbuild-cache-file>    (advanced)
+          A file called "ecbuild-cache.cmake" is generated during configuration.
+          This file can be moved to a safe location, and specified for future
+          builds to speed up checking of compiler/platform capabilities. Note that
+          this is only accelerating fresh builds, as cmake internally caches also.
+          Therefore this option is *not* recommended.
+
+
+Available values for "cmake-argument":
+
+    Any value that can be usually passed to cmake to (re)configure the build.
+    Typically these values start with "-D".
+        example:  -D ENABLE_TESTS=ON  -D ENABLE_MPI=OFF  -D ECKIT_PATH=...
+
+    They can be explicitly separated from [option...] with a "--", for the case
+    there is a conflicting option with the "cmake" executable, and the latter's
+    option is requested.
+
+------------------------------------------------------------------------
+
+NOTE: When reconfiguring a build, it is only necessary to change the relevant
+options, as everything stays cached. For example:
+  > ecbuild --prefix=PREFIX .
+  > ecbuild -D ENABLE_TESTS=ON .
+
+------------------------------------------------------------------------
+
+Compiling:
+
+  To compile the project with <N> threads:
+    > make -j<N>
+
+  To get verbose compilation/linking output:
+    > make VERBOSE=1
+
+Testing:
+
+  To run the project's tests
+    > ctest
+
+  Also check the ctest manual/help for more options on running tests
+
+Installing:
+
+  To install the project in location PREFIX with 
+       "--prefix=PREFIX" or
+       "-D CMAKE_INSTALL_PREFIX=PREFIX"
+    > make install
+
+------------------------------------------------------------------------
+ECMWF"
+
+EOF
+    exit $1
+}
+
+
+INSTALL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ECBUILD_MODULE_PATH=$INSTALL_DIR/../share/ecbuild/cmake
+ECBUILD_MODULE_PATH=$(cd $(dirname "$ECBUILD_MODULE_PATH") && pwd -P)/$(basename "$ECBUILD_MODULE_PATH")
+ADD_ECBUILD_OPTIONS="-D CMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
+
+version()
+{
+  # todo: do some clever regex of the VERSION.cmake file
+  echo "ecbuild version 1.6.0"
+  command -v cmake >/dev/null 2>&1 || { exit 0; }  
+  cmake --version | head -1
+  exit 0
+}
+
+toolchains()
+{
+  toolchains_dir=$INSTALL_DIR/../share/ecbuild/toolchains/
+  cd $toolchains_dir
+  echo "Available toolchains:"
+  ls | while read fname 
+  do
+      echo "  - ${fname%%.*}"
+  done
+  exit 0
+}
+
+prefix()
+{
+  arg=$1
+  path=$(cd $(dirname "$arg") && pwd -P)/$(basename "$arg")
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_INSTALL_PREFIX=${path}"
+}
+
+toolchain()
+{
+  arg=$1
+  if [ -f $arg ]; then 
+    toolchain_file=$arg
+  else
+    if [ -f $INSTALL_DIR/../share/ecbuild/toolchains/$arg.cmake ]; then
+      toolchain_file=$INSTALL_DIR/../share/ecbuild/toolchains/$arg.cmake
+    fi
+  fi
+  if [ -z ${toolchain_file+x} ]; then
+    toolchains_dir=$INSTALL_DIR/../share/ecbuild/toolchains/
+    toolchains_dir=$(cd $(dirname "$toolchains_dir") && pwd -P)/$(basename "$toolchains_dir")
+    echo "Error:"
+    echo "   Toolchain [$arg] is not valid: [$arg.cmake] cannot be"
+    echo "   found in [$toolchains_dir]"
+    exit 1
+  else
+    toolchain_file=$(cd $(dirname "$toolchain_file") && pwd -P)/$(basename "$toolchain_file")
+    ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_TOOLCHAIN_FILE=${toolchain_file}"
+  fi
+}
+
+cache()
+{
+  arg=$1
+  if [ -f $arg ]; then
+    cache_file=$(cd $(dirname "$arg") && pwd -P)/$(basename "$arg")
+  else
+    echo "Error:"
+    echo "   Cache file [$arg] is not found."
+    exit 1
+  fi
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D ECBUILD_CACHE=${cache_file}"
+}
+ 
+if test $# -eq 0; then
+    usage 1
+fi
+
+while test $# -gt 0; do
+    # Split --option=value in $opt="--option" and $val="value"
+    case "$1" in
+    --*=*) 
+      opt=`echo "$1" | sed 's/=.*//'`
+      val=`echo "$1" | sed 's/--[_a-zA-Z0-9]*=//'`
+      ;;
+    --*)
+      opt=$1
+      ;;
+    *)
+      break
+      ;;
+    esac
+    # Parse options
+    case "$opt" in
+      --help)
+        help 0
+  	    ;;
+      --version)
+        version
+        ;;
+      --toolchains)
+        toolchains
+        ;;
+      --prefix)
+        prefix $val
+        ;;
+      --build)
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_BUILD_TYPE=$val"
+        ;;
+      --static)
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=OFF"
+        ;;
+      --dynamic)
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=ON"
+        ;;        
+      --toolchain)
+        toolchain $val
+        ;;
+      --cache)
+        cache $val
+        ;;
+      --)
+        shift
+        break
+        ;;
+      *)
+        echo "unknown option: $opt"
+	      usage 1
+        ;;
+    esac
+    shift
+done
+
+# Check if cmake is available
+command -v cmake >/dev/null 2>&1 || { 
+  echo "cmake is required and cannot be found in the PATH." >&2
+  echo "  Try 'module load cmake'" >&2
+  echo "PATH=$PATH" >&2
+  exit 1; 
+}
+
+# If no arguments remain, set SOURCE to "."
+if [ $# -eq 0 ]; then
+  SOURCE="."
+fi
+
+COMMAND="cmake ${ADD_ECBUILD_OPTIONS} $@ $SOURCE"
+echo ""
+echo $COMMAND
+echo ""
+$COMMAND

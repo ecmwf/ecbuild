@@ -28,7 +28,7 @@ if( ENABLE_TESTS )
 
 	else()
 
-		message( WARNING "Boost unit test framework -- NOT FOUND" )
+		message( STATUS "Boost unit test framework -- NOT FOUND" )
 
 		set( HAVE_BOOST_UNIT_TEST 0 )
 

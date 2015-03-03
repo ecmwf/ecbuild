@@ -46,8 +46,8 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 
 					if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" VERSION_LESS 3.0) # cmake < 3.0
 						set( CMAKE_INSTALL_NAME_DIR "@loader_path/${RPATH_DIR}" )
-						_path_append( CMAKE_INSTALL_RPATH "@loader_path/${RPATH_DIR}" )
 					endif()
+					_path_append( CMAKE_INSTALL_RPATH "@loader_path/${RPATH_DIR}" )
 					set( _done 1 )
 
 				endif()

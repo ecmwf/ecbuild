@@ -37,9 +37,65 @@ set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuil
 
 include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
+set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
+
+########################################################################################################
+# define cmake policies
+
+# Included scripts do automatic cmake_policy PUSH and POP
+
+if( POLICY CMP0011 )
+	cmake_policy( SET CMP0011 OLD )
+endif()
+
+# Allow use of the LOCATION target property.
+
+if( POLICY CMP0026 )
+	cmake_policy( SET CMP0026 OLD )
+endif()
+
+# for macosx use @rpath in a target’s install name
+
+if( POLICY CMP0042 )
+	cmake_policy( SET CMP0042 NEW )
+	set( CMAKE_MACOSX_RPATH ON )
+endif()
+
+# Error on non-existent target in get_target_property
+
+if( POLICY CMP0045 )
+	cmake_policy( SET CMP0045 NEW )
+endif()
+
+# Error on non-existent target in get_target_property
+
+if( POLICY CMP0046 )
+	cmake_policy( SET CMP0046 NEW )
+endif()
+
+# Error on non-existent dependency in add_dependencies
+
+if( POLICY CMP0046 )
+	cmake_policy( SET CMP0050 NEW )
+endif()
+
+# Reject source and build dirs in installed INTERFACE_INCLUDE_DIRECTORIES
+
+if( POLICY CMP0052 )
+	cmake_policy( SET CMP0052 NEW )
+endif()
+
+# inside if() don't dereference variables if they are quoted 
+# e.g. "VAR" is not dereferenced 
+#      "${VAR}" is dereference only once
+
+if( POLICY CMP0054 )
+	cmake_policy( SET CMP0054 NEW )
+endif()
+
 ########################################################################################################
 # include our cmake macros, but only do so if this is the top project
-if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
 	# hostname of where we build
 
@@ -49,8 +105,19 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 
 	set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
 
-	message( STATUS "ecbuild ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
-	message( STATUS "cmake   ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
+	message( STATUS "ecbuild   ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
+	message( STATUS "cmake     ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
+
+	if( CMAKE_TOOLCHAIN_FILE )
+		message( STATUS "toolchain ${CMAKE_TOOLCHAIN_FILE}" )
+	endif()
+
+	if( ECBUILD_CACHE )
+		include( ${ECBUILD_CACHE} )
+      message( STATUS "cache     ${ECBUILD_CACHE}" )
+	endif()
+
+	message( STATUS "---------------------------------------------------------" )
 
 	# clear the build dir exported targets file (only on the top project)
 
@@ -107,8 +174,9 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	endif()
 
 	if( CMAKE_Fortran_COMPILER_LOADED )
+        set( CMAKE_Fortran_MODULE_DIRECTORY  ${CMAKE_BINARY_DIR}/module CACHE PATH "directory for all fortran modules." )
 		include(CheckFortranFunctionExists)
-		if( CMAKE_C_COMPILER_LOADED )
+		if( CMAKE_C_COMPILER_LOADED AND ENABLE_FORTRAN_C_INTERFACE )
 			include(FortranCInterface)
 		endif()
 		set( EC_HAVE_FORTRAN 1 )
@@ -150,6 +218,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_generate_config_headers )
 	include( ecbuild_generate_rpc )
 	include( ecbuild_generate_yy )
+	include( ecbuild_echo_targets )
 	include( ecbuild_add_option )
 	include( ecbuild_add_library )
 	include( ecbuild_add_executable )
@@ -170,17 +239,25 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_print_summary )
 	include( ecbuild_warn_unused_files )
 	include( ecbuild_find_mpi )
+	include( ecbuild_find_omp )
 	include( ecbuild_find_perl )
 	include( ecbuild_find_python )
 	include( ecbuild_find_lexyacc )
 	include( ecbuild_find_fortranlibs )
 	include( ecbuild_enable_fortran )
+	include( ecbuild_check_c_source )
+	include( ecbuild_check_cxx_source )
+	include( ecbuild_check_fortran_source )
+	include( ecbuild_bundle )
+	include( ecbuild_pkgconfig )
+	include( ecbuild_cache )
 
 	include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
 	############################################################################################
 	# kickstart the build system
 
+  	ecbuild_prepare_cache()
 	include( ecbuild_define_options )               # define build options
 	include( ecbuild_check_compiler )               # check for compiler characteristics
 	include( ecbuild_check_os )                     # check for os characteristics
@@ -188,6 +265,7 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 	include( ecbuild_define_paths )                 # define installation paths
 	include( ecbuild_links_target )                 # define the links target
 	include( ecbuild_setup_test_framework )         # setup test framework
+ 	ecbuild_flush_cache()
 
 	############################################################################################
 	# define the build timestamp
@@ -196,6 +274,8 @@ if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
 		ecbuild_get_timestamp( EC_BUILD_TIMESTAMP )
 		set( EC_BUILD_TIMESTAMP  "${EC_BUILD_TIMESTAMP}" CACHE INTERNAL "Build timestamp" )
 	endif()
+
+	message( STATUS "---------------------------------------------------------" )
 
 endif()
 

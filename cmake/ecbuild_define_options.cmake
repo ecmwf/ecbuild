@@ -22,6 +22,9 @@ option( ENABLE_OS_TESTS          "Run all OS tests" ON )
 
 mark_as_advanced( ENABLE_OS_TESTS )
 
+option( ENABLE_FORTRAN_C_INTERFACE "Enable Fortran/C Interface" OFF )
+mark_as_advanced( ENABLE_FORTRAN_C_INTERFACE )
+
 option( DEVELOPER_MODE           "activates developer mode"               OFF )
 option( CHECK_UNUSED_FILES       "check for unused project files"         ON )
 
@@ -35,10 +38,3 @@ cmake_dependent_option( ENABLE_OS_ENDINESS_TEST  "Run OS endiness tests"       O
 cmake_dependent_option( ENABLE_OS_FUNCTIONS_TEST "Run OS functions tests"      ON "ENABLE_OS_TESTS" OFF)
 
 mark_as_advanced( ENABLE_OS_TYPES_TEST ENABLE_OS_ENDINESS_TEST ENABLE_OS_FUNCTIONS_TEST  )
-
-# set policies
-
-if( NOT "${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" VERSION_LESS 3.0 ) # cmake >= 3.0
-	cmake_policy( SET CMP0042 NEW )
-	set( CMAKE_MACOSX_RPATH ON )
-endif()

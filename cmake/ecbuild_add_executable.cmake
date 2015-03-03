@@ -13,7 +13,7 @@
 macro( ecbuild_add_executable )
 
 	set( options NOINSTALL AUTO_VERSION )
-	set( single_value_args TARGET COMPONENT LINKER_LANGUAGE VERSION )
+	set( single_value_args TARGET COMPONENT LINKER_LANGUAGE VERSION OUTPUT_NAME )
     set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -77,7 +77,13 @@ macro( ecbuild_add_executable )
         # add the executable target
         add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} )
     
-        # add extra dependencies
+		# set OUTPUT_NAME
+
+		if( DEFINED _PAR_OUTPUT_NAME )
+			set_target_properties( ${_PAR_TARGET} PROPERTIES OUTPUT_NAME ${_PAR_OUTPUT_NAME} )
+		endif()
+
+		# add extra dependencies
         if( DEFINED _PAR_DEPENDS)
           add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
         endif()
@@ -155,6 +161,7 @@ macro( ecbuild_add_executable )
             export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
 
 		else()
+				# NOINSTALL targets are always built the build_rpath, not the install_rpath
 				set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
 				set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
 		endif()

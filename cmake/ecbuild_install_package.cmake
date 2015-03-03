@@ -134,7 +134,7 @@ macro( ecbuild_install_project )
 
     # TOP-LEVEL PROJECT EXPORT
 
-    if( ${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME} )
+    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
         # exports the package for use from the build-tree -- inserts <package> into the CMake user package registry
     
@@ -155,13 +155,14 @@ macro( ecbuild_install_project )
         set( PACKAGE_VERSION "${${PNAME}_VERSION}" ) 
         
         configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
+
         install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
 
         # prepare imutable variables (don't depend on install path)
 
-        set( CONF_PACKAGES "" )
-        if( ${PNAME}_PACKAGES )
-          set( CONF_PACKAGES ${${PNAME}_PACKAGES} )
+        set( CONF_FEATURES "" )
+        if( ${PNAME}_FEATURES )
+          set( CONF_FEATURES ${${PNAME}_FEATURES} )
         endif()
 
         set( CONF_LIBRARIES ${${PROJECT_NAME}_ALL_LIBS} )
@@ -203,6 +204,7 @@ macro( ecbuild_install_project )
         endforeach()
 
         set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
+
         if( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
             configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
                             "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
@@ -261,7 +263,7 @@ macro( ecbuild_install_project )
         # install the export
     
         if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
-            install( EXPORT ${PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
+            install( EXPORT ${CMAKE_PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
     
     else()

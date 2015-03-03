@@ -13,7 +13,7 @@
 function( ecbuild_add_library_impl )
 
 	set( options NOINSTALL AUTO_VERSION )
-	set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE HEADER_DESTINATION VERSION )
+	set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE HEADER_DESTINATION VERSION OUTPUT_NAME )
 	set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
 	cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -63,17 +63,6 @@ function( ecbuild_add_library_impl )
 			endif()
 		endif()
 
-		# add include dirs if defined
-		if( DEFINED _PAR_INCLUDES )
-		  list( REMOVE_DUPLICATES _PAR_INCLUDES )
-		  foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
-			if( path )
-			  include_directories( ${path} )
-	#        else()
-	#          message( WARNING "Path ${path} was skipped" )
-			endif()
-		  endforeach()
-		endif()
 
 		# add persistent layer files
 		if( DEFINED _PAR_PERSISTENT )
@@ -93,6 +82,12 @@ function( ecbuild_add_library_impl )
 
 		add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} )
 
+		# set OUTPUT_NAME
+
+		if( DEFINED _PAR_OUTPUT_NAME )
+			set_target_properties( ${_PAR_TARGET} PROPERTIES OUTPUT_NAME ${_PAR_OUTPUT_NAME} )
+		endif()
+
 		# add extra dependencies
 		if( DEFINED _PAR_DEPENDS)
 		  add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
@@ -108,6 +103,22 @@ function( ecbuild_add_library_impl )
 			  target_link_libraries( ${_PAR_TARGET} ${lib} )
 			else()
 #              message( WARNING "Lib ${lib} was skipped" )
+			endif()
+		  endforeach()
+		endif()
+
+		# add include dirs if defined
+		if( DEFINED _PAR_INCLUDES )
+		  list( REMOVE_DUPLICATES _PAR_INCLUDES )
+		  foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
+			if( path )
+				if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" )
+					include_directories( ${path} )
+				else()
+			  		target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
+				endif()
+	#        else()
+	#          message( WARNING "Path ${path} was skipped" )
 			endif()
 		  endforeach()
 		endif()
@@ -283,9 +294,7 @@ macro( ecbuild_add_library )
 			if( _p_TYPE MATCHES "[Bb][Oo][Tt][Hh]" ) # build both types
 
 				ecbuild_add_library_impl( TARGET ${_p_TARGET}        TYPE SHARED ${_p_UNPARSED_ARGUMENTS} )
-				ecbuild_add_library_impl( TARGET ${_p_TARGET}-static TYPE STATIC ${_p_UNPARSED_ARGUMENTS} )
-
-				set_target_properties( ${_p_TARGET}-static PROPERTIES OUTPUT_NAME ${_p_TARGET} )
+				ecbuild_add_library_impl( TARGET ${_p_TARGET}-static TYPE STATIC ${_p_UNPARSED_ARGUMENTS} OUTPUT_NAME ${_p_TARGET} DEPENDS ${_p_TARGET} )
 
 			else()
 
@@ -302,7 +311,7 @@ macro( ecbuild_add_library )
 			if( BUILD_SHARED_LIBS MATCHES "[Bb][Oo][Tt][Hh]" ) # build both types
 
 				ecbuild_add_library_impl( TARGET ${_p_TARGET}        TYPE SHARED ${_p_UNPARSED_ARGUMENTS} )
-				ecbuild_add_library_impl( TARGET ${_p_TARGET}-static TYPE STATIC ${_p_UNPARSED_ARGUMENTS} )
+				ecbuild_add_library_impl( TARGET ${_p_TARGET}-static TYPE STATIC ${_p_UNPARSED_ARGUMENTS} DEPENDS ${_p_TARGET} )
 
 				set_target_properties( ${_p_TARGET}-static PROPERTIES OUTPUT_NAME ${_p_TARGET} )
 
