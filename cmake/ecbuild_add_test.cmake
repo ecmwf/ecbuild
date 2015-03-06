@@ -304,7 +304,7 @@ macro( ecbuild_add_test )
           endif()
 
           if( DEFINED _PAR_ENVIRONMENT )
-              set_tests_properties( ${_PAR_TARGET} PROPERTIES ENVIRONMENT "${_PAR_ENVIRONMENT}")
+              set_property( TEST ${_PAR_TARGET} APPEND PROPERTY ENVIRONMENT "${_PAR_ENVIRONMENT}" )
           endif()
 
           if( DEFINED _PAR_WORKING_DIRECTORY )
@@ -312,7 +312,7 @@ macro( ecbuild_add_test )
           endif()
 
           if( DEFINED _PAR_TEST_DEPENDS )
-              set_tests_properties( ${_PAR_TARGET} PROPERTIES DEPENDS "${_PAR_TEST_DEPENDS}")
+              set_property( TEST ${_PAR_TARGET} APPEND PROPERTY DEPENDS "${_PAR_TEST_DEPENDS}" )
           endif()
 
       endif()
