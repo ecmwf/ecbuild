@@ -133,28 +133,6 @@ macro( ecbuild_add_test )
         endforeach()
       endif()
 
-      # get test data
-
-      if( _PAR_TEST_DATA )
-
-         foreach( _d ${_PAR_TEST_DATA} )
-
-            string( REGEX MATCH "[^:]+" _name "${_d}" )
-            string( REGEX MATCH ":.*"  _md5  "${_d}" )
-            string( REPLACE ":" "" _md5 "${_md5}" )
-
-            if( _md5 )
-              ecbuild_get_test_data( TARGET _test_data_${name} NAME ${_name} MD5 ${_md5} )
-            else()
-              ecbuild_get_test_data( TARGET _test_data_${name} NAME ${_name} )
-            endif()
-
-            list( APPEND _PAR_DEPENDS _test_data_${name} )
-
-         endforeach()
-
-      endif()
-
       # build executable
 
       if( DEFINED _PAR_SOURCES )
@@ -264,15 +242,13 @@ macro( ecbuild_add_test )
           set( _PAR_TARGET ${_PAR_COMMAND} )
       endif()
 
-      # scripts dont have actual build targets so no data downloads are executed
-      # we build a phony target to trigger the dependency downloads
-      if( DEFINED _PAR_COMMAND )
+      # scripts dont have actual build targets
+      # we build a phony target to trigger the dependencies
+      if( DEFINED _PAR_COMMAND AND DEFINED _PAR_DEPENDS )
 
           add_custom_target( ${_PAR_TARGET}.x ALL COMMAND ${CMAKE_COMMAND} -E touch ${_PAR_TARGET}.x )
 
-          if( DEFINED _PAR_DEPENDS)
-             add_dependencies( ${_PAR_TARGET}.x ${_PAR_DEPENDS} )
-           endif()
+          add_dependencies( ${_PAR_TARGET}.x ${_PAR_DEPENDS} )
 
       endif()
 
@@ -300,6 +276,31 @@ macro( ecbuild_add_test )
               add_test( ${_PAR_TARGET} ${_PAR_COMMAND} ${TEST_ARGS} ${_working_dir} ) # run a command as test
           else()
               add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ${_working_dir} ) # run the test that was generated
+          endif()
+
+          # get test data
+
+          if( _PAR_TEST_DATA )
+
+             foreach( _d ${_PAR_TEST_DATA} )
+
+                string( REGEX MATCH "[^:]+" _file "${_d}" )
+                string( REPLACE "." "_" _name "${_file}" )
+                string( REGEX MATCH ":.*"  _md5  "${_d}" )
+                string( REPLACE ":" "" _md5 "${_md5}" )
+
+                if( _md5 )
+                  ecbuild_get_test_data( TARGET _test_data_${_name} NAME ${_file} MD5 ${_md5} )
+                else()
+                  ecbuild_get_test_data( TARGET _test_data_${_name} NAME ${_file} )
+                endif()
+
+                add_test(  get_test_data_${_name} "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target _test_data_${_name} )
+
+                list( APPEND _PAR_TEST_DEPENDS get_test_data_${_name} )
+
+             endforeach()
+
           endif()
 
           if( DEFINED _PAR_ENVIRONMENT )
