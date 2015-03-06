@@ -23,7 +23,7 @@ function( _download_test_data _p_NAME _p_DIRNAME )
     if( CURL_PROGRAM )
 
 		add_custom_command( OUTPUT ${_p_NAME}
-			COMMENT "downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
+			COMMENT "(curl) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
 			COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
 
     else()
@@ -33,7 +33,7 @@ function( _download_test_data _p_NAME _p_DIRNAME )
         if( WGET_PROGRAM )
 
 		   add_custom_command( OUTPUT ${_p_NAME}
-				COMMENT "downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
+				COMMENT "(wget) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
 				COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
 
         endif()
@@ -163,3 +163,74 @@ function( ecbuild_get_test_data )
     add_custom_target( ${_p_TARGET} DEPENDS ${_deps} )
 
 endfunction(ecbuild_get_test_data)
+
+##############################################################################
+# function for getting test data
+#
+# examples:
+#
+## no check done
+#    ecbuild_get_test_multidata( TARGET get_foobar_data NAMES foo.grib bar.grib DIRNAME test/data/dir NOCHECK )
+#
+## check for remote md5
+#    ecbuild_get_test_multidata( TARGET get_foobar_data NAMES foo.grib bar.grib DIRNAME test/data/dir )
+#
+
+function( ecbuild_get_test_multidata )
+
+    set( options NOCHECK )
+    set( single_value_args TARGET DIRNAME )
+    set( multi_value_args  NAMES )
+
+    cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+
+    if(_p_UNPARSED_ARGUMENTS)
+      message(FATAL_ERROR "Unknown keywords given to ecbuild_get_test_data(): \"${_p_UNPARSED_ARGUMENTS}\"")
+    endif()
+
+    ### check parameters
+
+    if( NOT _p_NAMES )
+      message(FATAL_ERROR "ecbuild_get_test_data() expects a NAMES")
+    endif()
+
+    if( NOT _p_TARGET )
+      message(FATAL_ERROR "ecbuild_get_test_data() expects a TARGET")
+    endif()
+
+#    debug_var( _p_TARGET )
+#    debug_var( _p_NAME )
+#    debug_var( _p_DIRNAME )
+
+    if( _p_NOCHECK )
+        set( _nocheck NOCHECK )
+    endif()
+
+    if( _p_DIRNAME )
+        set( _dirname DIRNAME ${_p_DIRNAME} )
+    endif()
+
+    ### prepare file
+
+    set( _script ${CMAKE_CURRENT_BINARY_DIR}/get_data_${_p_TARGET}.cmake )
+
+    file( WRITE ${_script} "
+function(EXEC_CHECK)
+     execute_process(COMMAND \${ARGV} RESULT_VARIABLE CMD_RESULT)
+     if(CMD_RESULT)
+           message(FATAL_ERROR \"Error running ${CMD}\")
+     endif()
+endfunction()\n\n" )
+
+    foreach( _name ${_p_NAMES} )
+
+        ecbuild_get_test_data( TARGET __get_data_${_p_TARGET}_${_name} NAME ${_name} ${_dirname} ${_nocheck} )
+
+        file( APPEND ${_script} "exec_check( ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target __get_data_${_p_TARGET}_${_name} )\n" )
+
+    endforeach()
+
+    add_test(  NAME ${_p_TARGET} COMMAND ${CMAKE_COMMAND} -P ${_script} )
+
+endfunction(ecbuild_get_test_multidata)
+
