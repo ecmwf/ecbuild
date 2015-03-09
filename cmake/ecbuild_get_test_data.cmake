@@ -32,9 +32,17 @@ function( _download_test_data _p_NAME _p_DIRNAME )
 
         if( WGET_PROGRAM )
 
-		   add_custom_command( OUTPUT ${_p_NAME}
-				COMMENT "(wget) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
-				COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
+				 add_custom_command( OUTPUT ${_p_NAME}
+						COMMENT "(wget) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
+						COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
+
+				else()
+
+					if( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
+						message( WARNING "Couldn't find curl neither wget -- cannot download test data from server.\nPlease obtain the test data by other means and pleace it in the build directory." )
+						set( WARNING_CANNOT_DOWNLOAD_TEST_DATA 1 CACHE INTERNAL "Couldn't find curl neither wget -- cannot download test data from server" )
+						mark_as_advanced( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
+					endif()
 
         endif()
 
@@ -206,10 +214,6 @@ function( ecbuild_get_test_multidata )
         set( _nocheck NOCHECK )
     endif()
 
-    if( _p_DIRNAME )
-        set( _dirname DIRNAME ${_p_DIRNAME} )
-    endif()
-
     ### prepare file
 
     set( _script ${CMAKE_CURRENT_BINARY_DIR}/get_data_${_p_TARGET}.cmake )
@@ -222,9 +226,36 @@ function(EXEC_CHECK)
      endif()
 endfunction()\n\n" )
 
-    foreach( _name ${_p_NAMES} )
+    foreach( _d ${_p_NAMES} )
 
-        ecbuild_get_test_data( TARGET __get_data_${_p_TARGET}_${_name} NAME ${_name} ${_dirname} ${_nocheck} )
+        string( REGEX MATCH "[^:]+" _f "${_d}" )
+
+        get_filename_component( _file ${_f} NAME )
+        get_filename_component( _dir  ${_f} DIRECTORY )
+
+        list( APPEND _path_comps ${_p_DIRNAME} ${_dir} )
+
+        join( _path_comps "/" _dirname )
+
+        if( _dirname )
+            set( _dirname DIRNAME ${_dirname} )
+        endif()
+
+        string( REPLACE "." "_" _name "${_file}" )
+        string( REGEX MATCH ":.*"  _md5  "${_d}" )
+        string( REPLACE ":" "" _md5 "${_md5}" )
+
+        if( _md5 )
+            set( _md5 MD5 ${_md5} )
+        endif()
+
+#        debug_var(_f)
+#        debug_var(_file)
+#        debug_var(_dirname)
+#        debug_var(_name)
+#        debug_var(_md5)
+
+        ecbuild_get_test_data( TARGET __get_data_${_p_TARGET}_${_name} NAME ${_file} ${_dirname} ${_md5} ${_nocheck} )
 
         file( APPEND ${_script} "exec_check( ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target __get_data_${_p_TARGET}_${_name} )\n" )
 

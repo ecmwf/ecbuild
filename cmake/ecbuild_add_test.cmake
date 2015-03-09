@@ -282,24 +282,9 @@ macro( ecbuild_add_test )
 
           if( _PAR_TEST_DATA )
 
-             foreach( _d ${_PAR_TEST_DATA} )
+             ecbuild_get_test_multidata( TARGET ${_PAR_TARGET}_data NAMES ${_PAR_TEST_DATA} )
 
-                string( REGEX MATCH "[^:]+" _file "${_d}" )
-                string( REPLACE "." "_" _name "${_file}" )
-                string( REGEX MATCH ":.*"  _md5  "${_d}" )
-                string( REPLACE ":" "" _md5 "${_md5}" )
-
-                if( _md5 )
-                  ecbuild_get_test_data( TARGET _test_data_${_name} NAME ${_file} MD5 ${_md5} )
-                else()
-                  ecbuild_get_test_data( TARGET _test_data_${_name} NAME ${_file} )
-                endif()
-
-                add_test(  get_test_data_${_name} "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target _test_data_${_name} )
-
-                list( APPEND _PAR_TEST_DEPENDS get_test_data_${_name} )
-
-             endforeach()
+             list( APPEND _PAR_TEST_DEPENDS ${_PAR_TARGET}_data )
 
           endif()
 
