@@ -6,21 +6,52 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-function(JOIN _listname _glue _output )
+##############################################################################
+# function for concatenating list into a string
+#
+# examples:
+#
+#   set( _paths "foo" "bar" )
+#   join( _paths "/" _mypath )
+#
+#   message( "${_mpath}" ) #  produces "foo/bar"
 
-	set( _return "" )
+function( JOIN _listname _glue _output )
 
-	foreach( VAL ${${_listname}} )
-		set(_return "${_return}${_glue}${VAL}")
+	set( _ret "" )
+
+	foreach( _v ${${_listname}} )
+		if( _ret )
+			set(_ret "${_ret}${_glue}${_v}") # append
+		else()
+			set(_ret "${_v}") # init
+		endif()
 	endforeach()
 
-	string(LENGTH "${_glue}" _glue_len)
-	string(LENGTH "${_return}" _return_len)
-
-	math(EXPR _return_len ${_return_len}-${_glue_len})
-	string(SUBSTRING "${_return}" ${_glue_len} ${_return_len} _return)
-
-	set(${_output} "${_return}" PARENT_SCOPE)
+	set(${_output} "${_ret}" PARENT_SCOPE)
 
 endfunction()
 
+##############################################################################
+# function for inserting a key / value into a map
+#
+# examples:
+#
+#   map_insert( "mymap" "foo" "bar" )
+#
+
+function( MAP_INSERT _map _key _value )
+	set( "_${_map}_${_key}" "${_value}" PARENT_SCOPE )
+endfunction(MAP_INSERT)
+
+##############################################################################
+# function for inserting a key / value into a map
+#
+# examples:
+#
+#   map_get( "mymap" "foo" VAR )
+#
+
+function( MAP_GET _map _key _var )
+	set( ${_var} "${_${_map}_${_key}}" PARENT_SCOPE )
+endfunction(MAP_GET)
