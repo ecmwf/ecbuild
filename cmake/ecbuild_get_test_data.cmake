@@ -231,7 +231,7 @@ endfunction()\n\n" )
         string( REGEX MATCH "[^:]+" _f "${_d}" )
 
         get_filename_component( _file ${_f} NAME )
-        get_filename_component( _dir  ${_f} DIRECTORY )
+        get_filename_component( _dir  ${_f} PATH )
 
         list( APPEND _path_comps ${_p_DIRNAME} ${_dir} )
 
@@ -249,11 +249,11 @@ endfunction()\n\n" )
             set( _md5 MD5 ${_md5} )
         endif()
 
-#        debug_var(_f)
-#        debug_var(_file)
-#        debug_var(_dirname)
-#        debug_var(_name)
-#        debug_var(_md5)
+        debug_var(_f)
+        debug_var(_file)
+        debug_var(_dirname)
+        debug_var(_name)
+        debug_var(_md5)
 
         ecbuild_get_test_data( TARGET __get_data_${_p_TARGET}_${_name} NAME ${_file} ${_dirname} ${_md5} ${_nocheck} )
 
