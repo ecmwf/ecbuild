@@ -65,7 +65,7 @@ endfunction()
 ## checksum agains local md5
 #    ecbuild_get_test_data( NAME msl.grib MD5 f69ca0929d1122c7878d19f32401abe9 )
 #
-## checksum agains local sha1
+## (DEPRECATED) checksum agains local sha1
 #    ecbuild_get_test_data( NAME msl.grib SHA1 5a8e8c57c510b64e31863ca47cfc3b65971089d9 )
 
 function( ecbuild_get_test_data )
@@ -120,12 +120,14 @@ function( ecbuild_get_test_data )
 #            message( STATUS " ---  getting MD5 sum " )
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
-                                COMMAND md5sum ${_p_NAME} > ${_p_NAME}.localmd5 )
-
-            add_custom_command(	OUTPUT ${_p_NAME}.ok
-                                COMMAND diff ${_p_NAME}.md5 ${_p_NAME}.localmd5 && touch ${_p_NAME}.ok )
+                                COMMAND md5sum ${_p_NAME} > ${_p_NAME}.localmd5
+                                DEPENDS ${_p_NAME} )
 
             _download_test_data( ${_p_NAME}.md5 ${_p_DIRNAME} )
+
+            add_custom_command(	OUTPUT ${_p_NAME}.ok
+                                COMMAND diff ${_p_NAME}.md5 ${_p_NAME}.localmd5 && touch ${_p_NAME}.ok
+                                DEPENDS ${_p_NAME}.localmd5 ${_p_NAME}.md5 )
 
             list( APPEND _deps ${_p_NAME}.md5 ${_p_NAME}.localmd5 ${_p_NAME}.ok )
 
@@ -136,35 +138,37 @@ function( ecbuild_get_test_data )
 #            message( STATUS " ---  computing MD5 sum [${_p_MD5}]" )
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
-                                COMMAND ${MD5SUM} ${_p_NAME} > ${_p_NAME}.localmd5 )
-
-            add_custom_command( OUTPUT ${_p_NAME}.ok
-                                COMMAND diff ${_p_NAME}.md5 ${_p_NAME}.localmd5 && touch ${_p_NAME}.ok )
+                                COMMAND ${MD5SUM} ${_p_NAME} > ${_p_NAME}.localmd5
+                                DEPENDS ${_p_NAME} )
 
             configure_file( "${ECBUILD_MACROS_DIR}/md5.in" ${_p_NAME}.md5 @ONLY )
+
+            add_custom_command( OUTPUT ${_p_NAME}.ok
+                                COMMAND diff ${_p_NAME}.md5 ${_p_NAME}.localmd5 && touch ${_p_NAME}.ok
+                                DEPENDS ${_p_NAME}.localmd5 )
 
             list( APPEND _deps ${_p_NAME}.localmd5 ${_p_NAME}.ok )
 
         endif()
 
-        if( _p_SHA1 )
+#        if( _p_SHA1 )
 
-#            message( STATUS " ---  computing SHA1 sum [${_p_SHA1}]" )
+##            message( STATUS " ---  computing SHA1 sum [${_p_SHA1}]" )
 
-            find_program( SHASUM NAMES sha1sum shasum )
-            if( SHASUM )
-                add_custom_command( OUTPUT ${_p_NAME}.localsha1
-                                    COMMAND ${SHASUM} ${_p_NAME} > ${_p_NAME}.localsha1 )
+#            find_program( SHASUM NAMES sha1sum shasum )
+#            if( SHASUM )
+#                add_custom_command( OUTPUT ${_p_NAME}.localsha1
+#                                    COMMAND ${SHASUM} ${_p_NAME} > ${_p_NAME}.localsha1 )
 
-                add_custom_command( OUTPUT ${_p_NAME}.ok
-                                    COMMAND diff ${_p_NAME}.sha1 ${_p_NAME}.localsha1 && touch ${_p_NAME}.ok )
+#                add_custom_command( OUTPUT ${_p_NAME}.ok
+#                                    COMMAND diff ${_p_NAME}.sha1 ${_p_NAME}.localsha1 && touch ${_p_NAME}.ok )
 
-                configure_file( "${ECBUILD_MACROS_DIR}/sha1.in" ${_p_NAME}.sha1 @ONLY )
+#                configure_file( "${ECBUILD_MACROS_DIR}/sha1.in" ${_p_NAME}.sha1 @ONLY )
 
-                list( APPEND _deps ${_p_NAME}.localsha1 ${_p_NAME}.ok )
-            endif()
+#                list( APPEND _deps ${_p_NAME}.localsha1 ${_p_NAME}.ok )
+#            endif()
 
-        endif()
+#        endif()
 
     endif()
 
