@@ -19,9 +19,9 @@ set( ECBUILD_TRUST_FLAGS ON )
 # FLAGS COMMON TO ALL BUILD TYPES
 ####################################################################
 
-set( CMAKE_C_FLAGS       "-lhugetlbfs" )
-set( CMAKE_CXX_FLAGS     "-lhugetlbfs" )
-set( CMAKE_Fortran_FLAGS "-lhugetlbfs -emf -rmoid" )
+set( CMAKE_C_FLAGS_INIT       "-lhugetlbfs" )
+set( CMAKE_CXX_FLAGS_INIT     "-lhugetlbfs" )
+set( CMAKE_Fortran_FLAGS_INIT "-lhugetlbfs -emf -rmoid" )
 
 set( OMP_C_FLAGS             "-homp" )
 set( OMP_CXX_FLAGS           "-homp" )
