@@ -129,7 +129,7 @@ function( ecbuild_get_test_data )
                                 COMMAND diff ${_p_NAME}.md5 ${_p_NAME}.localmd5 && touch ${_p_NAME}.ok
                                 DEPENDS ${_p_NAME}.localmd5 ${_p_NAME}.md5 )
 
-            list( APPEND _deps ${_p_NAME}.md5 ${_p_NAME}.localmd5 ${_p_NAME}.ok )
+            list( APPEND _deps  ${_p_NAME}.localmd5 ${_p_NAME}.ok )
 
         endif()
 
