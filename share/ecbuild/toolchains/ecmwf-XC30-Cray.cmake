@@ -73,10 +73,3 @@ set( CMAKE_CXX_LINK_EXECUTABLE
 set(CMAKE_Fortran_LINK_EXECUTABLE
   "<CMAKE_Fortran_COMPILER> <CMAKE_Fortran_LINK_FLAGS> <LINK_FLAGS> <FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES> -Wl,-Bdynamic" )
   
-###################################################################
-# FEATURES SETUP
-###################################################################
-
-set( ENABLE_EIGEN OFF )
-
-###################################################################
