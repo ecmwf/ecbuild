@@ -120,7 +120,7 @@ function( ecbuild_get_test_data )
 #            message( STATUS " ---  getting MD5 sum " )
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
-                                COMMAND md5sum ${_p_NAME} > ${_p_NAME}.localmd5
+                                COMMAND ${MD5SUM} -t ${_p_NAME} > ${_p_NAME}.localmd5
                                 DEPENDS ${_p_NAME} )
 
             _download_test_data( ${_p_NAME}.md5 ${_p_DIRNAME} )
@@ -138,7 +138,7 @@ function( ecbuild_get_test_data )
 #            message( STATUS " ---  computing MD5 sum [${_p_MD5}]" )
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
-                                COMMAND ${MD5SUM} ${_p_NAME} > ${_p_NAME}.localmd5
+                                COMMAND ${MD5SUM} -t ${_p_NAME} > ${_p_NAME}.localmd5
                                 DEPENDS ${_p_NAME} )
 
             configure_file( "${ECBUILD_MACROS_DIR}/md5.in" ${_p_NAME}.md5 @ONLY )
