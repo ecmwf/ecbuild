@@ -42,7 +42,7 @@ set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
 ########################################################################################################
 # define cmake policies
 
-# Included scripts do automatic cmake_policy PUSH and POP
+# Included scripts don't automatic cmake_policy PUSH and POP
 
 if( POLICY CMP0011 )
 	cmake_policy( SET CMP0011 OLD )
