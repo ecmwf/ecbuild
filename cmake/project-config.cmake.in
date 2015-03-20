@@ -78,3 +78,12 @@ include( ${CMAKE_CURRENT_LIST_FILE}.tpls OPTIONAL )
 set( @PNAME@_IMPORT_FILE ${CMAKE_CURRENT_LIST_FILE} )
 mark_as_advanced( @PNAME@_IMPORT_FILE )
 
+# set @PROJECT_NAME@_BINARY_DIR for final installations or build directories
+
+if( NOT @PROJECT_NAME@_BINARY_DIR )
+	if( @_is_build_dir_export@ )
+		set( @PROJECT_NAME@_BINARY_DIR @PROJECT_BINARY_DIR@ )
+	else()
+		set( @PROJECT_NAME@_BINARY_DIR @CMAKE_INSTALL_PREFIX@ )
+	endif()
+endif()
