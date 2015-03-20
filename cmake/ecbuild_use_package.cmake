@@ -106,7 +106,7 @@ macro( ecbuild_use_package )
 
 				add_subdirectory( ${${PNAME}_subproj_dir_} ${_p_PROJECT} )
 
-				set( ${_p_PROJECT}_BASE_DIR ${${_p_PROJECT}_BINARY_DIR} )
+				set( ${_p_PROJECT}_BASE_DIR ${CMAKE_BINARY_DIR} )
 
 				set( ${PNAME}_FOUND 1 )
 				set( ${_p_PROJECT}_VERSION ${${PNAME}_VERSION} )
