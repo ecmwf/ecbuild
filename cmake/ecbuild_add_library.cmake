@@ -30,13 +30,6 @@ function( ecbuild_add_library_impl )
 	  message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the SOURCES.")
 	endif()
 
-	# get_filename_component( currdir ${CMAKE_CURRENT_SOURCE_DIR} NAME )
-
-	# file(RELATIVE_PATH reldir ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
-
-	# debug_var( currdir )
-	# debug_var( reldir )
-
 	### conditional build
 
 	if( DEFINED _PAR_CONDITION )

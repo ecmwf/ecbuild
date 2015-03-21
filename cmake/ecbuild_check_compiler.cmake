@@ -123,3 +123,19 @@ if( CMAKE_COMPILER_IS_GNUCXX )
 
 endif()
 
+############################################################################################
+# compiler dependent fixes
+
+# For Cray compilers add "-Wl,-Bdynamic" at very end of linker commands, in order to produce dynamic executables by default
+
+if( "${CMAKE_C_COMPILER_ID}" STREQUAL "Cray" )
+  set( CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <FLAGS> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES> -Wl,-Bdynamic" )
+endif()
+
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
+  set( CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_CXX_COMPILER> <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES> -Wl,-Bdynamic" )
+endif()
+
+if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
+  set(CMAKE_Fortran_LINK_EXECUTABLE "<CMAKE_Fortran_COMPILER> <CMAKE_Fortran_LINK_FLAGS> <LINK_FLAGS> <FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES> -Wl,-Bdynamic" )
+endif()

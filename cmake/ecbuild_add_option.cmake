@@ -189,6 +189,7 @@ macro( ecbuild_add_option )
     string( TOUPPER PNAME ${PROJECT_NAME} )
     set( ${PNAME}_HAVE_${_p_FEATURE} 1 )
     set( ${PNAME}_FEATURES "${${PNAME}_FEATURES};${PNAME}_HAVE_${_p_FEATURE}" CACHE INTERNAL "" )
+    list( REMOVE_DUPLICATES ${PNAME}_FEATURES )
   endif()
 
 endmacro( ecbuild_add_option  )
