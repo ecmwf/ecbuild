@@ -62,31 +62,17 @@ macro( ecbuild_declare_project )
 
 	# install dirs for this project
 
-	if( NOT DEFINED INSTALL_BIN_DIR )
-		set( INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
-	endif()
+	set( INSTALL_BIN_DIR bin )
+	set( INSTALL_LIB_DIR lib )
+    set( INSTALL_INCLUDE_DIR include )
+	set( INSTALL_DATA_DIR share/${PROJECT_NAME} )
+	set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
 
-	if( NOT DEFINED INSTALL_LIB_DIR )
-		set( INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
-	endif()
-
-	if( NOT DEFINED INSTALL_INCLUDE_DIR )
-		set( INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
-	endif()
-
-	if( NOT DEFINED INSTALL_DATA_DIR )
-		set( INSTALL_DATA_DIR share/${PROJECT_NAME} CACHE PATH "Installation directory for data files")
-	endif()
-
-	if( NOT DEFINED INSTALL_CMAKE_DIR )
-		set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake CACHE PATH "Installation directory for CMake files")
-	endif()
-
-		mark_as_advanced( INSTALL_BIN_DIR )
-		mark_as_advanced( INSTALL_LIB_DIR )
-		mark_as_advanced( INSTALL_INCLUDE_DIR )
-		mark_as_advanced( INSTALL_DATA_DIR )
-		mark_as_advanced( INSTALL_CMAKE_DIR )
+	mark_as_advanced( INSTALL_BIN_DIR )
+	mark_as_advanced( INSTALL_LIB_DIR )
+	mark_as_advanced( INSTALL_INCLUDE_DIR )
+	mark_as_advanced( INSTALL_DATA_DIR )
+	mark_as_advanced( INSTALL_CMAKE_DIR )
 
 	# warnings for non-relocatable projects
 
