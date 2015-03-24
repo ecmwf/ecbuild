@@ -74,6 +74,14 @@ macro( ecbuild_declare_project )
 	mark_as_advanced( INSTALL_DATA_DIR )
 	mark_as_advanced( INSTALL_CMAKE_DIR )
 
+	# overrides of install dirs
+
+	foreach( p LIB BIN INCLUDE DATA CMAKE )
+		if( ${PNAME}_INSTALL_${p}_DIR )
+			set( INSTALL_${p}_DIR ${${PNAME}_INSTALL_${p}_DIR} )
+		endif()
+	endforeach()
+
 	# warnings for non-relocatable projects
 
 	foreach( p LIB BIN INCLUDE DATA CMAKE )
