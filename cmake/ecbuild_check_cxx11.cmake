@@ -28,6 +28,14 @@ function( ecbuild_check_cxx11 )
 
 	cxx11_find_all_features( ALL_FEATURES ) # list all available features to check
 
+	# Save CXX flags
+	set( CXX_FLAGS_SNASHOT ${CMAKE_CXX_FLAGS} )
+
+	# Add C++11 flags
+	include( ${ECBUILD_MACROS_DIR}/ecbuild_get_cxx11_flags.cmake )
+	ecbuild_get_cxx11_flags( CXX11_FLAGS )
+	set( CMAKE_CXX_FLAGS "${CXX11_FLAGS} ${CMAKE_CXX_FLAGS}" )
+
 	if( NOT _p_FEATURES AND NOT _p_REQUIRED ) # no input, then search for all features
 
 		cxx11_feature_check()
@@ -43,6 +51,9 @@ function( ecbuild_check_cxx11 )
 		endforeach()
 
 	endif()
+
+	# Restore CXX flags
+	set( CMAKE_CXX_FLAGS ${CXX_FLAGS_SNAPSHOT} )
 
 	if( _p_FEATURES OR _p_REQUIRED )
 		set( CXX11_CHECKED_FEATURES ${_p_FEATURES} ${_p_REQUIRED} )
