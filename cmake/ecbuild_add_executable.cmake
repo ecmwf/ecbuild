@@ -101,7 +101,10 @@ macro( ecbuild_add_executable )
             endif()
           endforeach()
         endif()
-    
+
+        # filter sources
+        ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+
         # add local flags
         if( DEFINED _PAR_CFLAGS )
             set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
@@ -116,18 +119,14 @@ macro( ecbuild_add_executable )
             set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
         endif()
 
-		# define VERSION if requested
-		if( DEFINED _PAR_VERSION )
-			set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${_PAR_VERSION}" )
-		else()
-			if( _PAR_AUTO_VERSION )
-				set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}" )
-			endif()
-		endif()
-    
-        # filter sources        
-
-        ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+        # define VERSION if requested
+        if( DEFINED _PAR_VERSION )
+          set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${_PAR_VERSION}" )
+        else()
+          if( _PAR_AUTO_VERSION )
+            set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}" )
+          endif()
+        endif()
 
 #    debug_var( ${_PAR_TARGET}_h_srcs )
 #    debug_var( ${_PAR_TARGET}_c_srcs )

@@ -28,7 +28,7 @@ function( ecbuild_check_cxx11 )
 
 	cxx11_find_all_features( ALL_FEATURES ) # list all available features to check
 
-	if( NOT _p_FEATURES AND NOT _p_REQUIRED ) # no input, then searhc for all features
+	if( NOT _p_FEATURES AND NOT _p_REQUIRED ) # no input, then search for all features
 
 		cxx11_feature_check()
 
@@ -44,7 +44,13 @@ function( ecbuild_check_cxx11 )
 
 	endif()
 
-	foreach( f ${ALL_FEATURES} )
+	if( _p_FEATURES OR _p_REQUIRED )
+		set( CXX11_CHECKED_FEATURES ${_p_FEATURES} ${_p_REQUIRED} )
+	else()
+		set( CXX11_CHECKED_FEATURES ${ALL_FEATURES} )
+	endif()
+
+	foreach( f ${CXX11_CHECKED_FEATURES} )
 		# message( "HAS_CXX11_${FEAT}" )
 		string( TOUPPER ${f} FEAT )
 		if( HAS_CXX11_${FEAT} )
@@ -54,13 +60,38 @@ function( ecbuild_check_cxx11 )
 		endif()
 	endforeach()
 
+  if( CXX11_CHECKED_FEATURES )
+    list( SORT CXX11_CHECKED_FEATURES )
+	endif()
+	if( CXX11_SUPPORTED_FEATURES )
+		list( SORT CXX11_SUPPORTED_FEATURES )
+	endif()
+	if( CXX11_NOT_SUPPORTED_FEATURES )
+		list( SORT CXX11_NOT_SUPPORTED_FEATURES )
+	endif()
+
+	set( CXX11_CHECKED_FEATURES       ${CXX11_CHECKED_FEATURES}       PARENT_SCOPE )
 	set( CXX11_SUPPORTED_FEATURES     ${CXX11_SUPPORTED_FEATURES}     PARENT_SCOPE )
 	set( CXX11_NOT_SUPPORTED_FEATURES ${CXX11_NOT_SUPPORTED_FEATURES} PARENT_SCOPE )
 
 	if( _p_PRINT )
+		if( CXX11_CHECKED_FEATURES )
+			join( CXX11_CHECKED_FEATURES " " CXX11_CHECKED_FEATURES_STR )
+			message( STATUS "Checked C++11 features: ${CXX11_CHECKED_FEATURES_STR}" )
+		else()
+			message( STATUS "Checked no C++11 features" )
+		endif()
 		if( CXX11_SUPPORTED_FEATURES )
 			join( CXX11_SUPPORTED_FEATURES " " CXX11_SUPPORTED_FEATURES_STR )
 			message( STATUS "Found C++11 features: ${CXX11_SUPPORTED_FEATURES_STR}" )
+		else()
+			message( STATUS "Found no C++11 features" )
+		endif()
+		if( CXX11_NOT_SUPPORTED_FEATURES )
+			join( CXX11_NOT_SUPPORTED_FEATURES " " CXX11_NOT_SUPPORTED_FEATURES_STR )
+			message( STATUS "Not found C++11 features: ${CXX11_NOT_SUPPORTED_FEATURES_STR}" )
+		else()
+			message( STATUS "Found all checked C++11 features" )
 		endif()
 	endif()
 
