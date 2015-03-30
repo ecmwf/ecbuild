@@ -66,10 +66,9 @@ function( ecbuild_add_library_impl )
 			endif()
 		endif()
 
-		# add templates to project files and remove from compilation sources
+		# remove templates from compilation sources
 		if( DEFINED _PAR_TEMPLATES )
 			list( REMOVE_ITEM _PAR_SOURCES ${_PAR_TEMPLATES} )
-			ecbuild_declare_project_files( ${_PAR_TEMPLATES} )
 			add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
 		endif()
 
@@ -265,8 +264,11 @@ function( ecbuild_add_library_impl )
 
 	endif()
 
-	# mark project files
+	# mark source files as used
 	ecbuild_declare_project_files( ${_PAR_SOURCES} )
+  if( DEFINED _PAR_TEMPLATES )
+    ecbuild_declare_project_files( ${_PAR_TEMPLATES} )
+  endif()
 
 endfunction( ecbuild_add_library_impl  )
 

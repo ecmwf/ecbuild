@@ -67,10 +67,9 @@ macro( ecbuild_add_executable )
 			endif()
      endif()
     
-        # add templates to project files and remove from compilation sources
+        # remove templates from compilation sources
         if( DEFINED _PAR_TEMPLATES )
             list( REMOVE_ITEM _PAR_SOURCES ${_PAR_TEMPLATES} )
-            ecbuild_declare_project_files( ${_PAR_TEMPLATES} )
             add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
         endif()
     
@@ -190,7 +189,10 @@ macro( ecbuild_add_executable )
 
     endif()
 
-    # mark project files
+    # mark source files as used
     ecbuild_declare_project_files( ${_PAR_SOURCES} )
+    if( DEFINED _PAR_TEMPLATES )
+        ecbuild_declare_project_files( ${_PAR_TEMPLATES} )
+    endif()
 
 endmacro( ecbuild_add_executable  )
