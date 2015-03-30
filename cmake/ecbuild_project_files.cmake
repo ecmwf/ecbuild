@@ -16,17 +16,13 @@ macro( ecbuild_find_files_recursive aFileList )
 
 list( APPEND ecbuild_project_extensions c cc cpp cxx ) # for the moment skip ( h hh )
 
-# first find all the files in the directory
 foreach( aExt ${ecbuild_project_extensions} )
-
-    file( GLOB_RECURSE listFilesWithExt *.${aExt})
-
-    list( LENGTH  listFilesWithExt sizeFilesWithExt )
-    if( sizeFilesWithExt GREATER 0 )
-      set( ${aFileList} ${${aFileList}} ${listFilesWithExt} )
-    endif()
-
+  set( globPatterns ${globPatterns} *.${aExt} )
 endforeach()
+
+# This globs for only one pattern at a time
+# Shell extglob patterns are unfortunately not supported.
+file( GLOB_RECURSE ${aFileList} ${globPatterns} )
 
 endmacro()
 
