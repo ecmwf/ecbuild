@@ -26,15 +26,14 @@ macro( ecbuild_warn_unused_files )
           endif()
     
           # if unused files where found, put the list on the file
-          list( LENGTH MARS_UNUSED_FILES MARS_LENGTH_UNUSED_FILES )
-          if( MARS_LENGTH_UNUSED_FILES )
+          if( EC_UNUSED_FILES )
     
             message( STATUS "")
             message( STATUS " !!!--- ${UNUSED_FILES_LEVEL} ---!!! ")
             message( STATUS " !!!--- ${UNUSED_FILES_LEVEL} ---!!! ")
             message( STATUS "")
             message( STATUS " Unused source files found:")
-            foreach( AFILE ${MARS_UNUSED_FILES} )
+            foreach( AFILE ${EC_UNUSED_FILES} )
               message( STATUS "     ${AFILE}")
               file( APPEND ${UNUSED_FILE} "${AFILE}\n" )
             endforeach()
