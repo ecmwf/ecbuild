@@ -26,7 +26,7 @@ option( ENABLE_FORTRAN_C_INTERFACE "Enable Fortran/C Interface" OFF )
 mark_as_advanced( ENABLE_FORTRAN_C_INTERFACE )
 
 option( DEVELOPER_MODE           "activates developer mode"               OFF )
-option( CHECK_UNUSED_FILES       "check for unused project files"         ON )
+option( CHECK_UNUSED_FILES       "check for unused project files (slow)"  OFF )
 
 mark_as_advanced( DEVELOPER_MODE  )
 mark_as_advanced( CHECK_UNUSED_FILES  )
