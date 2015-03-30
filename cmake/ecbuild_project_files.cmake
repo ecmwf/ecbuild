@@ -16,17 +16,13 @@ macro( ecbuild_find_files_recursive aFileList )
 
 list( APPEND ecbuild_project_extensions c cc cpp cxx ) # for the moment skip ( h hh )
 
-# first find all the files in the directory
 foreach( aExt ${ecbuild_project_extensions} )
-
-    file( GLOB_RECURSE listFilesWithExt *.${aExt})
-
-    list( LENGTH  listFilesWithExt sizeFilesWithExt )
-    if( sizeFilesWithExt GREATER 0 )
-      set( ${aFileList} ${${aFileList}} ${listFilesWithExt} )
-    endif()
-
+  set( globPatterns ${globPatterns} *.${aExt} )
 endforeach()
+
+# This globs for only one pattern at a time
+# Shell extglob patterns are unfortunately not supported.
+file( GLOB_RECURSE ${aFileList} ${globPatterns} )
 
 endmacro()
 
@@ -34,12 +30,15 @@ endmacro()
 # finds the unused files on all the project
 function( ecbuild_find_project_files )
 
-  ecbuild_find_files_recursive( cwdFiles )
+  # Only do this if we actually care to warn about unused files
+  if( CHECK_UNUSED_FILES )
+    ecbuild_find_files_recursive( cwdFiles )
 
-  # this list will be kept
-  set( EC_PROJECT_FILES ${EC_PROJECT_FILES} ${cwdFiles} CACHE INTERNAL "" )
-  # this list will be progressevely emptied
-  set( EC_UNUSED_FILES  ${EC_UNUSED_FILES}  ${cwdFiles} CACHE INTERNAL "" )
+    # this list will be kept
+    set( EC_PROJECT_FILES ${EC_PROJECT_FILES} ${cwdFiles} CACHE INTERNAL "" )
+    # this list will be progressevely emptied
+    set( EC_UNUSED_FILES  ${EC_UNUSED_FILES}  ${cwdFiles} CACHE INTERNAL "" )
+  endif()
 
 endfunction()
 
@@ -47,27 +46,30 @@ endfunction()
 # removed used files from unused list
 macro( ecbuild_declare_project_files )
 
-  foreach( _afile ${ARGV} )
+  # Only do this if we actually care to warn about unused files
+  if( CHECK_UNUSED_FILES )
+    foreach( _afile ${ARGV} )
 
-    # debug_var( _afile )
+      # debug_var( _afile )
 
-    get_property( _src_gen SOURCE ${_afile} PROPERTY GENERATED )
+      get_property( _src_gen SOURCE ${_afile} PROPERTY GENERATED )
 
-    if( NOT _src_gen )
+      if( NOT _src_gen )
 
-    	get_filename_component( _abspath ${_afile} ABSOLUTE )
+        get_filename_component( _abspath ${_afile} ABSOLUTE )
 
-    	# check for existance of all declared files
-	    if( EXISTS ${_abspath} )
-    	    list( REMOVE_ITEM EC_UNUSED_FILES ${_abspath} )
-	    else()
-			message( FATAL_ERROR "In directory ${CMAKE_CURRENT_SOURCE_DIR} file ${_afile} was declared in CMakeLists.txt but not found" )
-    	endif()
-    endif()
+        # check for existance of all declared files
+        if( EXISTS ${_abspath} )
+            list( REMOVE_ITEM EC_UNUSED_FILES ${_abspath} )
+        else()
+        message( FATAL_ERROR "In directory ${CMAKE_CURRENT_SOURCE_DIR} file ${_afile} was declared in CMakeLists.txt but not found" )
+        endif()
+      endif()
 
-  endforeach()
+    endforeach()
 
-  # rewrite the unused file list in cache
-  set( EC_UNUSED_FILES ${EC_UNUSED_FILES} CACHE INTERNAL "unused files" )
+    # rewrite the unused file list in cache
+    set( EC_UNUSED_FILES ${EC_UNUSED_FILES} CACHE INTERNAL "unused files" )
+  endif()
 
 endmacro()
