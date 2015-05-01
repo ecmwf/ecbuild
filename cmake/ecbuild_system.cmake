@@ -42,7 +42,7 @@ set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
 ########################################################################################################
 # define cmake policies
 
-# Included scripts do automatic cmake_policy PUSH and POP
+# Included scripts don't automatic cmake_policy PUSH and POP
 
 if( POLICY CMP0011 )
 	cmake_policy( SET CMP0011 OLD )
@@ -225,6 +225,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 	include( ecbuild_append_to_rpath )
 	include( ecbuild_get_test_data )
 	include( ecbuild_add_cxx11_flags )
+	include( ecbuild_get_cxx11_flags )
 	include( ecbuild_add_test )
 	include( ecbuild_add_resources )
 	include( ecbuild_get_resources )

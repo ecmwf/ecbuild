@@ -180,9 +180,12 @@ macro( ecbuild_add_test )
                 endif()
 
                 # add test libraries
-				if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_LINKED AND HAVE_BOOST_UNIT_TEST )
+                if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_LINKED AND HAVE_BOOST_UNIT_TEST )
                     target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
                 endif()
+
+                # filter sources
+                ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
 
                 # add local flags
                 if( DEFINED _PAR_CFLAGS )
@@ -282,29 +285,14 @@ macro( ecbuild_add_test )
 
           if( _PAR_TEST_DATA )
 
-             foreach( _d ${_PAR_TEST_DATA} )
+             ecbuild_get_test_multidata( TARGET ${_PAR_TARGET}_data NAMES ${_PAR_TEST_DATA} )
 
-                string( REGEX MATCH "[^:]+" _file "${_d}" )
-                string( REPLACE "." "_" _name "${_file}" )
-                string( REGEX MATCH ":.*"  _md5  "${_d}" )
-                string( REPLACE ":" "" _md5 "${_md5}" )
-
-                if( _md5 )
-                  ecbuild_get_test_data( TARGET _test_data_${_name} NAME ${_file} MD5 ${_md5} )
-                else()
-                  ecbuild_get_test_data( TARGET _test_data_${_name} NAME ${_file} )
-                endif()
-
-                add_test(  get_test_data_${_name} "${CMAKE_COMMAND}" --build ${CMAKE_BINARY_DIR} --target _test_data_${_name} )
-
-                list( APPEND _PAR_TEST_DEPENDS get_test_data_${_name} )
-
-             endforeach()
+             list( APPEND _PAR_TEST_DEPENDS ${_PAR_TARGET}_data )
 
           endif()
 
           if( DEFINED _PAR_ENVIRONMENT )
-              set_tests_properties( ${_PAR_TARGET} PROPERTIES ENVIRONMENT "${_PAR_ENVIRONMENT}")
+              set_property( TEST ${_PAR_TARGET} APPEND PROPERTY ENVIRONMENT "${_PAR_ENVIRONMENT}" )
           endif()
 
           if( DEFINED _PAR_WORKING_DIRECTORY )
@@ -312,7 +300,7 @@ macro( ecbuild_add_test )
           endif()
 
           if( DEFINED _PAR_TEST_DEPENDS )
-              set_tests_properties( ${_PAR_TARGET} PROPERTIES DEPENDS "${_PAR_TEST_DEPENDS}")
+              set_property( TEST ${_PAR_TARGET} APPEND PROPERTY DEPENDS "${_PAR_TEST_DEPENDS}" )
           endif()
 
       endif()

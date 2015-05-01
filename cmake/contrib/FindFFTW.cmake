@@ -12,27 +12,55 @@
 #   FFTW_USE_STATIC_LIBS    ... if true, only static libraries are found
 #   FFTW_ROOT               ... if set, the libraries are exclusively searched
 #                               under this path
+#   FFTW_DIR                ... equivalent to FFTW_ROOT
+#   FFTW_PATH               ... equivalent to FFTW_ROOT
 #   FFTW_LIBRARY            ... fftw library to use
 #   FFTW_INCLUDE_DIR        ... fftw include directory
 #
 
-#=======================#
-#
-#      From Eigen3
-#
-#========================
+#============================================#
+#                                            #
+#    From Eigen3, modified by W Deconinck    #
+#                                            #
+#============================================#
 
-#If environment variable FFTWDIR is specified, it has same effect as FFTW_ROOT
-if( NOT FFTW_ROOT AND ENV{FFTWDIR} )
+if( (NOT FFTW_ROOT) AND EXISTS $ENV{FFTW_ROOT} )
+  set( FFTW_ROOT ${FFTW_ROOT} )
+endif()
+if( NOT FFTW_ROOT AND $FFTW_DIR )
+  set( FFTW_ROOT ${FFTW_DIR} )
+endif()
+if( (NOT FFTW_ROOT) AND EXISTS $ENV{FFTW_DIR} )
+  set( FFTW_ROOT $ENV{FFTW_DIR} )
+endif()
+if( (NOT FFTW_ROOT) AND FFTWDIR )
+  set( FFTW_ROOT ${FFTWDIR} )
+endif()
+if( (NOT FFTW_ROOT) AND EXISTS $ENV{FFTWDIR} )
   set( FFTW_ROOT $ENV{FFTWDIR} )
 endif()
+if( (NOT FFTW_ROOT) AND FFTW_PATH )
+  set( FFTW_ROOT ${FFTW_PATH} )
+endif()
+if( (NOT FFTW_ROOT) AND EXISTS $ENV{FFTW_PATH})
+  set( FFTW_ROOT $ENV{FFTW_PATH} )
+endif()
 
-# Check if we can use PkgConfig
-find_package(PkgConfig)
+if( FFTW_ROOT ) # On cc[a|b|t] FFTW_DIR is set to the lib directory :(
+  get_filename_component(_dirname ${FFTW_ROOT} NAME)
+  if( _dirname MATCHES "lib" )
+    set( FFTW_ROOT "${FFTW_ROOT}/.." )
+  endif()
+endif()
 
-#Determine from PKG
-if( PKG_CONFIG_FOUND AND NOT FFTW_ROOT )
-  pkg_check_modules( PKG_FFTW QUIET "fftw3" )
+if( NOT FFTW_ROOT )
+  # Check if we can use PkgConfig
+  find_package(PkgConfig)
+
+  #Determine from PKG
+  if( PKG_CONFIG_FOUND AND NOT FFTW_ROOT )
+    pkg_check_modules( PKG_FFTW QUIET "fftw3" )
+  endif()
 endif()
 
 #Check whether to search static or dynamic libs
