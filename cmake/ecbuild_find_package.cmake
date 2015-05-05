@@ -180,13 +180,15 @@ macro( ecbuild_find_package )
 
     set( _failed_message 
         "\n"
-        "    ${PROJECT_NAME} FAILED to find package ${_PAR_NAME}\n"
+        "  ${PROJECT_NAME} FAILED to find package ${_PAR_NAME}\n"
         "\n"
         "    Provide location with \"-D ${PNAME}_PATH=/...\" or \"-D ${_PAR_NAME}_DIR=/...\" \n"
         "    You may also export environment variables ${PNAME}_PATH or ${_PAR_NAME}_DIR\n"
         "\n"
+        "  Values (note CAPITALISATION):\n"
         "    ${PNAME}_PATH should contain the path to the installation (as in <install>/bin <install>/lib <install>/include)\n"
         "    ${_PAR_NAME}_DIR should be a directory containing a <package>-config.cmake file (usually <install>/share/<package>/cmake)\n"
+        "\n"
          )
 
 	if( NOT ${_PAR_NAME}_FOUND )
