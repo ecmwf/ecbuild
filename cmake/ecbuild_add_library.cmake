@@ -104,7 +104,7 @@ function( ecbuild_add_library_impl )
 		  list( REMOVE_DUPLICATES _PAR_INCLUDES )
 		  foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
 			if( path )
-				if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" )
+				if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" OR ECBUILD_USE_INCLUDE_DIRECTORIES )
 					include_directories( ${path} )
 				else()
 			  		target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
