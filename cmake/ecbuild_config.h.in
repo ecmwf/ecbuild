@@ -112,6 +112,10 @@
 #cmakedefine EC_HAVE_READDIR_R
 #cmakedefine EC_HAVE_GETHOSTBYNAME_R
 
+/* --- compiler __attribute__ support --- */
+
+#cmakedefine EC_HAVE_ATTRIBUTE_CONSTRUCTOR
+
 /* --- c compiler support --- */
 
 #cmakedefine EC_HAVE_C_INLINE

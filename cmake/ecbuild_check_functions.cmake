@@ -120,6 +120,11 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     # test for gethostbyname_r
     ecbuild_cache_check_c_source_compiles( "#include <netdb.h>\nint main(){ const char *name; struct hostent *ret; char *buf; struct hostent **result; size_t buflen; int *h_errnop; int i = gethostbyname_r(name,ret,buf,buflen,result,h_errnop); }\n" EC_HAVE_GETHOSTBYNAME_R )
 
+    #### special compiler __atributes__  #############
+    
+    # test for __attribute__ ((__constructor__)) -- usually present in GCC, Clang, Intel on Linux, Solaris, MacOSX; not present in AIX XLC
+    ecbuild_cache_check_c_source_compiles( "#include <stdio.h>\nstatic int argc_;static char** argv_;static char** envp_;\nint main(){printf(\"%d\", argc_);}\n__attribute__ ((__constructor__)) static void before_main(int argc, char* argv[], char* envp[]){argc_ = argc;argv_ = argv;envp_ = envp;}\n" EC_HAVE_ATTRIBUTE_CONSTRUCTOR )
+
 endif()
 
 
