@@ -7,6 +7,31 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
+
+# function to download stuff
+
+function( ecbuild_download_resource _p_OUT _p_URL )
+
+    debug_var(_p_OUT)
+    debug_var(_p_URL)
+
+    if( NOT EXISTS ${_p_OUT} )
+
+        find_program( CURL_PROGRAM curl )
+
+        execute_process( COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_OUT} ${_p_URL} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} RESULT_VARIABLE CMD_RESULT )
+         
+        debug_var(CMD_RESULT)
+
+        if(CMD_RESULT)
+            message(FATAL_ERROR \"Error downloading ${_p_URL}\")
+        endif()
+
+    endif()
+
+endfunction()
+
+
 # function for downloading test data
 
 function( _download_test_data _p_NAME _p_DIRNAME )
