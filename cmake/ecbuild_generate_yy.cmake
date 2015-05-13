@@ -16,7 +16,7 @@ macro( ecbuild_generate_yy )
 	ecbuild_find_perl( REQUIRED )
 
     set( options )
-	set( single_value_args YYPREFIX YACC LEX LEX_FLAGS YACC_FLAGS FLEX_FLAGS BISON_FLAGS )
+	set( single_value_args YYPREFIX YACC LEX YACC_TARGET LEX_TARGET LEX_FLAGS YACC_FLAGS FLEX_FLAGS BISON_FLAGS )
     set( multi_value_args  DEPENDANT )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -61,13 +61,21 @@ macro( ecbuild_generate_yy )
 		set( _PAR_BISON_FLAGS "-t" )
 	endif()
 
-#    debug_var( BASE )
+    #debug_var( BASE )
 
-    set( ${BASE}yy_tmp_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC}.tmp.c )
-    set( ${BASE}yl_tmp_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_LEX}.tmp.c )
+    if( NOT _PAR_YACC_TARGET )
+        set ( _PAR_YACC_TARGET ${_PAR_YACC} )
+    endif()
 
-    set( ${BASE}yy_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC}.c )
-    set( ${BASE}yl_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_LEX}.c )
+    if ( NOT _PAR_LEX_TARGET )
+        set ( _PAR_LEX_TARGET ${_PAR_LEX} )
+    endif()
+
+    set( ${BASE}yy_tmp_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC_TARGET}.tmp.c )
+    set( ${BASE}yl_tmp_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_LEX_TARGET}.tmp.c )
+
+    set( ${BASE}yy_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC_TARGET}.c )
+    set( ${BASE}yl_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_LEX_TARGET}.c )
 
     add_custom_target( ${_PAR_YYPREFIX}_${DEPENDANT} SOURCES ${_PAR_YACC}.y ${_PAR_LEX}.l )
 
