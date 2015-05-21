@@ -19,9 +19,9 @@ set( ECBUILD_TRUST_FLAGS ON )
 # FLAGS COMMON TO ALL BUILD TYPES
 ####################################################################
 
-set( CMAKE_C_FLAGS_INIT       "-lhugetlbfs" )
-set( CMAKE_CXX_FLAGS_INIT     "-lhugetlbfs" )
-set( CMAKE_Fortran_FLAGS_INIT "-lhugetlbfs -emf -rmoid" )
+set( _common_C_FLAGS       "-lhugetlbfs" )
+set( _common_CXX_FLAGS     "-lhugetlbfs" )
+set( _common_Fortran_FLAGS "-lhugetlbfs -emf -rmoid" )
 
 set( OMP_C_FLAGS             "-homp" )
 set( OMP_CXX_FLAGS           "-homp" )
@@ -35,33 +35,33 @@ set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
 # BIT REPRODUCIBLE FLAGS
 ####################################################################
 
-set( CMAKE_C_FLAGS_BIT        "-O2 -hflex_mp=conservative -hadd_paren -hfp1" )
-set( CMAKE_CXX_FLAGS_BIT      "-O2 -hflex_mp=conservative -hadd_paren -hfp1" )
-set( CMAKE_Fortran_FLAGS_BIT  "-O2 -hflex_mp=conservative -hadd_paren -hfp1" )
+set( CMAKE_C_FLAGS_BIT        "-O2 -hflex_mp=conservative -hadd_paren -hfp1 ${_common_C_FLAGS}" )
+set( CMAKE_CXX_FLAGS_BIT      "-O2 -hflex_mp=conservative -hadd_paren -hfp1 ${_common_CXX_FLAGS}" )
+set( CMAKE_Fortran_FLAGS_BIT  "-O2 -hflex_mp=conservative -hadd_paren -hfp1 ${_common_Fortran_FLAGS}" )
 
 ####################################################################
 # RELEASE FLAGS
 ####################################################################
 
-set( CMAKE_C_FLAGS_RELEASE       "-O3 -hfp3 -hscalar3 -hvector3" )
-set( CMAKE_CXX_FLAGS_RELEASE     "-O3 -hfp3 -hscalar3 -hvector3" )
-set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -hfp3 -hscalar3 -hvector3" )
+set( CMAKE_C_FLAGS_RELEASE       "-O3 -hfp3 -hscalar3 -hvector3 ${_common_C_FLAGS}" )
+set( CMAKE_CXX_FLAGS_RELEASE     "-O3 -hfp3 -hscalar3 -hvector3 ${_common_CXX_FLAGS}" )
+set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -hfp3 -hscalar3 -hvector3 ${_common_Fortran_FLAGS}" )
 
 ####################################################################
 # DEBUG FLAGS
 ####################################################################
 
-set( CMAKE_C_FLAGS_DEBUG        "-O0 -Gfast -Ktrap=fp" )
-set( CMAKE_CXX_FLAGS_DEBUG      "-O0 -Gfast -Ktrap=fp" )
-set( CMAKE_Fortran_FLAGS_DEBUG  "-O0 -Gfast -Ktrap=fp" )
+set( CMAKE_C_FLAGS_DEBUG        "-O0 -Gfast -Ktrap=fp ${_common_C_FLAGS}" )
+set( CMAKE_CXX_FLAGS_DEBUG      "-O0 -Gfast -Ktrap=fp ${_common_CXX_FLAGS}" )
+set( CMAKE_Fortran_FLAGS_DEBUG  "-O0 -Gfast -Ktrap=fp ${_common_Fortran_FLAGS}" )
 
 ####################################################################
 # RELWITHDEBINFO FLAGS
 ####################################################################
 
-set( CMAKE_C_FLAGS_RELWITHDEBINFO        "-hfp1 -G2" )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-hfp1 -G2" )
-set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO  "-hfp1 -G2" )
+set( CMAKE_C_FLAGS_RELWITHDEBINFO        "-hfp1 -G2 ${_common_C_FLAGS}" )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-hfp1 -G2 ${_common_CXX_FLAGS}" )
+set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO  "-hfp1 -G2 ${_common_Fortran_FLAGS}" )
 
 ####################################################################
 # LINK FLAGS
