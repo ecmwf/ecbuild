@@ -205,9 +205,18 @@ macro( ecbuild_install_project )
 
         set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
 
-        if( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
+        if( EXISTS "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${CONF_IMPORT_FILE}" )
+          install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
+                   DESTINATION "${INSTALL_CMAKE_DIR}" )
+        elseif( EXISTS "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" )
+        elseif( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
+            # For build tree
             configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
                             "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
+                            
+            # For install tree
+            configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
+                            "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${CONF_IMPORT_FILE}" @ONLY )
             install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
                      DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
