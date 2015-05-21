@@ -26,6 +26,7 @@ set( CMAKE_Fortran_FLAGS_INIT "-lhugetlbfs -emf -rmoid" )
 set( OMP_C_FLAGS             "-homp" )
 set( OMP_CXX_FLAGS           "-homp" )
 set( OMP_Fortran_FLAGS       "-homp" )
+
 set( OMPSTUBS_C_FLAGS        "-hnoomp" )
 set( OMPSTUBS_CXX_FLAGS      "-hnoomp" )
 set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
@@ -53,6 +54,14 @@ set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -hfp3 -hscalar3 -hvector3" )
 set( CMAKE_C_FLAGS_DEBUG        "-O0 -Gfast -Ktrap=fp" )
 set( CMAKE_CXX_FLAGS_DEBUG      "-O0 -Gfast -Ktrap=fp" )
 set( CMAKE_Fortran_FLAGS_DEBUG  "-O0 -Gfast -Ktrap=fp" )
+
+####################################################################
+# RELWITHDEBINFO FLAGS
+####################################################################
+
+set( CMAKE_C_FLAGS_RELWITHDEBINFO        "-hfp1 -G2" )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-hfp1 -G2" )
+set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO  "-hfp1 -G2" )
 
 ####################################################################
 # LINK FLAGS
