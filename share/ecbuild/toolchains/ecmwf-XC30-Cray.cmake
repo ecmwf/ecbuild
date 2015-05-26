@@ -19,10 +19,6 @@ set( ECBUILD_TRUST_FLAGS ON )
 # FLAGS COMMON TO ALL BUILD TYPES
 ####################################################################
 
-set( _common_C_FLAGS       "-lhugetlbfs" )
-set( _common_CXX_FLAGS     "-lhugetlbfs" )
-set( _common_Fortran_FLAGS "-lhugetlbfs -emf -rmoid" )
-
 set( OMP_C_FLAGS             "-homp" )
 set( OMP_CXX_FLAGS           "-homp" )
 set( OMP_Fortran_FLAGS       "-homp" )
@@ -31,42 +27,55 @@ set( OMPSTUBS_C_FLAGS        "-hnoomp" )
 set( OMPSTUBS_CXX_FLAGS      "-hnoomp" )
 set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
 
-####################################################################
-# BIT REPRODUCIBLE FLAGS
-####################################################################
-
-set( CMAKE_C_FLAGS_BIT        "-O2 -hflex_mp=conservative -hadd_paren -hfp1 ${_common_C_FLAGS}" )
-set( CMAKE_CXX_FLAGS_BIT      "-O2 -hflex_mp=conservative -hadd_paren -hfp1 ${_common_CXX_FLAGS}" )
-set( CMAKE_Fortran_FLAGS_BIT  "-O2 -hflex_mp=conservative -hadd_paren -hfp1 ${_common_Fortran_FLAGS}" )
+set( CMAKE_C_FLAGS_INIT       "" )
+set( CMAKE_CXX_FLAGS_INIT     "" )
+set( CMAKE_Fortran_FLAGS_INIT "-emf -rmoid" )   # -emf activates .mods and uses lower case -rmoid produces a listing file
 
 ####################################################################
 # RELEASE FLAGS
 ####################################################################
 
-set( CMAKE_C_FLAGS_RELEASE       "-O3 -hfp3 -hscalar3 -hvector3 ${_common_C_FLAGS}" )
-set( CMAKE_CXX_FLAGS_RELEASE     "-O3 -hfp3 -hscalar3 -hvector3 ${_common_CXX_FLAGS}" )
-set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -hfp3 -hscalar3 -hvector3 ${_common_Fortran_FLAGS}" )
+set( ECBUILD_C_FLAGS_RELEASE       "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
+set( ECBUILD_CXX_FLAGS_RELEASE     "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
+set( ECBUILD_Fortran_FLAGS_RELEASE "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
 
 ####################################################################
-# DEBUG FLAGS
+# BIT REPRODUCIBLE FLAGS
 ####################################################################
 
-set( CMAKE_C_FLAGS_DEBUG        "-O0 -Gfast -Ktrap=fp ${_common_C_FLAGS}" )
-set( CMAKE_CXX_FLAGS_DEBUG      "-O0 -Gfast -Ktrap=fp ${_common_CXX_FLAGS}" )
-set( CMAKE_Fortran_FLAGS_DEBUG  "-O0 -Gfast -Ktrap=fp ${_common_Fortran_FLAGS}" )
+set( ECBUILD_C_FLAGS_BIT        "-O2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
+set( ECBUILD_CXX_FLAGS_BIT      "-O2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
+set( ECBUILD_Fortran_FLAGS_BIT  "-O2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
 
 ####################################################################
 # RELWITHDEBINFO FLAGS
 ####################################################################
 
-set( CMAKE_C_FLAGS_RELWITHDEBINFO        "-hfp1 -G2 ${_common_C_FLAGS}" )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-hfp1 -G2 ${_common_CXX_FLAGS}" )
-set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO  "-hfp1 -G2 ${_common_Fortran_FLAGS}" )
+set( ECBUILD_C_FLAGS_RELWITHDEBINFO        "-O2 -hfp1 -Gfast -DNDEBUG" )
+set( ECBUILD_CXX_FLAGS_RELWITHDEBINFO      "-O2 -hfp1 -Gfast -DNDEBUG" )
+set( ECBUILD_Fortran_FLAGS_RELWITHDEBINFO  "-O2 -hfp1 -Gfast -DNDEBUG" )
+
+####################################################################
+# DEBUG FLAGS
+####################################################################
+
+set( ECBUILD_C_FLAGS_DEBUG        "-O0 -G0" )
+set( ECBUILD_CXX_FLAGS_DEBUG      "-O0 -G0" )
+set( ECBUILD_Fortran_FLAGS_DEBUG  "-O0 -G0" )
+
+####################################################################
+# PRODUCTION FLAGS
+####################################################################
+
+set( ECBUILD_C_FLAGS_PRODUCTION        "-O2 -hfp1 -G2" )
+set( ECBUILD_CXX_FLAGS_PRODUCTION      "-O2 -hfp1 -G2" )
+set( ECBUILD_Fortran_FLAGS_PRODUCTION  "-O2 -hfp1 -G2" )
 
 ####################################################################
 # LINK FLAGS
 ####################################################################
 
-set( CMAKE_C_LINK_FLAGS        "-Wl,-Map,loadmap -Wl,--as-needed" )
-set( CMAKE_CXX_LINK_FLAGS      "-Wl,-Map,loadmap -Wl,--as-needed" )
-set( CMAKE_Fortran_LINK_FLAGS  "-Wl,-Map,loadmap -Wl,--as-needed" )
+set( ECBUILD_C_LINK_FLAGS        "-Wl,-Map,loadmap -Wl,--as-needed -Ktrap=fp" )
+set( ECBUILD_CXX_LINK_FLAGS      "-Wl,-Map,loadmap -Wl,--as-needed -Ktrap=fp" )
+set( ECBUILD_Fortran_LINK_FLAGS  "-Wl,-Map,loadmap -Wl,--as-needed -Ktrap=fp" )
+
