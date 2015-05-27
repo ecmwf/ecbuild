@@ -141,6 +141,25 @@ if( ENABLE_OS_FUNCTIONS_TEST )
       set(EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV 0 CACHE INTERNAL "ATTRIBUTE_CONSTRUCTOR doesnt init argv correctly")
     endif()
 
+    #### check for some Linux stuff #############
+
+    ecbuild_check_c_source_return("
+        #include <sys/types.h>
+        #include <dirent.h>
+        int main()
+        {
+            DIR* d = opendir(\"/proc\");
+            if(d)
+                return 0;
+            else
+                return -1;
+        }"
+        VAR    EC_HAVE_PROCFS
+        OUTPUT EC_HAVE_PROCFS_OUTPUT )
+
+    debug_var(EC_HAVE_PROCFS)
+    debug_var(EC_HAVE_PROCFS_OUTPUT)
+
 endif()
 
 
