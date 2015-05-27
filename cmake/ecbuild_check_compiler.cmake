@@ -139,3 +139,14 @@ endif()
 if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
   set(CMAKE_Fortran_LINK_EXECUTABLE "<CMAKE_Fortran_COMPILER> <CMAKE_Fortran_LINK_FLAGS> <LINK_FLAGS> <FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES> -Wl,-Bdynamic" )
 endif()
+
+############################################################################################
+# Fortran compiler specific flags
+# if( NOT HAVE_SINGLE_PRECISION )
+#  if(CMAKE_Fortran_COMPILER_ID STREQUAL "PGI")
+#      cmake_add_fortran_flags("-r8")
+#  elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+#      # NOTE that if we add -fdefault-real-8 then we NEED -fdefault-double-8 to avoid quadmath
+#      cmake_add_fortran_flags("-fdefault-real-8 -fdefault-double-8")
+#  endif()
+# endif()

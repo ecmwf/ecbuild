@@ -1,5 +1,5 @@
 # (C) Copyright 1996-2014 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
 # In applying this licence, ECMWF does not waive the privileges and immunities 
@@ -10,7 +10,7 @@
 # os capability checks
 
 if( ENABLE_OS_FUNCTIONS_TEST )
-    
+
     ### symbol checks ##################
 
     ecbuild_cache_check_symbol_exists( fseek        "stdio.h"                         EC_HAVE_FSEEK  )
@@ -22,17 +22,17 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     ecbuild_cache_check_symbol_exists( fopen        "stdio.h"                         EC_HAVE_FOPEN  )
     ecbuild_cache_check_symbol_exists( flock        "sys/file.h"                      EC_HAVE_FLOCK  )
     ecbuild_cache_check_symbol_exists( mmap         "sys/mman.h"                      EC_HAVE_MMAP   )
-    
+
     ecbuild_cache_check_symbol_exists( posix_memalign "stdlib.h"                      EC_HAVE_POSIX_MEMALIGN )
-    
+
     ecbuild_cache_check_symbol_exists( F_GETLK      "fcntl.h"                         EC_HAVE_F_GETLK  )
     ecbuild_cache_check_symbol_exists( F_SETLK      "fcntl.h"                         EC_HAVE_F_SETLK  )
     ecbuild_cache_check_symbol_exists( F_SETLKW     "fcntl.h"                         EC_HAVE_F_SETLKW  )
-     
+
     ecbuild_cache_check_symbol_exists( F_GETLK64     "fcntl.h"                        EC_HAVE_F_GETLK64  )
     ecbuild_cache_check_symbol_exists( F_SETLK64     "fcntl.h"                        EC_HAVE_F_SETLK64  )
     ecbuild_cache_check_symbol_exists( F_SETLKW64    "fcntl.h"                        EC_HAVE_F_SETLKW64  )
-    
+
     ecbuild_cache_check_symbol_exists( MAP_ANONYMOUS "sys/mman.h"                     EC_HAVE_MAP_ANONYMOUS )
     ecbuild_cache_check_symbol_exists( MAP_ANON      "sys/mman.h"                     EC_HAVE_MAP_ANON )
 
@@ -48,7 +48,7 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     ecbuild_cache_check_include_files( sys/types.h    EC_HAVE_SYS_TYPES_H   )
     ecbuild_cache_check_include_files( malloc.h       EC_HAVE_MALLOC_H      )
     ecbuild_cache_check_include_files( sys/malloc.h   EC_HAVE_SYS_MALLOC_H  )
-    
+
     ecbuild_cache_check_include_files( sys/param.h    EC_HAVE_SYS_PARAM_H   )
     ecbuild_cache_check_include_files( sys/mount.h    EC_HAVE_SYS_MOUNT_H   )
     ecbuild_cache_check_include_files( sys/vfs.h      EC_HAVE_SYS_VFS_H     )
@@ -93,7 +93,7 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     ecbuild_cache_check_c_source_compiles( "#include <sys/statvfs.h>\nint main(){ struct statvfs v; }" EC_HAVE_STRUCT_STATVFS )
     # test for struct statvfs64
     ecbuild_cache_check_c_source_compiles( "#define _LARGEFILE64_SOURCE\n#include <sys/statvfs.h>\nint main(){ struct statvfs64 v; }" EC_HAVE_STRUCT_STATVFS64 )
-        
+
     # test for fsync
     ecbuild_cache_check_symbol_exists(fsync "unistd.h" EC_HAVE_FSYNC)
     # test for fdatasync
@@ -106,7 +106,7 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     ecbuild_cache_check_c_source_compiles( "#include <sys/procfs.h>\nint main(){ return 0; }\n" EC_HAVE_SYSPROCFS )
     # test for backtrace
     ecbuild_cache_check_c_source_compiles( "#include <unistd.h>\n#include <execinfo.h>\n int main(){ void ** buffer; int i = backtrace(buffer, 256); }\n" EC_HAVE_EXECINFO_BACKTRACE )
-           
+
     #### reentrant funtions support  #############
 
     # test for gmtime_r
@@ -121,9 +121,25 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     ecbuild_cache_check_c_source_compiles( "#include <netdb.h>\nint main(){ const char *name; struct hostent *ret; char *buf; struct hostent **result; size_t buflen; int *h_errnop; int i = gethostbyname_r(name,ret,buf,buflen,result,h_errnop); }\n" EC_HAVE_GETHOSTBYNAME_R )
 
     #### special compiler __atributes__  #############
-    
+
     # test for __attribute__ ((__constructor__)) -- usually present in GCC, Clang, Intel on Linux, Solaris, MacOSX; not present in AIX XLC
     ecbuild_cache_check_c_source_compiles( "#include <stdio.h>\nstatic int argc_;static char** argv_;static char** envp_;\nint main(){printf(\"%d\", argc_);}\n__attribute__ ((__constructor__)) static void before_main(int argc, char* argv[], char* envp[]){argc_ = argc;argv_ = argv;envp_ = envp;}\n" EC_HAVE_ATTRIBUTE_CONSTRUCTOR )
+
+    ecbuild_check_c_source_return("
+        #include <stdio.h>
+        #include <string.h>
+        int main(){return 0;}
+        __attribute__ ((__constructor__))
+        static void before_main(int argc, char* argv[], char* envp[])
+        {
+            printf(\"%d:%d\",argc, strstr(argv[0],\"cmTryCompileExec\")?1:0);
+        }"
+        VAR    EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV
+        OUTPUT EC_ATTRIBUTE_CONSTRUCTOR_INITS_OUTPUT )
+
+    if( EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV AND NOT EC_ATTRIBUTE_CONSTRUCTOR_INITS_OUTPUT STREQUAL "1:1" )
+      set(EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV 0 CACHE INTERNAL "ATTRIBUTE_CONSTRUCTOR doesnt init argv correctly")
+    endif()
 
 endif()
 
