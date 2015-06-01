@@ -81,7 +81,6 @@ if( CMAKE_CXX_COMPILER_LOADED AND ENABLE_OS_TESTS )
     # check for __FUNCTION__
     ecbuild_cache_check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }"
       EC_HAVE_FUNCTION_DEF )
-    
 
     # check for c++ abi, usually present in GNU compilers
     ecbuild_cache_check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }"
@@ -94,7 +93,7 @@ if( CMAKE_CXX_COMPILER_LOADED AND ENABLE_OS_TESTS )
     # check for sstream
     ecbuild_cache_check_cxx_source_compiles( "#include <sstream>\nint main() { std::stringstream s; }"
 	  EC_HAVE_CXX_SSTREAM )
- 
+
 endif()
 
 ############################################################################################
