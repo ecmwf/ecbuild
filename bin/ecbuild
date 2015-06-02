@@ -219,8 +219,7 @@ while test $# -gt 0; do
     #   ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS $1"
     #   ;;
     *)
-      shift
-      continue
+      break
       ;;
     esac
 
