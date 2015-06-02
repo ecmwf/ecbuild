@@ -74,6 +74,9 @@ Available values for "option":
           this is only accelerating fresh builds, as cmake internally caches also.
           Therefore this option is *not* recommended.
 
+    --dryrun
+          Don't actually execute cmake call, just print what would have been executed.
+
 
 Available values for "cmake-argument":
 
@@ -143,7 +146,7 @@ toolchains()
   toolchains_dir=$INSTALL_DIR/../share/ecbuild/toolchains/
   cd $toolchains_dir
   echo "Available toolchains:"
-  ls | while read fname 
+  ls | while read fname
   do
       echo "  - ${fname%%.*}"
   done
@@ -198,7 +201,12 @@ if test $# -eq 0; then
 fi
 
 while test $# -gt 0; do
+
     # Split --option=value in $opt="--option" and $val="value"
+
+    opt=""
+    val=""
+
     case "$1" in
     --*=*)
       opt=`echo "$1" | sed 's/=.*//'`
@@ -207,10 +215,17 @@ while test $# -gt 0; do
     --*)
       opt=$1
       ;;
+    # -D*)
+    #   ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS $1"
+    #   ;;
     *)
-      break
+      shift
+      continue
       ;;
     esac
+
+    # echo "debug opt: $opt $val"
+
     # Parse options
     case "$opt" in
       --help)
@@ -218,6 +233,9 @@ while test $# -gt 0; do
   	    ;;
       --version)
         version
+        ;;
+      --dryrun)
+        dryrun="yes"
         ;;
       --toolchains)
         toolchains
@@ -270,9 +288,15 @@ fi
 
 src=${srcARG:=""}
 cmake=${cmakebin:=cmake}
+dryrun=${dryrun:=no}
 
 echo ""
 echo "$cmake ${ADD_ECBUILD_OPTIONS} $@ $src"
 echo ""
+
+if [ ${dryrun} == "yes" ]; then
+  echo "[DRYRUN] -- not executing"
+  exit 0
+fi
 
 $cmake ${ADD_ECBUILD_OPTIONS} "$@" $src
