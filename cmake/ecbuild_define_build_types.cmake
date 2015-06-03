@@ -129,7 +129,7 @@ foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
   # APPEND Linker FLAGS per language (we append because CMake typically leaves them empty)
   foreach( _lang C CXX Fortran )
     if( ECBUILD_${_lang}_LINK_FLAGS )
-      set( CMAKE_${_lang}_LINK_FLAGS ${CMAKE_${_lang}_LINK_FLAGS} ${ECBUILD_${_lang}_LINK_FLAGS} )
+      set( CMAKE_${_lang}_LINK_FLAGS "${CMAKE_${_lang}_LINK_FLAGS} ${ECBUILD_${_lang}_LINK_FLAGS}" )
     endif()
   endforeach()
 
