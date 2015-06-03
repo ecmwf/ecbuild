@@ -185,11 +185,16 @@ macro( ecbuild_add_option )
 		add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}")
 	endif()
 
+  string( TOUPPER PNAME ${PROJECT_NAME} )
+  # If feature is enabled and was found, add it to feature list
   if( HAVE_${_p_FEATURE} )
-    string( TOUPPER PNAME ${PROJECT_NAME} )
     set( ${PNAME}_HAVE_${_p_FEATURE} 1 )
     set( ${PNAME}_FEATURES "${${PNAME}_FEATURES};${PNAME}_HAVE_${_p_FEATURE}" CACHE INTERNAL "" )
     list( REMOVE_DUPLICATES ${PNAME}_FEATURES )
+  # Otherwise (e.g. it was disabled during reconfigure) remove it from the feature list
+  else()
+    list( REMOVE_ITEM ${PNAME}_FEATURES ${PNAME}_HAVE_${_p_FEATURE} )
+    set( ${PNAME}_FEATURES "${${PNAME}_FEATURES}" CACHE INTERNAL "" )
   endif()
 
 endmacro( ecbuild_add_option  )
