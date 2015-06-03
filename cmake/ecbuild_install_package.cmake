@@ -160,7 +160,7 @@ macro( ecbuild_install_project )
 
         # prepare imutable variables (don't depend on install path)
 
-        set( CONF_FEATURES "" )
+        ecbuild_enabled_features( ${PNAME}_FEATURES )
         if( ${PNAME}_FEATURES )
           set( CONF_FEATURES ${${PNAME}_FEATURES} )
         endif()

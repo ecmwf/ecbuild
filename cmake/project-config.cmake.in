@@ -47,7 +47,7 @@ set( @PNAME@_LIBRARIES        ${@PNAME@_SELF_LIBRARIES}   ${@PNAME@_TPL_LIBRARIE
 
 set( @PNAME@_FEATURES    "@CONF_FEATURES@" )
 foreach( _f ${@PNAME@_FEATURES} )
-	set( ${_f} 1 )
+	set( @PNAME@_HAVE_${_f} 1 )
 endforeach()
 
 if( EXISTS ${@PNAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@ )
