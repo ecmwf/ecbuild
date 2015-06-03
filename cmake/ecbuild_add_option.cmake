@@ -192,7 +192,7 @@ macro( ecbuild_add_option )
     set( ${PNAME}_FEATURES "${${PNAME}_FEATURES};${PNAME}_HAVE_${_p_FEATURE}" CACHE INTERNAL "" )
     list( REMOVE_DUPLICATES ${PNAME}_FEATURES )
   # Otherwise (e.g. it was disabled during reconfigure) remove it from the feature list
-  else()
+  elseif( ${PNAME}_FEATURES )
     list( REMOVE_ITEM ${PNAME}_FEATURES ${PNAME}_HAVE_${_p_FEATURE} )
     set( ${PNAME}_FEATURES "${${PNAME}_FEATURES}" CACHE INTERNAL "" )
   endif()
