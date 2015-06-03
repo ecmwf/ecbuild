@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eua
+
 usage()
 {
   echo "Usage: ecbuild [--help] [--version]"
@@ -33,6 +35,9 @@ SYNOPSIS:
 
 Available values for "option":
 
+    --cmakebin=<path>
+          Set which cmake binary to use. Default is 'cmake'
+
     --prefix=<prefix>
           Set the install path to <prefix>.
           Equivalent to cmake argument "-D CMAKE_INSTALL_PREFIX=<prefix>"
@@ -57,8 +62,8 @@ Available values for "option":
     --toolchain=<toolchain>
           Use a platform specific toolchain, containing settings such
           as compilation flags, locations of commonly used dependencies.
-          <toolchain> can be the path to a custom toolchain file, or a 
-          pre-installed toolchain provided with ecbuild. For a list of 
+          <toolchain> can be the path to a custom toolchain file, or a
+          pre-installed toolchain provided with ecbuild. For a list of
           pre-installed toolchains, run "ecbuild --toolchains".
           Equivalent to cmake argument "-D CMAKE_TOOLCHAIN_FILE=<toolchain-file>"
 
@@ -68,6 +73,9 @@ Available values for "option":
           builds to speed up checking of compiler/platform capabilities. Note that
           this is only accelerating fresh builds, as cmake internally caches also.
           Therefore this option is *not* recommended.
+
+    --dryrun
+          Don't actually execute cmake call, just print what would have been executed.
 
 
 Available values for "cmake-argument":
@@ -106,7 +114,7 @@ Testing:
 
 Installing:
 
-  To install the project in location PREFIX with 
+  To install the project in location PREFIX with
        "--prefix=PREFIX" or
        "-D CMAKE_INSTALL_PREFIX=PREFIX"
     > make install
@@ -126,9 +134,9 @@ ADD_ECBUILD_OPTIONS="-D CMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
 
 version()
 {
-  # todo: do some clever regex of the VERSION.cmake file
-  echo "ecbuild version 1.6.0"
-  command -v cmake >/dev/null 2>&1 || { exit 0; }  
+  ecbuild_version=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ECBUILD_VERSION_STR |  perl -p -e 's/.*([\d]\.[\d]\.[\d]).*/\1/' )
+  echo "ecbuild version ${ecbuild_version}"
+  command -v cmake >/dev/null 2>&1 || { exit 0; }
   cmake --version | head -1
   exit 0
 }
@@ -138,7 +146,7 @@ toolchains()
   toolchains_dir=$INSTALL_DIR/../share/ecbuild/toolchains/
   cd $toolchains_dir
   echo "Available toolchains:"
-  ls | while read fname 
+  ls | while read fname
   do
       echo "  - ${fname%%.*}"
   done
@@ -155,7 +163,7 @@ prefix()
 toolchain()
 {
   arg=$1
-  if [ -f $arg ]; then 
+  if [ -f $arg ]; then
     toolchain_file=$arg
   else
     if [ -f $INSTALL_DIR/../share/ecbuild/toolchains/$arg.cmake ]; then
@@ -187,25 +195,36 @@ cache()
   fi
   ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D ECBUILD_CACHE=${cache_file}"
 }
- 
+
 if test $# -eq 0; then
     usage 1
 fi
 
 while test $# -gt 0; do
+
     # Split --option=value in $opt="--option" and $val="value"
+
+    opt=""
+    val=""
+
     case "$1" in
-    --*=*) 
+    --*=*)
       opt=`echo "$1" | sed 's/=.*//'`
       val=`echo "$1" | sed 's/--[_a-zA-Z0-9]*=//'`
       ;;
     --*)
       opt=$1
       ;;
+    # -D*)
+    #   ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS $1"
+    #   ;;
     *)
       break
       ;;
     esac
+
+    # echo "debug opt: $opt $val"
+
     # Parse options
     case "$opt" in
       --help)
@@ -214,8 +233,14 @@ while test $# -gt 0; do
       --version)
         version
         ;;
+      --dryrun)
+        dryrun="yes"
+        ;;
       --toolchains)
         toolchains
+        ;;
+      --cmakebin)
+        cmakebin="$val"
         ;;
       --prefix)
         prefix $val
@@ -228,7 +253,7 @@ while test $# -gt 0; do
         ;;
       --dynamic)
         ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=ON"
-        ;;        
+        ;;
       --toolchain)
         toolchain $val
         ;;
@@ -248,20 +273,29 @@ while test $# -gt 0; do
 done
 
 # Check if cmake is available
-command -v cmake >/dev/null 2>&1 || { 
+command -v cmake >/dev/null 2>&1 || {
   echo "cmake is required and cannot be found in the PATH." >&2
   echo "  Try 'module load cmake'" >&2
   echo "PATH=$PATH" >&2
-  exit 1; 
+  exit 1;
 }
 
-# If no arguments remain, set SOURCE to "."
+# If no arguments remain, set srcARG to "."
 if [ $# -eq 0 ]; then
-  SOURCE="."
+  srcARG="."
 fi
 
-COMMAND="cmake ${ADD_ECBUILD_OPTIONS} $@ $SOURCE"
+src=${srcARG:=""}
+cmake=${cmakebin:=cmake}
+dryrun=${dryrun:=no}
+
 echo ""
-echo $COMMAND
+echo "$cmake ${ADD_ECBUILD_OPTIONS} $@ $src"
 echo ""
-$COMMAND
+
+if [ ${dryrun} == "yes" ]; then
+  echo "[DRYRUN] -- not executing"
+  exit 0
+fi
+
+$cmake ${ADD_ECBUILD_OPTIONS} "$@" $src

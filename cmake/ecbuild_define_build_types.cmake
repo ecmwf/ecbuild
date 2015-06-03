@@ -111,18 +111,25 @@ endif()
 # overrides of the flags per build type
 
 foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
-  
-  # Compiler FLAGS per language
+
+  # OVERRIDE Compiler FLAGS per language (we override because CMake forcely defines them)
   foreach( _lang C CXX Fortran )
     if( ECBUILD_${_lang}_FLAGS_${_btype} )
       set( CMAKE_${_lang}_FLAGS_${_btype} ${ECBUILD_${_lang}_FLAGS_${_btype}} )
     endif()
   endforeach()
 
-  # Linker FLAGS per object type
+  # OVERRIDE Linker FLAGS per object type (we override because CMake forcely defines them)
   foreach( _obj EXE SHARED MODULE )
     if( ECBUILD_${_obj}_LINKER_FLAGS_${_btype} )
       set( CMAKE_${_obj}_LINKER_FLAGS_${_btype} ${ECBUILD_${_obj}_LINKER_FLAGS_${_btype}} )
+    endif()
+  endforeach()
+
+  # APPEND Linker FLAGS per language (we append because CMake typically leaves them empty)
+  foreach( _lang C CXX Fortran )
+    if( ECBUILD_${_lang}_LINK_FLAGS )
+      set( CMAKE_${_lang}_LINK_FLAGS "${CMAKE_${_lang}_LINK_FLAGS} ${ECBUILD_${_lang}_LINK_FLAGS}" )
     endif()
   endforeach()
 

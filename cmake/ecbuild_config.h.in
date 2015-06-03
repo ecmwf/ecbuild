@@ -115,6 +115,8 @@
 /* --- compiler __attribute__ support --- */
 
 #cmakedefine EC_HAVE_ATTRIBUTE_CONSTRUCTOR
+#cmakedefine EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV
+#cmakedefine EC_HAVE_PROCFS
 
 /* --- c compiler support --- */
 
