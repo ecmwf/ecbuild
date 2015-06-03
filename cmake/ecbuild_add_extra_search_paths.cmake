@@ -15,11 +15,9 @@
 
 function( ecbuild_add_extra_search_paths pkg )
 
-# debug_var( pkg )
+    string( TOUPPER ${pkg} _PKG )
 
 	ecbuild_list_extra_search_paths( ${pkg} CMAKE_PREFIX_PATH )
-
-	set( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE )
 
 	# fixes BOOST_ROOT taking precedence on the search for location
 	if( ${pkg} STREQUAL "boost" )
@@ -28,7 +26,17 @@ function( ecbuild_add_extra_search_paths pkg )
 		endif()
 	endif()
 
-# debug_var( CMAKE_PREFIX_PATH )
+    # in DEVELOPER_MODE we give priority to projects parallel in the build tree
+    # so lets prepend a parallel build tree to the search path if we find it
+    if( DEVELOPER_MODE )
+        if( EXISTS ${CMAKE_BINARY_DIR}/../${pkg}/${pkg}-config.cmake AND NOT ${_PKG}_PATH )
+            get_filename_component( _proj_bdir "${CMAKE_BINARY_DIR}/../${pkg}" ABSOLUTE )
+            set( ${_PKG}_PATH "${_proj_bdir}" PARENT_SCOPE )
+        endif()
+    endif()
+
+    set( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE )
+    # debug_var( CMAKE_PREFIX_PATH )
 
 endfunction()
 
