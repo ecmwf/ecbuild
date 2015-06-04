@@ -103,7 +103,7 @@ macro( ecbuild_install_project )
  
     ecbuild_enabled_features( ${PNAME}_FEATURES )
     foreach( _f ${${PNAME}_FEATURES} )
-        set( @PNAME@_HAVE_${_f} 1 )
+        set( ${PNAME}_HAVE_${_f} 1 )
     endforeach()
 
 
