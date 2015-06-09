@@ -157,8 +157,8 @@ if( ENABLE_OS_FUNCTIONS_TEST )
         VAR    EC_HAVE_PROCFS
         OUTPUT EC_HAVE_PROCFS_OUTPUT )
 
-    debug_var(EC_HAVE_PROCFS)
-    debug_var(EC_HAVE_PROCFS_OUTPUT)
+#    debug_var(EC_HAVE_PROCFS)
+#    debug_var(EC_HAVE_PROCFS_OUTPUT)
 
 endif()
 
