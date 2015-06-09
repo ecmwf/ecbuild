@@ -272,14 +272,6 @@ while test $# -gt 0; do
     shift
 done
 
-# Check if cmake is available
-command -v cmake >/dev/null 2>&1 || {
-  echo "cmake is required and cannot be found in the PATH." >&2
-  echo "  Try 'module load cmake'" >&2
-  echo "PATH=$PATH" >&2
-  exit 1;
-}
-
 # If no arguments remain, set srcARG to "."
 if [ $# -eq 0 ]; then
   srcARG="."
@@ -288,6 +280,14 @@ fi
 src=${srcARG:=""}
 cmake=${cmakebin:=cmake}
 dryrun=${dryrun:=no}
+
+# Check if cmake is available
+command -v $cmake >/dev/null 2>&1 || {
+  echo "cmake is required and cannot be found in the PATH." >&2
+  echo "  Try 'module load cmake'" >&2
+  echo "PATH=$PATH" >&2
+  exit 1;
+}
 
 echo ""
 echo "$cmake ${ADD_ECBUILD_OPTIONS} $@ $src"
