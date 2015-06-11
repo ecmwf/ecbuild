@@ -11,6 +11,11 @@
 #ifndef @PROJECT_NAME@_ecbuild_config_h
 #define @PROJECT_NAME@_ecbuild_config_h
 
+/* ecbuild info */
+
+#define ECBUILD_VERSION_STR "@ECBUILD_VERSION_STR@"
+#define ECBUILD_MACROS_DIR  "@ECBUILD_MACROS_DIR@"
+
 /* cpu arch info */
 
 #cmakedefine EC_BIG_ENDIAN       @EC_BIG_ENDIAN@
