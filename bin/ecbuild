@@ -329,6 +329,10 @@ if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
   tarball=cmake-${CMAKE_BUILD_VERSION}.tar.gz
   if [[ ! -r $tarball ]]; then
     url=http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/$tarball
+    # -N          Download only if the remote version of the file is newer
+    # --continue  Continue an interrupted download
+    # -T 60       Time out a download attempt after 60 seconds
+    # -t 3        Only make 3 download attempts
     wget -N --continue -T 60 -t 3 $url || {
       echo "Failed to download CMake release $CMAKE_BUILD_VERSION." >&2
       echo "Please download from $url" >&2
