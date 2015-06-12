@@ -329,7 +329,8 @@ if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
   if [[ ! -r $tarball ]]; then
     url=http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/$tarball
     wget -N --continue -T 60 -t 3 $url || {
-      echo "Failed to download CMake release $CMAKE_BUILD_VERSION. Please download from $url" >&2
+      echo "Failed to download CMake release $CMAKE_BUILD_VERSION." >&2
+      echo "Please download from $url" >&2
       echo "and place $tarball in $PWD" >&2
       exit 1
     }
