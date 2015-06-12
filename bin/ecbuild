@@ -325,7 +325,7 @@ fi
 # Build CMake if requested and no sufficient version found
 if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
   echo "Building CMake version ${CMAKE_BUILD_VERSION} ..." >&2
-  wget -N --continue http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/cmake-${CMAKE_BUILD_VERSION}.tar.gz
+  wget -N --continue -T 60 http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/cmake-${CMAKE_BUILD_VERSION}.tar.gz
   tar xzf cmake-${CMAKE_BUILD_VERSION}.tar.gz
   (
     mkdir -p build_cmake
