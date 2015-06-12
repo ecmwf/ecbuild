@@ -317,6 +317,20 @@ check_cmake() {
 }
 check_cmake
 
+# Build CMake if requested and no sufficient version found
+if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
+  echo "Building CMake version ${CMAKE_BUILD_VERSION} ..." >&2
+  wget -N --continue http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/cmake-${CMAKE_BUILD_VERSION}.tar.gz
+  tar xzf cmake-${CMAKE_BUILD_VERSION}.tar.gz
+  (
+    mkdir -p build_cmake
+    cd build_cmake
+    ../cmake-${CMAKE_BUILD_VERSION}/bootstrap --prefix=.. && make && make install
+  )
+  cmake=bin/cmake
+  check_cmake
+fi
+
 # Fail if we don't have a sufficient CMake
 if [[ ! $cmake_version_sufficient ]]; then
   if [[ ! $cmake_found ]]; then
