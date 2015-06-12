@@ -308,7 +308,7 @@ check_cmake() {
   # Check if cmake is available
   if $(command -v $cmake >/dev/null 2>&1); then
     cmake_found="yes"
-    cmake_version=$($cmake --version | head -n1 | awk -e '{ print $3 }')
+    cmake_version=$($cmake --version | head -n1 | awk '{ print $3 }')
     echo "Found CMake version $cmake_version" >& 2
     if version_gte $cmake_version $CMAKE_MIN_REQUIRED; then
       cmake_version_sufficient="yes"
