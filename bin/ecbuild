@@ -318,13 +318,16 @@ check_cmake() {
 check_cmake
 
 # Fail if we don't have a sufficient CMake
-if [[ ! $cmake_found ]]; then
-  echo "cmake is required and cannot be found in the PATH." >&2
-  echo "  Try 'module load cmake'" >&2
-  echo "PATH=$PATH" >&2
-fi
 if [[ ! $cmake_version_sufficient ]]; then
-  echo "cmake version $CMAKE_MIN_REQUIRED is required but only $cmake_version was found." >&2
+  if [[ ! $cmake_found ]]; then
+    echo "CMake is required and cannot be found in the PATH." >&2
+  else
+    echo "CMake version $CMAKE_MIN_REQUIRED is required but only $cmake_version was found." >&2
+  fi
+  echo "" >&2
+  echo "  Try 'module load cmake', specify a CMake binary with --cmakebin=/path/to/cmake" >&2
+  echo "  or  let ecbuild download and build CMake with the --build-cmake option." >&2
+  exit 1
 fi
 
 echo ""
