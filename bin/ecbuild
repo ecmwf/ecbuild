@@ -280,14 +280,8 @@ fi
 src=${srcARG:=""}
 cmake=${cmakebin:=cmake}
 dryrun=${dryrun:=no}
-
-# Check if cmake is available
-command -v $cmake >/dev/null 2>&1 || {
-  echo "cmake is required and cannot be found in the PATH." >&2
-  echo "  Try 'module load cmake'" >&2
-  echo "PATH=$PATH" >&2
-  exit 1;
-}
+cmake_found=""
+cmake_version_sufficient=""
 
 # Check if the cmake version is sufficient
 CMAKE_MIN_REQUIRED=2.8.12
@@ -298,11 +292,28 @@ version_gte() {
     [  "$2" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
 }
 
-cmake_version=$($cmake --version | head -n1 | awk -e '{ print $3 }')
-version_gte $cmake_version $CMAKE_MIN_REQUIRED || {
-  echo "cmake version $CMAKE_MIN_REQUIRED is required but only $cmake_version was found." >&2
-  exit 1;
+check_cmake() {
+  # Check if cmake is available
+  if $(command -v $cmake >/dev/null 2>&1); then
+    cmake_found="yes"
+    cmake_version=$($cmake --version | head -n1 | awk -e '{ print $3 }')
+    echo "Found CMake version $cmake_version" >& 2
+    if version_gte $cmake_version $CMAKE_MIN_REQUIRED; then
+      cmake_version_sufficient="yes"
+    fi
+  fi
 }
+check_cmake
+
+# Fail if we don't have a sufficient CMake
+if [[ ! $cmake_found ]]; then
+  echo "cmake is required and cannot be found in the PATH." >&2
+  echo "  Try 'module load cmake'" >&2
+  echo "PATH=$PATH" >&2
+fi
+if [[ ! $cmake_version_sufficient ]]; then
+  echo "cmake version $CMAKE_MIN_REQUIRED is required but only $cmake_version was found." >&2
+fi
 
 echo ""
 echo "$cmake ${ADD_ECBUILD_OPTIONS} $@ $src"
