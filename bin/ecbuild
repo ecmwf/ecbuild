@@ -324,6 +324,7 @@ fi
 
 # Build CMake if requested and no sufficient version found
 if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
+  echo "CMake version $CMAKE_MIN_REQUIRED is required but only $cmake_version was found." >&2
   echo "Building CMake version ${CMAKE_BUILD_VERSION} ..." >&2
   tarball=cmake-${CMAKE_BUILD_VERSION}.tar.gz
   if [[ ! -r $tarball ]]; then
