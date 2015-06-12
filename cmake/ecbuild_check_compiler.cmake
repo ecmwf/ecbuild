@@ -105,8 +105,8 @@ if( CMAKE_COMPILER_IS_GNUCC )
 
     if( ENABLE_WARNINGS )
         cmake_add_c_flags("-Wall")
-        cmake_add_c_flags("-pedantic")
-        #    cmake_add_c_flags("-Wextra")
+        # cmake_add_c_flags("-pedantic")
+        # cmake_add_c_flags("-Wextra")
     endif()
 
 endif()
