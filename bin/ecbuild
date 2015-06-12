@@ -325,8 +325,14 @@ fi
 # Build CMake if requested and no sufficient version found
 if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
   echo "Building CMake version ${CMAKE_BUILD_VERSION} ..." >&2
-  if [[ ! -r cmake-${CMAKE_BUILD_VERSION}.tar.gz ]]; then
-    wget -N --continue -T 60 -t 3 http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/cmake-${CMAKE_BUILD_VERSION}.tar.gz
+  tarball=cmake-${CMAKE_BUILD_VERSION}.tar.gz
+  if [[ ! -r $tarball ]]; then
+    url=http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/$tarball
+    wget -N --continue -T 60 -t 3 $url || {
+      echo "Failed to download CMake release $CMAKE_BUILD_VERSION. Please download from $url" >&2
+      echo "and place $tarball in $PWD" >&2
+      exit 1
+    }
   fi
   tar xzf cmake-${CMAKE_BUILD_VERSION}.tar.gz
   (
