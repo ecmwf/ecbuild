@@ -289,6 +289,21 @@ command -v $cmake >/dev/null 2>&1 || {
   exit 1;
 }
 
+# Check if the cmake version is sufficient
+CMAKE_MIN_REQUIRED=2.8.12
+
+# Check that version $1 satisfies $2
+# (adapted from http://stackoverflow.com/a/4024263/396967)
+version_gte() {
+    [  "$2" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
+}
+
+cmake_version=$($cmake --version | head -n1 | awk -e '{ print $3 }')
+version_gte $cmake_version $CMAKE_MIN_REQUIRED || {
+  echo "cmake version $CMAKE_MIN_REQUIRED is required but only $cmake_version was found." >&2
+  exit 1;
+}
+
 echo ""
 echo "$cmake ${ADD_ECBUILD_OPTIONS} $@ $src"
 echo ""
