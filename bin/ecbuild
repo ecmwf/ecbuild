@@ -65,17 +65,18 @@ Available values for "option":
           <toolchain> can be the path to a custom toolchain file, or a
           pre-installed toolchain provided with ecbuild. For a list of
           pre-installed toolchains, run "ecbuild --toolchains".
-          Equivalent to cmake argument "-D CMAKE_TOOLCHAIN_FILE=<toolchain-file>"
+          Equivalent to cmake argument "-DCMAKE_TOOLCHAIN_FILE=<toolchain-file>"
 
     --cache=<ecbuild-cache-file>    (advanced)
           A file called "ecbuild-cache.cmake" is generated during configuration.
           This file can be moved to a safe location, and specified for future
-          builds to speed up checking of compiler/platform capabilities. Note that
-          this is only accelerating fresh builds, as cmake internally caches also.
-          Therefore this option is *not* recommended.
+          builds to speed up checking of compiler/platform capabilities. Note
+          that this is only accelerating fresh builds, as cmake internally
+          caches also. Therefore this option is *not* recommended.
 
     --dryrun
-          Don't actually execute cmake call, just print what would have been executed.
+          Don't actually execute the cmake call, just print what would have
+          been executed.
 
 
 Available values for "cmake-argument":
