@@ -260,6 +260,9 @@ while test $# -gt 0; do
       --cache)
         cache $val
         ;;
+      --build-cmake)
+        build_cmake="yes"
+        ;;
       --)
         shift
         break
@@ -280,6 +283,7 @@ fi
 src=${srcARG:=""}
 cmake=${cmakebin:=cmake}
 dryrun=${dryrun:=no}
+build_cmake=${build_cmake:=""}
 cmake_found=""
 cmake_version_sufficient=""
 
