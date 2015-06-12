@@ -316,6 +316,11 @@ check_cmake() {
   fi
 }
 check_cmake
+# Use already built CMake if any
+if [[ ! $cmake_version_sufficient && -x bin/cmake ]]; then
+  cmake=bin/cmake
+  check_cmake
+fi
 
 # Build CMake if requested and no sufficient version found
 if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
