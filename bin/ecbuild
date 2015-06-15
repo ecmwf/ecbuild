@@ -2,6 +2,9 @@
 
 set -eua
 
+CMAKE_MIN_REQUIRED=2.8.10
+CMAKE_BUILD_VERSION=3.2.3
+
 usage()
 {
   echo "Usage: ecbuild [--help] [--version]"
@@ -65,17 +68,23 @@ Available values for "option":
           <toolchain> can be the path to a custom toolchain file, or a
           pre-installed toolchain provided with ecbuild. For a list of
           pre-installed toolchains, run "ecbuild --toolchains".
-          Equivalent to cmake argument "-D CMAKE_TOOLCHAIN_FILE=<toolchain-file>"
+          Equivalent to cmake argument "-DCMAKE_TOOLCHAIN_FILE=<toolchain-file>"
 
     --cache=<ecbuild-cache-file>    (advanced)
           A file called "ecbuild-cache.cmake" is generated during configuration.
           This file can be moved to a safe location, and specified for future
-          builds to speed up checking of compiler/platform capabilities. Note that
-          this is only accelerating fresh builds, as cmake internally caches also.
-          Therefore this option is *not* recommended.
+          builds to speed up checking of compiler/platform capabilities. Note
+          that this is only accelerating fresh builds, as cmake internally
+          caches also. Therefore this option is *not* recommended.
+
+    --build-cmake
+          Automatically download and build CMake version $CMAKE_BUILD_VERSION if the CMake
+          version found does not meet the minimum requirements (version $CMAKE_MIN_REQUIRED
+          is required). Requires an internet connection and may take a while.
 
     --dryrun
-          Don't actually execute cmake call, just print what would have been executed.
+          Don't actually execute the cmake call, just print what would have
+          been executed.
 
 
 Available values for "cmake-argument":
@@ -260,6 +269,9 @@ while test $# -gt 0; do
       --cache)
         cache $val
         ;;
+      --build-cmake)
+        build_cmake="yes"
+        ;;
       --)
         shift
         break
@@ -272,14 +284,6 @@ while test $# -gt 0; do
     shift
 done
 
-# Check if cmake is available
-command -v cmake >/dev/null 2>&1 || {
-  echo "cmake is required and cannot be found in the PATH." >&2
-  echo "  Try 'module load cmake'" >&2
-  echo "PATH=$PATH" >&2
-  exit 1;
-}
-
 # If no arguments remain, set srcARG to "."
 if [ $# -eq 0 ]; then
   srcARG="."
@@ -288,6 +292,76 @@ fi
 src=${srcARG:=""}
 cmake=${cmakebin:=cmake}
 dryrun=${dryrun:=no}
+build_cmake=${build_cmake:=""}
+cmake_found=""
+cmake_version_sufficient=""
+
+
+# Check that version $1 satisfies $2
+# (adapted from http://stackoverflow.com/a/4024263/396967)
+version_gte() {
+    [  "$2" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
+}
+
+# Check if the cmake version is sufficient
+check_cmake() {
+  # Check if cmake is available
+  if $(command -v $cmake >/dev/null 2>&1); then
+    cmake_found="yes"
+    cmake_version=$($cmake --version | head -n1 | awk '{ print $3 }')
+    echo "Found CMake version $cmake_version" >& 2
+    if version_gte $cmake_version $CMAKE_MIN_REQUIRED; then
+      cmake_version_sufficient="yes"
+    fi
+  fi
+}
+check_cmake
+# Use already built CMake if any
+if [[ ! $cmake_version_sufficient && -x bin/cmake ]]; then
+  cmake=bin/cmake
+  check_cmake
+fi
+
+# Build CMake if requested and no sufficient version found
+if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
+  echo "CMake version $CMAKE_MIN_REQUIRED is required but only $cmake_version was found." >&2
+  echo "Building CMake version ${CMAKE_BUILD_VERSION} ..." >&2
+  tarball=cmake-${CMAKE_BUILD_VERSION}.tar.gz
+  if [[ ! -r $tarball ]]; then
+    url=http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/$tarball
+    # -N          Download only if the remote version of the file is newer
+    # --continue  Continue an interrupted download
+    # -T 60       Time out a download attempt after 60 seconds
+    # -t 3        Only make 3 download attempts
+    wget -N --continue -T 60 -t 3 $url || {
+      echo "Failed to download CMake release $CMAKE_BUILD_VERSION." >&2
+      echo "Please download from $url" >&2
+      echo "and place $tarball in $PWD" >&2
+      exit 1
+    }
+  fi
+  tar xzf cmake-${CMAKE_BUILD_VERSION}.tar.gz
+  (
+    mkdir -p build_cmake
+    cd build_cmake
+    ../cmake-${CMAKE_BUILD_VERSION}/bootstrap --prefix=.. && make && make install
+  )
+  cmake=bin/cmake
+  check_cmake
+fi
+
+# Fail if we don't have a sufficient CMake
+if [[ ! $cmake_version_sufficient ]]; then
+  if [[ ! $cmake_found ]]; then
+    echo "CMake is required and cannot be found in the PATH." >&2
+  else
+    echo "CMake version $CMAKE_MIN_REQUIRED is required but only $cmake_version was found." >&2
+  fi
+  echo "" >&2
+  echo "  Try 'module load cmake', specify a CMake binary with --cmakebin=/path/to/cmake" >&2
+  echo "  or  let ecbuild download and build CMake with the --build-cmake option." >&2
+  exit 1
+fi
 
 echo ""
 echo "$cmake ${ADD_ECBUILD_OPTIONS} $@ $src"
