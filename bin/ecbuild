@@ -298,9 +298,10 @@ cmake_version_sufficient=""
 
 
 # Check that version $1 satisfies $2
-# (adapted from http://stackoverflow.com/a/4024263/396967)
+# CMake versions have no more than 4 fields
+# (adapted from http://stackoverflow.com/a/25731924/396967)
 version_gte() {
-    [  "$2" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
+    [  "$2" = "$(echo -e "$1\n$2" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | head -n1)" ]
 }
 
 # Check if the cmake version is sufficient
