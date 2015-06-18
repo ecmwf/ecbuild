@@ -319,6 +319,7 @@ check_cmake() {
 check_cmake
 # Use already built CMake if any
 if [[ ! $cmake_version_sufficient && -x bin/cmake ]]; then
+  echo "Using already built CMake in $PWD/bin/cmake" >&2
   cmake=bin/cmake
   check_cmake
 fi
