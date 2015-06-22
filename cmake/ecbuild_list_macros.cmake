@@ -64,7 +64,7 @@ endfunction(MAP_GET)
 #   ecbuild_list_remove_pattern( mylist "foo;bar" VAR )
 #
 
-function( ecbuild_list_remove_pattern _list _patterns _var )
+function(ecbuild_list_remove_pattern _list _patterns _var)
 
 #debug_var(  _list )
 #debug_var(  _patterns )
@@ -87,4 +87,4 @@ function( ecbuild_list_remove_pattern _list _patterns _var )
 
     set( ${_var} "${_result}" PARENT_SCOPE )
 
-endfunction(MAP_GET)
+endfunction(ecbuild_list_remove_pattern)
