@@ -43,9 +43,9 @@ set( ECBUILD_Fortran_FLAGS_RELEASE "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
 # BIT REPRODUCIBLE FLAGS
 ####################################################################
 
-set( ECBUILD_C_FLAGS_BIT        "-O2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
-set( ECBUILD_CXX_FLAGS_BIT      "-O2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
-set( ECBUILD_Fortran_FLAGS_BIT  "-O2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
+set( ECBUILD_C_FLAGS_BIT        "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
+set( ECBUILD_CXX_FLAGS_BIT      "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
+set( ECBUILD_Fortran_FLAGS_BIT  "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
 
 ####################################################################
 # RELWITHDEBINFO FLAGS
