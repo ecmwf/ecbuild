@@ -7,8 +7,7 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding a test
-##############################################################################
+# macro for looking for openmp flags
 
 macro( lookup_omp_flags )
   set(_OMP_FLAG_GNU        "-fopenmp")
@@ -166,6 +165,8 @@ macro( ecbuild_find_omp )
 
 endmacro( ecbuild_find_omp )
 
+##############################################################################
+# macro for enabling openmp
 
 macro( ecbuild_enable_omp )
 
@@ -184,6 +185,9 @@ macro( ecbuild_enable_omp )
   endif()
 
 endmacro( ecbuild_enable_omp )
+
+##############################################################################
+# macro for enabling openmp stubs
 
 macro( ecbuild_enable_ompstubs )
 
