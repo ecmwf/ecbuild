@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2014 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -17,7 +17,7 @@ function( ecbuild_download_resource _p_OUT _p_URL )
         find_program( CURL_PROGRAM curl )
 
         execute_process( COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_OUT} ${_p_URL} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} RESULT_VARIABLE CMD_RESULT )
-         
+
         if(CMD_RESULT)
             message(FATAL_ERROR \"Error downloading ${_p_URL}\")
         endif()
@@ -279,9 +279,12 @@ endfunction()\n\n" )
         #debug_var(_name)
         #debug_var(_md5)
 
-        ecbuild_get_test_data( TARGET __get_data_${_p_TARGET}_${_name} NAME ${_file} ${_dirname} ${_md5} ${_nocheck} )
+        ecbuild_get_test_data(
+            TARGET __get_data_${_p_TARGET}_${_name}
+            NAME ${_file} ${_dirname} ${_md5} ${_nocheck} )
 
-        file( APPEND ${_script} "exec_check( ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target __get_data_${_p_TARGET}_${_name} )\n" )
+        file( APPEND ${_script}
+            "exec_check( ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target __get_data_${_p_TARGET}_${_name} )\n" )
 
     endforeach()
 
