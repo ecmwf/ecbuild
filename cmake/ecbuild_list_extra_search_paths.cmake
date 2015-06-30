@@ -23,7 +23,6 @@ function( ecbuild_list_extra_search_paths pkg var )
 	# PKG_PATH (upper case)
 
 	if( DEFINED ${_PKG}_PATH AND EXISTS ${${_PKG}_PATH} )
-		message( "${_PKG}_PATH ${${_PKG}_PATH} exists " )
 		list( APPEND ${var} ${${_PKG}_PATH} )
 	endif()
 
