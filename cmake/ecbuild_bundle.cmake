@@ -34,7 +34,7 @@ if( ECBUILD_GIT )
   else()
     set( ECMWF_GIT_ADDRESS ${ECMWF_GIT_HTTPS} CACHE INTERNAL "" )
   endif()
-  
+
 endif()
 
 macro( ecbuild_git )
@@ -267,9 +267,14 @@ macro( ecbuild_bundle )
   set( multi_value_args )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
-  ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} ${_PAR_UNPARSED_ARGUMENTS} )
+  string(TOUPPER "${_PAR_PROJECT}" PNAME)
 
-  ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
+  if( BUNDLE_SKIP_${PNAME} )
+      message( STATUS "Skipping bundle project ${PNAME}" )
+  else()
+      ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} ${_PAR_UNPARSED_ARGUMENTS} )
+      ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
+  endif()
 
 endmacro()
 
