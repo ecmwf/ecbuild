@@ -15,6 +15,7 @@
 #
 # The following paths will be searched with priority if set in CMake or env
 #
+#  MKL_PATH          - root directory of the MKL installation
 #  MKL_ROOT          - root directory of the MKL installation
 
 option( MKL_PARALLEL "if mkl shoudl be parallel" OFF )
@@ -33,9 +34,9 @@ else()
 
 endif()
 
-# Search with priority for MKL_ROOT if given as CMake or env var
+# Search with priority for MKL_ROOT and MKL_PATH if set in CMake or env
 find_path(MKL_INCLUDE_DIR mkl.h
-          PATHS ${MKL_ROOT} ENV MKL_ROOT
+          PATHS ${MKL_PATH} ${MKL_ROOT} ENV MKL_PATH MKL_ROOT
           PATH_SUFFIXES include NO_DEFAULT_PATH)
 find_path(MKL_INCLUDE_DIR mkl.h
           PATH_SUFFIXES include)
