@@ -12,6 +12,10 @@
 #  MKL_FOUND         - system has Intel MKL
 #  MKL_INCLUDE_DIRS  - the MKL include directories
 #  MKL_LIBRARIES     - link these to use MKL
+#
+# The following paths will be searched with priority if set in CMake or env
+#
+#  MKL_ROOT          - root directory of the MKL installation
 
 option( MKL_PARALLEL "if mkl shoudl be parallel" OFF )
 
@@ -29,17 +33,12 @@ else()
 
 endif()
 
-
-if( $ENV{MKL_ROOT} )
-  list( APPEND __MKL_PATHS $ENV{MKL_ROOT} )
-endif()
-
-if( MKL_ROOT )
-  list( APPEND __MKL_PATHS ${MKL_ROOT} )
-endif()
-
-find_path(MKL_INCLUDE_DIR mkl.h PATHS ${__MKL_PATHS} PATH_SUFFIXES include NO_DEFAULT_PATH)
-find_path(MKL_INCLUDE_DIR mkl.h PATHS ${__MKL_PATHS} PATH_SUFFIXES include )
+# Search with priority for MKL_ROOT if given as CMake or env var
+find_path(MKL_INCLUDE_DIR mkl.h
+          PATHS ${MKL_ROOT} ENV MKL_ROOT
+          PATH_SUFFIXES include NO_DEFAULT_PATH)
+find_path(MKL_INCLUDE_DIR mkl.h
+          PATH_SUFFIXES include)
 
 if( MKL_INCLUDE_DIR ) # use include dir to find libs
 
