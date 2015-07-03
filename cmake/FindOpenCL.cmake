@@ -1,40 +1,51 @@
 # - Try to find OpenCL
 # Once done this will define
 #
-#  OPENCL_FOUND         - system has OpenCL
-#  OPENCL_INCLUDE_DIRS  - the OpenCL include directory
-#  OPENCL_LIBRARIES     - link these to use OpenCL
-
-if( $ENV{OPENCL_ROOT} )
-	list( APPEND __OPENCL_PATHS $ENV{OPENCL_ROOT} )
-endif()
-
-if( OPENCL_ROOT )
-	list( APPEND __OPENCL_PATHS ${OPENCL_ROOT} )
-endif()
+#  OPENCL_FOUND           - system has OpenCL
+#  OPENCL_INCLUDE_DIRS    - the OpenCL include directory
+#  OPENCL_LIBRARIES       - link these to use OpenCL
+#
+# The following paths will be searched with priority if set in CMake or env
+#
+#  OPENCL_ROOT            - root folder of the OpenCL installation
+#  CUDA_TOOLKIT_ROOT_DIR  - root folder of the CUDA installation (ships OpenCL)
+#  CUDA_ROOT              - root folder of the CUDA installation (ships OpenCL)
 
 if(UNIX)
+
   if(APPLE)
 
-    find_path(OPENCL_INCLUDE_DIRS OpenCL/cl.h PATHS ${___OPENCL_PATHS} PATH_SUFFIXES include NO_DEFAULT_PATH)
-    find_path(OPENCL_INCLUDE_DIRS OpenCL/cl.h PATHS ${___OPENCL_PATHS} PATH_SUFFIXES include )
+    # Search with priority for OPENCL_ROOT if given as CMake or env var
+    find_path(OPENCL_INCLUDE_DIRS OpenCL/cl.h
+              PATHS ${OPENCL_ROOT} ENV OPENCL_ROOT
+              PATH_SUFFIXES include NO_DEFAULT_PATH)
+    find_path(OPENCL_INCLUDE_DIRS OpenCL/cl.h
+              PATH_SUFFIXES include )
 
-    find_library(OPENCL_LIBRARIES OpenCL PATHS ${___OPENCL_PATHS} PATH_SUFFIXES lib NO_DEFAULT_PATH)
-    find_library(OPENCL_LIBRARIES OpenCL PATHS ${___OPENCL_PATHS} PATH_SUFFIXES lib )
+    # Search with priority for OPENCL_ROOT if given as CMake or env var
+    find_library(OPENCL_LIBRARIES OpenCL
+                 PATHS ${OPENCL_ROOT} ENV OPENCL_ROOT
+                 PATH_SUFFIXES lib NO_DEFAULT_PATH)
+    find_library(OPENCL_LIBRARIES OpenCL
+                 PATH_SUFFIXES lib )
 
   else()
 
-    list( APPEND __OPENCL_PATHS /usr/local/cuda )
+    # Search with priority for OPENCL_ROOT if given as CMake or env var
+    find_path(OPENCL_INCLUDE_DIRS NAMES CL/cl.h CL/opencl.h
+              PATHS ${OPENCL_ROOT} ENV OPENCL_ROOT
+              PATH_SUFFIXES include NO_DEFAULT_PATH)
+    find_path(OPENCL_INCLUDE_DIRS NAMES CL/cl.h CL/opencl.h
+              PATHS ${CUDA_TOOLKIT_ROOT_DIR} ${CUDA_ROOT} /usr/local/cuda
+              PATH_SUFFIXES include )
 
-    if( CUDA_ROOT )
-      list( APPEND __OPENCL_PATHS ${CUDA_ROOT} )
-    endif()
-
-    find_path(OPENCL_INCLUDE_DIRS NAMES CL/cl.h CL/opencl.h PATHS ${___OPENCL_PATHS} PATH_SUFFIXES include NO_DEFAULT_PATH)
-    find_path(OPENCL_INCLUDE_DIRS NAMES CL/cl.h CL/opencl.h PATHS ${___OPENCL_PATHS} PATH_SUFFIXES include )
-
-    find_library(OPENCL_LIBRARIES OpenCL PATHS ${___OPENCL_PATHS} PATH_SUFFIXES lib NO_DEFAULT_PATH)
-    find_library(OPENCL_LIBRARIES OpenCL PATHS ${___OPENCL_PATHS} PATH_SUFFIXES lib )
+    # Search with priority for OPENCL_ROOT if given as CMake or env var
+    find_library(OPENCL_LIBRARIES OpenCL
+                 PATHS ${OPENCL_ROOT} ENV OPENCL_ROOT
+                 PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH)
+    find_library(OPENCL_LIBRARIES OpenCL
+                 PATHS ${CUDA_TOOLKIT_ROOT_DIR} ${CUDA_ROOT} /usr/local/cuda
+                 PATH_SUFFIXES lib64 lib )
 
   endif()
 
