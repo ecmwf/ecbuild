@@ -29,7 +29,7 @@
 
 macro(CHECK_FORTRAN_SOURCE_COMPILES SOURCE VAR)
 
-if("${VAR}" MATCHES "^${VAR}$")
+if( ${VAR} MATCHES "^${VAR}$" )
     set(_FAIL_REGEX)
     set(_key)
     foreach(arg ${ARGN})

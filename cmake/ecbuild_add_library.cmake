@@ -14,7 +14,7 @@ function( ecbuild_add_library_impl )
 
 	set( options NOINSTALL AUTO_VERSION )
 	set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS LINKER_LANGUAGE HEADER_DESTINATION VERSION OUTPUT_NAME )
-	set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+	set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
 	cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -104,7 +104,7 @@ function( ecbuild_add_library_impl )
 		  list( REMOVE_DUPLICATES _PAR_INCLUDES )
 		  foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
 			if( path )
-				if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" )
+				if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" OR ECBUILD_USE_INCLUDE_DIRECTORIES )
 					include_directories( ${path} )
 				else()
 			  		target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )

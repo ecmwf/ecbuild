@@ -111,7 +111,8 @@ macro( ecbuild_add_test )
 
 		if( HAVE_BOOST_UNIT_TEST )
 			if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-				include_directories( ${ECBUILD_BOOST_HEADER_DIRS} )
+        include_directories( ${ECBUILD_BOOST_HEADER_DIRS} )
+        include_directories( ${Boost_INCLUDE_DIRS}  ) # temporary until we ship Boost Unit Test with ecBuild
 			else()
 				include_directories( ${ECBUILD_BOOST_HEADER_DIRS} ${Boost_INCLUDE_DIRS} )
 			endif()

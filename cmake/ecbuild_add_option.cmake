@@ -67,6 +67,7 @@ macro( ecbuild_add_option )
 	# define the option -- for cmake GUI
 
 	option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
+	ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT} PURPOSE "${_p_DESCRIPTION}" )
 
   set( _do_search ${ENABLE_${_p_FEATURE}} )
   if( _p_FEATURE STREQUAL "OMP" )
@@ -151,6 +152,7 @@ macro( ecbuild_add_option )
       set( HAVE_${_p_FEATURE} 0 )
     endif()
 
+		ecbuild_set_feature( ${_p_FEATURE} ENABLED ${HAVE_${_p_FEATURE}} )
 		# FINAL CHECK
 
 		if( HAVE_${_p_FEATURE} )
@@ -168,6 +170,7 @@ macro( ecbuild_add_option )
 			else()
 				message( STATUS "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
 				set( ENABLE_${_p_FEATURE} OFF )
+				ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
 			endif()
 
 		endif()
@@ -175,21 +178,16 @@ macro( ecbuild_add_option )
   else( _do_search )
 
 		set( HAVE_${_p_FEATURE} 0 )
+		ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
 
   endif( _do_search )
 
 
 	if( ${_p_ADVANCED} )
 		mark_as_advanced( ENABLE_${_p_FEATURE} )
-	else()
-		add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}")
 	endif()
 
-  if( HAVE_${_p_FEATURE} )
-    string( TOUPPER PNAME ${PROJECT_NAME} )
-    set( ${PNAME}_HAVE_${_p_FEATURE} 1 )
-    set( ${PNAME}_FEATURES "${${PNAME}_FEATURES};${PNAME}_HAVE_${_p_FEATURE}" CACHE INTERNAL "" )
-    list( REMOVE_DUPLICATES ${PNAME}_FEATURES )
-  endif()
+  string( TOUPPER PNAME ${PROJECT_NAME} )
+  set( ${PNAME}_HAVE_${_p_FEATURE} ${HAVE_${_p_FEATURE}} )
 
 endmacro( ecbuild_add_option  )

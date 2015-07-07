@@ -180,7 +180,7 @@ macro( ecbuild_use_package )
 		if( _p_REQUIRED )
             list( APPEND _opts REQUIRED )
         endif()
-    
+
 		ecbuild_find_package( NAME ${_p_PROJECT} ${_opts} )
 
 		if( ${_p_PROJECT}_FOUND )

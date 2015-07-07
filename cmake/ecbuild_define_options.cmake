@@ -38,3 +38,9 @@ cmake_dependent_option( ENABLE_OS_ENDINESS_TEST  "Run OS endiness tests"       O
 cmake_dependent_option( ENABLE_OS_FUNCTIONS_TEST "Run OS functions tests"      ON "ENABLE_OS_TESTS" OFF)
 
 mark_as_advanced( ENABLE_OS_TYPES_TEST ENABLE_OS_ENDINESS_TEST ENABLE_OS_FUNCTIONS_TEST  )
+
+option( ECBUILD_USE_INCLUDE_DIRECTORIES "Forces to use global include_directories() instead of target specific. Adverse effect on PkgConfig generation." OFF )
+
+mark_as_advanced( ECBUILD_USE_INCLUDE_DIRECTORIES )
+
+set( CMAKE_NO_SYSTEM_FROM_IMPORTED ON )

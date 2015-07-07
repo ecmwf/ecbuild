@@ -50,6 +50,14 @@ macro( ecbuild_find_package )
 
 	# search user defined paths first
 
+    if( NOT DEFINED ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
+        set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
+    endif()
+
+    if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${_PAR_NAME}_DIR}" STREQUAL "" )
+        set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
+    endif()
+
 	if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR OR ${PNAME}_DIR )
 
 		# debug_var( ${_PAR_NAME}_PATH )
@@ -170,19 +178,25 @@ macro( ecbuild_find_package )
 
 	### final messages
 
+    set( _failed_message 
+        "\n"
+        "  ${PROJECT_NAME} FAILED to find package ${_PAR_NAME}\n"
+        "\n"
+        "    Provide location with \"-D ${PNAME}_PATH=/...\" or \"-D ${_PAR_NAME}_DIR=/...\" \n"
+        "    You may also export environment variables ${PNAME}_PATH or ${_PAR_NAME}_DIR\n"
+        "\n"
+        "  Values (note CAPITALISATION):\n"
+        "    ${PNAME}_PATH should contain the path to the installation (as in <install>/bin <install>/lib <install>/include)\n"
+        "    ${_PAR_NAME}_DIR should be a directory containing a <package>-config.cmake file (usually <install>/share/<package>/cmake)\n"
+        "\n"
+         )
+
 	if( NOT ${_PAR_NAME}_FOUND )
 		if( _PAR_REQUIRED )
-			message( FATAL_ERROR
-              "    ${PROJECT_NAME} FAILED to find REQUIRED package ${_PAR_NAME}"
-              "    Provide location with \"-D ${PNAME}_DIR=/...\"\n"
-              "    or export ${PNAME}_DIR in environment"
-            )
+			message( FATAL_ERROR ${_failed_message} " !! ${PROJECT_NAME} requires package ${_PAR_NAME} !!" )
 		else()
 			if( NOT _PAR_QUIET )
-				message( STATUS
-                      "${PROJECT_NAME} couldn't find package ${_PAR_NAME}.\n"
-                      "      Provide location with \"-D ${PNAME}_DIR=/...\"\n"
-                      "      or export ${PNAME}_DIR in environment" )
+				message( STATUS ${_failed_message} )
 			endif()
 		endif()
 	endif()

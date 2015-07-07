@@ -5,10 +5,10 @@ git_tag=@PKGCONFIG_GIT_TAG@
 
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=${prefix}
-libdir=${prefix}/lib
-includedir=${prefix}/include
-bindir=${prefix}/bin
-fmoddir=${prefix}/include
+libdir=${prefix}/@INSTALL_LIB_DIR@
+includedir=${prefix}/@INSTALL_INCLUDE_DIR@
+bindir=${prefix}/@INSTALL_BIN_DIR@
+fmoddir=${prefix}/@INSTALL_INCLUDE_DIR@
 
 CC=@CMAKE_C_COMPILER@
 CXX=@CMAKE_CXX_COMPILER@

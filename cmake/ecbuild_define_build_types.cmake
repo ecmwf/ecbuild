@@ -35,8 +35,8 @@ mark_as_advanced(
     CMAKE_CXX_FLAGS_PRODUCTION
     CMAKE_C_FLAGS_PRODUCTION
     CMAKE_EXE_LINKER_FLAGS_PRODUCTION
-	CMAKE_SHARED_LINKER_FLAGS_PRODUCTION
-	CMAKE_MODULE_LINKER_FLAGS_PRODUCTION )
+	  CMAKE_SHARED_LINKER_FLAGS_PRODUCTION
+	  CMAKE_MODULE_LINKER_FLAGS_PRODUCTION )
 
 ############################################################################################
 # fixes for specific compilers
@@ -99,12 +99,38 @@ endif()
 
 # fail if build type is not one of the defined ones
 if( NOT CMAKE_BUILD_TYPE MATCHES "None"  AND
-	NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND
-	NOT CMAKE_BUILD_TYPE MATCHES "Bit" AND
-	NOT CMAKE_BUILD_TYPE MATCHES "Production" AND
+	  NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND
+	  NOT CMAKE_BUILD_TYPE MATCHES "Bit" AND
+	  NOT CMAKE_BUILD_TYPE MATCHES "Production" AND
     NOT CMAKE_BUILD_TYPE MATCHES "Release"  AND
     NOT CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" )
     message( FATAL_ERROR "CMAKE_BUILD_TYPE is not recognized. ${_BUILD_TYPE_MSG}" )
 endif()
 
+############################################################################################
+# overrides of the flags per build type
 
+foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+
+  # OVERRIDE Compiler FLAGS per language (we override because CMake forcely defines them)
+  foreach( _lang C CXX Fortran )
+    if( ECBUILD_${_lang}_FLAGS_${_btype} )
+      set( CMAKE_${_lang}_FLAGS_${_btype} ${ECBUILD_${_lang}_FLAGS_${_btype}} )
+    endif()
+  endforeach()
+
+  # OVERRIDE Linker FLAGS per object type (we override because CMake forcely defines them)
+  foreach( _obj EXE SHARED MODULE )
+    if( ECBUILD_${_obj}_LINKER_FLAGS_${_btype} )
+      set( CMAKE_${_obj}_LINKER_FLAGS_${_btype} ${ECBUILD_${_obj}_LINKER_FLAGS_${_btype}} )
+    endif()
+  endforeach()
+
+  # APPEND Linker FLAGS per language (we append because CMake typically leaves them empty)
+  foreach( _lang C CXX Fortran )
+    if( ECBUILD_${_lang}_LINK_FLAGS )
+      set( CMAKE_${_lang}_LINK_FLAGS "${CMAKE_${_lang}_LINK_FLAGS} ${ECBUILD_${_lang}_LINK_FLAGS}" )
+    endif()
+  endforeach()
+
+endforeach()

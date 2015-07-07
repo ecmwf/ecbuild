@@ -81,7 +81,6 @@ if( CMAKE_CXX_COMPILER_LOADED AND ENABLE_OS_TESTS )
     # check for __FUNCTION__
     ecbuild_cache_check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }"
       EC_HAVE_FUNCTION_DEF )
-    
 
     # check for c++ abi, usually present in GNU compilers
     ecbuild_cache_check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }"
@@ -94,7 +93,7 @@ if( CMAKE_CXX_COMPILER_LOADED AND ENABLE_OS_TESTS )
     # check for sstream
     ecbuild_cache_check_cxx_source_compiles( "#include <sstream>\nint main() { std::stringstream s; }"
 	  EC_HAVE_CXX_SSTREAM )
- 
+
 endif()
 
 ############################################################################################
@@ -106,8 +105,8 @@ if( CMAKE_COMPILER_IS_GNUCC )
 
     if( ENABLE_WARNINGS )
         cmake_add_c_flags("-Wall")
-        cmake_add_c_flags("-pedantic")
-        #    cmake_add_c_flags("-Wextra")
+        # cmake_add_c_flags("-pedantic")
+        # cmake_add_c_flags("-Wextra")
     endif()
 
 endif()
@@ -139,3 +138,14 @@ endif()
 if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
   set(CMAKE_Fortran_LINK_EXECUTABLE "<CMAKE_Fortran_COMPILER> <CMAKE_Fortran_LINK_FLAGS> <LINK_FLAGS> <FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES> -Wl,-Bdynamic" )
 endif()
+
+############################################################################################
+# Fortran compiler specific flags
+# if( NOT HAVE_SINGLE_PRECISION )
+#  if(CMAKE_Fortran_COMPILER_ID STREQUAL "PGI")
+#      cmake_add_fortran_flags("-r8")
+#  elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+#      # NOTE that if we add -fdefault-real-8 then we NEED -fdefault-double-8 to avoid quadmath
+#      cmake_add_fortran_flags("-fdefault-real-8 -fdefault-double-8")
+#  endif()
+# endif()

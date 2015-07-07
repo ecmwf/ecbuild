@@ -101,6 +101,11 @@ macro( ecbuild_install_project )
 
     ### EXPORTS ########################################################
  
+    ecbuild_enabled_features( ${PNAME}_FEATURES )
+    foreach( _f ${${PNAME}_FEATURES} )
+        set( ${PNAME}_HAVE_${_f} 1 )
+    endforeach()
+
 
     foreach( _tpl ${${PNAME}_TPLS} )
         string( TOUPPER ${_tpl} _TPL )
@@ -160,7 +165,6 @@ macro( ecbuild_install_project )
 
         # prepare imutable variables (don't depend on install path)
 
-        set( CONF_FEATURES "" )
         if( ${PNAME}_FEATURES )
           set( CONF_FEATURES ${${PNAME}_FEATURES} )
         endif()
@@ -205,9 +209,18 @@ macro( ecbuild_install_project )
 
         set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
 
-        if( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
+        if( EXISTS "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${CONF_IMPORT_FILE}" )
+          install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
+                   DESTINATION "${INSTALL_CMAKE_DIR}" )
+        elseif( EXISTS "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" )
+        elseif( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
+            # For build tree
             configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
                             "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
+                            
+            # For install tree
+            configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
+                            "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${CONF_IMPORT_FILE}" @ONLY )
             install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
                      DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
@@ -280,7 +293,10 @@ macro( ecbuild_install_project )
         set( ${PNAME}_TPL_LIBRARIES     ${${PNAME}_TPL_LIBRARIES}     PARENT_SCOPE )
         set( ${PNAME}_TPL_DEFINITIONS   ${${PNAME}_TPL_DEFINITIONS}   PARENT_SCOPE )
         set( ${PNAME}_TPL_INCLUDE_DIRS  ${${PNAME}_TPL_INCLUDE_DIRS}  PARENT_SCOPE )
-
-    endif()
+        set( ${PNAME}_FEATURES          ${${PNAME}_FEATURES}          PARENT_SCOPE )
+        foreach( _f ${${PNAME}_FEATURES} )
+            set( ${PNAME}_HAVE_${_f} ${${PNAME}_HAVE_${_f}} PARENT_SCOPE )
+        endforeach()
+     endif()
 
 endmacro( ecbuild_install_project )

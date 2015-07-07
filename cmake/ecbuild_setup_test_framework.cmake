@@ -24,7 +24,7 @@ if( ENABLE_TESTS )
 		set( HAVE_BOOST_UNIT_TEST 1 )
 		set( BOOST_UNIT_TEST_FRAMEWORK_LINKED 1 )
 
-		# message( STATUS "Boost unit test framework -- FOUND [${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}]" )
+		message( STATUS "Using Boost for unit tests:\n    INC [${Boost_INCLUDE_DIRS}]\n    LIB [${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}]" )
 
 	else()
 

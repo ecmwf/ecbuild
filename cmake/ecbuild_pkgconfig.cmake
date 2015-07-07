@@ -359,7 +359,7 @@ function( ecbuild_pkgconfig )
   message( STATUS "pkg-config file created: ${_PAR_FILEPATH}" )
 
   install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILEPATH}
-           DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/
+           DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}/pkgconfig/
            COMPONENT utilities )
 
 endfunction(ecbuild_pkgconfig)
