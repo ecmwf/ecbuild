@@ -12,7 +12,7 @@
 
 function( ecbuild_download_resource _p_OUT _p_URL )
 
-    if( NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${_p_OUT} )
+    if( NOT EXISTS ${_p_OUT} )
 
         find_program( CURL_PROGRAM curl )
 
