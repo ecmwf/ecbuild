@@ -15,13 +15,13 @@ set( ECBUILD_TRUST_FLAGS ON )
 # FLAGS COMMON TO ALL BUILD TYPES
 ####################################################################
 
-set( OMP_C_FLAGS             "-fomp" )
-set( OMP_CXX_FLAGS           "-fomp" )
-set( OMP_Fortran_FLAGS       "-fomp" )
+set( OMP_C_FLAGS             "-fopenmp" )
+set( OMP_CXX_FLAGS           "-fopenmp" )
+set( OMP_Fortran_FLAGS       "-fopenmp" )
 
 set( CMAKE_C_FLAGS_INIT       "" )
 set( CMAKE_CXX_FLAGS_INIT     "" )
-set( CMAKE_Fortran_FLAGS_INIT "" )   # -emf activates .mods and uses lower case -rmoid produces a listing file
+set( CMAKE_Fortran_FLAGS_INIT "" )
 
 ####################################################################
 # RELEASE FLAGS
@@ -35,9 +35,9 @@ set( CMAKE_Fortran_FLAGS_INIT "" )   # -emf activates .mods and uses lower case 
 # BIT REPRODUCIBLE FLAGS
 ####################################################################
 
-set( ECBUILD_C_FLAGS_BIT        "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
-set( ECBUILD_CXX_FLAGS_BIT      "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
-set( ECBUILD_Fortran_FLAGS_BIT  "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
+set( ECBUILD_C_FLAGS_BIT        "-g -O2 -m64 -march=native" )
+set( ECBUILD_CXX_FLAGS_BIT      "-g -O2 -m64 -march=native" )
+set( ECBUILD_Fortran_FLAGS_BIT  "-fno-range-check -ffree-line-length-300 -g -O2 -m64 -march=native -fconvert=big-endian" )
 
 ####################################################################
 # RELWITHDEBINFO FLAGS
@@ -67,7 +67,7 @@ set( ECBUILD_Fortran_FLAGS_BIT  "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp
 # LINK FLAGS
 ####################################################################
 
-set( ECBUILD_C_LINK_FLAGS        "-Wl,-Map,loadmap -Wl,--as-needed" )
-set( ECBUILD_CXX_LINK_FLAGS      "-Wl,-Map,loadmap -Wl,--as-needed" )
-set( ECBUILD_Fortran_LINK_FLAGS  "-Wl,-Map,loadmap -Wl,--as-needed" )
+set( ECBUILD_C_LINK_FLAGS        "-Wl,-Map,load.map -Wl,--as-needed" )
+set( ECBUILD_CXX_LINK_FLAGS      "-Wl,-Map,load.map -Wl,--as-needed" )
+set( ECBUILD_Fortran_LINK_FLAGS  "-Wl,-Map,load.map -Wl,--as-needed" )
 
