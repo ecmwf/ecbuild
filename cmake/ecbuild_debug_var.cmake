@@ -25,6 +25,18 @@ macro( debug_var VAR )
 endmacro( debug_var )
 
 ##############################################################################
+# macro for debugging a cmake list
+
+macro( debug_list VAR )
+
+    message( STATUS "${VAR}:" )
+    foreach( _elem ${${VAR}} )
+      message( STATUS "  ${_elem}" )
+    endforeach()
+
+endmacro( debug_list )
+
+##############################################################################
 # macro for debugging a environment variable within cmake
 
 macro( debug_env_var VAR )
