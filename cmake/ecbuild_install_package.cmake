@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2014 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -29,7 +29,7 @@ macro( ecbuild_install_project )
 
     string( TOUPPER ${PROJECT_NAME} PNAME )
     string( TOLOWER ${PROJECT_NAME} LNAME )
-    
+
     # components
 
     #    if( DEFINED _PAR_COMPONENTS )
@@ -37,7 +37,7 @@ macro( ecbuild_install_project )
     #    else()
     #        set(CPACK_COMPONENTS_ALL   "${PROJECT_NAME}")
     #    endif()
-    
+
     # name, version, etc ...
 
     set(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
@@ -100,7 +100,7 @@ macro( ecbuild_install_project )
     include( CPack )
 
     ### EXPORTS ########################################################
- 
+
     ecbuild_enabled_features( ${PNAME}_FEATURES )
     foreach( _f ${${PNAME}_FEATURES} )
         set( ${PNAME}_HAVE_${_f} 1 )
@@ -141,24 +141,27 @@ macro( ecbuild_install_project )
 
     if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
-        # exports the package for use from the build-tree -- inserts <package> into the CMake user package registry
-    
-        export( PACKAGE ${PROJECT_NAME} )
-         
+        # exports the package for use from the build-tree but only in DEVELOPER_MODE
+        # inserts <package> into the CMake user package registry
+
+        if( DEVELOPER_MODE )
+            export( PACKAGE ${PROJECT_NAME} )
+        endif()
+
         set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
         if( EXISTS ${LNAME}-config.cmake.in )
             set( _template_config "${LNAME}-config.cmake.in" )
         endif()
-    
+
         set( _template_config_version "${ECBUILD_MACROS_DIR}/project-config-version.cmake.in" )
         if( EXISTS ${LNAME}-config-version.cmake.in )
             set( _template_config_version "${LNAME}-config-version.cmake.in" )
         endif()
-    
+
         # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)
-    
-        set( PACKAGE_VERSION "${${PNAME}_VERSION}" ) 
-        
+
+        set( PACKAGE_VERSION "${${PNAME}_VERSION}" )
+
         configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
 
         install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
@@ -173,7 +176,7 @@ macro( ecbuild_install_project )
         if( ${PNAME}_LIBRARIES )
             set( CONF_LIBRARIES ${${PNAME}_LIBRARIES} )
         endif()
-                    
+
         set( CONF_DEFINITIONS "" )
         if( ${PNAME}_DEFINITIONS )
            set( CONF_DEFINITIONS ${${PNAME}_DEFINITIONS} )
@@ -217,7 +220,7 @@ macro( ecbuild_install_project )
             # For build tree
             configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
                             "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
-                            
+
             # For install tree
             configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
                             "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${CONF_IMPORT_FILE}" @ONLY )
@@ -248,7 +251,7 @@ macro( ecbuild_install_project )
         endif()
 
         # project-config.cmake @ install tree
-        
+
         file( RELATIVE_PATH REL_INCLUDE_DIR "${${PNAME}_FULL_INSTALL_CMAKE_DIR}" "${${PNAME}_FULL_INSTALL_INCLUDE_DIR}" )
         set( CONF_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
 
@@ -268,17 +271,17 @@ macro( ecbuild_install_project )
                 list( APPEND CONF_TPL_INCLUDE_DIRS ${${TPL}_INCLUDE_DIR} )
             endif()
         endforeach()
-        
+
         set( _is_build_dir_export OFF )
         configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
         install( FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
-     
+
         # install the export
-    
+
         if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
             install( EXPORT ${CMAKE_PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
-    
+
     else()
 
         set( ${PNAME}_FOUND             TRUE                          PARENT_SCOPE )

@@ -35,9 +35,9 @@ set( CMAKE_Fortran_FLAGS_INIT "" )
 # BIT REPRODUCIBLE FLAGS
 ####################################################################
 
-set( ECBUILD_C_FLAGS_BIT        "-g -O2 -m64 -march=native" )
-set( ECBUILD_CXX_FLAGS_BIT      "-g -O2 -m64 -march=native" )
-set( ECBUILD_Fortran_FLAGS_BIT  "-fno-range-check -ffree-line-length-300 -g -O2 -m64 -march=native -fconvert=big-endian" )
+set( ECBUILD_C_FLAGS_BIT        "-g -O2 -m64 -march=native -DNDEBUG" )
+set( ECBUILD_CXX_FLAGS_BIT      "-g -O2 -m64 -march=native -DNDEBUG" )
+set( ECBUILD_Fortran_FLAGS_BIT  "-fno-range-check -ffree-line-length-300 -g -O2 -m64 -march=native -fconvert=big-endian -DNDEBUG" )
 
 ####################################################################
 # RELWITHDEBINFO FLAGS
