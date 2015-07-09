@@ -15,11 +15,21 @@ function( ecbuild_download_resource _p_OUT _p_URL )
   if( NOT EXISTS ${_p_OUT} )
 
     find_program( CURL_PROGRAM curl )
-
-    execute_process( COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_OUT} ${_p_URL} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} RESULT_VARIABLE CMD_RESULT )
+    if( CURL_PROGRAM )
+      execute_process( COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_OUT} ${_p_URL}
+                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} RESULT_VARIABLE CMD_RESULT )
+    else()
+      find_program( WGET_PROGRAM wget )
+      if( WGET_PROGRAM )
+        execute_process( COMMAND ${WGET_PROGRAM} -nv -O ${_p_OUT} ${_p_URL}
+                         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} RESULT_VARIABLE CMD_RESULT )
+      else()
+        message(FATAL_ERROR "Could not find curl or wget. Error downloading ${_p_URL}")
+      endif()
+    endif()
 
     if(CMD_RESULT)
-      message(FATAL_ERROR \"Error downloading ${_p_URL}\")
+      message(FATAL_ERROR "Error downloading ${_p_URL}")
     endif()
 
   endif()
