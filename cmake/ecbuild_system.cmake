@@ -42,6 +42,12 @@ set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
 ########################################################################################################
 # define cmake policies
 
+# allow for empty spaces around library names 
+
+if( POLICY CMP0004 )
+    cmake_policy( SET CMP0004 OLD )
+endif()
+
 # Included scripts don't automatic cmake_policy PUSH and POP
 
 if( POLICY CMP0011 )
