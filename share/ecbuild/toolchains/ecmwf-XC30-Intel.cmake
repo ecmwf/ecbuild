@@ -22,9 +22,9 @@ set( OMP_Fortran_FLAGS       " -openmp  -openmp-threadprivate=compat  -openmp-re
 # for diagnostics:
 #  -diag-enable=vec -diag-file -Winline
 
-set( CMAKE_C_FLAGS_INIT       "-fp-speculation=strict -fp-model=precise -traceback" )
-set( CMAKE_CXX_FLAGS_INIT     "-fp-speculation=strict -fp-model=precise -traceback" )
-set( CMAKE_Fortran_FLAGS_INIT "-fp-speculation=strict -fp-model=precise -convert big_endian -assume byterecl -traceback -fpe0" )
+set( CMAKE_C_FLAGS       "-fp-speculation=strict -fp-model=precise -traceback" )
+set( CMAKE_CXX_FLAGS     "-fp-speculation=strict -fp-model=precise -traceback" )
+set( CMAKE_Fortran_FLAGS "-fp-speculation=strict -fp-model=precise -convert big_endian -assume byterecl -traceback -fpe0" )
 
 ####################################################################
 # RELEASE FLAGS

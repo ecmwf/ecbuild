@@ -19,9 +19,9 @@ set( OMP_C_FLAGS             "-fopenmp" )
 set( OMP_CXX_FLAGS           "-fopenmp" )
 set( OMP_Fortran_FLAGS       "-fopenmp" )
 
-set( CMAKE_C_FLAGS_INIT       "" )
-set( CMAKE_CXX_FLAGS_INIT     "" )
-set( CMAKE_Fortran_FLAGS_INIT "" )
+set( CMAKE_C_FLAGS       "" )
+set( CMAKE_CXX_FLAGS     "" )
+set( CMAKE_Fortran_FLAGS "" )
 
 ####################################################################
 # RELEASE FLAGS
