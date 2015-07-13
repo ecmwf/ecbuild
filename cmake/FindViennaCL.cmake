@@ -9,8 +9,8 @@
 # - Try to find ViennaCL
 # Once done this will define
 #
-#  VIENNACL_FOUND         - system has Intel MKL
-#  VIENNACL_INCLUDE_DIRS  - the MKL include directories
+#  VIENNACL_FOUND         - system has ViennaCL
+#  VIENNACL_INCLUDE_DIRS  - the ViennaCL include directories
 #
 # The following paths will be searched with priority if set in CMake or env
 #
