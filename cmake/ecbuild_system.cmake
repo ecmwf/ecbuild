@@ -78,6 +78,11 @@ if( POLICY CMP0046 )
     cmake_policy( SET CMP0046 NEW )
 endif()
 
+# Do not manage VERSION variables in project command
+if( POLICY CMP0048 )
+  cmake_policy( SET CMP0048 OLD )
+endif()
+
 # Disallow add_custom_command SOURCE signatures
 if( POLICY CMP0050 )
     cmake_policy( SET CMP0050 NEW )
