@@ -15,53 +15,56 @@ set( ECBUILD_TRUST_FLAGS ON )
 # FLAGS COMMON TO ALL BUILD TYPES
 ####################################################################
 
-set( OMP_C_FLAGS             "-qopenmp -qopenmp-threadprivate=compat -qopenmp-report=2" )
-set( OMP_CXX_FLAGS           "-qopenmp -qopenmp-threadprivate=compat -qopenmp-report=2" )
-set( OMP_Fortran_FLAGS       "-openmp -openmp-threadprivate=compat -openmp-report=2" )
+set( OMP_C_FLAGS             "-qopenmp -qopenmp-threadprivate=compat -qopenmp-report=2 -qopt-report-phase=vec,openmp" )
+set( OMP_CXX_FLAGS           "-qopenmp -qopenmp-threadprivate=compat -qopenmp-report=2 -qopt-report-phase=vec,openmp" )
+set( OMP_Fortran_FLAGS       " -openmp  -openmp-threadprivate=compat  -openmp-report=2  -opt-report-phase=vec,openmp" ) # -[q] is missing on purpose, ifort does not take -q as flag
 
-set( CMAKE_C_FLAGS_INIT       "" )
-set( CMAKE_CXX_FLAGS_INIT     "" )
-set( CMAKE_Fortran_FLAGS_INIT "" )
+# for diagnostics:
+#  -diag-enable=vec -diag-file -Winline
+
+set( CMAKE_C_FLAGS_INIT       "-fp-speculation=strict -fp-model=precise -traceback" )
+set( CMAKE_CXX_FLAGS_INIT     "-fp-speculation=strict -fp-model=precise -traceback" )
+set( CMAKE_Fortran_FLAGS_INIT "-fp-speculation=strict -fp-model=precise -convert big_endian -assume byterecl -traceback -fpe0" )
 
 ####################################################################
 # RELEASE FLAGS
 ####################################################################
 
-#set( ECBUILD_C_FLAGS_RELEASE       "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
-#set( ECBUILD_CXX_FLAGS_RELEASE     "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
-#set( ECBUILD_Fortran_FLAGS_RELEASE "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
+#set( ECBUILD_C_FLAGS_RELEASE       "not implemented" )
+#set( ECBUILD_CXX_FLAGS_RELEASE     "not implemented" )
+#set( ECBUILD_Fortran_FLAGS_RELEASE "not implemented" )
 
 ####################################################################
 # BIT REPRODUCIBLE FLAGS
 ####################################################################
 
-set( ECBUILD_C_FLAGS_BIT        "-traceback -fpic -fp-model source -O2 -xAVX -finline-function -finline-limit=500 -Winline -diag-enable=vec -diag-file" )
-set( ECBUILD_CXX_FLAGS_BIT      "-traceback -fpic -fp-model source -O2 -xAVX -finline-function -finline-limit=500 -Winline -diag-enable=vec -diag-file" )
-set( ECBUILD_Fortran_FLAGS_BIT  "-fpe0 -convert big_endian -assume byterecl -align array64byte -traceback -fpic -fp-model source -O2 -xAVX -finline-function -finline-limit=500 -Winline -diag-enable=vec -diag-file" )
+set( ECBUILD_C_FLAGS_BIT        "-O2 -xAVX -finline-function -finline-limit=500" )
+set( ECBUILD_CXX_FLAGS_BIT      "-O2 -xAVX -finline-function -finline-limit=500" )
+set( ECBUILD_Fortran_FLAGS_BIT  "-O2 -xAVX -finline-function -finline-limit=500 -align array64byte" )
 
 ####################################################################
 # RELWITHDEBINFO FLAGS
 ####################################################################
 
-#set( ECBUILD_C_FLAGS_RELWITHDEBINFO        "-O2 -hfp1 -Gfast -DNDEBUG" )
-#set( ECBUILD_CXX_FLAGS_RELWITHDEBINFO      "-O2 -hfp1 -Gfast -DNDEBUG" )
-#set( ECBUILD_Fortran_FLAGS_RELWITHDEBINFO  "-O2 -hfp1 -Gfast -DNDEBUG" )
+#set( ECBUILD_C_FLAGS_RELWITHDEBINFO        "not implemented" )
+#set( ECBUILD_CXX_FLAGS_RELWITHDEBINFO      "not implemented" )
+#set( ECBUILD_Fortran_FLAGS_RELWITHDEBINFO  "not implemented" )
 
 ####################################################################
 # DEBUG FLAGS
 ####################################################################
 
-set( ECBUILD_C_FLAGS_DEBUG        "-g -O2 -fp-speculation=strict" )
-set( ECBUILD_CXX_FLAGS_DEBUG      "-g -O2 -fp-speculation=strict" )
-set( ECBUILD_Fortran_FLAGS_DEBUG  "-g" )
+set( ECBUILD_C_FLAGS_DEBUG        "-g -O0" )
+set( ECBUILD_CXX_FLAGS_DEBUG      "-g -O0" )
+set( ECBUILD_Fortran_FLAGS_DEBUG  "-g -O0" ) # ??? -align array64byte
 
 ####################################################################
 # PRODUCTION FLAGS
 ####################################################################
 
-#set( ECBUILD_C_FLAGS_PRODUCTION        "-O2 -hfp1 -G2" )
-#set( ECBUILD_CXX_FLAGS_PRODUCTION      "-O2 -hfp1 -G2" )
-#set( ECBUILD_Fortran_FLAGS_PRODUCTION  "-O2 -hfp1 -G2" )
+#set( ECBUILD_C_FLAGS_PRODUCTION        "not implemented" )
+#set( ECBUILD_CXX_FLAGS_PRODUCTION      "not implemented" )
+#set( ECBUILD_Fortran_FLAGS_PRODUCTION  "not implemented" )
 
 ####################################################################
 # LINK FLAGS
