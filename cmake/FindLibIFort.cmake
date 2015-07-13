@@ -11,15 +11,25 @@
 
 ###############################################################################
 
-# - Try to find Intel Fortran (ifort) runtime libraries
+# - Try to find Intel Fortran (ifort) runtime libraries libifcore and libifport
 # Once done this will define
 #
 #  LIBIFORT_FOUND   - system has Intel Fortran (ifort) runtime libraries
 #  IFORT_LIBRARIES  - the Intel Fortran (ifort) runtime libraries
 #
-# The libraries libifcore and libifport are assumed to be on either the
-# LIBRARY_PATH or the LD_LIBRARY_PATH
+# The following paths will be searched with priority if set in CMake or env
+#
+#  INTEL_PATH       - prefix path of the Intel installation
+#
+# Otherwise the libraries are assumed to be on LIBRARY_PATH or LD_LIBRARY_PATH
 
+# Search with priority for INTEL_PATH if given as CMake or env var
+find_library( IFORT_LIB_CORE ifcore PATHS ${INTEL_PATH} ENV INTEL_PATH
+              PATH_SUFFIXES lib/intel64 compiler/lib/intel64 NO_DEFAULT_PATH )
+find_library( IFORT_LIB_PORT ifport PATHS ${INTEL_PATH} ENV INTEL_PATH
+              PATH_SUFFIXES lib/intel64 compiler/lib/intel64 NO_DEFAULT_PATH )
+
+# Otherwise, search LIBRARY_PATH and LD_LIBRARY_PATH
 find_library( IFORT_LIB_CORE ifcore PATHS ENV LIBRARY_PATH LD_LIBRARY_PATH )
 find_library( IFORT_LIB_PORT ifport PATHS ENV LIBRARY_PATH LD_LIBRARY_PATH )
 
