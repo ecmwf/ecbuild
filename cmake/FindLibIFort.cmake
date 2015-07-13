@@ -23,6 +23,9 @@
 #
 # Otherwise the libraries are assumed to be on LIBRARY_PATH or LD_LIBRARY_PATH
 
+# FIXME: might need to add further libraries in future, see
+# http://nf.nci.org.au/facilities/software/Compilers/Intel8/doc/f_ug1/files_32.htm
+
 # Search with priority for INTEL_PATH if given as CMake or env var
 find_library( IFORT_LIB_CORE ifcore PATHS ${INTEL_PATH} ENV INTEL_PATH
               PATH_SUFFIXES lib/intel64 compiler/lib/intel64 NO_DEFAULT_PATH )
