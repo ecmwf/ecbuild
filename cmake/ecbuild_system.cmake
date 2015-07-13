@@ -73,13 +73,13 @@ if( POLICY CMP0045 )
     cmake_policy( SET CMP0045 NEW )
 endif()
 
-# Error on non-existent target in get_target_property
+# Error on non-existent dependency in add_dependencies
 if( POLICY CMP0046 )
     cmake_policy( SET CMP0046 NEW )
 endif()
 
-# Error on non-existent dependency in add_dependencies
-if( POLICY CMP0046 )
+# Disallow add_custom_command SOURCE signatures
+if( POLICY CMP0050 )
     cmake_policy( SET CMP0050 NEW )
 endif()
 
