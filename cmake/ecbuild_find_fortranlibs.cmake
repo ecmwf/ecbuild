@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2014 ECMWF.
+# (C) Copyright 1996-2015 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -45,7 +45,7 @@ macro( ecbuild_find_fortranlibs )
     endif()
 
     if( _PAR_COMPILER MATCHES "intel" )
-      message( FATAL_ERROR "searching for intel libraries has not been implemented" )
+      set( WITH_INTEL_FORTRAN 1 )
       set( __known_fcomp 1 )
     endif()
 
@@ -55,7 +55,7 @@ macro( ecbuild_find_fortranlibs )
 
     ### set path from environment variables
 
-    foreach( _fortran_lib PGI XLF LIBGFORTRAN )
+    foreach( _fortran_lib PGI XLF LIBGFORTRAN INTEL )
       if( NOT ${_fortran_lib}_PATH AND NOT "$ENV{${_fortran_lib}_PATH}" STREQUAL "" )
         set( ${_fortran_lib}_PATH "$ENV{${_fortran_lib}_PATH}" )
       endif()
@@ -65,8 +65,10 @@ macro( ecbuild_find_fortranlibs )
 
     ### default is to search for gfortran
 
-    if( NOT WITH_PGI_FORTRAN AND NOT WITH_LIBGFORTRAN AND NOT WITH_XL_FORTRAN
-        AND NOT DEFINED PGI_PATH AND NOT DEFINED LIBGFORTRAN_PATH AND NOT DEFINED XLF_PATH )
+    if( NOT (WITH_PGI_FORTRAN OR WITH_LIBGFORTRAN OR
+             WITH_XL_FORTRAN OR WITH_INTEL_FORTRAN)
+        AND NOT (DEFINED PGI_PATH OR DEFINED LIBGFORTRAN_PATH OR
+                 DEFINED XLF_PATH OR DEFINED INTEL_PATH) )
       message( WARNING "Finding fortran libs for unspecified Fortran compiler: default search [ gfortran ]" )
       set( WITH_LIBGFORTRAN 1 )
     endif()
@@ -105,6 +107,18 @@ macro( ecbuild_find_fortranlibs )
         set( FORTRAN_LIBRARIES ${XLFORTRAN_LIBRARIES} )
         set( _flibs_found 1 )
         set( _flibs_txt "XLF" )
+      endif()
+
+    endif()
+
+    if( WITH_INTEL_FORTRAN OR DEFINED INTEL_PATH )
+
+      find_package(LibIFort)
+
+      if( LIBIFORT_FOUND )
+        set( FORTRAN_LIBRARIES ${IFORT_LIBRARIES} )
+        set( _flibs_found 1 )
+        set( _flibs_txt "Intel" )
       endif()
 
     endif()
