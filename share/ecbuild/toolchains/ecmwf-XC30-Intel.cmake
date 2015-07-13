@@ -51,9 +51,9 @@ set( ECBUILD_Fortran_FLAGS_BIT  "-fpe0 -convert big_endian -assume byterecl -ali
 # DEBUG FLAGS
 ####################################################################
 
-set( ECBUILD_C_FLAGS_DEBUG        "-O0 -g" )
-set( ECBUILD_CXX_FLAGS_DEBUG      "-O0 -g" )
-set( ECBUILD_Fortran_FLAGS_DEBUG  "-O0 -g" )
+set( ECBUILD_C_FLAGS_DEBUG        "-g -O2 -fp-speculation=strict" )
+set( ECBUILD_CXX_FLAGS_DEBUG      "-g -O2 -fp-speculation=strict" )
+set( ECBUILD_Fortran_FLAGS_DEBUG  "-g" )
 
 ####################################################################
 # PRODUCTION FLAGS
