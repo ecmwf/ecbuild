@@ -11,6 +11,9 @@
 #  - NOREMOTE (optional) : Option to avoid remote operations that require network
 #                          changes to tags that havent been fetched might fail
 
+# Set policies
+include( ecbuild_policies NO_POLICY_SCOPE )
+
 macro( debug_here VAR )
   message( STATUS " >>>>> ${VAR} [${${VAR}}]")
 endmacro()
