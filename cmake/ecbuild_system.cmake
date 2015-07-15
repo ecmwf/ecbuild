@@ -47,11 +47,6 @@ if( POLICY CMP0004 )
     cmake_policy( SET CMP0004 OLD )
 endif()
 
-# Included scripts don't automatic cmake_policy PUSH and POP
-if( POLICY CMP0011 )
-    cmake_policy( SET CMP0011 OLD )
-endif()
-
 # Allow use of the LOCATION target property.
 if( POLICY CMP0026 )
     cmake_policy( SET CMP0026 OLD )
