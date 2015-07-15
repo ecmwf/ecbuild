@@ -39,56 +39,8 @@ include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
 set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
 
-########################################################################################################
-# define cmake policies
-
-# allow for empty spaces around library names 
-if( POLICY CMP0004 )
-    cmake_policy( SET CMP0004 OLD )
-endif()
-
-# Allow use of the LOCATION target property.
-if( POLICY CMP0026 )
-    cmake_policy( SET CMP0026 OLD )
-endif()
-
-# for macosx use @rpath in a target’s install name
-if( POLICY CMP0042 )
-    cmake_policy( SET CMP0042 NEW )
-    set( CMAKE_MACOSX_RPATH ON )
-endif()
-
-# Error on non-existent target in get_target_property
-if( POLICY CMP0045 )
-    cmake_policy( SET CMP0045 NEW )
-endif()
-
-# Error on non-existent dependency in add_dependencies
-if( POLICY CMP0046 )
-    cmake_policy( SET CMP0046 NEW )
-endif()
-
-# Do not manage VERSION variables in project command
-if( POLICY CMP0048 )
-  cmake_policy( SET CMP0048 OLD )
-endif()
-
-# Disallow add_custom_command SOURCE signatures
-if( POLICY CMP0050 )
-    cmake_policy( SET CMP0050 NEW )
-endif()
-
-# Reject source and build dirs in installed INTERFACE_INCLUDE_DIRECTORIES
-if( POLICY CMP0052 )
-    cmake_policy( SET CMP0052 NEW )
-endif()
-
-# inside if() don't dereference variables if they are quoted
-# e.g. "VAR" is not dereferenced
-#      "${VAR}" is dereference only once
-if( POLICY CMP0054 )
-    cmake_policy( SET CMP0054 NEW )
-endif()
+# Set policies
+include( ecbuild_policies NO_POLICY_SCOPE )
 
 ########################################################################################################
 # include our cmake macros, but only do so if this is the top project
