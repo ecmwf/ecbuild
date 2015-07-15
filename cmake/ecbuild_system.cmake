@@ -42,11 +42,6 @@ set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
 ########################################################################################################
 # define cmake policies
 
-# dont allow duplicated names of targets
-if( POLICY CMP0002 )
-    cmake_policy( SET CMP0002 NEW )
-endif()
-
 # allow for empty spaces around library names 
 if( POLICY CMP0004 )
     cmake_policy( SET CMP0004 OLD )
