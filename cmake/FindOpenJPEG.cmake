@@ -22,6 +22,7 @@ IF( NOT DEFINED OPENJPEG_PATH AND NOT "$ENV{OPENJPEG_PATH}" STREQUAL "" )
   SET( OPENJPEG_PATH "$ENV{OPENJPEG_PATH}" )
 ENDIF()
 
+# TODO: This only works for OpenJPEG v1.x.y and not for v2 which has a different API, library name etc
 if( DEFINED OPENJPEG_PATH )
         find_path(OPENJPEG_INCLUDE_DIR openjpeg.h PATHS ${OPENJPEG_PATH}/include PATH_SUFFIXES openjpeg  NO_DEFAULT_PATH)
         find_library(OPENJPEG_LIBRARY  openjpeg   PATHS ${OPENJPEG_PATH}/lib     PATH_SUFFIXES openjpeg  NO_DEFAULT_PATH)
