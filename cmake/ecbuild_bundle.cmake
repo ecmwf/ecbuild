@@ -42,7 +42,7 @@ endif()
 
 macro( ecbuild_git )
 
-  set( options UPDATE NOREMOTE )
+  set( options UPDATE NOREMOTE MANUAL )
   set( single_value_args PROJECT DIR URL TAG BRANCH )
   set( multi_value_args )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
@@ -131,11 +131,11 @@ macro( ecbuild_git )
 
     endif()
 
-    if( DEFINED _PAR_BRANCH AND NOT "${_current_branch}" STREQUAL "${_PAR_BRANCH}" )
+    if( NOT _PAR_MANUAL AND DEFINED _PAR_BRANCH AND NOT "${_current_branch}" STREQUAL "${_PAR_BRANCH}" )
       set( _needs_switch 1 )
     endif()
 
-    if( DEFINED _PAR_TAG AND NOT "${_current_tag}" STREQUAL "${_PAR_TAG}" )
+    if( NOT _PAR_MANUAL AND DEFINED _PAR_TAG AND NOT "${_current_tag}" STREQUAL "${_PAR_TAG}" )
       set( _needs_switch 1 )
     endif()
 
@@ -266,7 +266,7 @@ endmacro()
 macro( ecbuild_bundle )
 
   set( options )
-  set( single_value_args PROJECT )
+  set( single_value_args PROJECT STASH GIT )
   set( multi_value_args )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
@@ -275,7 +275,13 @@ macro( ecbuild_bundle )
   if( BUNDLE_SKIP_${PNAME} )
       message( STATUS "Skipping bundle project ${PNAME}" )
   else()
-      ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} ${_PAR_UNPARSED_ARGUMENTS} )
+
+      if( _PAR_STASH )
+          ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} STASH ${_PAR_STASH} ${_PAR_UNPARSED_ARGUMENTS} )
+      elseif( _PAR_GIT )
+          ecbuild_git( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} URL ${_PAR_GIT} ${_PAR_UNPARSED_ARGUMENTS} )
+      endif()
+
       ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
   endif()
 
