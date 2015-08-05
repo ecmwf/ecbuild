@@ -18,20 +18,23 @@ function( _path_append var path )
 	if( "${${var}}" STREQUAL "" )
 		set( ${var} "${path}" PARENT_SCOPE )
 	else()
-		set( ${var} "${${var}}:${path}" PARENT_SCOPE )
+		list( FIND ${var} ${path} _found )
+		if( _found EQUAL "-1" )
+			set( ${var} "${${var}}:${path}" PARENT_SCOPE )
+		endif()
 	endif()
 endfunction()
 
 macro( ecbuild_append_to_rpath RPATH_DIRS )
    
    if( NOT ${ARGC} EQUAL 1 )
-	   message( SEND_ERROR "ecbuild_append_to_rpath takes 1 argument")
+     message( SEND_ERROR "ecbuild_append_to_rpath takes 1 argument")
    endif()
 
    foreach( RPATH_DIR ${RPATH_DIRS} )
      
 		if( NOT ${RPATH_DIR} STREQUAL "" )
-        
+
 			file( TO_CMAKE_PATH ${RPATH_DIR} RPATH_DIR ) # sanitize the path
 
 			if( IS_ABSOLUTE ${RPATH_DIR} )
@@ -48,6 +51,7 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 						set( CMAKE_INSTALL_NAME_DIR "@loader_path/${RPATH_DIR}" )
 					endif()
 					_path_append( CMAKE_INSTALL_RPATH "@loader_path/${RPATH_DIR}" )
+
 					set( _done 1 )
 
 				endif()
