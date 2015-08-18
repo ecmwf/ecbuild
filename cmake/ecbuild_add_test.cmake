@@ -266,9 +266,9 @@ macro( ecbuild_add_test )
       # Wrap with MPIEXEC
       if( _PAR_MPI )
         if( DEFINED _PAR_COMMAND )
-          set( _PAR_COMMAND ${MPIEXEC} -n ${_PAR_MPI} ${_PAR_COMMAND} )
+          set( _PAR_COMMAND ${MPIEXEC} -n ${_PAR_MPI} ${_TEST_DIR}/${_PAR_COMMAND} )
         else()
-          set( _PAR_COMMAND ${MPIEXEC} -n ${_PAR_MPI} ${_PAR_TARGET} )
+          set( _PAR_COMMAND ${MPIEXEC} -n ${_PAR_MPI} ${_TEST_DIR}/${_PAR_TARGET} )
         endif()
       endif()
 
