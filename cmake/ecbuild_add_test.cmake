@@ -94,7 +94,7 @@ macro( ecbuild_add_test )
     ### conditional build
 
     if( DEFINED _PAR_CONDITION )
-        set(_target_condition_file "${CMAKE_CURRENT_BINARY_DIR}/set_${_PAR_TARGET}_condition.cmake")
+        set(_target_condition_file "${_TEST_DIR}/set_${_PAR_TARGET}_condition.cmake")
         file( WRITE  ${_target_condition_file} "  if( ")
         foreach( term ${_PAR_CONDITION} )
             file( APPEND ${_target_condition_file} " ${term}")
@@ -130,7 +130,7 @@ macro( ecbuild_add_test )
 
       if( DEFINED _PAR_RESOURCES )
         foreach( rfile ${_PAR_RESOURCES} )
-          execute_process( COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${rfile} ${CMAKE_CURRENT_BINARY_DIR} )
+          execute_process( COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${rfile} ${_TEST_DIR} )
         endforeach()
       endif()
 
@@ -218,7 +218,7 @@ macro( ecbuild_add_test )
 
                 # set build location to local build dir
                 # not the project base as defined for libs and execs
-                set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+                set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${_TEST_DIR} )
 
 				# whatever project settings are, we always build tests with the build_rpath, not the install_rpath
 				set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
