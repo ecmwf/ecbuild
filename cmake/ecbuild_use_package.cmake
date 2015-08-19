@@ -89,6 +89,8 @@ macro( ecbuild_use_package )
 
   if( NOT ${PNAME}_FOUND AND NOT ${PNAME}_previous_subproj_ )
 
+    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 1) project was NOT added as subproject and is NOT FOUND")
+
     # check if SUBPROJDIR is set
 
     if( DEFINED ${PNAME}_subproj_dir_ )
@@ -119,6 +121,8 @@ macro( ecbuild_use_package )
 
   if( ${PNAME}_previous_subproj_ )
 
+    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 2) project was already added as subproject, check version is acceptable")
+
     if( NOT ${PNAME}_FOUND )
       message( FATAL_ERROR "${_p_PROJECT} was already included as sub-project but ${PNAME}_FOUND isn't set -- this is likely a BUG in ecbuild" )
     endif()
@@ -132,6 +136,8 @@ macro( ecbuild_use_package )
   # Case 3) project was NOT added as subproject, but is FOUND -- so it was previously found as a binary ( either build or install tree )
 
   if( ${PNAME}_FOUND AND NOT ${PNAME}_previous_subproj_ AND NOT _just_added )
+
+    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 3) project was NOT added as subproject, but is FOUND")
 
     # check version is acceptable
     set( _do_version_check 1 )
@@ -169,6 +175,8 @@ macro( ecbuild_use_package )
   #         so try to find precompiled binaries or a build tree
 
   if( NOT ${PNAME}_FOUND )
+
+    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 4) project was found neither as sub-project nor as binary")
 
     set( _opts )
     if( _p_VERSION )
