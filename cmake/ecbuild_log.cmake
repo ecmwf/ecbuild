@@ -1,5 +1,5 @@
 # Define colour escape sequences (https://stackoverflow.com/a/19578320/396967)
-if(NOT WIN32)
+if(NOT (WIN32 OR ECBUILD_NO_COLOUR))
   string(ASCII 27 Esc)
   set(ColourReset "${Esc}[m")
   set(ColourBold  "${Esc}[1m")
