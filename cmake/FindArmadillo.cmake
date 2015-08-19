@@ -17,8 +17,6 @@
 #
 #  ARMADILLO_PATH          - prefix path of the Armadillo installation
 
-ecbuild_add_extra_search_paths( armadillo )
-
 # Search with priority for ARMADILLO_PATH if given as CMake or env var
 find_path(ARMADILLO_INCLUDE_DIR armadillo
           PATHS ${ARMADILLO_PATH} ENV ARMADILLO_PATH

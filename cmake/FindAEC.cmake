@@ -14,8 +14,6 @@
 #  AEC_INCLUDE_DIRS - The AEC include directories
 #  AEC_LIBRARIES - The libraries needed to use AEC
 
-ecbuild_add_extra_search_paths( aec )
-
 if( DEFINED AEC_PATH )
     find_path( AEC_INCLUDE_DIR szlib.h    PATHS ${AEC_PATH}/include PATH_SUFFIXES aec NO_DEFAULT_PATH )
     find_library( AEC_LIBRARY  NAMES aec  PATHS ${AEC_PATH}/lib     PATH_SUFFIXES aec NO_DEFAULT_PATH )

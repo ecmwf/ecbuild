@@ -15,8 +15,6 @@
 
 if( NOT odb_api_FOUND )
 
-    ecbuild_add_extra_search_paths( odb_api )
-
     # find external odb_api
 
     if( NOT DEFINED ODB_API_PATH AND NOT "$ENV{ODB_API_PATH}" STREQUAL "" )

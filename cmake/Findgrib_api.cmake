@@ -19,8 +19,6 @@ option( GRIB_API_JPG "use jpg with grib_api" ON )
 
 if( NOT grib_api_FOUND AND NOT NO_GRIB_API_BINARIES )
 
-    ecbuild_add_extra_search_paths( grib_api )
-
     if( GRIB_API_JPG ) # jpeg support
         
         find_package( JPEG     QUIET ) # grib_api might be a static .a library in which

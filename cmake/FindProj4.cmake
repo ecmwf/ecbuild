@@ -11,8 +11,6 @@ if( NOT PROJ4_PATH AND NOT "$ENV{PROJ4_PATH}" STREQUAL "" )
     set( PROJ4_PATH "$ENV{PROJ4_PATH}" )
 endif()
 
-ecbuild_add_extra_search_paths( proj4 )
-
 if( NOT PROJ4_PATH )
 
     include(FindPkgConfig)

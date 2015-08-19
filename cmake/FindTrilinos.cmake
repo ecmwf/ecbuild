@@ -17,9 +17,6 @@
 
 # Try to find Trilinos using Trilinos recommendations
 
-
-ecbuild_add_extra_search_paths( trilinos )
-
 if( DEFINED $ENV{TRILINOS_PATH} )
     find_package(Trilinos PATHS $ENV{TRILINOS_PATH}/lib/cmake/Trilinos $ENV{TRILINOS_PATH}/include )
 endif()

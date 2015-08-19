@@ -13,8 +13,6 @@
 #   PANGO_LIBRARIES
 #   PANGO_INCLUDE_DIRS
 
-ecbuild_add_extra_search_paths( pango )
-
 find_package(PkgConfig)
 
 pkg_check_modules(PC_LIBPANGO QUIET pango)

@@ -15,8 +15,6 @@
 
 if( NOT spot_FOUND )
 
-    ecbuild_add_extra_search_paths( spot )
-
     # find external odb_api
 
     if( NOT DEFINED SPOT_PATH AND NOT "$ENV{SPOT_PATH}" STREQUAL "" )

@@ -12,8 +12,6 @@
 #  EMOS_INCLUDE_DIRS - The EMOS include directories
 #  EMOS_LIBRARIES - The libraries needed to use EMOS
 
-ecbuild_add_extra_search_paths( libemos )
-
 if( NOT DEFINED EMOS_PATH AND DEFINED $ENV{EMOS_PATH} )
 	set( EMOS_PATH $ENV{EMOS_PATH} )
 endif()

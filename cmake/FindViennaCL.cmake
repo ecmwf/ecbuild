@@ -18,8 +18,6 @@
 #
 # ViennaCL is header only, so there are no libraries to be found
 
-ecbuild_add_extra_search_paths( viennacl )
-
 # Search with priority for VIENNACL_PATH if given as CMake or env var
 find_path(VIENNACL_INCLUDE_DIR viennacl/version.hpp
           PATHS ${VIENNACL_PATH} ENV VIENNACL_PATH

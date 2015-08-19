@@ -71,8 +71,6 @@ if( PREFER_NETCDF4 )
 
   ## hdf5
 
-  ecbuild_add_extra_search_paths( hdf5 )
-
   # Note: Only the HDF5 C-library is required for NetCDF 
   #       ( even for Fortan and CXX bindings)
   find_package( HDF5 COMPONENTS C QUIET )
@@ -82,8 +80,6 @@ if( PREFER_NETCDF4 )
   # CONFIGURE the NETCDF_FIND_COMPONENTS variable
 
   # Find NetCDF4
-
-  ecbuild_add_extra_search_paths( netcdf4 )
 
   # message( "NETCDF CMAKE_PREFIX_PATH = [${CMAKE_PREFIX_PATH}]")
   # debug_var( NETCDF_ROOT )
@@ -153,10 +149,6 @@ if( PREFER_NETCDF3 )
   if(${_index} GREATER -1)
     set( NETCDF_Fortran 1 )
   endif()
-
-  ecbuild_add_extra_search_paths( netcdf3 )
-
-  ecbuild_add_extra_search_paths( netcdf ) # fallback to netcdf search paths
 
   message( "NETCDF CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}" )
 
