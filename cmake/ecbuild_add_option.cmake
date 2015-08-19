@@ -56,8 +56,10 @@ macro( ecbuild_add_option )
   get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE )
 
   if( NOT "${ENABLE_${_p_FEATURE}}" STREQUAL "" AND _in_cache )
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was found in cache")
     set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" )
   else()
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} not found in cache")
     set( ${_p_FEATURE}_user_provided_input 0 CACHE BOOL "" )
   endif()
 
@@ -83,6 +85,7 @@ macro( ecbuild_add_option )
       ### search for dependent packages
 
       foreach( pkg ${_p_REQUIRED_PACKAGES} )
+        ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for dependent package ${pkg}")
 
         string(REPLACE " " ";" pkglist ${pkg}) # string to list
 
@@ -103,17 +106,20 @@ macro( ecbuild_add_option )
         string( TOLOWER ${pkgname} pkgLOWER )
 
         if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
+          ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ${pkgname} has already been found")
           set( ${pkgname}_already_found 1 )
         else()
 
           ecbuild_add_extra_search_paths( ${pkgLOWER} ) # adds search paths specific to ECMWF
 
           if( pkgproject )
+            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for ecbuild project ${pkgname}")
             ecbuild_use_package( ${pkglist} )
           else()
             if( pkgname STREQUAL "MPI" )
               set( _find_args ${pkglist} )
               list( REMOVE_ITEM _find_args "MPI" )
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for MPI")
               ecbuild_find_mpi( ${_find_args} )
             elseif( pkgname STREQUAL "OMP" )
               set( _find_args ${pkglist} )
@@ -121,8 +127,10 @@ macro( ecbuild_add_option )
               if( NOT ENABLE_${_p_FEATURE} )
                 list( APPEND _find_args STUBS )
               endif()
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for OpenMP")
               ecbuild_find_omp( ${_find_args} )
             else()
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for package ${pkgname}")
               find_package( ${pkglist} )
             endif()
           endif()
@@ -177,6 +185,7 @@ macro( ecbuild_add_option )
 
   else( _do_search )
 
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): disabling feature")
     set( HAVE_${_p_FEATURE} 0 )
     ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
 
