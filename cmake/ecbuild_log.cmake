@@ -1,3 +1,31 @@
+# (C) Copyright 1996-2015 ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation
+# nor does it submit to any jurisdiction.
+
+###############################################################################
+# Macros for logging based on the log level set
+#
+# CMake variables controlling the behaviour:
+#
+# ECBUILD_LOG_LEVEL (string) - controls the log level
+#                              one of DEBUG, INFO, WARN, ERROR, CRITICAL
+#
+# ECBUILD_NO_COLOUR (bool)   - if enabled, does not colour log output
+#
+# Macros:
+#
+# ecbuild_debug    - logs a STATUS message if log level <= DEBUG
+# ecbuild_info     - logs a STATUS message if log level <= INFO
+# ecbuild_warn     - logs a WARNING message if log level <= WARN
+# ecbuild_error    - logs a SEND_ERROR message if log level <= ERROR
+# ecbuild_critical - logs a FATAL_ERROR message if log level <= CRITICAL
+#
+###############################################################################
+
 # Define colour escape sequences (https://stackoverflow.com/a/19578320/396967)
 if(NOT (WIN32 OR ECBUILD_NO_COLOUR))
   string(ASCII 27 Esc)
