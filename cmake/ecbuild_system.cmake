@@ -148,6 +148,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # add our macros
 
     include( ecbuild_debug_var )
+    include( ecbuild_log )
     include( ecbuild_list_macros )
 
     include( ecbuild_check_c_source )
