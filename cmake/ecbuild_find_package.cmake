@@ -45,6 +45,7 @@ macro( ecbuild_find_package )
   # check developer mode (search in cmake cache )
 
   if( NOT ${DEVELOPER_MODE} )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): Not in DEVELOPER_MODE - do not search package registry or recent GUI build paths")
     set( NO_DEV_BUILD_DIRS NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_BUILDS_PATH )
   endif()
 
@@ -67,7 +68,7 @@ macro( ecbuild_find_package )
 
     if( NOT ${_PAR_NAME}_FOUND )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 1) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${${PNAME}_PATH} ${_PAR_NAME}_PATH ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${${PNAME}_PATH} ${${_PAR_NAME}_PATH} ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}")
       find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET
         HINTS ${${PNAME}_PATH} ${${_PAR_NAME}_PATH} ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}
         NO_DEFAULT_PATH )
@@ -93,10 +94,15 @@ macro( ecbuild_find_package )
 
   endif()
 
-  # 3) search developer cache and recently configured packages in the CMake GUI
+  # 3) search developer cache and recently configured packages in the CMake GUI if in DEVELOPER_MODE
+  #    otherwise only search CMAKE_PREFIX_PATH and <package>_PATH
 
   if( NOT ${_PAR_NAME}_FOUND )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search developer cache and recently configured packages in the CMake GUI")
+    if (NO_DEV_BUILD_DIRS)
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search CMAKE_PREFIX_PATH and ${PNAME}_PATH")
+    else()
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search package registry and recently configured packages in the CMake GUI")
+    endif()
 
     find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE HINTS ENV ${PNAME}_PATH
       ${NO_DEV_BUILD_DIRS}
@@ -118,6 +124,8 @@ macro( ecbuild_find_package )
     if( _ecmwf_paths )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    ECMWF paths ${_ecmwf_paths}")
       find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE PATHS ${_ecmwf_paths} NO_DEFAULT_PATH )
+    else()
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    no special ECMWF paths found")
     endif()
 
   endif()
