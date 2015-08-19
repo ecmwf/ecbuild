@@ -110,8 +110,6 @@ macro( ecbuild_add_option )
           set( ${pkgname}_already_found 1 )
         else()
 
-          ecbuild_add_extra_search_paths( ${pkgLOWER} ) # adds search paths specific to ECMWF
-
           if( pkgproject )
             ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for ecbuild project ${pkgname}")
             ecbuild_use_package( ${pkglist} )

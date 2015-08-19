@@ -59,6 +59,9 @@ macro( ecbuild_find_package )
     set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
   endif()
 
+  # adds search paths specific to ECMWF and discovers parallel build trees in DEVELOPER_MODE
+  ecbuild_add_extra_search_paths( ${pkgLOWER} )
+
   if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR OR ${PNAME}_DIR )
     ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}}, ${PNAME}_PATH=${${PNAME}_PATH}, ${PNAME}_PATH=${${_PAR_NAME}_DIR}, ${PNAME}_DIR=${${PNAME}_DIR}")
 
