@@ -69,7 +69,7 @@ macro( ecbuild_find_package )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 1) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${${PNAME}_PATH} ${_PAR_NAME}_PATH ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}")
       find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET
-        HINTS ${${PNAME}_PATH} ${_PAR_NAME}_PATH ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}
+        HINTS ${${PNAME}_PATH} ${${_PAR_NAME}_PATH} ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}
         NO_DEFAULT_PATH )
     endif()
 
