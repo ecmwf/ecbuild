@@ -12,31 +12,31 @@
 
 macro( ecbuild_add_option )
 
-	set( options ADVANCED )
+  set( options ADVANCED )
   set( single_value_args FEATURE DEFAULT DESCRIPTION )
   set( multi_value_args  REQUIRED_PACKAGES CONDITION )
 
-	cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+  cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if( _p_UNPARSED_ARGUMENTS )
-	  message(FATAL_ERROR "Unknown keywords given to ecbuild_add_option(): \"${_p_UNPARSED_ARGUMENTS}\"")
+    message(FATAL_ERROR "Unknown keywords given to ecbuild_add_option(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
-	# check FEATURE parameter
+  # check FEATURE parameter
 
   if( NOT _p_FEATURE  )
-	  message(FATAL_ERROR "The call to ecbuild_add_option() doesn't specify the FEATURE.")
+    message(FATAL_ERROR "The call to ecbuild_add_option() doesn't specify the FEATURE.")
   endif()
 
-	# check DEFAULT parameter
+  # check DEFAULT parameter
 
   if( NOT DEFINED _p_DEFAULT )
-		set( _p_DEFAULT ON )
+    set( _p_DEFAULT ON )
   else()
-		if( NOT _p_DEFAULT MATCHES "[Oo][Nn]" AND NOT _p_DEFAULT MATCHES "[Oo][Ff][Ff]" )
-			message(FATAL_ERROR "In macro ecbuild_add_option(), DEFAULT is either ON or OFF: \"${_p_DEFAULT}\"")
-		endif()
-	endif()
+    if( NOT _p_DEFAULT MATCHES "[Oo][Nn]" AND NOT _p_DEFAULT MATCHES "[Oo][Ff][Ff]" )
+      message(FATAL_ERROR "In macro ecbuild_add_option(), DEFAULT is either ON or OFF: \"${_p_DEFAULT}\"")
+    endif()
+  endif()
 
   # check CONDITION parameter
   if( DEFINED _p_CONDITION )
@@ -51,23 +51,23 @@ macro( ecbuild_add_option )
     set( _${_p_FEATURE}_condition TRUE )
   endif()
 
-	# check if user provided value
+  # check if user provided value
 
-	get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE )
+  get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE )
 
-	if( NOT "${ENABLE_${_p_FEATURE}}" STREQUAL "" AND _in_cache )
-		set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" )
-	else()
-		set( ${_p_FEATURE}_user_provided_input 0 CACHE BOOL "" )
-	endif()
+  if( NOT "${ENABLE_${_p_FEATURE}}" STREQUAL "" AND _in_cache )
+    set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" )
+  else()
+    set( ${_p_FEATURE}_user_provided_input 0 CACHE BOOL "" )
+  endif()
 
-	mark_as_advanced( ${_p_FEATURE}_user_provided_input )
+  mark_as_advanced( ${_p_FEATURE}_user_provided_input )
 
 
-	# define the option -- for cmake GUI
+  # define the option -- for cmake GUI
 
-	option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
-	ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT} PURPOSE "${_p_DESCRIPTION}" )
+  option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
+  ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT} PURPOSE "${_p_DESCRIPTION}" )
 
   set( _do_search ${ENABLE_${_p_FEATURE}} )
   if( _p_FEATURE STREQUAL "OMP" )
@@ -152,40 +152,40 @@ macro( ecbuild_add_option )
       set( HAVE_${_p_FEATURE} 0 )
     endif()
 
-		ecbuild_set_feature( ${_p_FEATURE} ENABLED ${HAVE_${_p_FEATURE}} )
-		# FINAL CHECK
+    ecbuild_set_feature( ${_p_FEATURE} ENABLED ${HAVE_${_p_FEATURE}} )
+    # FINAL CHECK
 
-		if( HAVE_${_p_FEATURE} )
+    if( HAVE_${_p_FEATURE} )
 
-			message( STATUS "Feature ${_p_FEATURE} enabled" )
+      message( STATUS "Feature ${_p_FEATURE} enabled" )
 
-		else() # if user provided input and we cannot satisfy FAIL otherwise WARN
+    else() # if user provided input and we cannot satisfy FAIL otherwise WARN
 
-			if( ${_p_FEATURE}_user_provided_input )
+      if( ${_p_FEATURE}_user_provided_input )
         if( _${_p_FEATURE}_condition )
           message( FATAL_ERROR "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
         else()
           message( FATAL_ERROR "Feature ${_p_FEATURE} cannot be enabled -- following condition was not met: ${_p_CONDITION}" )
         endif()
-			else()
-				message( STATUS "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
-				set( ENABLE_${_p_FEATURE} OFF )
-				ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
-			endif()
+      else()
+        message( STATUS "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
+        set( ENABLE_${_p_FEATURE} OFF )
+        ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
+      endif()
 
-		endif()
+    endif()
 
   else( _do_search )
 
-		set( HAVE_${_p_FEATURE} 0 )
-		ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
+    set( HAVE_${_p_FEATURE} 0 )
+    ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
 
   endif( _do_search )
 
 
-	if( ${_p_ADVANCED} )
-		mark_as_advanced( ENABLE_${_p_FEATURE} )
-	endif()
+  if( ${_p_ADVANCED} )
+    mark_as_advanced( ENABLE_${_p_FEATURE} )
+  endif()
 
   string( TOUPPER PNAME ${PROJECT_NAME} )
   set( ${PNAME}_HAVE_${_p_FEATURE} ${HAVE_${_p_FEATURE}} )
