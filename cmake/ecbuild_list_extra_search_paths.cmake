@@ -100,7 +100,7 @@ function( ecbuild_list_extra_search_paths pkg var )
 
 	# define it out of the function
 
-  ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): found paths ${var}")
+  ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): setting ${var} to ${${var}}")
 	set( ${var} ${${var}} PARENT_SCOPE )
 
 # debug_var( ${var} )
