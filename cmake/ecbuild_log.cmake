@@ -13,6 +13,7 @@
 #
 # ECBUILD_LOG_LEVEL (string) - controls the log level
 #                              one of DEBUG, INFO, WARN, ERROR, CRITICAL
+#                              OFF to disable logging altogether
 #
 # ECBUILD_NO_COLOUR (bool)   - if enabled, does not colour log output
 #
@@ -55,6 +56,8 @@ set(ECBUILD_CRITICAL 50)
 
 if( NOT DEFINED ECBUILD_LOG_LEVEL )
   set(ECBUILD_LOG_LEVEL ${ECBUILD_WARN})
+elseif( NOT ECBUILD_LOG_LEVEL )
+  set(ECBUILD_LOG_LEVEL 60)
 elseif( ECBUILD_LOG_LEVEL STREQUAL "DEBUG" )
   set(ECBUILD_LOG_LEVEL ${ECBUILD_DEBUG})
 elseif( ECBUILD_LOG_LEVEL STREQUAL "INFO" )
