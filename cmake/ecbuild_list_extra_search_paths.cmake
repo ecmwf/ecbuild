@@ -40,8 +40,8 @@ function( ecbuild_list_extra_search_paths pkg var )
 
 	# ENV pkg_PATH (lower case)
 
-  if( DEFINED ${pkg}_PATH AND EXISTS $ENV{${${pkg}_PATH}} )
-    list( APPEND ${var} $ENV{${${pkg}_PATH}} )
+  if( DEFINED ${pkg}_PATH AND EXISTS $ENV{${pkg}_PATH} )
+    list( APPEND ${var} $ENV{${pkg}_PATH} )
 	endif()
 
 	# ENV PKG_DIR (upper case)
