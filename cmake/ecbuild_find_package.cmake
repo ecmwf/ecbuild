@@ -215,4 +215,7 @@ macro( ecbuild_find_package )
     endif()
   endif()
 
+  # Reset CMAKE_PREFIX_PATH
+  set(CMAKE_PREFIX_PATH ${_CMAKE_PREFIX_PATH})
+
 endmacro()
