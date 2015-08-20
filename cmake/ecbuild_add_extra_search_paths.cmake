@@ -22,13 +22,6 @@ function( ecbuild_add_extra_search_paths pkg )
 
   ecbuild_list_extra_search_paths( ${pkg} CMAKE_PREFIX_PATH )
 
-  # fixes BOOST_ROOT taking precedence on the search for location
-  if( ${pkg} STREQUAL "boost" )
-    if( BOOST_ROOT OR BOOSTROOT OR DEFINED ENV{BOOST_ROOT} OR DEFINED ENV{BOOSTROOT} )
-      set( CMAKE_PREFIX_PATH ${BOOST_ROOT} ${BOOSTROOT} $ENV{BOOST_ROOT} $ENV{BOOSTROOT} ${CMAKE_PREFIX_PATH} )
-    endif()
-  endif()
-
   # in DEVELOPER_MODE we give priority to projects parallel in the build tree
   # so lets prepend a parallel build tree to the search path if we find it
   if( DEVELOPER_MODE )

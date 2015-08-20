@@ -6,11 +6,10 @@ if( ENABLE_TESTS )
 
   # Try to find compiled boost
 
+  # BOOST_ROOT or BOOSTROOT should take precedence on the search for location
   if( BOOST_ROOT OR BOOSTROOT OR DEFINED ENV{BOOST_ROOT} OR DEFINED ENV{BOOSTROOT} )
     set( CMAKE_PREFIX_PATH ${BOOST_ROOT} ${BOOSTROOT} $ENV{BOOST_ROOT} $ENV{BOOSTROOT} ${CMAKE_PREFIX_PATH} )
   endif()
-
-  ecbuild_add_extra_search_paths( boost ) # also respects BOOST_ROOT
 
   set( Boost_USE_MULTITHREADED  ON )
   #   set( Boost_DEBUG              ON )
@@ -38,8 +37,5 @@ if( ENABLE_TESTS )
     # set( HAVE_BOOST_UNIT_TEST 1 )
 
   endif()
-
-  # Reset CMAKE_PREFIX_PATH
-  set(CMAKE_PREFIX_PATH ${_CMAKE_PREFIX_PATH})
 
 endif()
