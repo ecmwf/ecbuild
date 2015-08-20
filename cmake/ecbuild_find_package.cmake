@@ -60,9 +60,7 @@ macro( ecbuild_find_package )
   endif()
 
   if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR OR ${PNAME}_DIR )
-
-    # debug_var( ${_PAR_NAME}_PATH )
-    # debug_var( ${PNAME}_PATH )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}}, ${PNAME}_PATH=${${PNAME}_PATH}, ${PNAME}_PATH=${${_PAR_NAME}_DIR}, ${PNAME}_DIR=${${PNAME}_DIR}")
 
     # 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
 
