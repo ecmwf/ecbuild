@@ -6,6 +6,17 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+# - Try to find Armadillo
+# Once done this will define
+#
+#  ARMADILLO_FOUND         - system has Armadillo
+#  ARMADILLO_INCLUDE_DIRS  - the Armadillo include directory
+#  ARMADILLO_LIBRARIES     - the Armadillo library
+#
+# The following paths will be searched with priority if set in CMake or env
+#
+#  ARMADILLO_PATH          - prefix path of the Armadillo installation
+
 ecbuild_add_extra_search_paths( armadillo )
 
 # Search with priority for ARMADILLO_PATH if given as CMake or env var
