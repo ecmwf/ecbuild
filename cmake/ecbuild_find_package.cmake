@@ -68,7 +68,7 @@ macro( ecbuild_find_package )
 
     if( NOT ${_PAR_NAME}_FOUND )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 1) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${${PNAME}_PATH} ${${_PAR_NAME}_PATH} ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${PNAME}_PATH=${${PNAME}_PATH}, ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${PNAME}_DIR=${${PNAME}_DIR}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
       find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET
         HINTS ${${PNAME}_PATH} ${${_PAR_NAME}_PATH} ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}
         NO_DEFAULT_PATH )
@@ -99,9 +99,9 @@ macro( ecbuild_find_package )
 
   if( NOT ${_PAR_NAME}_FOUND )
     if (NO_DEV_BUILD_DIRS)
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search CMAKE_PREFIX_PATH and ${PNAME}_PATH")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search CMAKE_PREFIX_PATH and \$${PNAME}_PATH")
     else()
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search package registry and recently configured packages in the CMake GUI")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search CMAKE_PREFIX_PATH and \$${PNAME}_PATH and package registry")
     endif()
 
     find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE HINTS ENV ${PNAME}_PATH
