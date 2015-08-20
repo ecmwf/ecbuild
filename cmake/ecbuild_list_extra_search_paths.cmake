@@ -23,36 +23,42 @@ function( ecbuild_list_extra_search_paths pkg var )
 	# PKG_PATH (upper case)
 
 	if( DEFINED ${_PKG}_PATH AND EXISTS ${${_PKG}_PATH} )
+    ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): appending ${${_PKG}_PATH} to ${var}")
 		list( APPEND ${var} ${${_PKG}_PATH} )
 	endif()
 
 	# ENV PKG_PATH (upper case)
 
 	if( DEFINED ENV{${_PKG}_PATH} AND EXISTS $ENV{${_PKG}_PATH}  )
+    ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): appending $ENV{${_PKG}_PATH} to ${var}")
 		list( APPEND ${var} $ENV{${_PKG}_PATH} )
 	endif()
 
 	# pkg_PATH (lower case)
 
 	if( DEFINED ${pkg}_PATH AND EXISTS ${${pkg}_PATH} )
+    ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): appending ${${pkg}_PATH} to ${var}")
 		list( APPEND ${var} ${${pkg}_PATH} )
 	endif()
 
 	# ENV pkg_PATH (lower case)
 
   if( DEFINED ${pkg}_PATH AND EXISTS $ENV{${pkg}_PATH} )
+    ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): appending $ENV{${${pkg}_PATH}} to ${var}")
     list( APPEND ${var} $ENV{${pkg}_PATH} )
 	endif()
 
 	# ENV PKG_DIR (upper case)
 
 	if( DEFINED ENV{${_PKG}_DIR} AND EXISTS $ENV{${_PKG}_DIR}  )
+    ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): appending $ENV{${_PKG}_DIR} to ${var}")
 		list( APPEND ${var} $ENV{${_PKG}_DIR} )
 	endif()
 
 	# ENV pkg_DIR (lower case)
 
 	if( DEFINED ENV{${pkg}_DIR} AND EXISTS $ENV{${pkg}_DIR} )
+    ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): appending $ENV{${pkg}_DIR} to ${var}")
 		list( APPEND ${var} $ENV{${pkg}_DIR} )
 	endif()
 
