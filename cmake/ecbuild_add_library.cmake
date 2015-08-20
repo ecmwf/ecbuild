@@ -54,6 +54,7 @@ function( ecbuild_add_library_impl )
           NOT _PAR_TYPE MATCHES "MODULE" )
         message( FATAL_ERROR "library type must be one of [ STATIC | SHARED | MODULE ]" )
       endif()
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): library type is ${_PAR_TYPE}")
     endif()
 
 
@@ -68,6 +69,7 @@ function( ecbuild_add_library_impl )
 
     # remove templates from compilation sources
     if( DEFINED _PAR_TEMPLATES )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): removing ${_PAR_TEMPLATES} from sources")
       list( REMOVE_ITEM _PAR_SOURCES ${_PAR_TEMPLATES} )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
@@ -77,11 +79,13 @@ function( ecbuild_add_library_impl )
     # set OUTPUT_NAME
 
     if( DEFINED _PAR_OUTPUT_NAME )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set OUTPUT_NAME to ${_PAR_OUTPUT_NAME}")
       set_target_properties( ${_PAR_TARGET} PROPERTIES OUTPUT_NAME ${_PAR_OUTPUT_NAME} )
     endif()
 
     # add extra dependencies
     if( DEFINED _PAR_DEPENDS)
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add dependency on ${_PAR_DEPENDS}")
       add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
     endif()
 
@@ -92,9 +96,10 @@ function( ecbuild_add_library_impl )
       list(REMOVE_ITEM _PAR_LIBS optimized)
       foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
         if( lib )
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with ${lib}")
           target_link_libraries( ${_PAR_TARGET} ${lib} )
         else()
-          #              message( WARNING "Lib ${lib} was skipped" )
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${lib} not found - not linking")
         endif()
       endforeach()
     endif()
@@ -104,13 +109,14 @@ function( ecbuild_add_library_impl )
       list( REMOVE_DUPLICATES _PAR_INCLUDES )
       foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
         if( path )
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add ${path} to include_directories")
           if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" OR ECBUILD_USE_INCLUDE_DIRECTORIES )
             include_directories( ${path} )
           else()
             target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
           endif()
-          #        else()
-          #          message( WARNING "Path ${path} was skipped" )
+        else()
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
         endif()
       endforeach()
     endif()
@@ -132,12 +138,15 @@ function( ecbuild_add_library_impl )
 
     # define VERSION if requested
     if( DEFINED _PAR_VERSION )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set version to ${_PAR_VERSION}")
       set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${_PAR_VERSION}" )
     else()
       if( _PAR_AUTO_VERSION OR LIBS_VERSION MATCHES "[Aa][Uu][Tt][Oo]")
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set version to ${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION} (auto)")
         set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}" )
       endif()
       if( LIBS_VERSION AND NOT LIBS_VERSION MATCHES "[Aa][Uu][Tt][Oo]" )
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set version to ${LIBS_VERSION}")
         set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${LIBS_VERSION}" )
       endif()
     endif()
@@ -154,26 +163,32 @@ function( ecbuild_add_library_impl )
     # add local flags
 
     if( DEFINED _PAR_CFLAGS )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use C flags ${_PAR_CFLAGS}")
       set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
     endif()
     if( DEFINED _PAR_CXXFLAGS )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use C++ flags ${_PAR_CFLAGS}")
       set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
     endif()
     if( DEFINED _PAR_FFLAGS )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use Fortran flags ${_PAR_CFLAGS}")
       set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
     endif()
     if( DEFINED _PAR_GENERATED )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): mark as generated")
       set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
     endif()
 
     # set linker language
     if( DEFINED _PAR_LINKER_LANGUAGE )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): using linker language ${_PAR_LINKER_LANGUAGE}")
       set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
     endif()
 
     # installation
 
     if( NOT _PAR_NOINSTALL )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): installing to ${INSTALL_LIB_DIR}")
 
       # and associate with defined component
       #            if( DEFINED _PAR_COMPONENT )
@@ -248,6 +263,7 @@ function( ecbuild_add_library_impl )
     if( DEFINED _PAR_DEFINITIONS )
       get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
       list( APPEND _target_defs ${_PAR_DEFINITIONS} )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): using definitions ${_target_defs}")
       set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
     endif()
 
