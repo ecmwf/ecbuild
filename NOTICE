@@ -1,10 +1,14 @@
 Notice
 ------
 
-1. The files FindLex and FindYacc are based on the FindBison and FindFlex macros from the original CMake code base.
-   As requested, the License text has been preserved. The modifications are governed by the Apache License as described in COPYING.
+1. The files FindLex and FindYacc are based on the FindBison and FindFlex
+   macros from the original CMake code base.
+   As requested, the License text has been preserved. The modifications are
+   governed by the Apache License as described in COPYING.
 
-2. GetGitRevisionDescription macros are based on the macro with smae name from Ryan Pavlik <rpavlik@iastate.edu> and  Iowa State
-University, and distributed under Booy, and distributed under Booy, and distributed under Booy, and distributed under Boost license.
+2. GetGitRevisionDescription macros are based on the macro with smae name from
+   Ryan Pavlik <rpavlik@iastate.edu> and  Iowa State University, and
+   distributed under Boost license.
 
-3. FindNetCDF4 macro is based on the macro FindNetCDF from project UCLALES from Max-Planck-Institut für Meteorologie. 
+3. FindNetCDF4 macro is based on the macro FindNetCDF from project UCLALES from
+   Max-Planck-Institut für Meteorologie. 
