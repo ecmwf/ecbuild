@@ -49,18 +49,9 @@ macro( ecbuild_find_package )
     set( NO_DEV_BUILD_DIRS NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_BUILDS_PATH )
   endif()
 
-  # search user defined paths first
-
-  if( NOT DEFINED ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
-    set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
-  endif()
-
-  if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${_PAR_NAME}_DIR}" STREQUAL "" )
-    set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
-  endif()
-
   # in DEVELOPER_MODE we give priority to projects parallel in the build tree
   # so lets prepend a parallel build tree to the search path if we find it
+
   if( DEVELOPER_MODE )
     if( EXISTS ${CMAKE_BINARY_DIR}/../${pkg}/${pkg}-config.cmake )
       get_filename_component( _proj_bdir "${CMAKE_BINARY_DIR}/../${pkg}" ABSOLUTE )
@@ -69,9 +60,19 @@ macro( ecbuild_find_package )
         ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - ${_PKG}_PATH already set to ${${_PKG}_PATH}, not modifying")
       else()
         ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - setting ${_PKG}_PATH to ${_proj_bdir}")
-        set( ${_PKG}_PATH "${_proj_bdir}" PARENT_SCOPE )
+        set( ${_PKG}_PATH "${_proj_bdir}" )
       endif()
     endif()
+  endif()
+
+  # search user defined paths first
+
+  if( NOT DEFINED ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
+    set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
+  endif()
+
+  if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${_PAR_NAME}_DIR}" STREQUAL "" )
+    set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
   endif()
 
   if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR OR ${PNAME}_DIR )
