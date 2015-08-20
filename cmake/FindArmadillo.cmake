@@ -8,17 +8,17 @@
 
 ecbuild_add_extra_search_paths( armadillo )
 
-IF( NOT DEFINED ARMADILLO_PATH AND NOT "$ENV{ARMADILLO_PATH}" STREQUAL "" )
-  SET( ARMADILLO_PATH "$ENV{ARMADILLO_PATH}" )
-ENDIF()
-
-if( DEFINED ARMADILLO_PATH )
-        find_path(ARMADILLO_INCLUDE_DIR ARMADILLO.h PATHS ${ARMADILLO_PATH}/include PATH_SUFFIXES ARMADILLO  NO_DEFAULT_PATH)
-        find_library(ARMADILLO_LIBRARY  ARMADILLO   PATHS ${ARMADILLO_PATH}/lib     PATH_SUFFIXES ARMADILLO  NO_DEFAULT_PATH)
-endif()
-
+# Search with priority for ARMADILLO_PATH if given as CMake or env var
+find_path(ARMADILLO_INCLUDE_DIR armadillo
+          PATHS ${ARMADILLO_PATH} ENV ARMADILLO_PATH
+          PATH_SUFFIXES include NO_DEFAULT_PATH)
 find_path(ARMADILLO_INCLUDE_DIR  armadillo PATH_SUFFIXES include )
-find_library( ARMADILLO_LIBRARY  armadillo   PATH_SUFFIXES lib )
+
+# Search with priority for ARMADILLO_PATH if given as CMake or env var
+find_library(ARMADILLO_LIBRARY armadillo
+             PATHS ${ARMADILLO_PATH} ENV ARMADILLO_PATH
+             PATH_SUFFIXES lib64 lib NO_DEFAULT_PATH)
+find_library( ARMADILLO_LIBRARY  armadillo   PATH_SUFFIXES lib64 lib )
 
 set( ARMADILLO_LIBRARIES    ${ARMADILLO_LIBRARY} )
 set( ARMADILLO_INCLUDE_DIRS ${ARMADILLO_INCLUDE_DIR} )
