@@ -15,6 +15,9 @@
 
 function( ecbuild_add_extra_search_paths pkg )
 
+  # Back up current CMAKE_PREFIX_PATH so the caller can reset it
+  set( _CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE )
+
   string( TOUPPER ${pkg} _PKG )
 
   ecbuild_list_extra_search_paths( ${pkg} CMAKE_PREFIX_PATH )
