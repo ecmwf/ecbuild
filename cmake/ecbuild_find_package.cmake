@@ -59,8 +59,20 @@ macro( ecbuild_find_package )
     set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
   endif()
 
-  # adds search paths specific to ECMWF and discovers parallel build trees in DEVELOPER_MODE
-  ecbuild_add_extra_search_paths( ${pkgLOWER} )
+  # in DEVELOPER_MODE we give priority to projects parallel in the build tree
+  # so lets prepend a parallel build tree to the search path if we find it
+  if( DEVELOPER_MODE )
+    if( EXISTS ${CMAKE_BINARY_DIR}/../${pkg}/${pkg}-config.cmake )
+      get_filename_component( _proj_bdir "${CMAKE_BINARY_DIR}/../${pkg}" ABSOLUTE )
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - found parallel build tree in ${_proj_bdir}")
+      if( ${_PKG}_PATH )
+        ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - ${_PKG}_PATH already set to ${${_PKG}_PATH}, not modifying")
+      else()
+        ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - setting ${_PKG}_PATH to ${_proj_bdir}")
+        set( ${_PKG}_PATH "${_proj_bdir}" PARENT_SCOPE )
+      endif()
+    endif()
+  endif()
 
   if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR OR ${PNAME}_DIR )
     ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}}, ${PNAME}_PATH=${${PNAME}_PATH}, ${PNAME}_PATH=${${_PAR_NAME}_DIR}, ${PNAME}_DIR=${${PNAME}_DIR}")
@@ -217,8 +229,5 @@ macro( ecbuild_find_package )
       endif()
     endif()
   endif()
-
-  # Reset CMAKE_PREFIX_PATH
-  set(CMAKE_PREFIX_PATH ${_CMAKE_PREFIX_PATH})
 
 endmacro()

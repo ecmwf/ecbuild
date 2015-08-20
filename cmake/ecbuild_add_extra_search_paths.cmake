@@ -27,20 +27,6 @@ function( ecbuild_add_extra_search_paths pkg )
 
   ecbuild_list_extra_search_paths( ${pkg} CMAKE_PREFIX_PATH )
 
-  # in DEVELOPER_MODE we give priority to projects parallel in the build tree
-  # so lets prepend a parallel build tree to the search path if we find it
-  if( DEVELOPER_MODE )
-    if( EXISTS ${CMAKE_BINARY_DIR}/../${pkg}/${pkg}-config.cmake )
-      if( ${_PKG}_PATH )
-        ecbuild_debug("ecbuild_add_extra_search_paths(${pkg}): in DEVELOPER_MODE - ${_PKG}_PATH is set to ${${_PKG}_PATH}, not modifying")
-      else()
-        get_filename_component( _proj_bdir "${CMAKE_BINARY_DIR}/../${pkg}" ABSOLUTE )
-        ecbuild_debug("ecbuild_add_extra_search_paths(${pkg}): in DEVELOPER_MODE - setting ${_PKG}_PATH to ${_proj_bdir}")
-        set( ${_PKG}_PATH "${_proj_bdir}" PARENT_SCOPE )
-      endif()
-    endif()
-  endif()
-
   set( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE )
   # debug_var( CMAKE_PREFIX_PATH )
 
