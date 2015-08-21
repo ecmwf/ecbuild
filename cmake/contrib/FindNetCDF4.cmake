@@ -22,7 +22,7 @@
 # NETCDF_USE_STATIC_LIBRARIES variable is set before the call to find_package.
 #
 # To provide the module with a hint about where to find your NETCDF installation,
-# you can set the environment variable NETCDF_ROOT.  The Find module will then
+# set the environment variable NETCDF_ROOT or NETCDF_DIR. The Find module will then
 # look in this path when searching for NETCDF executables, paths, and libraries.
 #
 # In addition to finding the includes and libraries required to compile an NETCDF
@@ -90,7 +90,7 @@ endmacro()
 # try to find the NETCDF wrapper compilers
 find_program( NETCDF_CONFIG_EXECUTABLE
     NAMES nc-config
-    HINTS ENV NETCDF_ROOT
+    HINTS ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF4_DIR
     PATHS
     PATH_SUFFIXES bin Bin
     DOC "NETCDF CONFIG PROGRAM.  Used only to detect NETCDF compile flags." )
@@ -162,7 +162,7 @@ else()
           find_path( NETCDF_${INC}_INCLUDE_DIR ${INC}
               HINTS
                   ${NETCDF_${LANGUAGE}_INCLUDE_FLAGS}
-                      ENV NETCDF_ROOT
+                  ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF4_DIR
               PATHS
               PATH_SUFFIXES
                   include
@@ -203,13 +203,13 @@ else()
             find_library( NETCDF_${LIB}_LIBRARY_DEBUG
                 NAMES ${THIS_LIBRARY_SEARCH_DEBUG}
                 HINTS ${NETCDF_${LANGUAGE}_LIBRARY_DIRS}
-                ENV NETCDF_ROOT
+                ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF4_DIR
                 PATHS
                 PATH_SUFFIXES lib64 Lib64 lib Lib)
             find_library( NETCDF_${LIB}_LIBRARY_RELEASE
                 NAMES ${THIS_LIBRARY_SEARCH_RELEASE}
                 HINTS ${NETCDF_${LANGUAGE}_LIBRARY_DIRS}
-                ENV NETCDF_ROOT
+                ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF4_DIR
                 PATHS
                 PATH_SUFFIXES lib64 Lib64 lib Lib )
             select_library_configurations( NETCDF_${LIB} )
