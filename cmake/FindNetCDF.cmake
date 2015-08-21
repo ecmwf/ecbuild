@@ -40,10 +40,12 @@ set( NETCDF_FIND_COMPONENTS ${NetCDF_FIND_COMPONENTS} )
 list( APPEND NETCDF_FIND_COMPONENTS C )
 
 if( NETCDF_CXX )
+  ecbuild_debug( "FindNetCDF: also looking for C++ libraries" )
   list( APPEND NETCDF_FIND_COMPONENTS CXX )
 endif()
 
 if( NETCDF_Fortran OR NETCDF_FORTRAN OR NETCDF_F90 )
+  ecbuild_debug( "FindNetCDF: also looking for Fortran libraries" )
   list( APPEND NETCDF_FIND_COMPONENTS FORTRAN F90 )
 endif()
 
@@ -68,6 +70,8 @@ list( REMOVE_DUPLICATES NETCDF_FIND_COMPONENTS )
 ### NetCDF4
 
 if( PREFER_NETCDF4 )
+
+  ecbuild_debug( "FindNetCDF: looking for NetCDF4" )
 
   ## hdf5
 
@@ -124,7 +128,7 @@ endif()
 
 if( PREFER_NETCDF3 )
 
-  # message( "LOOKING FOR NETCDF3" )
+  ecbuild_debug( "FindNetCDF: looking for NetCDF3" )
 
   # debug_var( NetCDF_FIND_COMPONENTS )
   # debug_var( NetCDF_FIND_QUIETLY )
@@ -150,7 +154,7 @@ if( PREFER_NETCDF3 )
     set( NETCDF_Fortran 1 )
   endif()
 
-  message( "NETCDF CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}" )
+  #message( "NETCDF CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}" )
 
   find_package( NetCDF3 )
 
