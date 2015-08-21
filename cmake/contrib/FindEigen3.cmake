@@ -74,7 +74,13 @@ else(EIGEN3_INCLUDE_DIR)
       ${EIGEN_PATH}/include
       ${EIGEN_DIR}/include
       ${EIGEN_ROOT}/include
-      PATH_SUFFIXES eigen3 eigen
+      ENV EIGEN3_PATH
+      ENV EIGEN3_DIR
+      ENV EIGEN3_ROOT
+      ENV EIGEN_PATH
+      ENV EIGEN_DIR
+      ENV EIGEN_ROOT
+      PATH_SUFFIXES eigen3 eigen include/eigen3 include/eigen
     )
 
   if(EIGEN3_INCLUDE_DIR)
