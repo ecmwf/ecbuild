@@ -84,6 +84,7 @@ macro( ecbuild_add_option )
 
       ### search for dependent packages
 
+      set( _failed_to_find_packages )  # clear variable
       foreach( pkg ${_p_REQUIRED_PACKAGES} )
         ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for dependent package ${pkg}")
 
