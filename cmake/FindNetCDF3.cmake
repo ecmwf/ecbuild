@@ -39,24 +39,6 @@ if( DEFINED NETCDF_DIR )
     list( APPEND _netcdf_libs ${NETCDF_DIR} ${NETCDF_DIR}/lib )
 endif()
 
-foreach( _h /usr/local/apps/netcdf )
-
-	if( EXISTS ${_h} )
-	
-        list( APPEND _netcdf_incs  ${_h}/include ${_h}/current/include ${_h}/new/include ${_h}/stable/include )
-        list( APPEND _netcdf_libs  ${_h}/lib ${_h}/current/lib ${_h}/new/lib ${_h}/stable/lib )
-
-		file(GLOB _hd ${_h}/*)
-        foreach( d ${_hd} )
-            if( IS_DIRECTORY ${d} )
-                list( APPEND _netcdf_incs ${d}/include ${d}/LP64/include )
-                list( APPEND _netcdf_libs ${d}/lib ${d}/LP64/lib )
-            endif()
-        endforeach()
-    endif()
-
-endforeach() 
-
 ###
 
 set( _ncdf_sfx netcdf LP64 )
