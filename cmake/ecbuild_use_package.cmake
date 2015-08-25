@@ -192,17 +192,7 @@ macro( ecbuild_use_package )
     ecbuild_find_package( NAME ${_p_PROJECT} ${_opts} )
 
     if( ${_p_PROJECT}_FOUND )
-
       set( ${PNAME}_FOUND ${${_p_PROJECT}_FOUND} )
-
-      message( STATUS "[${_p_PROJECT}] (${${_p_PROJECT}_VERSION})" )
-
-      message( STATUS "   ${PNAME}_INCLUDE_DIRS : [${${PNAME}_INCLUDE_DIRS}]" )
-      if( ${PNAME}_DEFINITIONS )
-        message( STATUS "   ${PNAME}_DEFINITIONS : [${${PNAME}_DEFINITIONS}]" )
-      endif()
-      message( STATUS "   ${PNAME}_LIBRARIES : [${${PNAME}_LIBRARIES}]" )
-
     endif()
 
   endif()
