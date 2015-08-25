@@ -66,6 +66,7 @@ if(${_index} GREATER -1)
 endif()
 
 list( REMOVE_DUPLICATES NETCDF_FIND_COMPONENTS )
+ecbuild_debug( "FindNetCDF: looking for components ${NETCDF_FIND_COMPONENTS}" )
 
 ### NetCDF4
 
@@ -90,7 +91,7 @@ if( PREFER_NETCDF4 )
   # debug_var( NETCDF_FIND_COMPONENTS )
   # debug_var( NETCDF_FIND_QUIETLY )
   # debug_var( NETCDF_FIND_REQUIRED )
-  find_package( NetCDF4 )
+  find_package( NetCDF4 COMPONENTS ${NETCDF_FIND_COMPONENTS} )
   # debug_var( NETCDF4_FOUND )
   # debug_var( NETCDF_FOUND )
   # debug_var( NETCDF_LIBRARIES )
@@ -156,7 +157,7 @@ if( PREFER_NETCDF3 )
 
   #message( "NETCDF CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}" )
 
-  find_package( NetCDF3 )
+  find_package( NetCDF3 COMPONENTS ${NETCDF_FIND_COMPONENTS} )
 
   set_package_properties( NetCDF3 PROPERTIES TYPE RECOMMENDED PURPOSE "support for NetCDF3 file format" )
 
