@@ -53,8 +53,9 @@ macro( ecbuild_find_package )
   # so lets prepend a parallel build tree to the search path if we find it
 
   if( DEVELOPER_MODE )
-    if( EXISTS ${CMAKE_BINARY_DIR}/../${_PAR_NAME}/${_PAR_NAME}-config.cmake )
-      get_filename_component( _proj_bdir "${CMAKE_BINARY_DIR}/../${_PAR_NAME}" ABSOLUTE )
+    get_filename_component( _proj_bdir "${CMAKE_BINARY_DIR}/../${_PAR_NAME}" ABSOLUTE )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - searching for ${_PAR_NAME}-config.cmake in ${_proj_bdir}")
+    if( EXISTS ${_proj_bdir}/${_PAR_NAME}-config.cmake )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - found parallel build tree in ${_proj_bdir}")
       if( ${PNAME}_PATH )
         ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - ${PNAME}_PATH already set to ${${PNAME}_PATH}, not modifying")
@@ -68,10 +69,12 @@ macro( ecbuild_find_package )
   # search user defined paths first
 
   if( NOT DEFINED ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${PNAME}_PATH=${${PNAME}_PATH} from environment")
     set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
   endif()
 
   if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${_PAR_NAME}_DIR}" STREQUAL "" )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH} from environment")
     set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
   endif()
 
