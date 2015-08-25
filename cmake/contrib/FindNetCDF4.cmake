@@ -154,7 +154,7 @@ else()
     set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.mod typesizes.mod netcdf netcdff netcdf_c++)
 
     foreach( LANGUAGE ${NETCDF_LANGUAGE_BINDINGS} )
-      # debug_var(LANGUAGE)
+        ecbuild_debug("FindNetCDF4: looking for ${LANGUAGE} language bindings")
         set( NETCDF_${LANGUAGE}_FOUND 1 ) # disable this in following if necessary
       
         # find the NETCDF includes
@@ -250,8 +250,8 @@ else()
         # Append the libraries for this language binding to the list of all
         # required libraries.
         
-        # debug_var( NETCDF_${LANGUAGE}_FOUND )
         if( NETCDF_${LANGUAGE}_FOUND )
+            ecbuild_debug( "FindNetCDF4: ${LANGUAGE} language bindings found" )
             if( CMAKE_CONFIGURATION_TYPES OR CMAKE_BUILD_TYPE )
                 list( APPEND NETCDF_${LANGUAGE}_LIBRARIES 
                     debug ${NETCDF_${LANGUAGE}_LIBRARIES_DEBUG}
