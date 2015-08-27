@@ -214,7 +214,7 @@ macro( ecbuild_add_test )
         set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
       endif()
       if( DEFINED _PAR_GENERATED )
-        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): mark as generated")
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): mark as generated ${_PAR_GENERATED}")
         set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
       endif()
 
