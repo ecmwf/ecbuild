@@ -212,20 +212,20 @@ macro( ecbuild_install_project )
 
         set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
 
-        if( EXISTS "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${CONF_IMPORT_FILE}" )
+        # If <project>-import.cmake.in exist in source tree, configure it to
+        # the build tree and install the configured version
+        if( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
+          configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
+                          "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
           install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
                    DESTINATION "${INSTALL_CMAKE_DIR}" )
-        elseif( EXISTS "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" )
-        elseif( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
-            # For build tree
-            configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
-                            "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
-
-            # For install tree
-            configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
-                            "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${CONF_IMPORT_FILE}" @ONLY )
-            install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
-                     DESTINATION "${INSTALL_CMAKE_DIR}" )
+        # Otherwise, if <project>-import.cmake exist in source tree, copy it to
+        # the build tree and install it
+        elseif( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}" )
+          configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}"
+                          "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" COPYONLY )
+          install( FILES "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}"
+                   DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
 
         set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
