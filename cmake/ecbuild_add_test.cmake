@@ -77,17 +77,18 @@ macro( ecbuild_add_test )
     if( PYTHONINTERP_FOUND )
       set( _PAR_COMMAND ${PYTHON_EXECUTABLE} )
     else()
-      message( FATAL_ERROR "Requested a python test but python interpreter not found - PYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
+      message( WARNING "Requested a python test but python interpreter not found - disabling test\nPYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
+      set( _PAR_ENABLED 0 )
     endif()
   endif()
 
   ### further checks
 
-  if( NOT _PAR_TARGET AND NOT _PAR_COMMAND )
+  if( _PAR_ENABLED AND NOT _PAR_TARGET AND NOT _PAR_COMMAND )
     message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a TARGET nor a COMMAND.")
   endif()
 
-  if( NOT _PAR_COMMAND AND NOT _PAR_SOURCES )
+  if( _PAR_ENABLED AND NOT _PAR_COMMAND AND NOT _PAR_SOURCES )
     message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a COMMAND nor SOURCES, so no test can be defined or built.")
   endif()
 
