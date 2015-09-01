@@ -10,36 +10,36 @@
 
 macro( ecbuild_find_perl )
 
-    # parse parameters
+  # parse parameters
 
-    set( options REQUIRED )
-    set( single_value_args )
-    set( multi_value_args  )
+  set( options REQUIRED )
+  set( single_value_args )
+  set( multi_value_args  )
 
-    cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+  cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-    if(_p_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_find_perl(): \"${_p_UNPARSED_ARGUMENTS}\"")
+  if(_p_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown keywords given to ecbuild_find_perl(): \"${_p_UNPARSED_ARGUMENTS}\"")
+  endif()
+
+  find_package( Perl )
+
+  if( NOT PERL_EXECUTABLE AND _p_REQUIRED )
+    message( FATAL_ERROR "Failed to find Perl (REQUIRED)" )
+  endif()
+
+  if( PERL_EXECUTABLE )
+
+    execute_process( COMMAND ${PERL_EXECUTABLE} -V:version OUTPUT_VARIABLE  perl_version_output_variable  RESULT_VARIABLE  perl_version_return )
+    if( NOT perl_version_return )
+      string(REGEX REPLACE "version='([^']+)'.*" "\\1" PERL_VERSION ${perl_version_output_variable})
     endif()
 
-	find_package( Perl )
-
-    if( NOT PERL_EXECUTABLE AND _p_REQUIRED )
-        message( FATAL_ERROR "Failed to find Perl (REQUIRED)" )
+    # from cmake 2.8.8 onwards
+    if( NOT PERL_VERSION_STRING )
+      set( PERL_VERSION_STRING ${PERL_VERSION} )
     endif()
 
-    if( PERL_EXECUTABLE )
-
-		execute_process( COMMAND ${PERL_EXECUTABLE} -V:version OUTPUT_VARIABLE  perl_version_output_variable  RESULT_VARIABLE  perl_version_return )
-		if( NOT perl_version_return )
-			string(REGEX REPLACE "version='([^']+)'.*" "\\1" PERL_VERSION ${perl_version_output_variable})
-		endif()
-
-		# from cmake 2.8.8 onwards
-		if( NOT PERL_VERSION_STRING )
-			set( PERL_VERSION_STRING ${PERL_VERSION} )
-		endif()
-
-	endif()
+  endif()
 
 endmacro( ecbuild_find_perl )
