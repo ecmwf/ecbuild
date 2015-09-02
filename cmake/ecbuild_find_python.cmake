@@ -21,6 +21,8 @@
 #   PYTHON_LIBRARIES
 #   PYTHON_SITE_PACKAGES
 
+set( __test_python ${CMAKE_CURRENT_LIST_DIR}/pymain.c )
+
 macro( ecbuild_find_python )
 
     # parse parameters
@@ -111,9 +113,16 @@ macro( ecbuild_find_python )
 
         endif()
 
+        # Test if we can link against the Python libraries and include Python.h
+        try_compile( PYTHON_LIBS_WORKING ${CMAKE_CURRENT_BINARY_DIR}
+                     ${__test_python}
+                     COMPILE_DEFINITIONS -I${PYTHON_INCLUDE_DIR}
+                     LINK_LIBRARIES ${PYTHON_LIBRARIES} )
+
         # set output variables
 
-        find_package_handle_standard_args( PythonLibs DEFAULT_MSG PYTHON_INCLUDE_DIR PYTHON_LIBRARIES )
+        find_package_handle_standard_args( PythonLibs DEFAULT_MSG
+                                           PYTHON_INCLUDE_DIR PYTHON_LIBRARIES PYTHON_LIBS_WORKING )
         ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR}" )
         ecbuild_debug( "ecbuild_find_python: PYTHON_LIBRARIES=${PYTHON_LIBRARIES}" )
 
