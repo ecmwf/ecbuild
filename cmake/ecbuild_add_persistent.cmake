@@ -7,7 +7,31 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding persistent layer object classes
+#.rst:
+#
+# ecbuild_add_persistent
+# ======================
+#
+# Add persistent layer object classes. ::
+#
+#   ecbuild_add_persistent( SRC_LIST <variable>
+#                           FILES <file1> [<file2> ...] ]
+#                           [ NAMESPACE <namespace> ] )
+#
+# Options
+# -------
+#
+# SRC_LIST : required
+#   CMake variable to append the generated persistent layer objects to
+#
+# FILES : required
+#   list of base names of files to build persistent class information for
+#   (the source file is expected to have a .h extension, the generated file
+#   gets a .b extension)
+#
+# NAMESPACE : optional
+#   C++ namespace to place the persistent class information in
+#
 ##############################################################################
   
 # define the script to build the persistent class information
