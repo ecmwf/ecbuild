@@ -7,7 +7,49 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding a resources
+#.rst:
+#
+# ecbuild_add_resources
+# =====================
+#
+# Add resources as project files but optionally exclude them from packing. ::
+#
+#   ecbuild_add_resources( TARGET <name>
+#                          [ SOURCES <source1> [<source2> ...] ]
+#                          [ SOURCES_PACK <source1> [<source2> ...] ]
+#                          [ SOURCES_DONT_PACK <source1> [<source2> ...] ]
+#                          [ PACK <file1> [<file2> ...] ]
+#                          [ DONT_PACK <file1> [<file2> ...] ]
+#                          [ DONT_PACK_DIRS <directory1> [<directory2> ...] ]
+#                          [ DONT_PACK_REGEX <regex1> [<regex2> ...] ] )
+#
+# Options
+# -------
+#
+# TARGET : required
+#   target name (target will only be created if there are any sources)
+#
+# SOURCES : optional
+#   list of source files to pack (alias for SOURCES_PACK)
+#
+# SOURCES_PACK : optional
+#   list of source files to pack (alias for SOURCES)
+#
+# SOURCES_DONT_PACK : optional
+#   list of source files not to pack
+#
+# PACK : optional
+#   list of files to pack (takes priority over DONT_PACK, DONT_PACK_DIRS, DONT_PACK_REGEX)
+#
+# DONT_PACK : optional
+#   list of files not to pack
+#
+# DONT_PACK_DIRS : optional
+#   list of directories not to pack
+#
+# DONT_PACK_REGEX : optional
+#   list of regular expressions to match files and directories not to pack
+#
 ##############################################################################
 
 macro( ecbuild_add_resources )
