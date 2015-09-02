@@ -6,13 +6,24 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# macro to append paths to rpath
-
-# if dir is absolute, it simply appends
-# if dir is relative,
-#    then it will try to make it relative to the executables
-#    else it will fallback to making it absolute by prepending the install path
+##############################################################################
+#.rst:
+#
+# ecbuild_append_to_rpath
+# =======================
+#
+# Append paths to the rpath. ::
+#
+#   ecbuild_append_to_rpath( RPATH_DIRS )
+#
+# ``RPATH_DIRS`` is a list of directories to append to ``CMAKE_INSTALL_RPATH``.
+#
+# * If a directory is absolute, simply append it.
+# * If a directory is relative, build a platform-dependent relative path
+#   (using ``@loader_path`` on Mac OSX, ``$ORIGIN`` on Linux and Solaris)
+#   or fall back to making it absolute by prepending the install prefix.
+#
+##############################################################################
 
 function( _path_append var path )
 	if( "${${var}}" STREQUAL "" )
