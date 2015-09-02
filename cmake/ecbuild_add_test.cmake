@@ -7,22 +7,123 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding a test
+#.rst:
+#
+# ecbuild_add_test
+# ================
+#
+# Add a test as a script or an executable with a given list of source files. ::
+#
+#   ecbuild_add_test( [ TARGET <name> ]
+#                     [ SOURCES <source1> [<source2> ...] ]
+#                     [ COMMAND <executable> ]
+#                     [ TYPE EXE|SCRIPT|PYTHON ]
+#                     [ ARGS <argument1> [<argument2> ...] ]
+#                     [ RESOURCES <file1> [<file2> ...] ]
+#                     [ TEST_DATA <file1> [<file2> ...] ]
+#                     [ BOOST ]
+#                     [ MPI <number-of-ranks> ]
+#                     [ ENABLED ON|OFF ]
+#                     [ LIBS <library1> [<library2> ...] ]
+#                     [ INCLUDES <path1> [<path2> ...] ]
+#                     [ DEFINITIONS <definition1> [<definition2> ...] ]
+#                     [ PERSISTENT <file1> [<file2> ...] ]
+#                     [ GENERATED <file1> [<file2> ...] ]
+#                     [ DEPENDS <target1> [<target2> ...] ]
+#                     [ TEST_DEPENDS <target1> [<target2> ...] ]
+#                     [ CONDITION <condition1> [<condition2> ...] ]
+#                     [ ENVIRONMENT <variable1> [<variable2> ...] ]
+#                     [ WORKING_DIRECTORY <path> ]
+#                     [ CFLAGS <flag1> [<flag2> ...] ]
+#                     [ CXXFLAGS <flag1> [<flag2> ...] ]
+#                     [ FFLAGS <flag1> [<flag2> ...] ]
+#                     [ LINKER_LANGUAGE <lang> ] )
+#
+# Options
+# -------
+#
+# TARGET : either TARGET or COMMAND must be provided, unless TYPE is PYTHON
+#   target name to be built
+#
+# SOURCES : required if TARGET is provided
+#   list of source files to be compiled
+#
+# COMMAND : either TARGET or COMMAND must be provided, unless TYPE is PYTHON
+#   command or script to execute (no executable is built)
+#
+# TYPE : optional
+#   test type, one of:
+#
+#   EXE
+#     run built executable, default if TARGET is provided
+#   SCRIPT
+#     run command or script, default if COMMAND is provided
+#   PYTHON
+#     run a Python script (requires the Python interpreter to be found)
+#
+# ARGS : optional
+#   list of arguments to pass to TARGET or COMMAND when running the test
+#
+# RESOURCES : optional
+#   list of files to copy from the test source directory to the test directory
+#
+# TEST_DATA : optional
+#   list of test data files to download
+#
+# BOOST : optional
+#   use the Boost Unit Test Framework
+#
+# MPI : optional
+#    number of MPI tasks to use. If greater than 1, and MPI is not available,
+#    the test is disabled
+#
+# ENABLED : optional
+#   if set to OFF, the test is built but not enabled as a test case
+#
+# LIBS : optional
+#   list of libraries to link against (CMake targets or external libraries)
+#
+# INCLUDES : optional
+#   list of paths to add to include directories
+#
+# DEFINITIONS : optional
+#   list of definitions to add to preprocessor defines
+#
+# PERSISTENT : optional
+#   list of persistent layer object files
+#
+# GENERATED : optional
+#   list of files to mark as generated (sets GENERATED source file property)
+#
+# DEPENDS : optional
+#   list of targets to be built before this target
+#
+# TEST_DEPENDS : optional
+#   list of tests to be run before this one
+#
+# CONDITION : optional
+#   list of conditions, all of which must evaluate to true for this target to be built
+#
+# ENVIRONMENT : optional
+#   list of environment variables to set in the test environment
+#
+# WORKING_DIRECTORY : optional
+#   directory to switch to before running the test
+#
+# CFLAGS : optional
+#   list of C compiler flags to use for all C source files
+#
+# CXXFLAGS : optional
+#   list of C++ compiler flags to use for all C++ source files
+#
+# FFLAGS : optional
+#   list of Fortran compiler flags to use for all Fortran source files
+#
+#
+# LINKER_LANGUAGE : optional
+#   sets the LINKER_LANGUAGE property on the target
+#
 ##############################################################################
-
-# Arguments:
-#  TARGET : name of test
-#  ENABLED [optional]: (default ON)
-#  COMMAND [optional]: Run command instead of executable
-#  TYPE [optional]: EXE / SCRIPT / PYTHON  (default EXE)
-#  MPI [optional]: number of mpi-tasks to use. If greater than 1,
-#                  and MPI is not available, the test is disabled
-#  SOURCES: sources to be compiled
-#  LIBS: Libraries needed for linking
-#  INCLUDES: Extra include directories
-#  DEPENDS: Add explicit dependency to other targets (for building)
-#  TEST_DEPENDS: add explicity dependency on another test running before
-#  ARGS: Command-line arguments to COMMAND OR TARGET
 
 macro( ecbuild_add_test )
 
