@@ -40,6 +40,8 @@ macro( ecbuild_find_perl )
       set( PERL_VERSION_STRING ${PERL_VERSION} )
     endif()
 
+    ecbuild_debug("ecbuild_find_perl: found perl version ${PERL_VERSION_STRING} as ${PERL_EXECUTABLE}")
+
   endif()
 
 endmacro( ecbuild_find_perl )
