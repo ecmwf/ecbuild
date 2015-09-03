@@ -107,14 +107,19 @@ macro( ecbuild_add_option )
         string( TOLOWER ${pkgname} pkgLOWER )
 
         if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
+
           ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ${pkgname} has already been found")
           set( ${pkgname}_already_found 1 )
+
         else()
 
           if( pkgproject )
+
             ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for ecbuild project ${pkgname}")
             ecbuild_use_package( ${pkglist} )
+
           else()
+
             if( pkgname STREQUAL "MPI" )
               set( _find_args ${pkglist} )
               list( REMOVE_ITEM _find_args "MPI" )
@@ -137,12 +142,16 @@ macro( ecbuild_add_option )
               ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for package ${pkgname}")
               find_package( ${pkglist} )
             endif()
+
           endif()
 
-          # append to list of third-party libraries (to be forward to other packages )
-          string( TOUPPER ${PROJECT_NAME} PNAME )
-          list( APPEND ${PNAME}_TPLS ${pkgname} )
-          list( REMOVE_DUPLICATES ${PNAME}_TPLS )
+        endif()
+
+        # if found append to list of third-party libraries (to be forward to other packages )
+        if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
+
+          list( APPEND ${PROJECT_NAME_CAPS}_TPLS ${pkgname} )
+          list( REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS )
 
         endif()
 
@@ -201,7 +210,6 @@ macro( ecbuild_add_option )
     mark_as_advanced( ENABLE_${_p_FEATURE} )
   endif()
 
-  string( TOUPPER PNAME ${PROJECT_NAME} )
-  set( ${PNAME}_HAVE_${_p_FEATURE} ${HAVE_${_p_FEATURE}} )
+  set( ${PROJECT_NAME_CAPS}_HAVE_${_p_FEATURE} ${HAVE_${_p_FEATURE}} )
 
 endmacro( ecbuild_add_option  )

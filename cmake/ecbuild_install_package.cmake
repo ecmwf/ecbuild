@@ -27,8 +27,8 @@ macro( ecbuild_install_project )
 
     ### PACKAGING ########################################################
 
-    string( TOUPPER ${PROJECT_NAME} PNAME )
-    string( TOLOWER ${PROJECT_NAME} LNAME )
+    set( PNAME ${PROJECT_NAME_CAPS} )
+    set( LNAME ${PROJECT_NAME_LOWCASE} )
 
     # components
 
@@ -101,11 +101,12 @@ macro( ecbuild_install_project )
 
     ### EXPORTS ########################################################
 
-    ecbuild_enabled_features( ${PNAME}_FEATURES )
+    ecbuild_enabled_features( ${PROJECT_NAME_CAPS}_FEATURES )
     foreach( _f ${${PNAME}_FEATURES} )
         set( ${PNAME}_HAVE_${_f} 1 )
     endforeach()
 
+    message( STATUS "${PROJECT_NAME_CAPS}_TPLS: ${${PROJECT_NAME_CAPS}_TPLS}" )
 
     foreach( _tpl ${${PNAME}_TPLS} )
         string( TOUPPER ${_tpl} _TPL )

@@ -42,6 +42,11 @@ set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
 # Set policies
 include( ecbuild_policies NO_POLICY_SCOPE )
 
+# set capitalised project name
+
+string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
+string( TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWCASE )
+
 ########################################################################################################
 # include our cmake macros, but only do so if this is the top project
 if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
