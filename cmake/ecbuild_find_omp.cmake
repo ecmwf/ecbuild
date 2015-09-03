@@ -194,7 +194,15 @@ macro( ecbuild_find_omp )
 endmacro( ecbuild_find_omp )
 
 ##############################################################################
-# macro for enabling openmp
+#.rst:
+#
+# ecbuild_enable_omp
+# ==================
+#
+# Find OpenMP for C, C++ and Fortran and set the compiler flags for each
+# language for which OpenMP support was detected.
+#
+##############################################################################
 
 macro( ecbuild_enable_omp )
 
