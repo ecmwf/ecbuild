@@ -142,6 +142,7 @@ macro( ecbuild_add_option )
           # append to list of third-party libraries (to be forward to other packages )
           string( TOUPPER ${PROJECT_NAME} PNAME )
           list( APPEND ${PNAME}_TPLS ${pkgname} )
+          list( REMOVE_DUPLICATES ${PNAME}_TPLS )
 
         endif()
 

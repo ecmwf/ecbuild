@@ -197,6 +197,11 @@ macro( ecbuild_use_package )
 
   endif()
 
+  if( ${PNAME}_FOUND )
+    list( APPEND ${PNAME}_TPLS ${_p_PROJECT} )
+    list( REMOVE_DUPLICATES ${PNAME}_TPLS )
+  endif()
+
   ### for when we change this macro to a function()
   # set_parent_scope( ${PNAME}_FOUND )
   # set_parent_scope( ${_p_PROJECT}_FOUND )
