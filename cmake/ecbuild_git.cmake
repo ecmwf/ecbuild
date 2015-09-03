@@ -251,7 +251,49 @@ macro( ecbuild_git )
 
 endmacro()
 
-########################################################################################################################
+##############################################################################
+#.rst:
+#
+# ecbuild_stash
+# =============
+#
+# Manages an external Git repository on ECMWF Stash. ::
+#
+#   ecbuild_stash( PROJECT <name>
+#                  DIR <directory>
+#                  STASH <repository>
+#                  [ BRANCH <gitbranch> | TAG <gittag> ]
+#                  [ UPDATE | NOREMOTE ] )
+#                  [ MANUAL ] )
+#
+# Options
+# -------
+#
+# PROJECT : required
+#   project name for the Git repository to be managed
+#
+# DIR : required
+#   directory to clone the repository into (can be relative)
+#
+# STASH : required
+#   Stash repository in the form <project>/<repository>
+#
+# BRANCH : optional, cannot be combined with TAG
+#   Git branch to check out
+#
+# TAG : optional, cannot be combined with BRANCH
+#   Git tag or commit id to check out
+#
+# UPDATE : optional, requires BRANCH, cannot be combined with NOREMOTE
+#   Create a CMake target update to fetch changes from the remote repository
+#
+# NOREMOTE : optional, cannot be combined with UPDATE
+#   Do not fetch changes from the remote repository
+#
+# MANUAL : optional
+#   Do not automatically switch branches or tags
+#
+##############################################################################
 
 macro( ecmwf_stash )
 
