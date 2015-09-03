@@ -74,21 +74,26 @@ macro( ecbuild_find_package )
   endif()
 
   if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${_PAR_NAME}_DIR}" STREQUAL "" )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH} from environment")
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR} from environment")
     set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
   endif()
 
-  if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR OR ${PNAME}_DIR )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}}, ${PNAME}_PATH=${${PNAME}_PATH}, ${PNAME}_PATH=${${_PAR_NAME}_DIR}, ${PNAME}_DIR=${${PNAME}_DIR}")
+  if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${PNAME}_DIR}" STREQUAL "" )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_DIR=${${PNAME}_DIR} from environment")
+    set( ${_PAR_NAME}_DIR "$ENV{${PNAME}_DIR}" )
+  endif()
+
+  if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}}, ${PNAME}_PATH=${${PNAME}_PATH}, ${PNAME}_PATH=${${_PAR_NAME}_DIR}")
 
     # 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
 
     if( NOT ${_PAR_NAME}_FOUND )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 1) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${PNAME}_PATH=${${PNAME}_PATH}, ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${PNAME}_DIR=${${PNAME}_DIR}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${PNAME}_PATH=${${PNAME}_PATH}, ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
       find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET
         COMPONENTS ${_PAR_COMPONENTS}
-        HINTS ${${PNAME}_PATH} ${${_PAR_NAME}_PATH} ${${PNAME}_DIR} ${${_PAR_NAME}_DIR}
+        HINTS ${${PNAME}_PATH} ${${_PAR_NAME}_PATH} ${${_PAR_NAME}_DIR}
         NO_DEFAULT_PATH )
     endif()
 
