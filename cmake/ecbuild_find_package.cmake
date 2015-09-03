@@ -138,26 +138,7 @@ macro( ecbuild_find_package )
 
   endif()
 
-  # 4) search special ECMWF paths
-
-  if( NOT ${_PAR_NAME}_FOUND )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 4) search special ECMWF paths")
-
-    set( _ecmwf_paths ) # clear variable
-    ecbuild_list_extra_search_paths( ${_PAR_NAME} _ecmwf_paths )
-
-    if( _ecmwf_paths )
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    ECMWF paths ${_ecmwf_paths}")
-      find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE
-        COMPONENTS ${_PAR_COMPONENTS}
-        PATHS ${_ecmwf_paths} NO_DEFAULT_PATH )
-    else()
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    no special ECMWF paths found")
-    endif()
-
-  endif()
-
-  # 5) search system paths, for <package>-config.cmake
+  # 4) search system paths, for <package>-config.cmake
 
   if( NOT ${_PAR_NAME}_FOUND )
     ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 5) search system paths, for ${_PAR_NAME}-config.cmake")
@@ -168,7 +149,7 @@ macro( ecbuild_find_package )
 
   endif()
 
-  # 6) search system paths, using Find<package>.cmake if it exists
+  # 5) search system paths, using Find<package>.cmake if it exists
 
   if( NOT ${_PAR_NAME}_FOUND )
     ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 6) search system paths, using Find${_PAR_NAME}.cmake if it exists")
