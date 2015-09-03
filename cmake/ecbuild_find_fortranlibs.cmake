@@ -6,8 +6,27 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-###############################################################################
-# macro to find fortran (static) link libraries
+##############################################################################
+#.rst:
+#
+# ecbuild_find_fortranlibs
+# ========================
+#
+# Find the Fortran (static) link libraries. ::
+#
+#   ecbuild_find_fortranlibs( [ COMPILER gfortran|pgi|xlf|intel ]
+#                             [ REQUIRED ] )
+#
+# Options
+# -------
+#
+# COMPILER : optional, defaults to gfortran
+#   request a given Fortran compiler (``gfortran``, ``pgi``, ``xlf``, ``intel``)
+#
+# REQUIRED : optional
+#   fail if Fortran libraries were not found
+#
+##############################################################################
 
 macro( ecbuild_find_fortranlibs )
 
