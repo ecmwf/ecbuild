@@ -215,6 +215,32 @@ macro( ecbuild_find_mpi )
 
 endmacro( ecbuild_find_mpi )
 
+##############################################################################
+#.rst:
+#
+# ecbuild_enable_mpi
+# ==================
+#
+# Find MPI, add include directories and set compiler flags. ::
+#
+#   ecbuild_enable_mpi( [ COMPONENTS <component1> [ <component2> ... ] ]
+#                       [ REQUIRED ] )
+#
+# For each MPI language binding found, set the corresponding compiler flags
+# and add the include directories.
+#
+# See ``ecbuild_find_mpi`` for input and output variables.
+#
+# Options
+# -------
+#
+# COMPONENTS : optional, defaults to C
+#   list of required languages bindings
+#
+# REQUIRED : optional
+#   fail if MPI was not found
+#
+##############################################################################
 
 macro( ecbuild_enable_mpi )
 
