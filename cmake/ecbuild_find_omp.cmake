@@ -73,19 +73,47 @@ macro( lookup_omp_flags )
 
 endmacro()
 
+##############################################################################
+#.rst:
+#
+# ecbuild_find_omp
+# ================
+#
+# Find OpenMP. ::
+#
+#   ecbuild_find_omp( [ COMPONENTS <component1> [ <component2> ... ] ]
+#                     [ REQUIRED ]
+#                     [ STUBS ] )
+#
+# Options
+# -------
+#
+# COMPONENTS : optional, defaults to C
+#   list of required languages bindings
+#
+# REQUIRED : optional
+#   fail if OpenMP was not found
+#
+# STUBS : optional
+#   search for OpenMP stubs
+#
+# Output variables
+# ----------------
+#
+# The following CMake variables are set if OpenMP was found: ::
+#
+#   OMP_FOUND - OpenMP was found
+#
+# For each language listed in COMPONENTS, the following variables are set ::
+#
+#   OMP_<LANG>_FOUND - OpenMP bindings for LANG were found
+#   OMP_<LANG>_FLAGS - OpenMP compiler flags for LANG
+#
+# If the STUBS option was given, all variables are also set with the OMPSTUBS
+# instead of the OMP prefix.
+#
+##############################################################################
 
-# MACRO ecbuild_find_omp
-#
-# ecbuild_find_omp( COMPONENTS C CXX Fortran
-#                   STUBS )
-# Sets following variables
-#   - OMP_FOUND
-#   - OMP_<lang>_FOUND
-#   - OMP_<lang>_FLAGS
-#
-# If STUBS are available, above flags will still hold TRUE,
-# as OMP code will just work.
-#
 macro( ecbuild_find_omp )
 
   set( options REQUIRED STUBS )
