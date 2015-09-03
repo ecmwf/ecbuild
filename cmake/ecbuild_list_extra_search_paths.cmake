@@ -9,7 +9,6 @@
 ############################################################################################
 #
 # macro for adding search paths to CMAKE_PREFIX_PATH
-# for example the ECMWF /usr/local/apps paths
 #
 # usage: ecbuild_list_extra_search_paths( netcdf4 VARIABLE )
 
@@ -61,42 +60,6 @@ function( ecbuild_list_extra_search_paths pkg var )
     ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): appending \$${pkg}_DIR = $ENV{${pkg}_DIR} to ${var}")
 		list( APPEND ${var} $ENV{${pkg}_DIR} )
 	endif()
-
-	# directories under /usr/local/apps/${pkg}
-
-	if( SEARCH_ECMWF_PATHS )
-
-		foreach( _apps /usr/local/apps/${pkg} /usr/local/lib/metaps/lib/${pkg} )
-
-			if( EXISTS ${_apps} )
-        ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): Searching ${_apps}")
-
-				 file( GLOB ps ${_apps}/[0-9]* )
-				 list( SORT ps )
-				 list( REVERSE ps ) # reversing will give us the newest versions first
-				 foreach( p ${ps} )
-					 if( IS_DIRECTORY ${p} )
-						  list( APPEND ${var}  ${p} )
-						  if( EXISTS ${p}/LP64 )
-							  list( APPEND ${var} ${p}/LP64 )
-						  endif()
-					 endif()
-				 endforeach()
-
-				 foreach( p ${_apps} ${_apps}/current ${_apps}/stable ${_apps}/new ${_apps}/next ${_apps}/prev )
-				   if( EXISTS ${p} )
-					   list( APPEND ${var} ${p} )
-				   endif()
-				   if( EXISTS ${p}/LP64 )
-					   list( APPEND ${var} ${p}/LP64 )
-				   endif()
-				 endforeach()
-
-			endif()
-
-		endforeach()
-
-	endif( SEARCH_ECMWF_PATHS )
 
 	# sanitize the list
 
