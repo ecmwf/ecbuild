@@ -223,7 +223,15 @@ macro( ecbuild_enable_omp )
 endmacro( ecbuild_enable_omp )
 
 ##############################################################################
-# macro for enabling openmp stubs
+#.rst:
+#
+# ecbuild_enable_ompstubs
+# =======================
+#
+# Find OpenMP stubs for C, C++ and Fortran and set the compiler flags for each
+# language for which OpenMP stubs were detected.
+#
+##############################################################################
 
 macro( ecbuild_enable_ompstubs )
 
