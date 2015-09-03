@@ -17,7 +17,16 @@ include(CMakeParseArguments)
 
 include(ecbuild_git)
 
-########################################################################################################################
+##############################################################################
+#.rst:
+#
+# ecbuild_bundle_initialize
+# =========================
+#
+# Initialise the ecBuild environment for a bundle. *Must* be called *before*
+# any call to ecbuild_bundle.
+#
+##############################################################################
 
 macro( ecbuild_bundle_initialize )
 
@@ -43,7 +52,48 @@ macro( ecbuild_bundle_initialize )
 
 endmacro()
 
-########################################################################################################################
+##############################################################################
+#.rst:
+#
+# ecbuild_bundle
+# ==============
+#
+# Declare a subproject to be built as part of this bundle. ::
+#
+#   ecbuild_bundle( PROJECT <name>
+#                   STASH <repository> | GIT <giturl>
+#                   [ BRANCH <gitbranch> | TAG <gittag> ]
+#                   [ UPDATE | NOREMOTE ] )
+#                   [ MANUAL ] )
+#
+# Options
+# -------
+#
+# PROJECT : required
+#   project name for the Git repository to be managed
+#
+# STASH : cannot be combined with GIT, either is required
+#   Stash repository in the form <project>/<repository>
+#
+# URL : cannot be combined with STASH, either is required
+#   Git URL of the remote repository to clone (see ``git help clone``)
+#
+# BRANCH : optional, cannot be combined with TAG
+#   Git branch to check out
+#
+# TAG : optional, cannot be combined with BRANCH
+#   Git tag or commit id to check out
+#
+# UPDATE : optional, requires BRANCH, cannot be combined with NOREMOTE
+#   Create a CMake target update to fetch changes from the remote repository
+#
+# NOREMOTE : optional, cannot be combined with UPDATE
+#   Do not fetch changes from the remote repository
+#
+# MANUAL : optional
+#   Do not automatically switch branches or tags
+#
+##############################################################################
 
 macro( ecbuild_bundle )
 
@@ -68,6 +118,17 @@ macro( ecbuild_bundle )
   endif()
 
 endmacro()
+
+##############################################################################
+#.rst:
+#
+# ecbuild_bundle_finalize
+# =======================
+#
+# Finalise the ecBuild environment for a bundle. *Must* be called *after* the
+# last call to ecbuild_bundle.
+#
+##############################################################################
 
 macro( ecbuild_bundle_finalize )
 
