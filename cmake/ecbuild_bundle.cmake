@@ -93,6 +93,27 @@ endmacro()
 # MANUAL : optional
 #   Do not automatically switch branches or tags
 #
+# Usage
+# -----
+#
+# A bundle is used to build a number of projects together. Each subproject
+# needs to be declared with a call to ecbuild_bundle, where the order of
+# projects is important and needs to respect dependencies: if project B
+# depends on project A, A should be listed before B in the bundle.
+#
+# The first time a bundle is built, the sources of all subprojects are cloned
+# into directories named according to project in the *source* tree of the
+# bundle (which means these directories should be added to ``.gitignore``).
+#
+# Subprojects are configured and built in order. Due to being added as a
+# subproject, the usual project discovery mechanism (i.e. locating and
+# importing a ``<project>-config.cmake`` file) is not used. Also there are no
+# ``<project>-config.cmake`` files being generated for individual subprojects.
+# However there *are* package-config files being generated for each library.
+#
+# To switch off a subproject when building a bundle, set the CMake variable
+# ``BUNDLE_SKIP_<PNAME>`` where ``PNAME`` is the capitalised project name.
+#
 ##############################################################################
 
 macro( ecbuild_bundle )
