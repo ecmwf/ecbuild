@@ -282,6 +282,19 @@ macro( ecbuild_enable_mpi )
 
 endmacro( ecbuild_enable_mpi )
 
+##############################################################################
+#.rst:
+#
+# ecbuild_include_mpi
+# ===================
+#
+# Add MPI include directories and set compiler flags, assuming MPI was found.
+#
+# For each MPI language binding found, set corresponding compiler flags and
+# add include directories. ``ecbuild_find_mpi`` must have been called before.
+#
+##############################################################################
+
 macro( ecbuild_include_mpi )
 
     set( options )
