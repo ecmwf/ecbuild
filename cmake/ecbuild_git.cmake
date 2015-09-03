@@ -6,19 +6,6 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-# Manages an external git repository
-# Usage:
-# git(DIR <directory> URL <giturl> [BRANCH <gitbranch>] [TAG <gittag>] [UPDATE] )
-#
-# Arguments:
-#  - DIR: directory name where repo will be cloned to
-#  - URL: location of origin git repository
-#  - BRANCH (optional): Branch to clone
-#  - TAG (optional): Tag or commit-id to checkout
-#  - UPDATE (optional) : Option to try to update every cmake run
-#  - NOREMOTE (optional) : Option to avoid remote operations that require network
-#                          changes to tags that havent been fetched might fail
-
 set( ECBUILD_GIT  ON  CACHE BOOL "Turn on/off ecbuild_git() function" )
 
 if( ECBUILD_GIT )
@@ -38,6 +25,50 @@ if( ECBUILD_GIT )
   endif()
 
 endif()
+
+##############################################################################
+#.rst:
+#
+# ecbuild_git
+# ===========
+#
+# Manages an external Git repository. ::
+#
+#   ecbuild_git( PROJECT <name>
+#                DIR <directory>
+#                URL <giturl>
+#                [ BRANCH <gitbranch> | TAG <gittag> ]
+#                [ UPDATE | NOREMOTE ] )
+#                [ MANUAL ] )
+#
+# Options
+# -------
+#
+# PROJECT : required
+#   project name for the Git repository to be managed
+#
+# DIR : required
+#   directory to clone the repository into (can be relative)
+#
+# URL : required
+#   Git URL of the remote repository to clone (see ``git help clone``)
+#
+# BRANCH : optional, cannot be combined with TAG
+#   Git branch to check out
+#
+# TAG : optional, cannot be combined with BRANCH
+#   Git tag or commit id to check out
+#
+# UPDATE : optional, requires BRANCH, cannot be combined with NOREMOTE
+#   Create a CMake target update to fetch changes from the remote repository
+#
+# NOREMOTE : optional, cannot be combined with UPDATE
+#   Do not fetch changes from the remote repository
+#
+# MANUAL : optional
+#   Do not automatically switch branches or tags
+#
+##############################################################################
 
 macro( ecbuild_git )
 
