@@ -37,8 +37,10 @@ macro( ecbuild_use_package )
   # user defined dir with subprojects
 
   if( NOT DEFINED ${PNAME}_SOURCE AND DEFINED SUBPROJECT_DIRS )
+    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): scanning subproject directories ${SUBPROJECT_DIRS}")
     foreach( dir ${SUBPROJECT_DIRS} )
       if( EXISTS ${dir}/${_p_PROJECT} AND EXISTS ${dir}/${_p_PROJECT}/CMakeLists.txt )
+        ecbuild_debug("ecbuild_use_package(${_p_PROJECT}):   setting ${PNAME}_SOURCE to ${dir}/${_p_PROJECT}")
         set( ${PNAME}_SOURCE "${dir}/${_p_PROJECT}" )
       endif()
     endforeach()
@@ -57,6 +59,7 @@ macro( ecbuild_use_package )
   else() # default is 'dropped in' subdirectory named as project
 
     if( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT} AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT}/CMakeLists.txt )
+      ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): found ${_p_PROJECT} in subdirectory ${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT}")
       set( ${PNAME}_subproj_dir_ "${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT}" )
     endif()
 
@@ -71,8 +74,10 @@ macro( ecbuild_use_package )
   list( FIND ECBUILD_PROJECTS ${_p_PROJECT} _ecbuild_project_${PNAME} )
 
   if( NOT _ecbuild_project_${PNAME} EQUAL "-1" )
+    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): ${_p_PROJECT} was previously added as a subproject")
     set( ${PNAME}_previous_subproj_ 1 )
   else()
+    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): ${_p_PROJECT} was not previously added as a subproject")
     set( ${PNAME}_previous_subproj_ 0 )
   endif()
 
@@ -85,15 +90,15 @@ macro( ecbuild_use_package )
     set( ${_p_PROJECT}_FOUND 1 )
   endif()
 
-  # Case 1) project was NOT added as subproject and is NOT FOUND
+  # Case 1) project was NOT previously added as subproject and is NOT already FOUND
 
   if( NOT ${PNAME}_FOUND AND NOT ${PNAME}_previous_subproj_ )
-
-    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 1) project was NOT added as subproject and is NOT FOUND")
 
     # check if SUBPROJDIR is set
 
     if( DEFINED ${PNAME}_subproj_dir_ )
+
+      ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 1) project was NOT previously added as subproject and is NOT already FOUND")
 
       # check version is acceptable
       set( _just_added 1 )
@@ -106,6 +111,7 @@ macro( ecbuild_use_package )
 
       set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${_p_PROJECT} CACHE INTERNAL "" )
 
+      ecbuild_debug("ecbuild_use_package(${_p_PROJECT}):    ${_p_PROJECT} found in subdirectory ${${PNAME}_subproj_dir_}")
       add_subdirectory( ${${PNAME}_subproj_dir_} ${_p_PROJECT} )
 
       set( ${_p_PROJECT}_BASE_DIR ${CMAKE_BINARY_DIR} )
@@ -137,7 +143,7 @@ macro( ecbuild_use_package )
 
   if( ${PNAME}_FOUND AND NOT ${PNAME}_previous_subproj_ AND NOT _just_added )
 
-    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 3) project was NOT added as subproject, but is FOUND")
+    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 3) project was NOT previously added as subproject, but is FOUND")
 
     # check version is acceptable
     set( _do_version_check 1 )
@@ -176,7 +182,7 @@ macro( ecbuild_use_package )
 
   if( NOT ${PNAME}_FOUND )
 
-    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 4) project was found neither as sub-project nor as binary")
+    ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 4) project has NOT been added as a subproject and is NOT already FOUND")
 
     set( _opts )
     if( _p_VERSION )
