@@ -7,8 +7,18 @@
 # nor does it submit to any jurisdiction.
 
 ##############################################################################
-
-# function to download a file from a given URL at configure time
+#.rst:
+#
+# ecbuild_download_resource
+# =========================
+#
+# Download a file from a given URL and save to FILE at configure time. ::
+#
+#   ecbuild_download_resource( FILE URL )
+#
+# curl or wget is required (curl is preferred if available).
+#
+##############################################################################
 
 function( ecbuild_download_resource _p_OUT _p_URL )
 
