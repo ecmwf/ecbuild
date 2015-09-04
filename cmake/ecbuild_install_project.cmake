@@ -6,10 +6,73 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-###############################################################################
+##############################################################################
+#.rst:
+#
+# ecbuild_install_project
+# =======================
+#
+# Set up packaging and export configuration. ::
+#
+#   ecbuild_install_project( NAME <name> [ DESCRIPTION <description> ] )
+#
+# Options
+# -------
+#
+# NAME : required
+#   project name used for packaging
+#
+# DESCRIPTION : optional
+#   project description used for packaging
+#
+# Usage
+# -----
+#
+# ``ecbuild_install_project`` should be called at the very end of any ecBuild
+# project (only followed by ``ecbuild_print_summary``), sets up packaging of
+# the project with cpack and exports the configuration and targets for other
+# projects to use.
+#
+# In a top-level project, the following files are generated: ::
+#
+#   <project>-config.cmake         - default project configuration
+#   <project>-config-version.cmake - project version number
+#   <project>-import.cmake         - extra project configuration (optional)
+#   <project>-config.cmake.tpls    - 3rd party project configurations
+#   <project>-targets.cmake        - exported targets
+#
+# For ``<project>-import.cmake`` to be exported to build and install tree,
+# ``<project>-import.cmake`` or ``<project>-import.cmake.in`` must exist in
+# the source tree. ``<project>-config.cmake.in`` and
+# ``<project>-config-version.cmake.in`` can be provided in the source tree to
+# override the default templates used to generate ``<project>-config.cmake``
+# and ``<project>-config-version.cmake``.
+#
+# In DEVELOPER_MODE, the build tree location is also added to the CMake user
+# package registry.
+#
+# If the project is added as a subdirectory, the following CMake variables
+# are set in the parent scope: ::
+#
+#   <PROJECT>_FOUND
+#   <project>_FOUND
+#   <PROJECT>_VERSION
+#   <project>_VERSION
+#   <PROJECT>_INCLUDE_DIRS
+#   <PROJECT>_LIBRARIES
+#   <PROJECT>_DEFINITIONS
+#   <PROJECT>_PACKAGES
+#   <PROJECT>_TPLS
+#   <PROJECT>_TPL_LIBRARIES
+#   <PROJECT>_TPL_DEFINITIONS
+#   <PROJECT>_TPL_INCLUDE_DIRS
+#   <PROJECT>_FEATURES
+#   <PROJECT>_HAVE_<FEATURE>
+#
+##############################################################################
+
 
 macro( ecbuild_install_project )
-
 
     set( options )
     set( single_value_args NAME DESCRIPTION )
