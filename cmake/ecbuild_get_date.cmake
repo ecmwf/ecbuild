@@ -28,8 +28,18 @@ macro(ecbuild_get_date RESULT)
     endif()
 endmacro(ecbuild_get_date)
 
-############################################################################################
-# get timestamp
+##############################################################################
+#.rst:
+#
+# ecbuild_get_timestamp
+# =====================
+#
+# Set the CMake variable ``${TIMESTAMP}`` to the current date and time in the
+# form YYYYmmDDHHMMSS. ::
+#
+#   ecbuild_get_timestamp( TIMESTAMP )
+#
+##############################################################################
 
 macro(ecbuild_get_timestamp RESULT)
     if(UNIX)
