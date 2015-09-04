@@ -7,7 +7,80 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding a subproject directory
+#.rst:
+#
+# ecbuild_find_package
+# ====================
+#
+# Find a package and import its configuration. ::
+#
+#   ecbuild_find_package( NAME <name>
+#                         [ VERSION <version> [ EXACT ] ]
+#                         [ COMPONENTS <component1> [ <component2> ... ] ]
+#                         [ REQUIRED ]
+#                         [ QUIET ] )
+#
+# Options
+# -------
+#
+# NAME : required
+#   package name (used as ``Find<name>.cmake`` and ``<name>-config.cmake``)
+#
+# VERSION : optional
+#   minimum required package version
+#
+# COMPONENTS : optional
+#   list of package components to find (behaviour depends on the package)
+#
+# EXACT : optional, requires VERSION
+#   require the exact version rather than a minimum version
+#
+# REQUIRED : optional
+#   fail if package cannot be found
+#
+# QUIET : optional
+#   do not output package information if found
+#
+# Input variables
+# ---------------
+#
+# The following CMake variables influence the behaviour if set (``<name>`` is
+# the package name as given, ``<NAME>`` is the capitalised version):
+#
+# :DEVELOPER_MODE: if enabled, discover projects parallel in the build tree
+# :<name>_PATH:    install prefix path of the package
+# :<NAME>_PATH:    install prefix path of the package
+# :<name>_DIR:     directory containing the ``<name>-config.cmake`` file
+#                  (usually ``<install-prefix>/share/<name>/cmake``)
+#
+# The environment variables ``<name>_PATH``, ``<NAME>_PATH``, ``<name>_DIR``
+# are taken into account only if the corresponding CMake variables are unset.
+#
+# Usage
+# -----
+#
+# The search proceeds as follows:
+#
+# 1.  If any paths have been specified by the user via CMake or environment
+#     variables as given above or a parallel build tree has been discovered in
+#     DEVELOPER_MODE:
+#
+#     * search for ``<name>-config.cmake`` in those paths only
+#     * search using ``Find<name>.cmake`` (which should respect those paths)
+#     * fail if the package was not found in any of those paths
+#
+# 2.  Search for ``<name>-config.cmake`` in the ``CMAKE_PREFIX_PATH`` and if
+#     DEVELOPER_MODE is enabled also in the user package registry.
+#
+# 3.  Search system paths for ``<name>-config.cmake``.
+#
+# 4.  Search system paths using ``Find<name>.cmake``.
+#
+# 5.  If the package was found, and a minimum version was requested, check if
+#     the version is acceptable and if not, unset ``<NAME>_FOUND``.
+#
+# 6.  Fail if the package was not found and is REQUIRED.
+#
 ##############################################################################
 
 macro( ecbuild_find_package )
