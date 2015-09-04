@@ -6,26 +6,41 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-###############################################################################
-# Macros for logging based on the log level set
+##############################################################################
+#.rst:
 #
-# CMake variables controlling the behaviour:
+# Logging
+# =======
 #
-# ECBUILD_LOG_LEVEL (string) - controls the log level
-#                              one of DEBUG, INFO, WARN, ERROR, CRITICAL
-#                              OFF to disable logging altogether
+# ecBuild provides macros for logging based on a log level set by the user,
+# similar to the Python logging module: ::
 #
-# ECBUILD_NO_COLOUR (bool)   - if enabled, does not colour log output
+#   ecbuild_debug    - logs a STATUS message if log level <= DEBUG
+#   ecbuild_info     - logs a STATUS message if log level <= INFO
+#   ecbuild_warn     - logs a WARNING message if log level <= WARN
+#   ecbuild_error    - logs a SEND_ERROR message if log level <= ERROR
+#   ecbuild_critical - logs a FATAL_ERROR message if log level <= CRITICAL
 #
-# Macros:
+# Input variables
+# ---------------
 #
-# ecbuild_debug    - logs a STATUS message if log level <= DEBUG
-# ecbuild_info     - logs a STATUS message if log level <= INFO
-# ecbuild_warn     - logs a WARNING message if log level <= WARN
-# ecbuild_error    - logs a SEND_ERROR message if log level <= ERROR
-# ecbuild_critical - logs a FATAL_ERROR message if log level <= CRITICAL
+# CMake variables controlling logging behaviour:
 #
-###############################################################################
+# ECBUILD_LOG_LEVEL : string, one of DEBUG, INFO, WARN, ERROR, CRITICAL, OFF
+#   set the desired log level, OFF to disable logging altogether
+#
+# ECBUILD_NO_COLOUR : bool
+#   if set, does not colour log output (by default log output is coloured)
+#
+# Usage
+# -----
+#
+# The macros ``ecbuild_debug`` and ``ecbuild_info`` can be used to output
+# messages which are not printed by default. Many ecBuild macros use this
+# facility to log debugging hints. When debugging a CMake run, users can use
+# ``-DECBUILD_LOG_LEVEL=DEBUG`` to get detailed diagnostics.
+#
+##############################################################################
 
 # Define colour escape sequences (https://stackoverflow.com/a/19578320/396967)
 if(NOT (WIN32 OR ECBUILD_NO_COLOUR))
@@ -73,11 +88,15 @@ else()
   set(ECBUILD_LOG_LEVEL ${ECBUILD_WARN})
 endif()
 
+##############################################################################
+
 macro( ecbuild_debug MSG )
   if( ECBUILD_LOG_LEVEL LESS 11)
     message(STATUS "${Blue}DEBUG - ${MSG}${ColourReset}")
   endif()
 endmacro( ecbuild_debug )
+
+##############################################################################
 
 macro( ecbuild_info MSG )
   if( ECBUILD_LOG_LEVEL LESS 21)
@@ -85,17 +104,23 @@ macro( ecbuild_info MSG )
   endif()
 endmacro( ecbuild_info )
 
+##############################################################################
+
 macro( ecbuild_warn MSG )
   if( ECBUILD_LOG_LEVEL LESS 31)
     message(WARNING "${Yellow}WARN - ${MSG}${ColourReset}")
   endif()
 endmacro( ecbuild_warn )
 
+##############################################################################
+
 macro( ecbuild_error MSG )
   if( ECBUILD_LOG_LEVEL LESS 41)
     message(SEND_ERROR "${BoldRed}ERROR - ${MSG}${ColourReset}")
   endif()
 endmacro( ecbuild_error )
+
+##############################################################################
 
 macro( ecbuild_critical MSG )
   if( ECBUILD_LOG_LEVEL LESS 51)
