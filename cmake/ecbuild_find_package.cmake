@@ -66,11 +66,16 @@ macro( ecbuild_find_package )
     endif()
   endif()
 
-  # search user defined paths first
+  # Read environment variables but ONLY if the corresponding CMake variables are unset
 
   if( NOT DEFINED ${PNAME}_PATH AND NOT "$ENV{${PNAME}_PATH}" STREQUAL "" )
     ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${PNAME}_PATH=${${PNAME}_PATH} from environment")
     set( ${PNAME}_PATH "$ENV{${PNAME}_PATH}" )
+  endif()
+
+  if( NOT DEFINED ${_PAR_NAME}_PATH AND NOT "$ENV{${_PAR_NAME}_PATH}" STREQUAL "" )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH} from environment")
+    set( ${_PAR_NAME}_PATH "$ENV{${_PAR_NAME}_PATH}" )
   endif()
 
   if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${_PAR_NAME}_DIR}" STREQUAL "" )
@@ -78,13 +83,10 @@ macro( ecbuild_find_package )
     set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
   endif()
 
-  if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${PNAME}_DIR}" STREQUAL "" )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_DIR=${${PNAME}_DIR} from environment")
-    set( ${_PAR_NAME}_DIR "$ENV{${PNAME}_DIR}" )
-  endif()
+  # search user defined paths first
 
   if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}}, ${PNAME}_PATH=${${PNAME}_PATH}, ${PNAME}_PATH=${${_PAR_NAME}_DIR}")
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${PNAME}_PATH=${${PNAME}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
 
     # 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
 
