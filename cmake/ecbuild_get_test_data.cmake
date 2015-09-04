@@ -269,7 +269,9 @@ endfunction()\n\n" )
 
     endforeach()
 
-    add_test(  NAME ${_p_TARGET} COMMAND ${CMAKE_COMMAND} -P ${_script} )
+    if( ENABLE_TESTS )
+      add_test(  NAME ${_p_TARGET} COMMAND ${CMAKE_COMMAND} -P ${_script} )
+    endif()
 
 endfunction(ecbuild_get_test_multidata)
 
