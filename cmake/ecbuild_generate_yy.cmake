@@ -6,8 +6,59 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# macro to process lex/yacc files
+##############################################################################
+#.rst:
+#
+# ecbuild_generate_yy
+# ===================
+#
+# Process lex/yacc files. ::
+#
+#   ecbuild_generate_yy( YYPREFIX <prefix>
+#                        YACC <file>
+#                        LEX <file>
+#                        DEPENDANT <file1> [ <file2> ... ]
+#                        [ YACC_TARGET <file> ]
+#                        [ LEX_TARGET <file> ]
+#                        [ YACC_FLAGS <flags> ]
+#                        [ LEX_FLAGS <flags> ]
+#                        [ BISON_FLAGS <flags> ]
+#                        [ FLEX_FLAGS <flags> ] )
+#
+# Options
+# -------
+#
+# YYPREFIX : required
+#   prefix to use for file and function names
+#
+# YACC : required
+#   base name of the yacc source file (without .y extension)
+#
+# LEX : required
+#   base name of the lex source file (without .l extension)
+#
+# DEPENDANT : required
+#  list of files which depend on the generated lex and yacc target files
+
+# YACC_TARGET : optional, defaults to YACC
+#   base name of the generated yacc target file (without .c extension)
+#
+# LEX_TARGET : optional, defaults to LEX
+#   base name of the generated lex target file (without .c extension)
+#
+# YACC_FLAGS : optional, defaults to -t
+#   flags to pass to yacc executable
+#
+# LEX_FLAGS : optional
+#   flags to pass to lex executable
+#
+# BISON_FLAGS : optional, defaults to -t
+#   flags to pass to bison executable
+#
+# FLEX_FLAGS : optional, defaults to -l
+#   flags to pass to flex executable
+#
+##############################################################################
 
 macro( ecbuild_generate_yy )
 
