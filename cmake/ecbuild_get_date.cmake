@@ -6,8 +6,18 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# get date macro
+##############################################################################
+#.rst:
+#
+# ecbuild_get_date
+# ================
+#
+# Set the CMake variable ``${DATE}`` to the current date in the form
+# YYYY.mm.DD. ::
+#
+#   ecbuild_get_date( DATE )
+#
+##############################################################################
 
 macro(ecbuild_get_date RESULT)
     if(UNIX)
