@@ -115,7 +115,7 @@ endmacro()
 ##############################################################################
 # macro that only adds a c flag if compiler supports it
 
-macro( cmake_add_c_flags m_c_flags )
+macro( ecbuild_add_c_flags m_c_flags )
 
   set( _flags ${m_c_flags} )
 
@@ -159,3 +159,7 @@ macro( cmake_add_c_flags m_c_flags )
   unset( _flag_ok )
 endmacro()
 
+macro( cmake_add_c_flags m_c_flags )
+  message( DEPRECATION " cmake_add_c_flags is deprecated, use ecbuild_add_c_flags instead." )
+  ecbuild_add_c_flags( ${m_c_flags} )
+endmacro()
