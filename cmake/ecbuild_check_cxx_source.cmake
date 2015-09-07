@@ -124,7 +124,7 @@ endmacro()
 ##############################################################################
 # macro that only adds a cxx flag if compiler supports it
 
-macro( cmake_add_cxx_flags m_cxx_flags )
+macro( ecbuild_add_cxx_flags m_cxx_flags )
 
   set( _flags ${m_cxx_flags} )
   if( _flags AND CMAKE_CXX_COMPILER_LOADED )
@@ -157,4 +157,9 @@ macro( cmake_add_cxx_flags m_cxx_flags )
   endif()
   unset( _flags )
 
+endmacro()
+
+macro( cmake_add_cxx_flags m_cxx_flags )
+  message( DEPRECATION " cmake_add_cxx_flags is deprecated, use ecbuild_add_cxx_flags instead." )
+  ecbuild_add_cxx_flags( ${m_cxx_flags} )
 endmacro()
