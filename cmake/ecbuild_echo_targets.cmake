@@ -1,14 +1,18 @@
+# (C) Copyright 1996-2015 ECMWF.
 #
-#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation
+# nor does it submit to any jurisdiction.
+
 # FUNCTION ecbuild_echo_targets ( <list-of-targets> )
 #
 #   Writes all possible target properties of the specified list-of-targets.
 #   This is very useful for debugging
-# 
 
+function(ecbuild_echo_target_property tgt prop)
 
-function(echo_target_property tgt prop)
- 
   cmake_policy(PUSH)
 
   if( POLICY CMP0026 )
@@ -19,7 +23,7 @@ function(echo_target_property tgt prop)
   get_property(v TARGET ${tgt} PROPERTY ${prop})
   get_property(d TARGET ${tgt} PROPERTY ${prop} DEFINED)
   get_property(s TARGET ${tgt} PROPERTY ${prop} SET)
- 
+
   # only produce output for values that are set
   #if(s)
     message("tgt='${tgt}' prop='${prop}'")
@@ -32,13 +36,13 @@ function(echo_target_property tgt prop)
   cmake_policy(POP)
 
 endfunction()
- 
-function(echo_target tgt)
+
+function(ecbuild_echo_target tgt)
   if(NOT TARGET ${tgt})
     message("There is no target named '${tgt}'")
     return()
   endif()
- 
+
   set(props
 DEBUG_OUTPUT_NAME
 DEBUG_POSTFIX
@@ -181,18 +185,18 @@ VS_WINRT_REFERENCES
 WIN32_EXECUTABLE
 XCODE_ATTRIBUTE_WHATEVER
 )
- 
+
   message("======================== ${tgt} ========================")
   foreach(p ${props})
-    echo_target_property("${t}" "${p}")
+    ecbuild_echo_target_property("${t}" "${p}")
   endforeach()
   message("")
 endfunction()
- 
- 
+
+
 function(ecbuild_echo_targets)
   set(tgts ${ARGV})
   foreach(t ${tgts})
-    echo_target("${t}")
+    ecbuild_echo_target("${t}")
   endforeach()
 endfunction()
