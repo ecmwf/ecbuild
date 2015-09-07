@@ -6,6 +6,24 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+##############################################################################
+#.rst:
+#
+# ecbuild_print_summary
+# =====================
+#
+# Print a summary of the project, build environment and enabled features. ::
+#
+#   ecbuild_print_summary()
+#
+# If ``project_summary.cmake`` exist in the source root directory, a project
+# summary is printed by including this file.
+#
+# For a top level project, a summary of the build environment and a feature
+# summary are also printed.
+#
+##############################################################################
+
 macro( ecbuild_print_summary )
 
   if( EXISTS ${PROJECT_SOURCE_DIR}/project_summary.cmake )
