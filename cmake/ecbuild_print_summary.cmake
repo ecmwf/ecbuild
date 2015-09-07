@@ -83,33 +83,6 @@ macro( ecbuild_print_summary )
     # issue warnings / errors in case there are unused project files
     ecbuild_warn_unused_files()
 
-    # issue a warning that 'make install' mighty be broken for old cmakes
-    if( ${CMAKE_VERSION} VERSION_LESS "2.8.3" )
-
-      message( STATUS " +++ WARNING +++ WARNING +++ WARNING +++" )
-      message( STATUS " +++ " )
-      message( STATUS " +++ This CMake version [${CMAKE_VERSION}] is rather OLD !!" )
-      message( STATUS " +++ " )
-      message( STATUS " +++ We work hard to keep CMake backward compatibility (support >= 2.6.4)" )
-      message( STATUS " +++ but there are some limits inherent to older versions." )
-      message( STATUS " +++ " )
-      message( STATUS " +++ You will be able to build the software... " )
-      message( STATUS " +++ " )
-      message( STATUS " +++ But: " )
-      message( STATUS " +++     * the 'make install' target most likely will NOT WORK" )
-      message( STATUS " +++     * if you want to install these binaries you might need to copy them by yourself" )
-      message( STATUS " +++     * the binaries are in '${CMAKE_BINARY_DIR}' /lib and /bin" )
-      message( STATUS " +++     * copying headers will take substantially more work, and you might end up copying files that won't be needed" )
-      message( STATUS " +++ " )
-      message( STATUS " +++ Therefore, we recommend that you:  " )
-      message( STATUS " +++     * upgrade to a newer CMake with version at least >= 2.8.3" )
-      message( STATUS " +++     * remove this build directory '${CMAKE_BINARY_DIR}'" )
-      message( STATUS " +++     * rerun a newer cmake on an new empty build directory" )
-      message( STATUS " +++ " )
-      message( STATUS " +++ WARNING +++ WARNING +++ WARNING +++" )
-
-    endif()
-
   endif( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
 endmacro( ecbuild_print_summary )
