@@ -113,11 +113,11 @@ endif()
 
 if( CMAKE_COMPILER_IS_GNUCXX )
 
-   cmake_add_cxx_flags("-pipe") # use pipe for faster compilation
+   ecbuild_add_cxx_flags("-pipe") # use pipe for faster compilation
 
     if( ENABLE_WARNINGS )
-        cmake_add_cxx_flags("-Wall")
-        #    cmake_add_cxx_flags("-Wextra")
+        ecbuild_add_cxx_flags("-Wall")
+        #    ecbuild_add_cxx_flags("-Wextra")
     endif()
 
 endif()

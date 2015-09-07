@@ -14,9 +14,9 @@ macro( ecbuild_add_cxx11_flags )
 
 	# if( CMAKE_COMPILER_IS_GNUCXX )
 	# 	if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
-	# 		cmake_add_cxx_flags("-std=c++0x")
+	# 		ecbuild_add_cxx_flags("-std=c++0x")
 	# 	else()
-	# 		cmake_add_cxx_flags("-std=c++11")
+	# 		ecbuild_add_cxx_flags("-std=c++11")
 	# 	endif()
 	# endif()
 

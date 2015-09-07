@@ -185,7 +185,7 @@ macro( ecbuild_enable_mpi )
     endif()
 
     if( MPI_CXX_FOUND AND NOT CXX_COMPILER_SUPPORTS_MPI )
-        cmake_add_cxx_flags("${MPI_CXX_COMPILE_FLAGS}")
+        ecbuild_add_cxx_flags("${MPI_CXX_COMPILE_FLAGS}")
         include_directories(${MPI_CXX_INCLUDE_PATH})
     endif()
 
@@ -217,7 +217,7 @@ macro( ecbuild_include_mpi )
 
     if( MPI_CXX_FOUND AND NOT CXX_COMPILER_SUPPORTS_MPI )
         include( ecbuild_check_cxx_source )
-        cmake_add_cxx_flags("${MPI_CXX_COMPILE_FLAGS}")
+        ecbuild_add_cxx_flags("${MPI_CXX_COMPILE_FLAGS}")
         include_directories(${MPI_CXX_INCLUDE_PATH})
     endif()
 
