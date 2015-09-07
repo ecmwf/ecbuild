@@ -6,10 +6,17 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-# FUNCTION ecbuild_echo_targets ( <list-of-targets> )
+##############################################################################
+#.rst:
 #
-#   Writes all possible target properties of the specified list-of-targets.
-#   This is very useful for debugging
+# ecbuild_echo_target_property
+# ============================
+#
+# Output a given property of a given target. ::
+#
+#   ecbuild_echo_target_property( <target> <property> )
+#
+##############################################################################
 
 function(ecbuild_echo_target_property tgt prop)
 
@@ -36,6 +43,18 @@ function(ecbuild_echo_target_property tgt prop)
   cmake_policy(POP)
 
 endfunction()
+
+##############################################################################
+#.rst:
+#
+# ecbuild_echo_target
+# ===================
+#
+# Output all possible target properties of a given target. ::
+#
+#   ecbuild_echo_target( <target> )
+#
+##############################################################################
 
 function(ecbuild_echo_target tgt)
   if(NOT TARGET ${tgt})
@@ -193,6 +212,18 @@ XCODE_ATTRIBUTE_WHATEVER
   message("")
 endfunction()
 
+##############################################################################
+#.rst:
+#
+# ecbuild_echo_targets
+# ====================
+#
+# Output all possible target properties of the specified list-of-targets.
+# This is very useful for debugging. ::
+#
+#   ecbuild_echo_targets( <list-of-targets> )
+#
+##############################################################################
 
 function(ecbuild_echo_targets)
   set(tgts ${ARGV})
