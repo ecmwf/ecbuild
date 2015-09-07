@@ -154,7 +154,27 @@ macro( ecbuild_check_c_source_return SOURCE )
 endmacro()
 
 ##############################################################################
-# macro that only adds a c flag if compiler supports it
+#.rst:
+#
+# ecbuild_add_c_flags
+# ===================
+#
+# Add C compiler flags to CMAKE_C_FLAGS only if supported by the compiler. ::
+#
+#   ecbuild_add_c_flags( <flag1> [ <flag2> ... ]
+#                        [ BUILD <build> ]
+#                        [ NAME <name> ] )
+#
+# Options
+# -------
+#
+# BUILD : optional
+#   add flags to ``CMAKE_C_FLAGS_<build>`` instead of ``CMAKE_C_FLAGS``
+#
+# NAME : optional
+#   name of the check (if omitted, checks are enumerated)
+#
+##############################################################################
 
 macro( ecbuild_add_c_flags m_c_flags )
 
