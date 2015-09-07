@@ -101,12 +101,12 @@ endif()
 
 if( CMAKE_COMPILER_IS_GNUCC )
 
-    cmake_add_c_flags("-pipe") # use pipe for faster compilation
+    ecbuild_add_c_flags("-pipe") # use pipe for faster compilation
 
     if( ENABLE_WARNINGS )
-        cmake_add_c_flags("-Wall")
-        # cmake_add_c_flags("-pedantic")
-        # cmake_add_c_flags("-Wextra")
+        ecbuild_add_c_flags("-Wall")
+        # ecbuild_add_c_flags("-pedantic")
+        # ecbuild_add_c_flags("-Wextra")
     endif()
 
 endif()

@@ -180,7 +180,7 @@ macro( ecbuild_enable_mpi )
     endif()
 
     if( MPI_C_FOUND AND NOT C_COMPILER_SUPPORTS_MPI )
-        cmake_add_c_flags("${MPI_C_COMPILE_FLAGS}")
+        ecbuild_add_c_flags("${MPI_C_COMPILE_FLAGS}")
         include_directories(${MPI_C_INCLUDE_PATH})
     endif()
 
@@ -211,7 +211,7 @@ macro( ecbuild_include_mpi )
 
     if( MPI_C_FOUND AND NOT C_COMPILER_SUPPORTS_MPI )
         include( ecbuild_check_c_source )
-        cmake_add_c_flags("${MPI_C_COMPILE_FLAGS}")
+        ecbuild_add_c_flags("${MPI_C_COMPILE_FLAGS}")
         include_directories(${MPI_C_INCLUDE_PATH})
     endif()
 
