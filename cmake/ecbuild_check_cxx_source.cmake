@@ -163,7 +163,22 @@ macro( ecbuild_check_cxx_source_return SOURCE )
 endmacro()
 
 ##############################################################################
-# macro that only adds a cxx flag if compiler supports it
+#.rst:
+#
+# ecbuild_add_cxx_flags
+# =====================
+#
+# Add C++ compiler flags to CMAKE_CXX_FLAGS only if supported by compiler. ::
+#
+#   ecbuild_add_cxx_flags( <flag1> [ <flag2> ... ] [ BUILD <build> ] )
+#
+# Options
+# -------
+#
+# BUILD : optional
+#   add flags to ``CMAKE_CXX_FLAGS_<build>`` instead of ``CMAKE_CXX_FLAGS``
+#
+##############################################################################
 
 macro( ecbuild_add_cxx_flags m_cxx_flags )
 
