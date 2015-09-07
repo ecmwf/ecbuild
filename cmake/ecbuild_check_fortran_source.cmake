@@ -117,7 +117,7 @@ endmacro()
 # macro that only adds a Fortran flag if compiler supports it
 
 include( CheckFortranCompilerFlag )
-macro( cmake_add_fortran_flags m_fortran_flags )
+macro( ecbuild_add_fortran_flags m_fortran_flags )
 
   set( _flags ${m_fortran_flags} )
 
@@ -155,3 +155,7 @@ macro( cmake_add_fortran_flags m_fortran_flags )
 
 endmacro()
 
+macro( cmake_add_fortran_flags m_fortran_flags )
+  message( DEPRECATION " cmake_add_fortran_flags is deprecated, use ecbuild_add_fortran_flags instead." )
+  ecbuild_add_fortran_flags( ${m_fortran_flags} )
+endmacro()
