@@ -12,42 +12,44 @@
 
 function( _download_test_data _p_NAME _p_DIRNAME )
 
-    # TODO: make that 'at ecmwf'
-    #if(1)
-    #unset(ENV{no_proxy})
-    #unset(ENV{NO_PROXY})
-    #set(ENV{http_proxy} "http://proxy.ecmwf.int:3333")
-    #endif()
+  # TODO: make that 'at ecmwf'
+  #if(1)
+  #unset(ENV{no_proxy})
+  #unset(ENV{NO_PROXY})
+  #set(ENV{http_proxy} "http://proxy.ecmwf.int:3333")
+  #endif()
 
-    find_program( CURL_PROGRAM curl )
+  find_program( CURL_PROGRAM curl )
 
-    if( CURL_PROGRAM )
+  if( CURL_PROGRAM )
 
-		add_custom_command( OUTPUT ${_p_NAME}
-			COMMENT "(curl) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
-			COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
+    add_custom_command( OUTPUT ${_p_NAME}
+      COMMENT "(curl) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
+      COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_NAME}
+              http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
+
+  else()
+
+    find_program( WGET_PROGRAM wget )
+
+    if( WGET_PROGRAM )
+
+      add_custom_command( OUTPUT ${_p_NAME}
+        COMMENT "(wget) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
+        COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME}
+                http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
 
     else()
 
-        find_program( WGET_PROGRAM wget )
-
-        if( WGET_PROGRAM )
-
-				 add_custom_command( OUTPUT ${_p_NAME}
-						COMMENT "(wget) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
-						COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME} http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
-
-				else()
-
-					if( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
-						message( WARNING "Couldn't find curl neither wget -- cannot download test data from server.\nPlease obtain the test data by other means and pleace it in the build directory." )
-						set( WARNING_CANNOT_DOWNLOAD_TEST_DATA 1 CACHE INTERNAL "Couldn't find curl neither wget -- cannot download test data from server" )
-						mark_as_advanced( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
-					endif()
-
-        endif()
+      if( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
+        message( WARNING "Couldn't find curl neither wget -- cannot download test data from server.\nPlease obtain the test data by other means and pleace it in the build directory." )
+        set( WARNING_CANNOT_DOWNLOAD_TEST_DATA 1 CACHE INTERNAL "Couldn't find curl neither wget -- cannot download test data from server" )
+        mark_as_advanced( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
+      endif()
 
     endif()
+
+  endif()
 
 endfunction()
 
