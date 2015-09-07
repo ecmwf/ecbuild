@@ -301,14 +301,14 @@ if( UNIX )
 
 		if( CMAKE_Fortran_COMPILER_ID MATCHES "XL" )
 
-			cmake_add_fortran_flags("-qxflag=dealloc_cfptr")
-			cmake_add_fortran_flags("-qextname")
-			cmake_add_fortran_flags("-qdpc=e")
-			cmake_add_fortran_flags("-bmaxdata:0x40000000")
-			cmake_add_fortran_flags("-bloadmap:loadmap -bmap:loadmap")
+			ecbuild_add_fortran_flags("-qxflag=dealloc_cfptr")
+			ecbuild_add_fortran_flags("-qextname")
+			ecbuild_add_fortran_flags("-qdpc=e")
+			ecbuild_add_fortran_flags("-bmaxdata:0x40000000")
+			ecbuild_add_fortran_flags("-bloadmap:loadmap -bmap:loadmap")
 
 			if(EC_OS_BITS EQUAL "32" )
-				cmake_add_fortran_flags("-q32")
+				ecbuild_add_fortran_flags("-q32")
 			endif()
 		endif()
 
