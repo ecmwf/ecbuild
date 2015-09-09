@@ -7,7 +7,75 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# function for adding a subproject directory
+#.rst:
+#
+# ecbuild_use_package
+# ===================
+#
+# Add a project from a source directory, a subdirectory or search for it. ::
+#
+#   ecbuild_use_package( PROJECT <name>
+#                        [ VERSION <version> [ EXACT ] ]
+#                        [ REQUIRED ]
+#                        [ QUIET ] )
+#
+# Options
+# -------
+#
+# NAME : required
+#   package name (used as ``Find<name>.cmake`` and ``<name>-config.cmake``)
+#
+# VERSION : optional
+#   minimum required package version
+#
+# EXACT : optional, requires VERSION
+#   require the exact version rather than a minimum version
+#
+# REQUIRED : optional
+#   fail if package cannot be found
+#
+# QUIET : optional
+#   do not output package information if found
+#
+# Input variables
+# ---------------
+#
+# The following CMake variables influence the behaviour if set (``<name>``
+# is the package name as given, ``<NAME>`` is the capitalised version):
+#
+# :<NAME>_SOURCE:    path to source directory for package
+# :SUBPROJECT_DIRS:  list of additional paths to search for package source
+#
+# See also ``ecbuild_find_package`` for additional CMake variables relevant
+# when search for the package (step 6 below).
+#
+# Usage
+# -----
+#
+# Use another CMake project as a dependency by either building it from source
+# i.e. adding its source directory as a subdirectory or searching for it. This
+# transparently deals with the case where the project has already been included
+# e.g. because multiple projects with shared dependencies are built together.
+#
+# The search proceeds as follows:
+#
+# 1.  If ``SUBPROJECT_DIRS`` is set, each directory in the list is searched
+#     for a subdirectory <name> and ``<NAME>_SOURCE`` is set to the first one
+#     found (if any).
+#
+# 2.  If ``<NAME>_SOURCE`` is set, check if this directory is a CMake project
+#     (contains ``CMakeLists.txt`` and fail if not.
+#
+# 3.  Otherwise, check if the current directory has a ``<name>`` subdirectory.
+#
+# 4.  If the project has not been previously marked as found or added as a
+#     subdirectory and a project source directory has been found in steps 1-3
+#     add this subdirectory.
+#
+# 5.  If the project has been marked as found, check the version.
+#
+# 6.  Otherwise, search for the project using ``ecbuild_find_package``.
+#
 ##############################################################################
 
 macro( ecbuild_use_package )
