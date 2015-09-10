@@ -8,11 +8,14 @@
 
 ############################################################################################
 #
-# macro for adding search paths to CMAKE_PREFIX_PATH
+# macro for adding search paths for a package to a given CMake variable
 #
 # usage: ecbuild_list_extra_search_paths( netcdf4 VARIABLE )
 
 function( ecbuild_list_extra_search_paths pkg var )
+
+  message( DEPRECATION " ecbuild_list_extra_search_paths should no longer be"
+           " used and is going to be removed in a future version of ecBuild." )
 
 	# debug_var( pkg )
 	# debug_var( var )
