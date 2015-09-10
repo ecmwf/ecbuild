@@ -226,16 +226,69 @@ function( ecbuild_get_test_data )
 endfunction(ecbuild_get_test_data)
 
 ##############################################################################
-# function for getting test data
+#.rst:
 #
-# examples:
+# ecbuild_get_test_multidata
+# ==========================
 #
-## no check done
-#    ecbuild_get_test_multidata( TARGET get_foobar_data NAMES foo.grib bar.grib DIRNAME test/data/dir NOCHECK )
+# Download multiple test data sets at build time. ::
 #
-## check for remote md5
-#    ecbuild_get_test_multidata( TARGET get_foobar_data NAMES foo.grib bar.grib DIRNAME test/data/dir )
+#   ecbuild_get_test_multidata( NAMES <name1> [ <name2> ... ]
+#                               TARGET <target>
+#                               [ DIRNAME <dir> ]
+#                               [ NOCHECK ] )
 #
+# curl or wget is required (curl is preferred if available).
+#
+# Options
+# -------
+#
+# NAMES : required
+#   list of names of the test data files
+#
+# TARGET : optional
+#   CMake target name
+#
+# DIRNAME : optional, defaults to <project>/<relative path to current dir>
+#   directory in which the test data resides
+#
+# NOCHECK : optional
+#   do not verify the md5 checksum of the data file
+#
+# Usage
+# -----
+#
+# Download test data from ``http://download.ecmwf.org/test-data/<DIRNAME>``
+# for each name given in the list of ``NAMES``. Each name may contain a
+# relative path, which is appended to ``DIRNAME`` and may be followed by an
+# md5 checksum, separated with a ``:`` (the name must not contain spaces).
+#
+# If the ``DIRNAME`` argument is not given, the project name followed by the
+# relative path from the root directory to the current directory is used.
+#
+# By default, each downloaded file is verified against an md5 checksum, either
+# given as part of the name as described above or a remote checksum downloaded
+# from the server. Use the argument ``NOCHECK`` to disable this check.
+#
+# Examples
+# --------
+#
+# Do not verify checksums: ::
+#
+#   ecbuild_get_test_multidata( TARGET get_grib_data NAMES foo.grib bar.grib
+#                               DIRNAME test/data/dir NOCHECK )
+#
+# Checksums agains remote md5 file: ::
+#
+#   ecbuild_get_test_multidata( TARGET get_grib_data NAMES foo.grib bar.grib
+#                               DIRNAME test/data/dir )
+#
+# Checksum agains local md5: ::
+#
+#   ecbuild_get_test_multidata( TARGET get_grib_data DIRNAME test/data/dir
+#                               NAMES msl.grib:f69ca0929d1122c7878d19f32401abe9 )
+#
+##############################################################################
 
 function( ecbuild_get_test_multidata )
 
@@ -322,4 +375,3 @@ endfunction()\n\n" )
     endif()
 
 endfunction(ecbuild_get_test_multidata)
-
