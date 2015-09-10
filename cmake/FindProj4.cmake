@@ -7,8 +7,12 @@
 #
 # Define PROJ4_MIN_VERSION for which version desired.
 
-if( NOT PROJ4_PATH AND NOT "$ENV{PROJ4_PATH}" STREQUAL "" )
-    set( PROJ4_PATH "$ENV{PROJ4_PATH}" )
+if( NOT PROJ4_PATH )
+    if ( NOT "$ENV{PROJ4_PATH}" STREQUAL "" )
+        set( PROJ4_PATH "$ENV{PROJ4_PATH}" )
+    elseif ( NOT "$ENV{PROJ4_DIR}" STREQUAL "" )
+        set( PROJ4_PATH "$ENV{PROJ4_DIR}" )
+    endif()
 endif()
 
 if( NOT PROJ4_PATH )
