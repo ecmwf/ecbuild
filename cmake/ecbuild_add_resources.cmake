@@ -12,7 +12,7 @@
 # ecbuild_add_resources
 # =====================
 #
-# Add resources as project files but optionally exclude them from packing. ::
+# Add resources as project files but optionally exclude them from packaging. ::
 #
 #   ecbuild_add_resources( TARGET <name>
 #                          [ SOURCES <source1> [<source2> ...] ]
@@ -29,26 +29,27 @@
 # TARGET : required
 #   target name (target will only be created if there are any sources)
 #
-# SOURCES : optional
-#   list of source files to pack (alias for SOURCES_PACK)
+# SOURCES : optional, alias for SOURCES_PACK
+#   list of source files included when packaging
 #
-# SOURCES_PACK : optional
-#   list of source files to pack (alias for SOURCES)
+# SOURCES_PACK : optional, alias for SOURCES
+#   list of source files included when packaging
 #
 # SOURCES_DONT_PACK : optional
-#   list of source files not to pack
+#   list of source files excluded when packaging
 #
-# PACK : optional
-#   list of files to pack (takes priority over DONT_PACK, DONT_PACK_DIRS, DONT_PACK_REGEX)
+# PACK : optional, priority over DONT_PACK, DONT_PACK_DIRS, DONT_PACK_REGEX
+#   list of files to include when packaging
 #
 # DONT_PACK : optional
-#   list of files not to pack
+#   list of files to exclude when packaging
 #
 # DONT_PACK_DIRS : optional
-#   list of directories not to pack
+#   list of directories to exclude when packaging
 #
 # DONT_PACK_REGEX : optional
-#   list of regular expressions to match files and directories not to pack
+#   list of regular expressions to match files and directories to exclude when
+#   packaging
 #
 ##############################################################################
 
