@@ -35,8 +35,7 @@
 #                        [ CXXFLAGS <flag1> [<flag2> ...] ]
 #                        [ FFLAGS <flag1> [<flag2> ...] ]
 #                        [ LINKER_LANGUAGE <lang> ]
-#                        [ OUTPUT_NAME <name> ]
-#                        [ COMPONENT <name> ] )
+#                        [ OUTPUT_NAME <name> ] )
 #
 # Options
 # -------
@@ -124,9 +123,6 @@
 #
 # OUTPUT_NAME : optional
 #   sets the OUTPUT_NAME property on the target
-#
-# COMPONENT : optional, currently ignored
-#   sets the installation COMPONENT
 #
 ##############################################################################
 
