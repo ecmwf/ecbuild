@@ -53,10 +53,11 @@
 # Usage
 # -----
 #
-# Features with DEFAULT OFF need to be explcitly enabled by the user with
-# -DENABLE_<FEATURE>=ON. If a feature is enabled, all REQUIRED_PACKAGES are
-# found and every CONDITION is met, ecBuild sets the variable HAVE_<FEATURE>
-# to ON. This is the variable to use to check for the feature availability.
+# Features with ``DEFAULT OFF`` need to be explcitly enabled by the user with
+# ``-DENABLE_<FEATURE>=ON``. If a feature is enabled, all ``REQUIRED_PACKAGES``
+# are found and every ``CONDITION`` is met, ecBuild sets the variable
+# ``HAVE_<FEATURE>`` to ``ON``. This is the variable to use to check for the
+# availability of the feature.
 #
 ##############################################################################
 
