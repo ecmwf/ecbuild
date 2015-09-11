@@ -6,6 +6,10 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+##############################################################################
+
+# Write transitive list of library dependencies of each library in ${libraries}
+# to CMake variable ${dependencies}
 function( ecbuild_library_dependencies dependencies libraries )
 
   set( _libraries ${${libraries}} )
@@ -59,8 +63,10 @@ function( ecbuild_library_dependencies dependencies libraries )
 
 endfunction(ecbuild_library_dependencies)
 
-#############################################################################################
+##############################################################################
 
+# Write list of include directories of each library in ${libraries}
+# to CMake variable ${dependencies}
 function( ecbuild_include_dependencies dependencies libraries )
 
   set( _libraries ${${libraries}} )
@@ -83,8 +89,10 @@ function( ecbuild_include_dependencies dependencies libraries )
 
 endfunction(ecbuild_include_dependencies)
 
-#############################################################################################
+##############################################################################
 
+# Transform list of libraries in ${libraries}, ignoring any in ${ignore_libs},
+# and write pkg-config compatible string to CMake variable ${pkgconfig_libs}
 function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
   set( _libraries ${${libraries}} )
@@ -157,10 +165,11 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
 endfunction(ecbuild_pkgconfig_libs)
 
+##############################################################################
 
-#############################################################################################
-
-
+# Transform list of include directories in ${INCLUDE_DIRS}, ignoring any in
+# ${ignore_includes} and ${${PNAME}_INCLUDE_DIRS}, and write pkg-config
+# compatible string to CMake variable ${INCLUDE}
 function( ecbuild_pkgconfig_include INCLUDE INCLUDE_DIRS ignore_includes )
 
   string( TOUPPER ${PROJECT_NAME} PNAME )
