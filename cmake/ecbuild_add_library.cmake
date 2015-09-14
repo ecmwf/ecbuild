@@ -49,13 +49,10 @@
 # TYPE : optional
 #   library type, one of:
 #
-#   SHARED
-#     libraries are linked dynamically and loaded at runtime
-#   STATIC
-#     archives of object files for use when linking other targets.
-#   MODULE
-#     plugins that are not linked into other targets but may be loaded
-#     dynamically at runtime using dlopen-like functionality
+#   :SHARED: libraries are linked dynamically and loaded at runtime
+#   :STATIC: archives of object files for use when linking other targets.
+#   :MODULE: plugins that are not linked into other targets but may be loaded
+#            dynamically at runtime using dlopen-like functionality
 #
 # TEMPLATES : optional
 #   list of files specified as SOURCES which are not to be compiled separately
@@ -91,10 +88,8 @@
 # INSTALL_HEADERS : optional
 #   specify which header files to install:
 #
-#   LISTED
-#     install header files listed as SOURCES
-#   ALL
-#     install all header files ending in .h, .hh, .hpp, .H
+#   :LISTED: install header files listed as SOURCES
+#   :ALL:    install all header files ending in .h, .hh, .hpp, .H
 #
 # INSTALL_HEADERS_LIST : optional
 #   list of extra headers to install
@@ -116,7 +111,6 @@
 #
 # FFLAGS : optional
 #   list of Fortran compiler flags to use for all Fortran source files
-#
 #
 # LINKER_LANGUAGE : optional
 #   sets the LINKER_LANGUAGE property on the target
