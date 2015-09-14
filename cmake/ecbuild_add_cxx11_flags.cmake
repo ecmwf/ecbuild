@@ -12,8 +12,11 @@
 # ecbuild_add_cxx11_flags
 # =======================
 #
-# Add cxx11 flags to CXX compilation flags
-# (uses macros from the project https://github.com/UCL/GreatCMakeCookOff)
+# Add cxx11 flags to CXX compilation flags. ::
+#
+#   ecbuild_add_cxx11_flags()
+#
+# This macro uses macros from http://github.com/UCL/GreatCMakeCookOff.
 #
 ##############################################################################
 
