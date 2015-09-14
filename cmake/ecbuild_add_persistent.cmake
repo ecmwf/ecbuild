@@ -26,8 +26,9 @@
 #
 # FILES : required
 #   list of base names of files to build persistent class information for
-#   (the source file is expected to have a .h extension, the generated file
-#   gets a .b extension)
+#
+#   The source file is expected to have a .h extension, the generated file
+#   gets a .b extension.
 #
 # NAMESPACE : optional
 #   C++ namespace to place the persistent class information in
