@@ -6,9 +6,33 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# macro to check for cxx11 features
-# uses macros from the project github.com/UCL/GreatCMakeCookOff
+##############################################################################
+#.rst:
+#
+# ecbuild_check_cxx11
+# ===================
+#
+# Check for C++11 features. ::
+#
+#   ecbuild_check_cxx11( [ FEATURES <feature1> [ <feature2> ... ] ]
+#                        [ REQUIRED <feature1> [ <feature2> ... ] ]
+#                        [ PRINT ] )
+#
+# This function uses macros from http://github.com/UCL/GreatCMakeCookOff
+#
+# Options
+# -------
+#
+# FEATURES : optional, checks for all features if omitted
+#   list of features to check for
+#
+# REQUIRED : optional
+#   list of required features to check for
+#
+# PRINT : optional
+#   print a summary of features check for, found and not found
+#
+##############################################################################
 
 function( ecbuild_check_cxx11 )
 

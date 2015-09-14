@@ -6,20 +6,42 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# macro to find python
-
-# OUTPUT:
-#   PYTHONINTERP_FOUND
-#   PYTHONLIBS_FOUND
-#   PYTHON_FOUND
-#   PYTHON_VERSION_MAJOR
-#   PYTHON_VERSION_MINOR
-#   PYTHON_VERSION_PATCH
-#   PYTHON_VERSION_STRING
-#   PYTHON_INCLUDE_DIRS
-#   PYTHON_LIBRARIES
-#   PYTHON_SITE_PACKAGES
+##############################################################################
+#.rst:
+#
+# ecbuild_find_python
+# ===================
+#
+# Find Python interpreter, its version and the Python libraries. ::
+#
+#   ecbuild_find_python( [ VERSION <version> ] [ REQUIRED ] )
+#
+# Options
+# -------
+#
+# VERSION : optional
+#   minimum required version
+#
+# REQUIRED : optional
+#   fail if Python was not found
+#
+# Output variables
+# ----------------
+#
+# The following CMake variables are set if perl was found:
+#
+# :PYTHONINTERP_FOUND:    Python interpreter was found
+# :PYTHONLIBS_FOUND:      Python libraries were found
+# :PYTHON_FOUND:          Python was found (both interpreter and libraries)
+# :PYTHON_VERSION_MAJOR:  major version number
+# :PYTHON_VERSION_MINOR:  minor version number
+# :PYTHON_VERSION_PATCH:  patch version number
+# :PYTHON_VERSION_STRING: Python version
+# :PYTHON_INCLUDE_DIRS:   Python include directories
+# :PYTHON_LIBRARIES:      Python libraries
+# :PYTHON_SITE_PACKAGES:  Python site packages directory
+#
+##############################################################################
 
 set( __test_python ${CMAKE_CURRENT_LIST_DIR}/pymain.c )
 

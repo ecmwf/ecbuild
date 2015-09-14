@@ -6,8 +6,24 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# generates the config header fot the project with the system introspection done by CMake
+##############################################################################
+#.rst:
+#
+# ecbuild_generate_config_headers
+# ===============================
+#
+# Generates the ecBuild configuration header for the project with the system
+# introspection done by CMake. ::
+#
+#   ecbuild_generate_config_headers( [ DESTINATION <directory> ] )
+#
+# Options
+# -------
+#
+# DESTINATION : optional
+#   installation destination directory
+#
+##############################################################################
 
 function( ecbuild_generate_config_headers )
 

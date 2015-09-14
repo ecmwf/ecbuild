@@ -6,9 +6,19 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# macro to add cxx11 flags to compilation
-# uses macros from the project github.com/UCL/GreatCMakeCookOff
+##############################################################################
+#.rst:
+#
+# ecbuild_add_cxx11_flags
+# =======================
+#
+# Add cxx11 flags to CXX compilation flags. ::
+#
+#   ecbuild_add_cxx11_flags()
+#
+# This macro uses macros from http://github.com/UCL/GreatCMakeCookOff.
+#
+##############################################################################
 
 macro( ecbuild_add_cxx11_flags )
 

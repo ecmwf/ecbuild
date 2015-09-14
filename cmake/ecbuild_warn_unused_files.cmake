@@ -6,8 +6,28 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# print warnings about unused files
+##############################################################################
+#.rst:
+#
+# ecbuild_warn_unused_files
+# =========================
+#
+# Print warnings about unused source files in the project. ::
+#
+#   ecbuild_warn_unused_files()
+#
+# If the CMake variable ``CHECK_UNUSED_FILES`` is set, ecBuild will keep track
+# of any source files (.c, .cc, .cpp, .cxx) which are not part of a CMake
+# target. If set, this macro reports unused files if any have been found. This
+# is considered a fatal error unless ``UNUSED_FILES_LEVEL`` is set to a value
+# different from ``ERROR``.
+#
+# .. note ::
+#
+#   Enabling ``CHECK_UNUSED_FILES`` can slow down the CMake configure time
+#   considerably!
+#
+##############################################################################
 
 macro( ecbuild_warn_unused_files )
 

@@ -6,7 +6,30 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# macro to initialize a project
+##############################################################################
+#.rst:
+#
+# ecbuild_declare_project
+# =======================
+#
+# Initialise an ecBuild project. A CMake project must have previously been
+# declared with ``project( <name> ... )``. Sets the following CMake variables
+# (where ``PNAME`` is the capitalised project name):
+#
+# :<PNAME>_GIT_SHA1:            Git revision (if project is a Git repo)
+# :<PNAME>_GIT_SHA1_SHORT:      short Git revision (if project is a Git repo)
+# :<PNAME>_VERSION:             version in format ``MAJOR.MINOR.PATCH``
+# :<PNAME>_VERSION_STR:         version as given in ``VERSION.cmake`` or 0.0.0
+# :<PNAME>_MAJOR_VERSION:       major version number
+# :<PNAME>_MINOR_VERSION:       minor version number
+# :<PNAME>_PATCH_VERSION:       patch version number
+# :<PNAME>_INSTALL_BIN_DIR:     directory for installing executables
+# :<PNAME>_INSTALL_LIB_DIR:     directory for installing libraries
+# :<PNAME>_INSTALL_INCLUDE_DIR: directory for installing include files
+# :<PNAME>_INSTALL_DATA_DIR:    directory for installing data
+# :<PNAME>_INSTALL_CMAKE_DIR:   directory for installing CMake files
+#
+##############################################################################
 
 macro( ecbuild_declare_project )
 

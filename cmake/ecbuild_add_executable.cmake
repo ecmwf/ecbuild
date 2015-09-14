@@ -7,7 +7,90 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding a test
+#.rst:
+#
+# ecbuild_add_executable
+# ======================
+#
+# Add an executable with a given list of source files. ::
+#
+#   ecbuild_add_executable( TARGET <name>
+#                           SOURCES <source1> [<source2> ...]
+#                           [ TEMPLATES <template1> [<template2> ...] ]
+#                           [ LIBS <library1> [<library2> ...] ]
+#                           [ INCLUDES <path1> [<path2> ...] ]
+#                           [ DEFINITIONS <definition1> [<definition2> ...] ]
+#                           [ PERSISTENT <file1> [<file2> ...] ]
+#                           [ GENERATED <file1> [<file2> ...] ]
+#                           [ DEPENDS <target1> [<target2> ...] ]
+#                           [ CONDITION <condition1> [<condition2> ...] ]
+#                           [ NOINSTALL ]
+#                           [ VERSION <version> | AUTO_VERSION ]
+#                           [ CFLAGS <flag1> [<flag2> ...] ]
+#                           [ CXXFLAGS <flag1> [<flag2> ...] ]
+#                           [ FFLAGS <flag1> [<flag2> ...] ]
+#                           [ LINKER_LANGUAGE <lang> ]
+#                           [ OUTPUT_NAME <name> ] )
+#
+# Options
+# -------
+#
+# TARGET : required
+#   target name
+#
+# SOURCES : required
+#   list of source files
+#
+# TEMPLATES : optional
+#   list of files specified as SOURCES which are not to be compiled separately
+#   (these are commonly template implementation files included in a header)
+#
+# LIBS : optional
+#   list of libraries to link against (CMake targets or external libraries)
+#
+# INCLUDES : optional
+#   list of paths to add to include directories
+#
+# DEFINITIONS : optional
+#   list of definitions to add to preprocessor defines
+#
+# PERSISTENT : optional
+#   list of persistent layer object files
+#
+# GENERATED : optional
+#   list of files to mark as generated (sets GENERATED source file property)
+#
+# DEPENDS : optional
+#   list of targets to be built before this target
+#
+# CONDITION : optional
+#   list of conditions, all of which must evaluate to true for this target to be built
+#
+# NOINSTALL : optional
+#   do not install the executable
+# 
+# VERSION : optional, AUTO_VERSION or LIBS_VERSION is used if not specified
+#   version to use as executable version
+#
+# AUTO_VERSION : optional, ignored if VERSION is specified
+#   automatically version the executable with the package version
+#
+# CFLAGS : optional
+#   list of C compiler flags to use for all C source files
+#
+# CXXFLAGS : optional
+#   list of C++ compiler flags to use for all C++ source files
+#
+# FFLAGS : optional
+#   list of Fortran compiler flags to use for all Fortran source files
+#
+#
+# LINKER_LANGUAGE : optional
+#   sets the LINKER_LANGUAGE property on the target
+#
+# OUTPUT_NAME : optional
+#   sets the OUTPUT_NAME property on the target
+#
 ##############################################################################
 
 macro( ecbuild_add_executable )

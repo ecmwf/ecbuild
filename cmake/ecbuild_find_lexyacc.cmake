@@ -6,16 +6,40 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# macro to find python
-
-# OUTPUT:
+##############################################################################
+#.rst:
 #
-# BISON_FOUND or YACC_FOUND
-# FLEX_FOUND or LEX_FOUND
+# ecbuild_find_lexyacc
+# ====================
 #
-# BISON_EXECUTABLE or YACC_EXECUTABLE
-# FLEX_EXECUTABLE or LEX_EXECUTABLE
+# Find flex and bison (preferred) or lex and yacc.
+#
+# Input variables
+# ---------------
+#
+# The following CMake variables can set to skip search for bison or yacc:
+#
+# :SKIP_BISON: do not search for flex and bison
+# :SKIP_YACC:  do not search for lex and yacc
+#
+# Output variables
+# ----------------
+#
+# The following CMake variables are set if flex and bison were found:
+#
+# :FLEX_FOUND:       flex was found
+# :BISON_FOUND:      bison was found
+# :FLEX_EXECUTABLE:  path to the flex executable
+# :BISON_EXECUTABLE: path to the bison executable
+#
+# The following CMake variables are set if lex and yacc were found:
+#
+# :LEX_FOUND:       lex was found
+# :YACC_FOUND:      yacc was found
+# :LEX_EXECUTABLE:  path to the lex executable
+# :YACC_EXECUTABLE: path to the yacc executable
+#
+##############################################################################
 
 macro( ecbuild_find_lexyacc )
 

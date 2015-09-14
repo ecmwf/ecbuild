@@ -7,7 +7,29 @@
 # nor does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for specifying files to exclude from packaging
+#.rst:
+#
+# ecbuild_dont_pack
+# =================
+#
+# Specify files and directories to exclude from packaging. ::
+#
+#   ecbuild_dont_pack( [ FILES <file1> [ <file2> ... ] ]
+#                      [ DIRS <dir1> [ <dir2> ... ] ]
+#                      [ REGEX <regex> ] )
+#
+# Options
+# -------
+#
+# FILES : optional, one of FILES, DIRS, REGEX required
+#   list of files to exclude from packaging
+#
+# DIRS : optional, one of FILES, DIRS, REGEX required
+#   list of directories to exclude from packaging
+#
+# REGEX : optional, one of FILES, DIRS, REGEX required
+#   regular expression to match files / directories to exclude from packaging
+#
 ##############################################################################
 
 macro( ecbuild_dont_pack )

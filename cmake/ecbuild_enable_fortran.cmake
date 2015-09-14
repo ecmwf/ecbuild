@@ -7,8 +7,25 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-
-# macro for enabling the fortan language
+#.rst:
+#
+# ecbuild_enable_fortran
+# ======================
+#
+# Enable the Fortran language. ::
+#
+#   ecbuild_enable_fortran( [ MODULE_DIRECTORY <directory> ] [ REQUIRED ] )
+#
+# Options
+# -------
+#
+# MODULE_DIRECTORY : optional, defaults to ``${CMAKE_BINARY_DIR}/module``
+#   set the CMAKE_Fortran_MODULE_DIRECTORY
+#
+# REQUIRED : optional
+#   fail if no working Fortran compiler was detected
+#
+##############################################################################
 
 macro( ecbuild_enable_fortran )
 

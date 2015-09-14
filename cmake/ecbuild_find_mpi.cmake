@@ -6,10 +6,69 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-############################################################################################
-# macro to find MPI
-# uses the canonical find_package( MPI )
-# but does more checks
+##############################################################################
+#.rst:
+#
+# ecbuild_find_mpi
+# ================
+#
+# Find MPI and check if MPI compilers successfully compile C/C++/Fortran. ::
+#
+#   ecbuild_find_mpi( [ COMPONENTS <component1> [ <component2> ... ] ]
+#                     [ REQUIRED ] )
+#
+# Options
+# -------
+#
+# COMPONENTS : optional, defaults to C
+#   list of required languages bindings
+#
+# REQUIRED : optional
+#   fail if MPI was not found
+#
+# Input variables
+# ---------------
+#
+# ECBUILD_FIND_MPI : optional, defaults to TRUE
+#   test C/C++/Fortran MPI compiler wrappers (assume working if FALSE)
+#
+# Output variables
+# ----------------
+#
+# The following CMake variables are set if MPI was found: ::
+#
+#   MPI_FOUND
+#   MPI_LIBRARY
+#   MPI_EXTRA_LIBRARY 
+#
+# The following CMake variables are set if C bindings were found: ::
+#
+#   MPI_C_FOUND
+#   MPI_C_COMPILER
+#   MPI_C_COMPILE_FLAGS
+#   MPI_C_INCLUDE_PATH
+#   MPI_C_LIBRARIES
+#   MPI_C_LINK_FLAGS
+#
+# The following CMake variables are set if C++ bindings were found: ::
+#
+#   MPI_CXX_FOUND
+#   MPI_CXX_COMPILER
+#   MPI_CXX_COMPILE_FLAGS
+#   MPI_CXX_INCLUDE_PATH
+#   MPI_CXX_LIBRARIES
+#   MPI_CXX_LINK_FLAGS
+#
+# The following CMake variables are set if Fortran bindings were found: ::
+#
+#   MPI_Fortran_FOUND
+#   MPI_Fortran_COMPILER
+#   MPI_Fortran_COMPILE_FLAGS
+#   MPI_Fortran_INCLUDE_PATH
+#   MPI_Fortran_LIBRARIES
+#   MPI_Fortran_LINK_FLAGS
+#
+##############################################################################
 
 macro( ecbuild_find_mpi )
 
@@ -156,6 +215,32 @@ macro( ecbuild_find_mpi )
 
 endmacro( ecbuild_find_mpi )
 
+##############################################################################
+#.rst:
+#
+# ecbuild_enable_mpi
+# ==================
+#
+# Find MPI, add include directories and set compiler flags. ::
+#
+#   ecbuild_enable_mpi( [ COMPONENTS <component1> [ <component2> ... ] ]
+#                       [ REQUIRED ] )
+#
+# For each MPI language binding found, set the corresponding compiler flags
+# and add the include directories.
+#
+# See ``ecbuild_find_mpi`` for input and output variables.
+#
+# Options
+# -------
+#
+# COMPONENTS : optional, defaults to C
+#   list of required languages bindings
+#
+# REQUIRED : optional
+#   fail if MPI was not found
+#
+##############################################################################
 
 macro( ecbuild_enable_mpi )
 
@@ -196,6 +281,19 @@ macro( ecbuild_enable_mpi )
     endif()
 
 endmacro( ecbuild_enable_mpi )
+
+##############################################################################
+#.rst:
+#
+# ecbuild_include_mpi
+# ===================
+#
+# Add MPI include directories and set compiler flags, assuming MPI was found.
+#
+# For each MPI language binding found, set corresponding compiler flags and
+# add include directories. ``ecbuild_find_mpi`` must have been called before.
+#
+##############################################################################
 
 macro( ecbuild_include_mpi )
 

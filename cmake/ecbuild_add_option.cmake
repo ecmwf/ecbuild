@@ -7,7 +7,61 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro for adding a test
+#.rst:
+#
+# ecbuild_add_option
+# ==================
+#
+# Add a CMake configuration option, which may depend on a list of packages. ::
+#
+#   ecbuild_add_option( FEATURE <name>
+#                       [ DEFAULT ON|OFF ]
+#                       [ DESCRIPTION <description> ]
+#                       [ REQUIRED_PACKAGES <package1> [<package2> ...] ]
+#                       [ CONDITION <condition1> [<condition2> ...] ]
+#                       [ ADVANCED ] )
+#
+# Options
+# -------
+#
+# FEATURE : required
+#   name of the feature / option
+#
+# DEFAULT : optional, defaults to ON
+#   if set to ON, the feature is enabled even if not explicitly requested
+#
+# DESCRIPTION : optional
+#   string describing the feature (shown in summary and stored in the cache)
+#
+# REQUIRED_PACKAGES : optional
+#   list of packages required to be found for this feature to be enabled
+#
+#   The package specification can be either ::
+#
+#     <package> [ <version> ... ]
+
+#   to search for a given package with option minimum required version or ::
+#
+#     PROJECT <name> [ VERSION <version> ... ]
+#
+#   to search for an ecBuild project with optional minimum required version.
+#
+# CONDITION : optional
+#   list of conditions, all of which must evaluate to true for this option to
+#   be enabled
+#
+# ADVANCED : optional
+#   mark the feature as advanced
+#
+# Usage
+# -----
+#
+# Features with ``DEFAULT OFF`` need to be explcitly enabled by the user with
+# ``-DENABLE_<FEATURE>=ON``. If a feature is enabled, all ``REQUIRED_PACKAGES``
+# are found and every ``CONDITION`` is met, ecBuild sets the variable
+# ``HAVE_<FEATURE>`` to ``ON``. This is the variable to use to check for the
+# availability of the feature.
+#
 ##############################################################################
 
 macro( ecbuild_add_option )

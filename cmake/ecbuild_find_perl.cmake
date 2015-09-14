@@ -6,7 +6,33 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# OUTPUT:
+##############################################################################
+#.rst:
+#
+# ecbuild_find_perl
+# =================
+#
+# Find perl executable and its version. ::
+#
+#   ecbuild_find_perl( [ REQUIRED ] )
+#
+# Options
+# -------
+#
+# REQUIRED : optional
+#   fail if perl was not found
+#
+# Output variables
+# ----------------
+#
+# The following CMake variables are set if perl was found:
+#
+# :PERL_FOUND:          perl was found
+# :PERL_EXECUTABLE:     path to the perl executable
+# :PERL_VERSION:        perl version
+# :PERL_VERSION_STRING: perl version (same as ``PERL_VERSION``)
+#
+##############################################################################
 
 macro( ecbuild_find_perl )
 
