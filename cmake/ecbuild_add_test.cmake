@@ -54,12 +54,9 @@
 # TYPE : optional
 #   test type, one of:
 #
-#   EXE
-#     run built executable, default if TARGET is provided
-#   SCRIPT
-#     run command or script, default if COMMAND is provided
-#   PYTHON
-#     run a Python script (requires the Python interpreter to be found)
+#   :EXE:    run built executable, default if TARGET is provided
+#   :SCRIPT: run command or script, default if COMMAND is provided
+#   :PYTHON: run a Python script (requires the Python interpreter to be found)
 #
 # ARGS : optional
 #   list of arguments to pass to TARGET or COMMAND when running the test
@@ -74,8 +71,9 @@
 #   use the Boost Unit Test Framework
 #
 # MPI : optional
-#    number of MPI tasks to use. If greater than 1, and MPI is not available,
-#    the test is disabled
+#   number of MPI tasks to use.
+#
+#   If greater than 1, and MPI is not available, the test is disabled.
 #
 # ENABLED : optional
 #   if set to OFF, the test is built but not enabled as a test case
@@ -118,7 +116,6 @@
 #
 # FFLAGS : optional
 #   list of Fortran compiler flags to use for all Fortran source files
-#
 #
 # LINKER_LANGUAGE : optional
 #   sets the LINKER_LANGUAGE property on the target
