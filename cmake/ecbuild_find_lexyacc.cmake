@@ -25,19 +25,19 @@
 # Output variables
 # ----------------
 #
-# The following CMake variables are set if flex and bison were found: ::
+# The following CMake variables are set if flex and bison were found:
 #
-#   FLEX_FOUND       - flex was found
-#   BISON_FOUND      - bison was found
-#   FLEX_EXECUTABLE  - path to the flex executable
-#   BISON_EXECUTABLE - path to the bison executable
+# :FLEX_FOUND:       flex was found
+# :BISON_FOUND:      bison was found
+# :FLEX_EXECUTABLE:  path to the flex executable
+# :BISON_EXECUTABLE: path to the bison executable
 #
-# The following CMake variables are set if lex and yacc were found: ::
+# The following CMake variables are set if lex and yacc were found:
 #
-#   LEX_FOUND       - lex was found
-#   YACC_FOUND      - yacc was found
-#   LEX_EXECUTABLE  - path to the lex executable
-#   YACC_EXECUTABLE - path to the yacc executable
+# :LEX_FOUND:       lex was found
+# :YACC_FOUND:      yacc was found
+# :LEX_EXECUTABLE:  path to the lex executable
+# :YACC_EXECUTABLE: path to the yacc executable
 #
 ##############################################################################
 
