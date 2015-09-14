@@ -18,9 +18,14 @@
 #
 # If the CMake variable ``CHECK_UNUSED_FILES`` is set, ecBuild will keep track
 # of any source files (.c, .cc, .cpp, .cxx) which are not part of a CMake
-# target (this is a very slow process!!). If set, this macro reports unused
-# files if any have been found. This is considered a fatal error unless
-# ``UNUSED_FILES_LEVEL`` is set to a value different from "ERROR".
+# target. If set, this macro reports unused files if any have been found. This
+# is considered a fatal error unless ``UNUSED_FILES_LEVEL`` is set to a value
+# different from ``ERROR``.
+#
+# .. note ::
+#
+#   Enabling ``CHECK_UNUSED_FILES`` can slow down the CMake configure time
+#   considerably!
 #
 ##############################################################################
 
