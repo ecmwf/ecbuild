@@ -18,6 +18,8 @@
 #                        [ REQUIRED <feature1> [ <feature2> ... ] ]
 #                        [ PRINT ] )
 #
+# This function uses macros from http://github.com/UCL/GreatCMakeCookOff
+#
 # Options
 # -------
 #
@@ -29,10 +31,6 @@
 #
 # PRINT : optional
 #   print a summary of features check for, found and not found
-#
-# .. note ::
-#
-#   This function uses macros from http://github.com/UCL/GreatCMakeCookOff
 #
 ##############################################################################
 
