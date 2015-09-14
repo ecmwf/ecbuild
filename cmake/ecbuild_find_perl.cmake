@@ -25,12 +25,12 @@
 # Output variables
 # ----------------
 #
-# The following CMake variables are set if perl was found: ::
+# The following CMake variables are set if perl was found:
 #
-#   PERL_FOUND          - perl was found
-#   PERL_EXECUTABLE     - path to the perl executable
-#   PERL_VERSION        - perl version
-#   PERL_VERSION_STRING - perl version (same as PERL_VERSION)
+# :PERL_FOUND:          perl was found
+# :PERL_EXECUTABLE:     path to the perl executable
+# :PERL_VERSION:        perl version
+# :PERL_VERSION_STRING: perl version (same as ``PERL_VERSION``)
 #
 ##############################################################################
 
