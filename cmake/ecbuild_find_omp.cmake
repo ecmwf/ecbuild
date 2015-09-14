@@ -100,14 +100,14 @@ endmacro()
 # Output variables
 # ----------------
 #
-# The following CMake variables are set if OpenMP was found: ::
+# The following CMake variables are set if OpenMP was found:
 #
-#   OMP_FOUND - OpenMP was found
+# :OMP_FOUND: OpenMP was found
 #
-# For each language listed in COMPONENTS, the following variables are set ::
+# For each language listed in COMPONENTS, the following variables are set:
 #
-#   OMP_<LANG>_FOUND - OpenMP bindings for LANG were found
-#   OMP_<LANG>_FLAGS - OpenMP compiler flags for LANG
+# :OMP_<LANG>_FOUND: OpenMP bindings for LANG were found
+# :OMP_<LANG>_FLAGS: OpenMP compiler flags for LANG
 #
 # If the STUBS option was given, all variables are also set with the OMPSTUBS
 # instead of the OMP prefix.
