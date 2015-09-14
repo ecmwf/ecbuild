@@ -33,13 +33,13 @@
 # the project with cpack and exports the configuration and targets for other
 # projects to use.
 #
-# In a top-level project, the following files are generated: ::
+# In a top-level project, the following files are generated:
 #
-#   <project>-config.cmake         - default project configuration
-#   <project>-config-version.cmake - project version number
-#   <project>-import.cmake         - extra project configuration (optional)
-#   <project>-config.cmake.tpls    - 3rd party project configurations
-#   <project>-targets.cmake        - exported targets
+# :<project>-config.cmake:         default project configuration
+# :<project>-config-version.cmake: project version number
+# :<project>-import.cmake:         extra project configuration (optional)
+# :<project>-config.cmake.tpls:    3rd party project configurations
+# :<project>-targets.cmake:        exported targets
 #
 # For ``<project>-import.cmake`` to be exported to build and install tree,
 # ``<project>-import.cmake`` or ``<project>-import.cmake.in`` must exist in
@@ -52,22 +52,21 @@
 # package registry.
 #
 # If the project is added as a subdirectory, the following CMake variables
-# are set in the parent scope: ::
+# are set in the parent scope:
 #
-#   <PROJECT>_FOUND
-#   <project>_FOUND
-#   <PROJECT>_VERSION
-#   <project>_VERSION
-#   <PROJECT>_INCLUDE_DIRS
-#   <PROJECT>_LIBRARIES
-#   <PROJECT>_DEFINITIONS
-#   <PROJECT>_PACKAGES
-#   <PROJECT>_TPLS
-#   <PROJECT>_TPL_LIBRARIES
-#   <PROJECT>_TPL_DEFINITIONS
-#   <PROJECT>_TPL_INCLUDE_DIRS
-#   <PROJECT>_FEATURES
-#   <PROJECT>_HAVE_<FEATURE>
+# :<PROJECT>_FOUND:            set to ``TRUE``
+# :<project>_FOUND:            set to ``TRUE``
+# :<PROJECT>_VERSION:          version string
+# :<project>_VERSION:          version string
+# :<PROJECT>_INCLUDE_DIRS:     list of include directories
+# :<PROJECT>_LIBRARIES:        list of libraries
+# :<PROJECT>_DEFINITIONS:      list of compiler definitions
+# :<PROJECT>_TPLS:             list of 3rd party dependencies
+# :<PROJECT>_TPL_LIBRARIES:    libraries of 3rd party dependencies
+# :<PROJECT>_TPL_DEFINITIONS:  compiler definitions of 3rd party dependencies
+# :<PROJECT>_TPL_INCLUDE_DIRS: include directories of 3rd party dependencies
+# :<PROJECT>_FEATURES:         list of enabled features
+# :<PROJECT>_HAVE_<FEATURE>:   set to 1 for each enabled features
 #
 ##############################################################################
 
