@@ -28,18 +28,18 @@
 # Output variables
 # ----------------
 #
-# The following CMake variables are set if perl was found: ::
+# The following CMake variables are set if perl was found:
 #
-#   PYTHONINTERP_FOUND    - Python interpreter was found
-#   PYTHONLIBS_FOUND      - Python libraries were found
-#   PYTHON_FOUND          - Python was found (both interpreter and libraries)
-#   PYTHON_VERSION_MAJOR  - major version number
-#   PYTHON_VERSION_MINOR  - minor version number
-#   PYTHON_VERSION_PATCH  - patch version number
-#   PYTHON_VERSION_STRING - Python version
-#   PYTHON_INCLUDE_DIRS   - Python include directories
-#   PYTHON_LIBRARIES      - Python libraries
-#   PYTHON_SITE_PACKAGES  - Python site packages directory
+# :PYTHONINTERP_FOUND:    Python interpreter was found
+# :PYTHONLIBS_FOUND:      Python libraries were found
+# :PYTHON_FOUND:          Python was found (both interpreter and libraries)
+# :PYTHON_VERSION_MAJOR:  major version number
+# :PYTHON_VERSION_MINOR:  minor version number
+# :PYTHON_VERSION_PATCH:  patch version number
+# :PYTHON_VERSION_STRING: Python version
+# :PYTHON_INCLUDE_DIRS:   Python include directories
+# :PYTHON_LIBRARIES:      Python libraries
+# :PYTHON_SITE_PACKAGES:  Python site packages directory
 #
 ##############################################################################
 
