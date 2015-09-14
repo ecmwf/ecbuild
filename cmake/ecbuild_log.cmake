@@ -13,13 +13,13 @@
 # =======
 #
 # ecBuild provides macros for logging based on a log level set by the user,
-# similar to the Python logging module: ::
+# similar to the Python logging module:
 #
-#   ecbuild_debug    - logs a STATUS message if log level <= DEBUG
-#   ecbuild_info     - logs a STATUS message if log level <= INFO
-#   ecbuild_warn     - logs a WARNING message if log level <= WARN
-#   ecbuild_error    - logs a SEND_ERROR message if log level <= ERROR
-#   ecbuild_critical - logs a FATAL_ERROR message if log level <= CRITICAL
+# :ecbuild_debug:    logs a ``STATUS`` message if log level <= ``DEBUG``
+# :ecbuild_info:     logs a ``STATUS`` message if log level <= ``INFO``
+# :ecbuild_warn:     logs a ``WARNING`` message if log level <= ``WARN``
+# :ecbuild_error:    logs a ``SEND_ERROR`` message if log level <= ``ERROR``
+# :ecbuild_critical: logs a ``FATAL_ERROR`` message if log level <= ``CRITICAL``
 #
 # Input variables
 # ---------------
