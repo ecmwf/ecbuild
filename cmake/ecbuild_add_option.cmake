@@ -36,12 +36,15 @@
 # REQUIRED_PACKAGES : optional
 #   list of packages required to be found for this feature to be enabled
 #
-#   The package specification can be one of
+#   The package specification can be either ::
 #
-#   <package> [ <version> ... ]
-#     search for a given package with optionally a minimum required version
-#   PROJECT <name> [ VERSION <version> ... ]
-#     search for an ecBuild project with optionally a minimum required version
+#     <package> [ <version> ... ]
+
+#   to search for a given package with option minimum required version or ::
+#
+#     PROJECT <name> [ VERSION <version> ... ]
+#
+#   to search for an ecBuild project with optional minimum required version.
 #
 # CONDITION : optional
 #   list of conditions, all of which must evaluate to true for this option to
