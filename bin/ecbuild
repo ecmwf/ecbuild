@@ -62,6 +62,10 @@ Available values for "option":
           Build dynamic libraries (usually the default).
           Equivalent to "-D BUILD_SHARED_LIBS=ON"
 
+    --shared     (same option as --dynamic)
+          Build dynamic libraries (usually the default).
+          Equivalent to "-D BUILD_SHARED_LIBS=ON"
+
     --toolchain=<toolchain>
           Use a platform specific toolchain, containing settings such
           as compilation flags, locations of commonly used dependencies.
@@ -261,6 +265,9 @@ while test $# -gt 0; do
         ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=OFF"
         ;;
       --dynamic)
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=ON"
+        ;;
+      --shared)
         ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=ON"
         ;;
       --toolchain)
