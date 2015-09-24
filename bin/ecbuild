@@ -54,6 +54,18 @@ Available values for "option":
              - bit : Highest optimization level while staying bit-reproducible
              - ...others depending on project
 
+    --log=<log-level>
+          Set the ecbuild log-level
+          Equivalent to "-D ECBUILD_LOG_LEVEL=<log-level>"
+          <log-level> can be any of:
+             - DEBUG
+             - INFO
+             - WARN
+             - ERROR
+             - CRITICAL
+             - OFF
+          Every choice outputs also the log-levels listed below itself
+
     --static
           Build static libraries.
           Equivalent to "-D BUILD_SHARED_LIBS=OFF"
@@ -152,6 +164,12 @@ version()
   command -v cmake >/dev/null 2>&1 || { exit 0; }
   cmake --version | head -1
   exit 0
+}
+
+log()
+{
+  log_level=$(sed 's/.*/\U&/' <<< "$1")
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D ECBUILD_LOG_LEVEL=${log_level}"
 }
 
 toolchains()
@@ -260,6 +278,9 @@ while test $# -gt 0; do
         ;;
       --build)
         ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_BUILD_TYPE=$val"
+        ;;
+      --log)
+        log $val
         ;;
       --static)
         ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=OFF"
