@@ -138,7 +138,7 @@ macro( ecbuild_find_python )
         # Test if we can link against the Python libraries and include Python.h
         try_compile( PYTHON_LIBS_WORKING ${CMAKE_CURRENT_BINARY_DIR}
                      ${__test_python}
-                     COMPILE_DEFINITIONS -I${PYTHON_INCLUDE_DIR}
+                     CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIR}"
                      LINK_LIBRARIES ${PYTHON_LIBRARIES} )
 
         # set output variables
