@@ -135,6 +135,9 @@ macro( ecbuild_find_python )
 
         endif()
 
+        # Remove duplicate include directories
+        list(REMOVE_DUPLICATES PYTHON_INCLUDE_DIR)
+
         # Test if we can link against the Python libraries and include Python.h
         try_compile( PYTHON_LIBS_WORKING ${CMAKE_CURRENT_BINARY_DIR}
                      ${__test_python}
@@ -150,8 +153,6 @@ macro( ecbuild_find_python )
 
         set( PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIR} )
         set( PYTHON_INCLUDE_PATH ${PYTHON_INCLUDE_DIR} )
-
-        list( REMOVE_DUPLICATES PYTHON_INCLUDE_DIRS )
 
         # Also set PYTHON_FOUND and Python_FOUND for compatibility with ecbuild_add_option
         if( PYTHONLIBS_FOUND )
