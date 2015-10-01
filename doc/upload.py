@@ -4,6 +4,7 @@ The Confluence password needs be be export as environment variable
 ``CONFLUENCE_PASSWORD``.
 """
 
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import json
 import logging
 from os import environ, path
@@ -113,16 +114,24 @@ def create_or_update(page, space):
                          headers=({'Content-Type': 'application/json'})))
 
 
-def main(space, parent):
-    import sys
+def main():
+    parser = ArgumentParser(description=__doc__,
+                            formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--space', default='ECBUILD',
+                        help='Confluence space to upload to')
+    parser.add_argument('--page', default='ecBuild Macros',
+                        help='Page to attach documentation to')
+    parser.add_argument('macro', nargs='+',
+                        help='list of paths to ecBuild macros')
+    args = parser.parse_args()
     # Get id of parent page
     r = requests.get(API_URL,
-                     params={'spaceKey': space, 'title': parent},
+                     params={'spaceKey': args.space, 'title': args.page},
                      auth=AUTH,
                      headers=({'Content-Type': 'application/json'}))
     parent_id = r.json()['results'][0]['id']
-    for f in sys.argv[1:]:
-        upload(f, space, parent_id)
+    for f in args.macro:
+        upload(f, args.space, parent_id)
 
 if __name__ == '__main__':
-    main(space='ECSDK', parent='ecBuild macros')
+    main()
