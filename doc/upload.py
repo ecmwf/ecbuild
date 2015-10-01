@@ -1,3 +1,9 @@
+"""Uplodad documentation for a given list of ecBuild macros to Confluence.
+
+The Confluence password needs be be export as environment variable
+``CONFLUENCE_PASSWORD``.
+"""
+
 import json
 import logging
 from os import environ, path
