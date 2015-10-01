@@ -15,7 +15,7 @@ import requests
 
 from rst2confluence import confluence
 
-API_URL = 'https://software-test.ecmwf.int/wiki/rest/api/content'
+API_URL = 'https://software.ecmwf.int/wiki/rest/api/content'
 AUTH = (environ['USER'], environ['CONFLUENCE_PASSWORD'])
 
 # Log to file with level DEBUG
