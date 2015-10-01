@@ -1,4 +1,5 @@
 import json
+import logging
 from os import environ, path
 
 from docutils.core import publish_string
@@ -9,6 +10,17 @@ from rst2confluence import confluence
 
 API_URL = 'https://software-test.ecmwf.int/wiki/rest/api/content'
 AUTH = (environ['USER'], environ['CONFLUENCE_PASSWORD'])
+
+# Set up logging: log to file with level DEBUG
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)s %(levelname)s - %(message)s',
+                    filename='upload.log')
+# Log to console with level INFO
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+logging.getLogger().addHandler(ch)
+
+log = logging.getLogger('upload')
 
 
 def extract(fname):
