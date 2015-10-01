@@ -103,15 +103,19 @@ def create_or_update(page, space):
     if len(r.json()['results']):
         p = r.json()['results'][0]
         page['version'] = {'number': p['version']['number'] + 1}
-        pp(requests.put('/'.join([API_URL, p['id']]),
-                        data=json.dumps(page),
-                        auth=AUTH,
-                        headers=({'Content-Type': 'application/json'})))
-    else:
-        pp(requests.post(API_URL,
+        r = requests.put('/'.join([API_URL, p['id']]),
                          data=json.dumps(page),
                          auth=AUTH,
-                         headers=({'Content-Type': 'application/json'})))
+                         headers=({'Content-Type': 'application/json'}))
+    else:
+        r = requests.post(API_URL,
+                          data=json.dumps(page),
+                          auth=AUTH,
+                          headers=({'Content-Type': 'application/json'}))
+    log.debug(pp(r))
+    if not r.ok:
+        log.warn('  Uploading to space %s failed: %d (%s)\n    %s',
+                 space, r.status_code, r.reason, r.json()['message'])
 
 
 def main():
