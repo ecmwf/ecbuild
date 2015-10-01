@@ -48,33 +48,28 @@ def extract(fname):
 
 def pp(res):
     "Pretty-print JSON response"
-    print '{} {}\n'.format(json.dumps(res.json(), sort_keys=True, indent=2,
-                           separators=(',', ': ')), res)
+    return '{} {}\n'.format(json.dumps(res.json(), sort_keys=True, indent=2,
+                            separators=(',', ': ')), res)
 
 
-def upload(fname):
-    "Upload documentation for CMake module ``fname``."
+def upload(fname, parent_id):
+    """Upload documentation for CMake module ``fname`` as child of page with
+    id ``parent_id``."""
     pagename = path.splitext(path.basename(fname))[0]
     rst = '\n'.join(extract(fname))
     if not rst:
         return
-    print '=' * 79
-    print pagename
-    print '=' * 79
-    print 'rST'
-    print '-' * 79
-    print rst
-    print '-' * 79
-    print 'Confluence'
-    print '-' * 79
+    log.debug('=' * 79)
+    log.info('Uploading %s', pagename)
+    log.debug('=' * 79)
+    log.debug('rST')
+    log.debug('-' * 79)
+    log.debug(rst)
+    log.debug('-' * 79)
+    log.debug('Confluence')
+    log.debug('-' * 79)
     cwiki = publish_string(rst, writer=confluence.Writer())
-    print cwiki
-    # Get id of parent page
-    r = requests.get(API_URL,
-                     params={'spaceKey': 'ECSDK', 'title': 'ecBuild macros'},
-                     auth=AUTH,
-                     headers=({'Content-Type': 'application/json'}))
-    parent_id = r.json()['results'][0]['id']
+    log.debug(cwiki)
     page = {'type': 'page',
             'title': pagename,
             'space': {'key': 'ECSDK'},
@@ -108,8 +103,14 @@ def create_or_update(page):
 
 def main():
     import sys
+    # Get id of parent page
+    r = requests.get(API_URL,
+                     params={'spaceKey': 'ECSDK', 'title': 'ecBuild macros'},
+                     auth=AUTH,
+                     headers=({'Content-Type': 'application/json'}))
+    parent_id = r.json()['results'][0]['id']
     for f in sys.argv[1:]:
-        upload(f)
+        upload(f, parent_id)
 
 if __name__ == '__main__':
     main()
