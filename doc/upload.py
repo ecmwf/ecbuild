@@ -58,7 +58,7 @@ def pp(res):
                             separators=(',', ': ')), res)
 
 
-def upload(fname, parent_id):
+def upload(fname, space, parent_id):
     """Upload documentation for CMake module ``fname`` as child of page with
     id ``parent_id``."""
     pagename = path.splitext(path.basename(fname))[0]
@@ -78,17 +78,17 @@ def upload(fname, parent_id):
     log.debug(cwiki)
     page = {'type': 'page',
             'title': pagename,
-            'space': {'key': 'ECSDK'},
+            'space': {'key': space},
             'body': {'storage': {'value': cwiki, 'representation': 'wiki'}},
             'ancestors': [{'type': 'page', 'id': parent_id}]}
-    create_or_update(page)
+    create_or_update(page, space)
 
 
-def create_or_update(page):
+def create_or_update(page, space):
     "Update Confluence ``page`` if it exists, otherwise create it."
     # Check if page exists
     r = requests.get(API_URL,
-                     params={'spaceKey': 'ECSDK',
+                     params={'spaceKey': space,
                              'title': page['title'],
                              'expand': 'version'},
                      auth=AUTH,
@@ -107,16 +107,16 @@ def create_or_update(page):
                          headers=({'Content-Type': 'application/json'})))
 
 
-def main():
+def main(space, parent):
     import sys
     # Get id of parent page
     r = requests.get(API_URL,
-                     params={'spaceKey': 'ECSDK', 'title': 'ecBuild macros'},
+                     params={'spaceKey': space, 'title': parent},
                      auth=AUTH,
                      headers=({'Content-Type': 'application/json'}))
     parent_id = r.json()['results'][0]['id']
     for f in sys.argv[1:]:
-        upload(f, parent_id)
+        upload(f, space, parent_id)
 
 if __name__ == '__main__':
-    main()
+    main(space='ECSDK', parent='ecBuild macros')
