@@ -11,16 +11,22 @@ from rst2confluence import confluence
 API_URL = 'https://software-test.ecmwf.int/wiki/rest/api/content'
 AUTH = (environ['USER'], environ['CONFLUENCE_PASSWORD'])
 
-# Set up logging: log to file with level DEBUG
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(name)s %(levelname)s - %(message)s',
-                    filename='upload.log')
+# Log to file with level DEBUG
+fh = logging.FileHandler('upload.log')
+fh.setLevel(logging.DEBUG)
+fmt = logging.Formatter('%(asctime)s %(name)s %(levelname)-5s - %(message)s')
+fh.setFormatter(fmt)
 # Log to console with level INFO
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
-logging.getLogger().addHandler(ch)
 
 log = logging.getLogger('upload')
+log.setLevel(logging.DEBUG)
+log.addHandler(ch)
+log.addHandler(fh)
+# Also log requests at debug level to file
+logging.getLogger('requests').addHandler(fh)
+logging.getLogger('requests').setLevel(logging.DEBUG)
 
 
 def extract(fname):
