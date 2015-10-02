@@ -134,8 +134,11 @@ def main():
                      auth=AUTH,
                      headers=({'Content-Type': 'application/json'}))
     parent_id = r.json()['results'][0]['id']
+    log.info('====== Start uploading documentation to "%s" in space %s ======',
+             args.page, args.space)
     for f in args.macro:
         upload(f, args.space, parent_id)
+    log.info('====== Finished uploading documentation ======')
 
 if __name__ == '__main__':
     main()
