@@ -366,7 +366,7 @@ endfunction()\n\n" )
             NAME ${_file} ${_dirname} ${_md5} ${_nocheck} )
 
         file( APPEND ${_script}
-            "exec_check( ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target __get_data_${_p_TARGET}_${_name} )\n" )
+            "exec_check( ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target __get_data_${_p_TARGET}_${_name}/fast )\n" )
 
     endforeach()
 
