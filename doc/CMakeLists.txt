@@ -9,7 +9,7 @@ if( PYTHONINTERP_FOUND )
 
     add_custom_target( upload_docs COMMENT "Uploading documentation" )
     add_custom_command( TARGET upload_docs POST_BUILD
-                        COMMAND ${PYTHON_EXECUTABLE} upload.py ${ECBUILD_MODULE}
+                        COMMAND ${PYTHON_EXECUTABLE} upload.py --logfile "${CMAKE_CURRENT_BINARY_DIR}/upload.log" ${ECBUILD_MODULE}
                         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                         COMMENT "Uploading documentation" )
 
