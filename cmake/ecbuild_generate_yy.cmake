@@ -127,9 +127,11 @@ macro( ecbuild_generate_yy )
   endif()
 
   set( ${BASE}yy_tmp_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC_TARGET}.tmp.c )
+  set( ${BASE}yh_tmp_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC_TARGET}.tmp.h )
   set( ${BASE}yl_tmp_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_LEX_TARGET}.tmp.c )
 
   set( ${BASE}yy_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC_TARGET}.c )
+  set( ${BASE}yh_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC_TARGET}.h )
   set( ${BASE}yl_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_LEX_TARGET}.c )
 
   if( NOT _PAR_SOURCE_DIR )
@@ -153,6 +155,7 @@ macro( ecbuild_generate_yy )
   endif()
 
   set_source_files_properties(${${BASE}yy_tmp_target} GENERATED)
+  set_source_files_properties(${${BASE}yh_tmp_target} GENERATED)
   set_source_files_properties(${${BASE}yl_tmp_target} GENERATED)
 
   add_custom_command(OUTPUT  ${${BASE}yy_target}
@@ -160,6 +163,13 @@ macro( ecbuild_generate_yy )
     COMMAND ${PERL_EXECUTABLE} -pi -e 's/yy/${_PAR_YYPREFIX}/g' ${${BASE}yy_target}
     COMMAND ${PERL_EXECUTABLE} -pi -e 's/\\.tmp\\.c/\\.c/g' ${${BASE}yy_target}
     DEPENDS ${${BASE}yy_tmp_target}
+    )
+
+  add_custom_command(OUTPUT  ${${BASE}yh_target}
+    COMMAND ${CMAKE_COMMAND} -E copy ${${BASE}yh_tmp_target} ${${BASE}yh_target}
+    COMMAND ${PERL_EXECUTABLE} -pi -e 's/yy/${_PAR_YYPREFIX}/g' ${${BASE}yh_target}
+    COMMAND ${PERL_EXECUTABLE} -pi -e 's/\\.tmp\\.h/\\.h/g' ${${BASE}yh_target}
+    DEPENDS ${${BASE}yh_tmp_target}
     )
 
   add_custom_command(OUTPUT  ${${BASE}yl_target}
@@ -170,6 +180,7 @@ macro( ecbuild_generate_yy )
     )
 
   set_source_files_properties(${${BASE}yy_target} GENERATED)
+  set_source_files_properties(${${BASE}yh_target} GENERATED)
   set_source_files_properties(${${BASE}yl_target} GENERATED)
 
   foreach( file ${_PAR_DEPENDANT} )
@@ -177,7 +188,7 @@ macro( ecbuild_generate_yy )
       set( file ${_PAR_SOURCE_DIR}/${file} )
     endif()
     set_source_files_properties( ${file} PROPERTIES
-      OBJECT_DEPENDS "${${BASE}yy_target};${${BASE}yl_target}" )
+        OBJECT_DEPENDS "${${BASE}yy_target};${${BASE}yh_target};${${BASE}yl_target}" )
   endforeach()
 
 endmacro( ecbuild_generate_yy )
