@@ -18,22 +18,8 @@ from rst2confluence import confluence
 API_URL = 'https://software.ecmwf.int/wiki/rest/api/content'
 AUTH = (environ['USER'], environ['CONFLUENCE_PASSWORD'])
 
-# Log to file with level DEBUG
-fh = logging.FileHandler('upload.log')
-fh.setLevel(logging.DEBUG)
-fmt = logging.Formatter('%(asctime)s %(name)s %(levelname)-5s - %(message)s')
-fh.setFormatter(fmt)
-# Log to console with level INFO
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-
 log = logging.getLogger('upload')
 log.setLevel(logging.DEBUG)
-log.addHandler(ch)
-log.addHandler(fh)
-# Also log requests at debug level to file
-logging.getLogger('requests').addHandler(fh)
-logging.getLogger('requests').setLevel(logging.DEBUG)
 
 
 def extract(fname):
@@ -125,9 +111,26 @@ def main():
                         help='Confluence space to upload to')
     parser.add_argument('--page', default='ecBuild Macros',
                         help='Page to attach documentation to')
+    parser.add_argument('--logfile', default='upload.log',
+                        help='Path to log file')
     parser.add_argument('macro', nargs='+',
                         help='list of paths to ecBuild macros')
     args = parser.parse_args()
+
+    # Log to file with level DEBUG
+    fh = logging.FileHandler(args.logfile)
+    fh.setLevel(logging.DEBUG)
+    fmt = logging.Formatter('%(asctime)s %(name)s %(levelname)-5s - %(message)s')
+    fh.setFormatter(fmt)
+    log.addHandler(fh)
+    # Log to console with level INFO
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    log.addHandler(ch)
+    # Also log requests at debug level to file
+    logging.getLogger('requests').addHandler(fh)
+    logging.getLogger('requests').setLevel(logging.DEBUG)
+
     # Get id of parent page
     r = requests.get(API_URL,
                      params={'spaceKey': args.space, 'title': args.page},
@@ -136,6 +139,7 @@ def main():
     parent_id = r.json()['results'][0]['id']
     log.info('====== Start uploading documentation to "%s" in space %s ======',
              args.page, args.space)
+    log.info('Logging to file %s', args.logfile)
     for f in args.macro:
         upload(f, args.space, parent_id)
     log.info('====== Finished uploading documentation ======')
