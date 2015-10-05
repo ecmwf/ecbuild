@@ -18,6 +18,7 @@
 #                        YACC <file>
 #                        LEX <file>
 #                        DEPENDANT <file1> [ <file2> ... ]
+#                        [ SOURCE_DIR <dir> ]
 #                        [ YACC_TARGET <file> ]
 #                        [ LEX_TARGET <file> ]
 #                        [ YACC_FLAGS <flags> ]
@@ -39,7 +40,10 @@
 #
 # DEPENDANT : required
 #  list of files which depend on the generated lex and yacc target files
-
+#
+# SOURCE_DIR : optional, defaults to CMAKE_CURRENT_SOURCE_DIR
+#   directory where yacc and lex source files are located
+#
 # YACC_TARGET : optional, defaults to YACC
 #   base name of the generated yacc target file (without .c extension)
 #
@@ -67,7 +71,7 @@ macro( ecbuild_generate_yy )
   ecbuild_find_perl( REQUIRED )
 
   set( options )
-  set( single_value_args YYPREFIX YACC LEX YACC_TARGET LEX_TARGET LEX_FLAGS YACC_FLAGS FLEX_FLAGS BISON_FLAGS )
+  set( single_value_args YYPREFIX YACC LEX SOURCE_DIR YACC_TARGET LEX_TARGET LEX_FLAGS YACC_FLAGS FLEX_FLAGS BISON_FLAGS )
   set( multi_value_args  DEPENDANT )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -128,19 +132,23 @@ macro( ecbuild_generate_yy )
   set( ${BASE}yy_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_YACC_TARGET}.c )
   set( ${BASE}yl_target ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_LEX_TARGET}.c )
 
-  add_custom_target( ${_PAR_YYPREFIX}_${DEPENDANT} SOURCES ${_PAR_YACC}.y ${_PAR_LEX}.l )
+  if( NOT _PAR_SOURCE_DIR )
+    set( _PAR_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
+  endif()
+
+  add_custom_target( ${_PAR_YYPREFIX}_${DEPENDANT} SOURCES ${_PAR_SOURCE_DIR}/${_PAR_YACC}.y ${_PAR_SOURCE_DIR}/${_PAR_LEX}.l )
 
   if( BISON_FOUND )
-    bison_target( ${BASE}_parser  ${_PAR_YACC}.y  ${${BASE}yy_tmp_target} COMPILE_FLAGS "${_PAR_BISON_FLAGS}" )
+    bison_target( ${BASE}_parser ${_PAR_SOURCE_DIR}/${_PAR_YACC}.y ${${BASE}yy_tmp_target} COMPILE_FLAGS "${_PAR_BISON_FLAGS}" )
   else()
-    yacc_target( ${BASE}_parser  ${_PAR_YACC}.y   ${${BASE}yy_tmp_target} COMPILE_FLAGS "${_PAR_YACC_FLAGS}" )
+    yacc_target( ${BASE}_parser ${_PAR_SOURCE_DIR}/${_PAR_YACC}.y ${${BASE}yy_tmp_target} COMPILE_FLAGS "${_PAR_YACC_FLAGS}" )
   endif()
 
   if( FLEX_FOUND )
-    flex_target(  ${BASE}_scanner ${_PAR_LEX}.l   ${${BASE}yl_tmp_target} COMPILE_FLAGS "${_PAR_FLEX_FLAGS}" )
+    flex_target( ${BASE}_scanner ${_PAR_SOURCE_DIR}/${_PAR_LEX}.l ${${BASE}yl_tmp_target} COMPILE_FLAGS "${_PAR_FLEX_FLAGS}" )
     add_flex_bison_dependency(${BASE}_scanner ${BASE}_parser)
   else()
-    lex_target(  ${BASE}_scanner ${_PAR_LEX}.l   ${${BASE}yl_tmp_target} COMPILE_FLAGS "${_PAR_LEX_FLAGS}" )
+    lex_target( ${BASE}_scanner ${_PAR_SOURCE_DIR}/${_PAR_LEX}.l ${${BASE}yl_tmp_target} COMPILE_FLAGS "${_PAR_LEX_FLAGS}" )
     add_lex_yacc_dependency(${BASE}_scanner ${BASE}_parser)
   endif()
 
@@ -165,6 +173,9 @@ macro( ecbuild_generate_yy )
   set_source_files_properties(${${BASE}yl_target} GENERATED)
 
   foreach( file ${_PAR_DEPENDANT} )
+    if( NOT IS_ABSOLUTE ${file})
+      set( file ${_PAR_SOURCE_DIR}/${file} )
+    endif()
     set_source_files_properties( ${file} PROPERTIES
       OBJECT_DEPENDS "${${BASE}yy_target};${${BASE}yl_target}" )
   endforeach()
