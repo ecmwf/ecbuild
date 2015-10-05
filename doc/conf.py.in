@@ -1,0 +1,45 @@
+#=============================================================================
+# CMake - Cross Platform Makefile Generator
+# Copyright 2000-2013 Kitware, Inc., Insight Software Consortium
+#
+# Distributed under the OSI-approved BSD License (the "License");
+# see accompanying file Copyright.txt for details.
+#
+# This software is distributed WITHOUT ANY WARRANTY; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the License for more information.
+#=============================================================================
+import sys
+import os
+import re
+import glob
+
+sys.path.insert(0, r'@conf_path@')
+
+source_suffix = '.rst'
+master_doc = 'index'
+
+project = 'ecBuild'
+copyright = 'ECMWF'
+version = '@conf_version@' # feature version
+release = '@conf_release@' # full version string
+
+primary_domain = 'cmake'
+
+exclude_patterns = []
+
+extensions = ['cmake']
+templates_path = ['@conf_path@/templates']
+
+nitpicky = True
+
+html_show_sourcelink = True
+html_static_path = ['@conf_path@/static']
+html_theme = 'default'
+html_title = 'ecBuild %s Documentation' % release
+html_short_title = '%s Documentation' % release
+html_favicon = '@conf_path@/static/ecbuild.ico'
+# Not supported yet by sphinx:
+# https://bitbucket.org/birkenfeld/sphinx/issue/1448/make-qthelp-more-configurable
+# qthelp_namespace = "org.cmake"
+# qthelp_qch_name = "CMake-300.qch"
