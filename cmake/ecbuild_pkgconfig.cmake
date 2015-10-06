@@ -187,6 +187,7 @@ function( ecbuild_pkgconfig_include INCLUDE INCLUDE_DIRS ignore_includes )
     foreach( _ignore ${ignore_include_dirs} )
       if( "${_incdir}" MATCHES "${_ignore}" )
         unset( _incdir )
+        break()
       endif()
     endforeach()
 
