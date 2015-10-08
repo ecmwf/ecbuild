@@ -106,6 +106,7 @@ macro( ecbuild_find_package )
   # debug_var( _PAR_NAME )
 
   string( TOUPPER ${_PAR_NAME} PNAME )
+  string( TOLOWER ${_PAR_NAME} LNAME )
 
   set( _${PNAME}_version "" )
   if( _PAR_VERSION )
@@ -126,9 +127,9 @@ macro( ecbuild_find_package )
   # so lets prepend a parallel build tree to the search path if we find it
 
   if( DEVELOPER_MODE )
-    get_filename_component( _proj_bdir "${CMAKE_BINARY_DIR}/../${_PAR_NAME}" ABSOLUTE )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - searching for ${_PAR_NAME}-config.cmake in ${_proj_bdir}")
-    if( EXISTS ${_proj_bdir}/${_PAR_NAME}-config.cmake )
+    get_filename_component( _proj_bdir "${CMAKE_BINARY_DIR}/../${LNAME}" ABSOLUTE )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - searching for ${LNAME}-config.cmake in ${_proj_bdir}")
+    if( EXISTS ${_proj_bdir}/${LNAME}-config.cmake )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - found parallel build tree in ${_proj_bdir}")
       if( ${PNAME}_PATH )
         ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - ${PNAME}_PATH already set to ${${PNAME}_PATH}, not modifying")
