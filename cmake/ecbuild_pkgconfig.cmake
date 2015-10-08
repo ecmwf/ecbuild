@@ -120,7 +120,9 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
         get_filename_component( _name ${_lib} NAME_WE )
         get_filename_component( _dir  ${_lib} PATH )
 
-        if( NOT _name )
+        if( TARGET ${_lib} )
+          get_target_property( _name ${_lib} OUTPUT_NAME )
+        elseif( NOT _name )
           set( _name ${_lib} )
         endif()
 
