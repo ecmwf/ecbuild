@@ -157,6 +157,12 @@ macro( ecbuild_find_package )
     set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
   endif()
 
+  # Find packages quietly unless in DEVELOPER_MODE, LOG_LEVEL is DEBUG or the package is REQUIRED
+
+  if( NOT ( DEVELOPER_MODE OR _PAR_REQUIRED ) AND ( ECBUILD_LOG_LEVEL GREATER ${ECBUILD_DEBUG} ) )
+    set( _find_quiet QUIET )
+  endif()
+
   # search user defined paths first
 
   if( ${_PAR_NAME}_PATH OR ${PNAME}_PATH OR ${_PAR_NAME}_DIR )
@@ -167,7 +173,7 @@ macro( ecbuild_find_package )
     if( NOT ${_PAR_NAME}_FOUND )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 1) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${PNAME}_PATH=${${PNAME}_PATH}, ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
-      find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE QUIET
+      find_package( ${_PAR_NAME} ${_${PNAME}_version} NO_MODULE ${_find_quiet}
         COMPONENTS ${_PAR_COMPONENTS}
         HINTS ${${PNAME}_PATH} ${${_PAR_NAME}_PATH} ${${_PAR_NAME}_DIR}
         NO_DEFAULT_PATH )
@@ -177,7 +183,8 @@ macro( ecbuild_find_package )
 
     if( NOT ${_PAR_NAME}_FOUND )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 2) search using a file Find${_PAR_NAME}.cmake if it exists")
-      find_package( ${_PAR_NAME} ${_${PNAME}_version} MODULE QUIET COMPONENTS ${_PAR_COMPONENTS} )
+      find_package( ${_PAR_NAME} ${_${PNAME}_version} MODULE ${_find_quiet}
+                    COMPONENTS ${_PAR_COMPONENTS} )
     endif()
 
     # is <package>_PATH was given and we don't find anything then we FAIL
@@ -203,7 +210,7 @@ macro( ecbuild_find_package )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search CMAKE_PREFIX_PATH and \$${PNAME}_PATH and package registry")
     endif()
 
-    find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE
+    find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_find_quiet} NO_MODULE
       COMPONENTS ${_PAR_COMPONENTS}
       HINTS ENV ${PNAME}_PATH
       ${NO_DEV_BUILD_DIRS}
@@ -219,7 +226,7 @@ macro( ecbuild_find_package )
   if( NOT ${_PAR_NAME}_FOUND )
     ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 5) search system paths, for ${_PAR_NAME}-config.cmake")
 
-    find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET NO_MODULE
+    find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_find_quiet} NO_MODULE
       COMPONENTS ${_PAR_COMPONENTS}
       ${NO_DEV_BUILD_DIRS} )
 
@@ -230,7 +237,8 @@ macro( ecbuild_find_package )
   if( NOT ${_PAR_NAME}_FOUND )
     ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 6) search system paths, using Find${_PAR_NAME}.cmake if it exists")
 
-    find_package( ${_PAR_NAME} ${_${PNAME}_version} QUIET MODULE COMPONENTS ${_PAR_COMPONENTS} )
+    find_package( ${_PAR_NAME} ${_${PNAME}_version} ${_find_quiet} MODULE
+                  COMPONENTS ${_PAR_COMPONENTS} )
 
   endif()
 
