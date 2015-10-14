@@ -20,6 +20,8 @@
 #                        [ TEMPLATES <template1> [<template2> ...] ]
 #                        [ LIBS <library1> [<library2> ...] ]
 #                        [ INCLUDES <path1> [<path2> ...] ]
+#                        [ PRIVATE_INCLUDES <path1> [<path2> ...] ]
+#                        [ PUBLIC_INCLUDES <path1> [<path2> ...] ]
 #                        [ DEFINITIONS <definition1> [<definition2> ...] ]
 #                        [ PERSISTENT <file1> [<file2> ...] ]
 #                        [ GENERATED <file1> [<file2> ...] ]
@@ -61,8 +63,16 @@
 # LIBS : optional
 #   list of libraries to link against (CMake targets or external libraries)
 #
-# INCLUDES : optional
-#   list of paths to add to include directories
+# INCLUDES : (DEPRECATED) optional
+#   list of paths to add to include directories, behaves as PUBLIC_INCLUDES if CMake >= 2.8.11
+#   and reverts to include_directories() for CMake < 2.8.11
+#
+# PUBLIC_INCLUDES : optional
+#   list of paths to add to include directories which will be publicly exported to other projects
+#
+# PRIVATE_INCLUDES : optional
+#   list of paths to add to include directories which won't be exported to other projects,
+#   equivalent to using a include_directories() before calling this macro
 #
 # DEFINITIONS : optional
 #   list of definitions to add to preprocessor defines
@@ -81,7 +91,7 @@
 #
 # NOINSTALL : optional
 #   do not install the library
-# 
+#
 # HEADER_DESTINATION
 #   directory to install headers (if not specified, INSTALL_INCLUDE_DIR is used)
 #
@@ -124,7 +134,7 @@ function( ecbuild_add_library_impl )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS INSTALL_HEADERS_REGEX LINKER_LANGUAGE HEADER_DESTINATION VERSION OUTPUT_NAME )
-  set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+  set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -225,6 +235,38 @@ function( ecbuild_add_library_impl )
           else()
             target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
           endif()
+        else()
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
+        endif()
+      endforeach()
+    endif()
+
+    # add private include dirs if defined
+    if( DEFINED _PAR_PRIVATE_INCLUDES )
+      if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" )
+        ecbuild_critical("ecbuild_add_library(${_PAR_TARGET}): cannot use PRIVATE_INCLUDES with CMake < 2.8.11" )
+      endif()
+      list( REMOVE_DUPLICATES _PAR_PRIVATE_INCLUDES )
+      foreach( path ${_PAR_PRIVATE_INCLUDES} ) # skip NOTFOUND
+        if( path )
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add ${path} to include_directories")
+          target_include_directories( ${_PAR_TARGET} PRIVATE ${path} )
+        else()
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
+        endif()
+      endforeach()
+    endif()
+
+    # add public include dirs if defined
+    if( DEFINED _PAR_PUBLIC_INCLUDES )
+      if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" )
+        ecbuild_critical("ecbuild_add_library(${_PAR_TARGET}): cannot use PUBLIC_INCLUDES with CMake < 2.8.11" )
+      endif()
+      list( REMOVE_DUPLICATES _PAR_PUBLIC_INCLUDES )
+      foreach( path ${_PAR_PUBLIC_INCLUDES} ) # skip NOTFOUND
+        if( path )
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add ${path} to include_directories")
+          target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
         else()
           ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
         endif()

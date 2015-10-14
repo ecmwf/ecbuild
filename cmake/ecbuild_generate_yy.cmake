@@ -40,6 +40,7 @@
 #
 # DEPENDANT : required
 #  list of files which depend on the generated lex and yacc target files
+#  At least one should be an existing source file (not generated itself).
 #
 # SOURCE_DIR : optional, defaults to CMAKE_CURRENT_SOURCE_DIR
 #   directory where yacc and lex source files are located
@@ -115,8 +116,6 @@ macro( ecbuild_generate_yy )
   if( NOT _PAR_BISON_FLAGS )
     set( _PAR_BISON_FLAGS "-t" )
   endif()
-
-  #debug_var( BASE )
 
   if( NOT _PAR_YACC_TARGET )
     set ( _PAR_YACC_TARGET ${_PAR_YACC} )
