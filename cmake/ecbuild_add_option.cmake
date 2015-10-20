@@ -39,7 +39,7 @@
 #   The package specification can be either ::
 #
 #     <package> [ <version> ... ]
-
+#
 #   to search for a given package with option minimum required version or ::
 #
 #     PROJECT <name> [ VERSION <version> ... ]
@@ -61,6 +61,11 @@
 # are found and every ``CONDITION`` is met, ecBuild sets the variable
 # ``HAVE_<FEATURE>`` to ``ON``. This is the variable to use to check for the
 # availability of the feature.
+#
+# If a feature is explicitly enabled but the required packages are not found,
+# configuration fails. This only applies when configuring from *clean cache*.
+# With an already populated cache, use ``-DENABLE_<FEATURE>=REQUIRE`` to make
+# the feature a required feature (this cannot be done via the CMake GUI).
 #
 ##############################################################################
 
