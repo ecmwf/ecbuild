@@ -111,7 +111,12 @@ macro( ecbuild_add_option )
 
   get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE )
 
-  if( NOT "${ENABLE_${_p_FEATURE}}" STREQUAL "" AND _in_cache )
+  # A feature set to REQUIRE is always treated as explicitly enabled
+  if( ENABLE_${_p_FEATURE} MATCHES "REQUIRE" )
+    set( ENABLE_${_p_FEATURE} ON CACHE BOOL "" FORCE )
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was required")
+    set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" FORCE )
+  elseif( NOT "${ENABLE_${_p_FEATURE}}" STREQUAL "" AND _in_cache )
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was found in cache")
     set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" )
   else()
