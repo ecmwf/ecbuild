@@ -13,21 +13,43 @@
 # =======================
 #
 # Initialise an ecBuild project. A CMake project must have previously been
-# declared with ``project( <name> ... )``. Sets the following CMake variables
+# declared with ``project( <name> ... )``. ::
+#
+#   ecbuild_declare_project()
+#
+# Sets the following CMake variables
 # (where ``PNAME`` is the capitalised project name):
 #
-# :<PNAME>_GIT_SHA1:            Git revision (if project is a Git repo)
-# :<PNAME>_GIT_SHA1_SHORT:      short Git revision (if project is a Git repo)
-# :<PNAME>_VERSION:             version in format ``MAJOR.MINOR.PATCH``
-# :<PNAME>_VERSION_STR:         version as given in ``VERSION.cmake`` or 0.0.0
-# :<PNAME>_MAJOR_VERSION:       major version number
-# :<PNAME>_MINOR_VERSION:       minor version number
-# :<PNAME>_PATCH_VERSION:       patch version number
+# :<PNAME>_GIT_SHA1:       Git revision (if project is a Git repo)
+# :<PNAME>_GIT_SHA1_SHORT: short Git revision (if project is a Git repo)
+# :<PNAME>_VERSION:        version in format ``MAJOR.MINOR.PATCH``
+# :<PNAME>_VERSION_STR:    version as given in ``VERSION.cmake`` or 0.0.0
+# :<PNAME>_MAJOR_VERSION:  major version number
+# :<PNAME>_MINOR_VERSION:  minor version number
+# :<PNAME>_PATCH_VERSION:  patch version number
+# :INSTALL_BIN_DIR:        relative install directory for executables
+#                          (default: ``bin``)
+# :INSTALL_LIB_DIR:        relative install directory for libraries
+#                          (default: ``lib``)
+# :INSTALL_INCLUDE_DIR:    relative install directory for include files
+#                          (default: ``include``)
+# :INSTALL_DATA_DIR:       relative install directory for data
+#                          (default: ``share/<project_name>``)
+# :INSTALL_CMAKE_DIR:      relative install directory for CMake files
+#                          (default: ``share/<project_name>/cmake``)
+#
+# The relative installation directories of components can be customised by
+# setting the following CMake variables on the command line or in cache:
+#
 # :<PNAME>_INSTALL_BIN_DIR:     directory for installing executables
 # :<PNAME>_INSTALL_LIB_DIR:     directory for installing libraries
 # :<PNAME>_INSTALL_INCLUDE_DIR: directory for installing include files
 # :<PNAME>_INSTALL_DATA_DIR:    directory for installing data
 # :<PNAME>_INSTALL_CMAKE_DIR:   directory for installing CMake files
+#
+# Using *relative* paths is recommended, which are interpreted relative to the
+# ``CMAKE_INSTALL_PREFIX``. Using absolute paths makes the build
+# non-relocatable and may break the generation of relocatable binary packages.
 #
 ##############################################################################
 
