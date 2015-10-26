@@ -43,11 +43,11 @@ Available values for "option":
 
     --prefix=<prefix>
           Set the install path to <prefix>.
-          Equivalent to cmake argument "-D CMAKE_INSTALL_PREFIX=<prefix>"
+          Equivalent to cmake argument "-DCMAKE_INSTALL_PREFIX=<prefix>"
 
     --build=<build-type>
           Set the build-type to <build-type>.
-          Equivalent to cmake argument "-D CMAKE_BUILD_TYPE=<build-type>"
+          Equivalent to cmake argument "-DCMAKE_BUILD_TYPE=<build-type>"
           <build-type> can be any of:
              - debug : Lowest optimization level, useful for debugging
              - release : Highest optimization level, for best performance
@@ -56,7 +56,7 @@ Available values for "option":
 
     --log=<log-level>
           Set the ecbuild log-level
-          Equivalent to "-D ECBUILD_LOG_LEVEL=<log-level>"
+          Equivalent to "-DECBUILD_LOG_LEVEL=<log-level>"
           <log-level> can be any of:
              - DEBUG
              - INFO
@@ -68,15 +68,15 @@ Available values for "option":
 
     --static
           Build static libraries.
-          Equivalent to "-D BUILD_SHARED_LIBS=OFF"
+          Equivalent to "-DBUILD_SHARED_LIBS=OFF"
 
     --dynamic
           Build dynamic libraries (usually the default).
-          Equivalent to "-D BUILD_SHARED_LIBS=ON"
+          Equivalent to "-DBUILD_SHARED_LIBS=ON"
 
     --shared     (same option as --dynamic)
           Build dynamic libraries (usually the default).
-          Equivalent to "-D BUILD_SHARED_LIBS=ON"
+          Equivalent to "-DBUILD_SHARED_LIBS=ON"
 
     --toolchain=<toolchain>
           Use a platform specific toolchain, containing settings such
@@ -107,7 +107,7 @@ Available values for "cmake-argument":
 
     Any value that can be usually passed to cmake to (re)configure the build.
     Typically these values start with "-D".
-        example:  -D ENABLE_TESTS=ON  -D ENABLE_MPI=OFF  -D ECKIT_PATH=...
+        example:  -DENABLE_TESTS=ON  -DENABLE_MPI=OFF  -DECKIT_PATH=...
 
     They can be explicitly separated from [option...] with a "--", for the case
     there is a conflicting option with the "cmake" executable, and the latter's
@@ -118,7 +118,7 @@ Available values for "cmake-argument":
 NOTE: When reconfiguring a build, it is only necessary to change the relevant
 options, as everything stays cached. For example:
   > ecbuild --prefix=PREFIX .
-  > ecbuild -D ENABLE_TESTS=ON .
+  > ecbuild -DENABLE_TESTS=ON .
 
 ------------------------------------------------------------------------
 
@@ -141,7 +141,7 @@ Installing:
 
   To install the project in location PREFIX with
        "--prefix=PREFIX" or
-       "-D CMAKE_INSTALL_PREFIX=PREFIX"
+       "-DCMAKE_INSTALL_PREFIX=PREFIX"
     > make install
 
 ------------------------------------------------------------------------
@@ -155,7 +155,7 @@ EOF
 INSTALL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ECBUILD_MODULE_PATH=$INSTALL_DIR/../share/ecbuild/cmake
 ECBUILD_MODULE_PATH=$(cd $(dirname "$ECBUILD_MODULE_PATH") && pwd -P)/$(basename "$ECBUILD_MODULE_PATH")
-ADD_ECBUILD_OPTIONS="-D CMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
+ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
 
 version()
 {
@@ -169,7 +169,7 @@ version()
 log()
 {
   log_level=$(sed 's/.*/\U&/' <<< "$1")
-  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D ECBUILD_LOG_LEVEL=${log_level}"
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_LOG_LEVEL=${log_level}"
 }
 
 toolchains()
@@ -186,7 +186,7 @@ toolchains()
 
 prefix()
 {
-  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_INSTALL_PREFIX=$(realpath ${1/#\~/$HOME})"
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_INSTALL_PREFIX=$(realpath ${1/#\~/$HOME})"
 }
 
 toolchain()
@@ -208,7 +208,7 @@ toolchain()
     exit 1
   else
     toolchain_file=$(cd $(dirname "$toolchain_file") && pwd -P)/$(basename "$toolchain_file")
-    ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_TOOLCHAIN_FILE=${toolchain_file}"
+    ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_TOOLCHAIN_FILE=${toolchain_file}"
   fi
 }
 
@@ -222,7 +222,7 @@ cache()
     echo "   Cache file [$arg] is not found."
     exit 1
   fi
-  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D ECBUILD_CACHE=${cache_file}"
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_CACHE=${cache_file}"
 }
 
 if test $# -eq 0; then
@@ -275,19 +275,19 @@ while test $# -gt 0; do
         prefix $val
         ;;
       --build)
-        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_BUILD_TYPE=$val"
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_BUILD_TYPE=$val"
         ;;
       --log)
         log $val
         ;;
       --static)
-        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=OFF"
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DBUILD_SHARED_LIBS=OFF"
         ;;
       --dynamic)
-        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=ON"
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DBUILD_SHARED_LIBS=ON"
         ;;
       --shared)
-        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=ON"
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DBUILD_SHARED_LIBS=ON"
         ;;
       --toolchain)
         toolchain $val
