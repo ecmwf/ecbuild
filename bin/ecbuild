@@ -186,7 +186,7 @@ toolchains()
 
 prefix()
 {
-  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_INSTALL_PREFIX=$(realpath ${1/#\~/$HOME})"
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_INSTALL_PREFIX=$(realpath -m ${1/#\~/$HOME})"
 }
 
 toolchain()
