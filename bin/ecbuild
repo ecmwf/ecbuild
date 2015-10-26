@@ -186,9 +186,7 @@ toolchains()
 
 prefix()
 {
-  arg=$1
-  path=$(cd $(dirname "$arg") && pwd -P)/$(basename "$arg")
-  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_INSTALL_PREFIX=${path}"
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_INSTALL_PREFIX=$(realpath $1)"
 }
 
 toolchain()
