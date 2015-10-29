@@ -122,7 +122,8 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
         if( TARGET ${_lib} )
           get_target_property( _name ${_lib} OUTPUT_NAME )
-        elseif( NOT _name )
+        endif()
+        if( NOT _name )
           set( _name ${_lib} )
         endif()
 
