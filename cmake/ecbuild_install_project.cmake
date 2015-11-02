@@ -155,6 +155,15 @@ macro( ecbuild_install_project )
 
     list( APPEND CPACK_SOURCE_IGNORE_FILES ${ECBUILD_DONT_PACK_FILES} )
 
+    # Find the ecbuild toolchain files and include in the source package if found
+    find_path( ECBUILD_TOOLCHAIN_DIR ecmwf-XC30-GNU.cmake
+               PATHS ${ECBUILD_MACROS_DIR}/../toolchains
+                     ${ECBUILD_MACROS_DIR}/../share/ecbuild/toolchains )
+
+    if( ECBUILD_TOOLCHAIN_DIR )
+      list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES "${ECBUILD_TOOLCHAIN_DIR}" "share/ecbuild/toolchains/" )
+    endif()
+
     # Find the ecbuild bin directory and include in the source package if found
     find_program( ECBUILD_SCRIPT ecbuild
                   PATHS ${ECBUILD_MACROS_DIR}/../bin
