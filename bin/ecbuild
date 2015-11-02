@@ -185,7 +185,11 @@ log()
 
 toolchains()
 {
-  toolchains_dir=$INSTALL_DIR/../share/ecbuild/toolchains/
+  if [ -d $INSTALL_DIR/../share/ecbuild/toolchains ]; then
+    toolchains_dir=$( readlink -e $INSTALL_DIR/../share/ecbuild/toolchains )
+  elif [ -d $INSTALL_DIR/share/ecbuild/toolchains ]; then
+    toolchains_dir=$( readlink -e $INSTALL_DIR/share/ecbuild/toolchains )
+  fi
   if [ -d $toolchains_dir ]; then
     cd $toolchains_dir
     echo "Available toolchains:"
