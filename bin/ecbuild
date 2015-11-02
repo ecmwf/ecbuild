@@ -200,14 +200,13 @@ toolchain()
     fi
   fi
   if [ -z ${toolchain_file+x} ]; then
-    toolchains_dir=$INSTALL_DIR/../share/ecbuild/toolchains/
-    toolchains_dir=$(cd $(dirname "$toolchains_dir") && pwd -P)/$(basename "$toolchains_dir")
+    toolchains_dir=$( readlink -m $INSTALL_DIR/../share/ecbuild/toolchains/ )
     echo "Error:"
     echo "   Toolchain [$arg] is not valid: [$arg.cmake] cannot be"
     echo "   found in [$toolchains_dir]"
     exit 1
   else
-    toolchain_file=$(cd $(dirname "$toolchain_file") && pwd -P)/$(basename "$toolchain_file")
+    toolchain_file=$( readlink -m "$toolchain_file" )
     ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_TOOLCHAIN_FILE=${toolchain_file}"
   fi
 }
@@ -216,7 +215,7 @@ cache()
 {
   arg=$1
   if [ -f $arg ]; then
-    cache_file=$(cd $(dirname "$arg") && pwd -P)/$(basename "$arg")
+    cache_file=$( readlink -e "$arg" )
   else
     echo "Error:"
     echo "   Cache file [$arg] is not found."
