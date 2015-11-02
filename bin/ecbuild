@@ -168,6 +168,12 @@ if [ -n "$ECBUILD_MODULE_PATH" ]; then
   ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
 fi
 
+if [ -d $INSTALL_DIR/../share/ecbuild/toolchains ]; then
+  ECBUILD_TOOLCHAIN_DIR=$( readlink -e $INSTALL_DIR/../share/ecbuild/toolchains )
+elif [ -d $INSTALL_DIR/share/ecbuild/toolchains ]; then
+  ECBUILD_TOOLCHAIN_DIR=$( readlink -e $INSTALL_DIR/share/ecbuild/toolchains )
+fi
+
 version()
 {
   ecbuild_version=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ECBUILD_VERSION_STR |  perl -p -e 's/.*([\d]\.[\d]\.[\d]).*/\1/' )
@@ -185,13 +191,8 @@ log()
 
 toolchains()
 {
-  if [ -d $INSTALL_DIR/../share/ecbuild/toolchains ]; then
-    toolchains_dir=$( readlink -e $INSTALL_DIR/../share/ecbuild/toolchains )
-  elif [ -d $INSTALL_DIR/share/ecbuild/toolchains ]; then
-    toolchains_dir=$( readlink -e $INSTALL_DIR/share/ecbuild/toolchains )
-  fi
-  if [ -d $toolchains_dir ]; then
-    cd $toolchains_dir
+  if [ -d $ECBUILD_TOOLCHAIN_DIR ]; then
+    cd $ECBUILD_TOOLCHAIN_DIR
     echo "Available toolchains:"
     ls | while read fname
     do
@@ -215,18 +216,17 @@ toolchain()
   if [ -f $arg ]; then
     toolchain_file=$arg
   else
-    if [ -f $INSTALL_DIR/../share/ecbuild/toolchains/$arg.cmake ]; then
-      toolchain_file=$INSTALL_DIR/../share/ecbuild/toolchains/$arg.cmake
+    if [ -f $ECBUILD_TOOLCHAIN_DIR/$arg.cmake ]; then
+      toolchain_file=$ECBUILD_TOOLCHAIN_DIR/$arg.cmake
     fi
   fi
   if [ -z ${toolchain_file+x} ]; then
-    toolchains_dir=$( readlink -m $INSTALL_DIR/../share/ecbuild/toolchains/ )
     echo "Error:"
     echo "   Toolchain [$arg] is not valid: [$arg.cmake] cannot be"
-    echo "   found in [$toolchains_dir]"
+    echo "   found in [$ECBUILD_TOOLCHAIN_DIR]"
     exit 1
   else
-    toolchain_file=$( readlink -m "$toolchain_file" )
+    toolchain_file=$( readlink -e "$toolchain_file" )
     ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_TOOLCHAIN_FILE=${toolchain_file}"
   fi
 }
