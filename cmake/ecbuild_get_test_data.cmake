@@ -162,14 +162,12 @@ function( ecbuild_get_test_data )
 
     if( NOT _p_NOCHECK )
 
-        find_program( MD5SUM md5sum )
-
-        if( MD5SUM AND NOT _p_MD5 AND NOT _p_SHA1) # use remote md5
+        if( NOT _p_MD5 AND NOT _p_SHA1) # use remote md5
 
 #            message( STATUS " ---  getting MD5 sum " )
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
-                                COMMAND ${MD5SUM} -t ${_p_NAME} > ${_p_NAME}.localmd5
+                                COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
                                 DEPENDS ${_p_NAME} )
 
             _download_test_data( ${_p_NAME}.md5 ${_p_DIRNAME} )
@@ -182,12 +180,12 @@ function( ecbuild_get_test_data )
 
         endif()
 
-        if( MD5SUM AND _p_MD5 )
+        if( _p_MD5 )
 
 #            message( STATUS " ---  computing MD5 sum [${_p_MD5}]" )
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
-                                COMMAND ${MD5SUM} -t ${_p_NAME} > ${_p_NAME}.localmd5
+                                COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
                                 DEPENDS ${_p_NAME} )
 
             configure_file( "${ECBUILD_MACROS_DIR}/md5.in" ${_p_NAME}.md5 @ONLY )
