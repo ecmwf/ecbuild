@@ -153,6 +153,7 @@ EOF
 
 
 INSTALL_DIR="$( dirname $( readlink -e "${BASH_SOURCE[0]}" ) )"
+ECBUILD_MODULE_PATH=""
 # If there is a directory share/ecbuild/cmake relative to the parent directory
 # (as in an install tree), add it to CMAKE_MODULE_PATH
 if [ -d $INSTALL_DIR/../share/ecbuild/cmake ]; then
@@ -163,7 +164,9 @@ fi
 if [ -d $INSTALL_DIR/cmake ]; then
   ECBUILD_MODULE_PATH=$( readlink -e $INSTALL_DIR/cmake ):$ECBUILD_MODULE_PATH
 fi
-ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
+if [ -n "$ECBUILD_MODULE_PATH" ]; then
+  ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
+fi
 
 version()
 {
