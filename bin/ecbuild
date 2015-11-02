@@ -186,13 +186,18 @@ log()
 toolchains()
 {
   toolchains_dir=$INSTALL_DIR/../share/ecbuild/toolchains/
-  cd $toolchains_dir
-  echo "Available toolchains:"
-  ls | while read fname
-  do
-      echo "  - ${fname%%.*}"
-  done
-  exit 0
+  if [ -d $toolchains_dir ]; then
+    cd $toolchains_dir
+    echo "Available toolchains:"
+    ls | while read fname
+    do
+        echo "  - ${fname%%.*}"
+    done
+    exit 0
+  else
+    echo "No toolchains available."
+    exit 1
+  fi
 }
 
 prefix()
