@@ -218,7 +218,7 @@ cache()
     cache_file=$( readlink -e "$arg" )
   else
     echo "Error:"
-    echo "   Cache file [$arg] is not found."
+    echo "   Cache file [$arg] is not found or is not a file."
     exit 1
   fi
   ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_CACHE=${cache_file}"
