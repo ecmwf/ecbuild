@@ -152,9 +152,17 @@ EOF
 }
 
 
-INSTALL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ECBUILD_MODULE_PATH=$INSTALL_DIR/../share/ecbuild/cmake
-ECBUILD_MODULE_PATH=$(cd $(dirname "$ECBUILD_MODULE_PATH") && pwd -P)/$(basename "$ECBUILD_MODULE_PATH")
+INSTALL_DIR="$( dirname $( readlink -e "${BASH_SOURCE[0]}" ) )"
+# If there is a directory share/ecbuild/cmake relative to the parent directory
+# (as in an install tree), add it to CMAKE_MODULE_PATH
+if [ -d $INSTALL_DIR/../share/ecbuild/cmake ]; then
+  ECBUILD_MODULE_PATH=$( readlink -e $INSTALL_DIR/../share/ecbuild/cmake )
+fi
+# If there is a cmake subdirectory relative to the script directory (as in a
+# tarball), add it to CMAKE_MODULE_PATH
+if [ -d $INSTALL_DIR/cmake ]; then
+  ECBUILD_MODULE_PATH=$( readlink -e $INSTALL_DIR/cmake ):$ECBUILD_MODULE_PATH
+fi
 ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
 
 version()
