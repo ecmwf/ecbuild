@@ -181,6 +181,33 @@ if( ENABLE_OS_ENDINESS_TEST )
 endif()
 
 ############################################################################################
+# enable profiling
+
+if( ENABLE_PROFILING )
+
+        set( ___set_profiler 0 )
+
+        if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
+
+            ecbuild_add_c_flags("-pg")
+            ecbuild_add_cxx_flags("-pg")
+            ecbuild_add_fortran_flags("-pg")
+
+            set(CMAKE_EXE_LINKER_FLAGS     "${CMAKE_EXE_LINKER_FLAGS} -pg")
+            set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -pg")
+            set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -pg")
+
+            set( ___set_profiler 1 )
+
+        endif()
+
+        if( NOT ___set_profiler )
+            message( WARNING "Profiling enabled but ecbuild doesn't know how to enable for this particular compiler ${CMAKE_C_COMPILER_ID}")
+        endif()
+
+endif()
+
+############################################################################################
 # check operating system
 
 set( EC_OS_NAME "UNKNOWN" )
