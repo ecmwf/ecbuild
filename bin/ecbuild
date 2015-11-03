@@ -161,8 +161,8 @@ if [ -d $INSTALL_DIR/../share/ecbuild/cmake ]; then
 fi
 # If there is a cmake subdirectory relative to the script directory (as in a
 # tarball), add it to CMAKE_MODULE_PATH
-if [ -d $INSTALL_DIR/cmake ]; then
-  ECBUILD_MODULE_PATH=$( readlink -e $INSTALL_DIR/cmake ):$ECBUILD_MODULE_PATH
+if [ -d $INSTALL_DIR/../cmake ]; then
+  ECBUILD_MODULE_PATH=$( readlink -e $INSTALL_DIR/../cmake ):$ECBUILD_MODULE_PATH
 fi
 if [ -n "$ECBUILD_MODULE_PATH" ]; then
   ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"

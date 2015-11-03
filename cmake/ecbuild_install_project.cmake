@@ -171,7 +171,7 @@ macro( ecbuild_install_project )
 
     if( ECBUILD_SCRIPT )
       get_filename_component( ECBUILD_BIN_DIR ${ECBUILD_SCRIPT} PATH )
-      list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES "${ECBUILD_BIN_DIR}" "." )
+      list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES "${ECBUILD_BIN_DIR}" "bin/" )
     endif()
 
     # cpack config file
