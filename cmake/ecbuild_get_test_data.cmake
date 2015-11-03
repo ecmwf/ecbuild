@@ -246,6 +246,7 @@ endfunction(ecbuild_get_test_data)
 #   ecbuild_get_test_multidata( NAMES <name1> [ <name2> ... ]
 #                               TARGET <target>
 #                               [ DIRNAME <dir> ]
+#                               [ EXTRACT ]
 #                               [ NOCHECK ] )
 #
 # curl or wget is required (curl is preferred if available).
@@ -261,6 +262,9 @@ endfunction(ecbuild_get_test_data)
 #
 # DIRNAME : optional, defaults to <project>/<relative path to current dir>
 #   directory in which the test data resides
+#
+# EXTRACT : optional
+#   extract downloaded files (supported archives: tar, zip, tar.gz, tar.bz2)
 #
 # NOCHECK : optional
 #   do not verify the md5 checksum of the data file
@@ -302,7 +306,7 @@ endfunction(ecbuild_get_test_data)
 
 function( ecbuild_get_test_multidata )
 
-    set( options NOCHECK )
+    set( options EXTRACT NOCHECK )
     set( single_value_args TARGET DIRNAME )
     set( multi_value_args  NAMES )
 
@@ -325,6 +329,10 @@ function( ecbuild_get_test_multidata )
 #    debug_var( _p_TARGET )
 #    debug_var( _p_NAME )
 #    debug_var( _p_DIRNAME )
+
+    if( _p_EXTRACT )
+        set( _extract EXTRACT )
+    endif()
 
     if( _p_NOCHECK )
         set( _nocheck NOCHECK )
@@ -373,7 +381,7 @@ endfunction()\n\n" )
 
         ecbuild_get_test_data(
             TARGET __get_data_${_p_TARGET}_${_name}
-            NAME ${_file} ${_dirname} ${_md5} ${_nocheck} )
+            NAME ${_file} ${_dirname} ${_md5} ${_extract} ${_nocheck} )
 
         # The option /fast disables dependency checking on a target, see
         # https://cmake.org/Wiki/CMake_FAQ#Is_there_a_way_to_skip_checking_of_dependent_libraries_when_compiling.3F
