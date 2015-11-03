@@ -172,8 +172,9 @@ function( ecbuild_get_test_data )
 
             _download_test_data( ${_p_NAME}.md5 ${_p_DIRNAME} )
 
-            add_custom_command(	OUTPUT ${_p_NAME}.ok
-                                COMMAND diff ${_p_NAME}.md5 ${_p_NAME}.localmd5 && touch ${_p_NAME}.ok
+            add_custom_command( OUTPUT ${_p_NAME}.ok
+                                COMMAND ${CMAKE_COMMAND} -E compare_files ${_p_NAME}.md5 ${_p_NAME}.localmd5 &&
+                                        ${CMAKE_COMMAND} -E touch ${_p_NAME}.ok
                                 DEPENDS ${_p_NAME}.localmd5 ${_p_NAME}.md5 )
 
             list( APPEND _deps  ${_p_NAME}.localmd5 ${_p_NAME}.ok )
@@ -191,7 +192,8 @@ function( ecbuild_get_test_data )
             configure_file( "${ECBUILD_MACROS_DIR}/md5.in" ${_p_NAME}.md5 @ONLY )
 
             add_custom_command( OUTPUT ${_p_NAME}.ok
-                                COMMAND diff ${_p_NAME}.md5 ${_p_NAME}.localmd5 && touch ${_p_NAME}.ok
+                                COMMAND ${CMAKE_COMMAND} -E compare_files ${_p_NAME}.md5 ${_p_NAME}.localmd5 &&
+                                        ${CMAKE_COMMAND} -E touch ${_p_NAME}.ok
                                 DEPENDS ${_p_NAME}.localmd5 )
 
             list( APPEND _deps ${_p_NAME}.localmd5 ${_p_NAME}.ok )
