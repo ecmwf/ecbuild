@@ -65,6 +65,7 @@ endfunction()
 #                          [ TARGET <target> ]
 #                          [ DIRNAME <dir> ]
 #                          [ MD5 <hash> ]
+#                          [ EXTRACT ]
 #                          [ NOCHECK ] )
 #
 # curl or wget is required (curl is preferred if available).
@@ -84,6 +85,9 @@ endfunction()
 # MD5 : optional, ignored if NOCHECK is given
 #   md5 checksum of the data set to verify. If not given and NOCHECK is *not*
 #   set, download the md5 checksum and verify
+#
+# EXTRACT : optional
+#   extract the downloaded file (supported archives: tar, zip, tar.gz, tar.bz2)
 #
 # NOCHECK : optional
 #   do not verify the md5 checksum of the data file
@@ -119,7 +123,7 @@ endfunction()
 
 function( ecbuild_get_test_data )
 
-    set( options NOCHECK )
+    set( options NOCHECK EXTRACT )
     set( single_value_args TARGET URL NAME DIRNAME MD5 SHA1)
     set( multi_value_args  )
 
@@ -222,6 +226,12 @@ function( ecbuild_get_test_data )
     endif()
 
     add_custom_target( ${_p_TARGET} DEPENDS ${_deps} )
+
+    if( _p_EXTRACT )
+      ecbuild_debug("ecbuild_get_test_data: extracting ${_p_NAME} (post-build for target ${_p_TARGET}")
+      add_custom_command( TARGET ${_p_TARGET} POST_BUILD
+                          COMMAND ${CMAKE_COMMAND} -E tar xv ${_p_NAME} )
+    endif()
 
 endfunction(ecbuild_get_test_data)
 
