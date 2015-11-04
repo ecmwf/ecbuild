@@ -187,14 +187,17 @@ if( ENABLE_PROFILING )
 
   if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
 
-    set( _flags "-pg;-fprofile-arcs;-ftest-coverage" )
-    ecbuild_add_c_flags( "${_flags}" )
-    ecbuild_add_cxx_flags( "${_flags}" )
-    ecbuild_add_fortran_flags( "${_flags}" )
+    set( _flags "-pg --coverage" )
 
     set( CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} ${_flags}" )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${_flags}" )
     set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${_flags}" )
+
+    set( ECBUILD_TRUST_FLAGS ON )
+    ecbuild_add_c_flags( "${_flags}" )
+    ecbuild_add_cxx_flags( "${_flags}" )
+    ecbuild_add_fortran_flags( "${_flags}" )
+    unset( ECBUILD_TRUST_FLAGS )
 
     unset( _flags )
   
