@@ -170,13 +170,18 @@ endmacro()
 #
 # Add C++ compiler flags to CMAKE_CXX_FLAGS only if supported by compiler. ::
 #
-#   ecbuild_add_cxx_flags( <flag1> [ <flag2> ... ] [ BUILD <build> ] )
+#   ecbuild_add_cxx_flags( <flag1> [ <flag2> ... ]
+#                          [ BUILD <build> ]
+#                          [ NAME <name> ] )
 #
 # Options
 # -------
 #
 # BUILD : optional
 #   add flags to ``CMAKE_CXX_FLAGS_<build>`` instead of ``CMAKE_CXX_FLAGS``
+#
+# NAME : optional
+#   name of the check (if omitted, checks are enumerated)
 #
 ##############################################################################
 
@@ -185,7 +190,7 @@ macro( ecbuild_add_cxx_flags m_cxx_flags )
   set( _flags ${m_cxx_flags} )
   if( _flags AND CMAKE_CXX_COMPILER_LOADED )
     set( options )
-    set( single_value_args BUILD )
+    set( single_value_args BUILD NAME )
     set( multi_value_args )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -197,10 +202,18 @@ macro( ecbuild_add_cxx_flags m_cxx_flags )
     math( EXPR N_CXXFLAG '${N_CXXFLAG}+1' )
 
     if( NOT ECBUILD_TRUST_FLAGS )
-      check_cxx_compiler_flag( ${_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
+      if( DEFINED _PAR_NAME )
+        check_cxx_compiler_flag( ${_flags} ${_PAR_NAME} )
+        set( _flag_ok ${${_PAR_NAME}} )
+      else()
+        check_cxx_compiler_flag( ${_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
+        set( _flag_ok CXX_FLAG_TEST_${N_CXXFLAG} )
+      endif()
+    else()
+      set( _flag_ok 1 )
     endif()
 
-    if( CXX_FLAG_TEST_${N_CXXFLAG} OR ECBUILD_TRUST_FLAGS )
+    if( _flag_ok )
       if( _PAR_BUILD )
         set( CMAKE_CXX_FLAGS_${_PAR_BUILD} "${CMAKE_CXX_FLAGS_${_PAR_BUILD}} ${_flags}" )
       else()
@@ -212,6 +225,7 @@ macro( ecbuild_add_cxx_flags m_cxx_flags )
     endif()
   endif()
   unset( _flags )
+  unset( _flag_ok )
 
 endmacro()
 
