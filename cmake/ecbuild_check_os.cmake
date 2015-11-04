@@ -185,25 +185,20 @@ endif()
 
 if( ENABLE_PROFILING )
 
-  set( ___set_profiler 0 )
-  
   if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
-  
-    foreach (flag -pg -fprofile-arcs -ftest-coverage)
-      ecbuild_add_c_flags(${flag})
-      ecbuild_add_cxx_flags(${flag})
-      ecbuild_add_fortran_flags(${flag})
 
-      set(CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} ${flag}")
-      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${flag}")
-      set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${flag}")
-    endforeach()
+    set( _flags "-pg;-fprofile-arcs;-ftest-coverage" )
+    ecbuild_add_c_flags( "${_flags}" )
+    ecbuild_add_cxx_flags( "${_flags}" )
+    ecbuild_add_fortran_flags( "${_flags}" )
+
+    set( CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} ${_flags}" )
+    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${_flags}" )
+    set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${_flags}" )
+
+    unset( _flags )
   
-    set( ___set_profiler 1 )
-  
-  endif()
-  
-  if( NOT ___set_profiler )
+  else()
     message( WARNING "Profiling enabled but ecbuild doesn't know how to enable for this particular compiler ${CMAKE_C_COMPILER_ID}")
   endif()
 
@@ -367,5 +362,3 @@ if( ${EC_OS_NAME} MATCHES "UNKNOWN" )
 	endif()
 
 endif()
-
-
