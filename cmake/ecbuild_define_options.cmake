@@ -16,7 +16,7 @@ option( ENABLE_WARNINGS         "enable compiler warnings"                      
 
 option( ENABLE_LARGE_FILE_SUPPORT "build with large file support"   ON  )
 
-option( ENABLE_PROFILING        "build with profiling support" ON )
+option( ENABLE_PROFILING        "build with profiling support" OFF )
 
 mark_as_advanced( ENABLE_LARGE_FILE_SUPPORT )
 
