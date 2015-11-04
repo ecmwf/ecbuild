@@ -157,15 +157,9 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_list_macros )
 
     include( ecbuild_check_c_source_return )
-
-    if( CMAKE_CXX_COMPILER_LOADED )
     include( ecbuild_check_cxx_source_return )
     include( ecbuild_check_cxx11 )
-    endif()
-
-    if( CMAKE_Fortran_COMPILER_LOADED )
     include( ecbuild_check_fortran_source_return )
-    endif()
 
     include( ecbuild_requires_macro_version )
     include( ecbuild_get_date )
