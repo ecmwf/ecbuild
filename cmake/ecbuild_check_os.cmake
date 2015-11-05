@@ -193,11 +193,13 @@ if( ENABLE_PROFILING )
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${_flags}" )
     set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${_flags}" )
 
+    set( _trust_flags ${ECBUILD_TRUST_FLAGS} )
     set( ECBUILD_TRUST_FLAGS ON )
     ecbuild_add_c_flags( "${_flags}" )
     ecbuild_add_cxx_flags( "${_flags}" )
     ecbuild_add_fortran_flags( "${_flags}" )
-    unset( ECBUILD_TRUST_FLAGS )
+    set( ECBUILD_TRUST_FLAGS ${_trust_flags} )
+    unset( _trust_flags )
 
     unset( _flags )
   
