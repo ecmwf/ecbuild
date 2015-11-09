@@ -164,7 +164,9 @@ if [ -d $INSTALL_DIR/../cmake ]; then
   ECBUILD_MODULE_PATH="$( cd "$INSTALL_DIR/../cmake" && pwd -P );$ECBUILD_MODULE_PATH"
 fi
 if [ -n "$ECBUILD_MODULE_PATH" ]; then
-  ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
+  ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=\"$ECBUILD_MODULE_PATH\""
+else
+  ADD_ECBUILD_OPTIONS=""
 fi
 
 if [ -d $INSTALL_DIR/../share/ecbuild/toolchains ]; then
