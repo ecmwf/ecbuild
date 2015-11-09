@@ -211,7 +211,7 @@ prefix()
 
 toolchain()
 {
-  arg=$1
+  arg=${1/#\~\//$HOME/}
   if [ -f $arg ]; then
     toolchain_file=$arg
   else
