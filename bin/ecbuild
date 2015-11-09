@@ -289,7 +289,7 @@ while test $# -gt 0; do
         cmakebin="$val"
         ;;
       --prefix)
-        prefix $val
+        prefix "$val"
         ;;
       --build)
         ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_BUILD_TYPE=$val"
