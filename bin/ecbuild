@@ -151,27 +151,26 @@ EOF
     exit $1
 }
 
-
-INSTALL_DIR="$( dirname $( readlink -e "${BASH_SOURCE[0]}" ) )"
+INSTALL_DIR="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
 ECBUILD_MODULE_PATH=""
 # If there is a directory share/ecbuild/cmake relative to the parent directory
 # (as in an install tree), add it to CMAKE_MODULE_PATH
 if [ -d $INSTALL_DIR/../share/ecbuild/cmake ]; then
-  ECBUILD_MODULE_PATH="$( readlink -e $INSTALL_DIR/../share/ecbuild/cmake )"
+  ECBUILD_MODULE_PATH="$( cd "$INSTALL_DIR/../share/ecbuild/cmake" && pwd -P )"
 fi
 # If there is a cmake subdirectory relative to the script directory (as in a
 # tarball), add it to CMAKE_MODULE_PATH
 if [ -d $INSTALL_DIR/../cmake ]; then
-  ECBUILD_MODULE_PATH="$( readlink -e $INSTALL_DIR/../cmake );$ECBUILD_MODULE_PATH"
+  ECBUILD_MODULE_PATH="$( cd "$INSTALL_DIR/../cmake" && pwd -P );$ECBUILD_MODULE_PATH"
 fi
 if [ -n "$ECBUILD_MODULE_PATH" ]; then
   ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
 fi
 
 if [ -d $INSTALL_DIR/../share/ecbuild/toolchains ]; then
-  ECBUILD_TOOLCHAIN_DIR="$( readlink -e $INSTALL_DIR/../share/ecbuild/toolchains )"
+  ECBUILD_TOOLCHAIN_DIR="$( cd "$INSTALL_DIR/../share/ecbuild/toolchains" && pwd -P )"
 elif [ -d $INSTALL_DIR/share/ecbuild/toolchains ]; then
-  ECBUILD_TOOLCHAIN_DIR="$( readlink -e $INSTALL_DIR/share/ecbuild/toolchains )"
+  ECBUILD_TOOLCHAIN_DIR="$( cd "$INSTALL_DIR/share/ecbuild/toolchains" && pwd -P )"
 fi
 
 version()
@@ -207,7 +206,7 @@ toolchains()
 
 prefix()
 {
-  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_INSTALL_PREFIX=$(readlink -m ${1/#\~\//$HOME\/})"
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_INSTALL_PREFIX=\"${1/#\~\//$HOME/}\""
 }
 
 toolchain()
@@ -226,8 +225,7 @@ toolchain()
     echo "   found in [$ECBUILD_TOOLCHAIN_DIR]"
     exit 1
   else
-    toolchain_file=$( readlink -e "$toolchain_file" )
-    ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_TOOLCHAIN_FILE=${toolchain_file}"
+    ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_TOOLCHAIN_FILE=\"${toolchain_file}\""
   fi
 }
 
@@ -235,7 +233,7 @@ cache()
 {
   arg=$1
   if [ -f $arg ]; then
-    cache_file=$( readlink -e "$arg" )
+    cache_file=$( cd "$arg" && pwd -P )
   else
     echo "Error:"
     echo "   Cache file [$arg] is not found or is not a file."
