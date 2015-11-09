@@ -87,7 +87,8 @@
 #   list of targets to be built before this target
 #
 # CONDITION : optional
-#   list of conditions, all of which must evaluate to true for this target to be built
+#   conditional expression which must evaluate to true for this target to be
+#   built (must be valid in a CMake ``if`` statement)
 #
 # NOINSTALL : optional
 #   do not install the library

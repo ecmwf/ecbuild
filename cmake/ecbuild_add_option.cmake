@@ -47,8 +47,8 @@
 #   to search for an ecBuild project with optional minimum required version.
 #
 # CONDITION : optional
-#   list of conditions, all of which must evaluate to true for this option to
-#   be enabled
+#   conditional expression which must evaluate to true for this option to be
+#   enabled (must be valid in a CMake ``if`` statement)
 #
 # ADVANCED : optional
 #   mark the feature as advanced
@@ -58,7 +58,7 @@
 #
 # Features with ``DEFAULT OFF`` need to be explcitly enabled by the user with
 # ``-DENABLE_<FEATURE>=ON``. If a feature is enabled, all ``REQUIRED_PACKAGES``
-# are found and every ``CONDITION`` is met, ecBuild sets the variable
+# are found and ``CONDITION`` is met, ecBuild sets the variable
 # ``HAVE_<FEATURE>`` to ``ON``. This is the variable to use to check for the
 # availability of the feature.
 #

@@ -100,7 +100,8 @@
 #   list of tests to be run before this one
 #
 # CONDITION : optional
-#   list of conditions, all of which must evaluate to true for this target to be built
+#   conditional expression which must evaluate to true for this target to be
+#   built (must be valid in a CMake ``if`` statement)
 #
 # ENVIRONMENT : optional
 #   list of environment variables to set in the test environment
