@@ -357,11 +357,12 @@ endfunction()\n\n" )
         get_filename_component( _file ${_f} NAME )
         get_filename_component( _dir  ${_f} PATH )
 
-        set( _dirname "${_p_DIRNAME}/${_dir}" )
-
+        list( APPEND _path_comps ${_p_DIRNAME} ${_dir} )
+        join( _path_comps "/" _dirname )
         if( _dirname )
             set( _dirname DIRNAME ${_dirname} )
         endif()
+        unset( _path_comps )
 
         string( REPLACE "." "_" _name "${_file}" )
         string( REGEX MATCH ":.*"  _md5  "${_d}" )
