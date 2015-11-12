@@ -357,9 +357,7 @@ endfunction()\n\n" )
         get_filename_component( _file ${_f} NAME )
         get_filename_component( _dir  ${_f} PATH )
 
-        list( APPEND _path_comps ${_p_DIRNAME} ${_dir} )
-
-        join( _path_comps "/" _dirname )
+        set( _dirname "${_p_DIRNAME}/${_dir}" )
 
         if( _dirname )
             set( _dirname DIRNAME ${_dirname} )
