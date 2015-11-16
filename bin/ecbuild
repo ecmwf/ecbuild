@@ -162,11 +162,14 @@ if [ -d $INSTALL_DIR/../share/ecbuild/cmake ]; then
 elif [ -d $INSTALL_DIR/../cmake ]; then
   ECBUILD_MODULE_PATH="$( cd "$INSTALL_DIR/../cmake" && pwd -P )"
 fi
-if [ -n "$ECBUILD_MODULE_PATH" ]; then
-  ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
-else
-  ADD_ECBUILD_OPTIONS=""
+
+# Fail if we couldn't find ecBuild modules
+if [ ! -f "$ECBUILD_MODULE_PATH/VERSION.cmake" ]; then
+  echo "FATAL: ecBuild modules could not be found in either $INSTALL_DIR/../share/ecbuild/cmake or $INSTALL_DIR/../cmake" >&2
+  exit 1
 fi
+
+ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
 
 if [ -d $INSTALL_DIR/../share/ecbuild/toolchains ]; then
   ECBUILD_TOOLCHAIN_DIR="$( cd "$INSTALL_DIR/../share/ecbuild/toolchains" && pwd -P )"
