@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2014 ECMWF.
+# (C) Copyright 1996-2015 ECMWF.
 # 
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
@@ -7,7 +7,48 @@
 # does it submit to any jurisdiction.
 
 ##############################################################################
-# macro that runs the given C++ code and returns its output
+#.rst:
+#
+# ecbuild_check_cxx_source_return
+# ===============================
+#
+# Compile and run a given C++ code and return its output. ::
+#
+#   ecbuild_check_cxx_source_return( <source>
+#                                    VAR <name>
+#                                    OUTPUT <name>
+#                                    [ INCLUDES <path1> [ <path2> ... ] ]
+#                                    [ LIBS <library1> [ <library2> ... ] ]
+#                                    [ DEFINITIONS <definition1> [ <definition2> ... ] ] )
+#
+# Options
+# -------
+#
+# VAR : required
+#   name of the check and name of the CMake variable to write result to
+#
+# OUTPUT : required
+#   name of CMake variable to write the output to
+#
+# INCLUDES : optional
+#   list of paths to add to include directories
+#
+# LIBS : optional
+#   list of libraries to link against (CMake targets or external libraries)
+#
+# DEFINITIONS : optional
+#   list of definitions to add to preprocessor defines
+#
+# Usage
+# -----
+#
+# This will write the given source to a .cxx file and compile and run it with
+# try_run. If successful, ``${VAR}`` is set to 1 and ``${OUTPUT}`` is set to
+# the output of the successful run in the CMake cache.
+#
+# The check will not run if ``${VAR}`` is defined (e.g. from ecBuild cache).
+#
+##############################################################################
 
 macro( ecbuild_check_cxx_source_return SOURCE )
 
@@ -49,7 +90,7 @@ macro( ecbuild_check_cxx_source_return SOURCE )
         if( _p_INCLUDES )
             list( APPEND __add_incs ${_p_INCLUDES} )
         endif()
-		if( __add_incs )
+        if( __add_incs )
             set(CHECK_CXX_SOURCE_COMPILES_ADD_INCLUDES "-DINCLUDE_DIRECTORIES:STRING=${__add_incs}")
         endif()
     
@@ -69,8 +110,8 @@ macro( ecbuild_check_cxx_source_return SOURCE )
           COMPILE_OUTPUT_VARIABLE compile_OUTPUT 
           RUN_OUTPUT_VARIABLE     run_OUTPUT )
    
-	  # debug_var( ${_p_VAR}_COMPILED )
-	  # debug_var( ${_p_VAR}_EXITCODE )
+        # debug_var( ${_p_VAR}_COMPILED )
+        # debug_var( ${_p_VAR}_EXITCODE )
 
         # if it did not compile make the return value fail code of 1
 
@@ -118,43 +159,5 @@ macro( ecbuild_check_cxx_source_return SOURCE )
         endif()
     
     endif()
-
-endmacro()
-
-##############################################################################
-# macro that only adds a cxx flag if compiler supports it
-
-macro( cmake_add_cxx_flags m_cxx_flags )
-
-  set( _flags ${m_cxx_flags} )
-  if( _flags AND CMAKE_CXX_COMPILER_LOADED )
-    set( options )
-    set( single_value_args BUILD )
-    set( multi_value_args )
-
-    cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
-
-    if( NOT DEFINED N_CXXFLAG )
-      set( N_CXXFLAG 0 )
-    endif()
-
-    math( EXPR N_CXXFLAG '${N_CXXFLAG}+1' )
-
-    if( NOT ECBUILD_TRUST_FLAGS )
-      check_cxx_compiler_flag( ${_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
-    endif()
-
-    if( CXX_FLAG_TEST_${N_CXXFLAG} OR ECBUILD_TRUST_FLAGS )
-      if( _PAR_BUILD )
-        set( CMAKE_CXX_FLAGS_${_PAR_BUILD} "${CMAKE_CXX_FLAGS_${_PAR_BUILD}} ${_flags}" )
-      else()
-        set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_flags}" )
-        # message( STATUS "C++ FLAG [${_flags}] added" )
-      endif()
-    else()
-      message( STATUS "Unrecognised CXX flag [${_flags}] -- skipping" )
-    endif()
-  endif()
-  unset( _flags )
 
 endmacro()

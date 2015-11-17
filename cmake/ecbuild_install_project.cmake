@@ -1,15 +1,77 @@
-# (C) Copyright 1996-2014 ECMWF.
-# 
+# (C) Copyright 1996-2015 ECMWF.
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-###############################################################################
+##############################################################################
+#.rst:
+#
+# ecbuild_install_project
+# =======================
+#
+# Set up packaging and export configuration. ::
+#
+#   ecbuild_install_project( NAME <name> [ DESCRIPTION <description> ] )
+#
+# Options
+# -------
+#
+# NAME : required
+#   project name used for packaging
+#
+# DESCRIPTION : optional
+#   project description used for packaging
+#
+# Usage
+# -----
+#
+# ``ecbuild_install_project`` should be called at the very end of any ecBuild
+# project (only followed by ``ecbuild_print_summary``), sets up packaging of
+# the project with cpack and exports the configuration and targets for other
+# projects to use.
+#
+# In a top-level project, the following files are generated:
+#
+# :<project>-config.cmake:         default project configuration
+# :<project>-config-version.cmake: project version number
+# :<project>-import.cmake:         extra project configuration (optional)
+# :<project>-config.cmake.tpls:    3rd party project configurations
+# :<project>-targets.cmake:        exported targets
+#
+# For ``<project>-import.cmake`` to be exported to build and install tree,
+# ``<project>-import.cmake`` or ``<project>-import.cmake.in`` must exist in
+# the source tree. ``<project>-config.cmake.in`` and
+# ``<project>-config-version.cmake.in`` can be provided in the source tree to
+# override the default templates used to generate ``<project>-config.cmake``
+# and ``<project>-config-version.cmake``.
+#
+# In DEVELOPER_MODE, the build tree location is also added to the CMake user
+# package registry.
+#
+# If the project is added as a subdirectory, the following CMake variables
+# are set in the parent scope:
+#
+# :<PROJECT>_FOUND:            set to ``TRUE``
+# :<project>_FOUND:            set to ``TRUE``
+# :<PROJECT>_VERSION:          version string
+# :<project>_VERSION:          version string
+# :<PROJECT>_INCLUDE_DIRS:     list of include directories
+# :<PROJECT>_LIBRARIES:        list of libraries
+# :<PROJECT>_DEFINITIONS:      list of compiler definitions
+# :<PROJECT>_TPLS:             list of 3rd party dependencies
+# :<PROJECT>_TPL_LIBRARIES:    libraries of 3rd party dependencies
+# :<PROJECT>_TPL_DEFINITIONS:  compiler definitions of 3rd party dependencies
+# :<PROJECT>_TPL_INCLUDE_DIRS: include directories of 3rd party dependencies
+# :<PROJECT>_FEATURES:         list of enabled features
+# :<PROJECT>_HAVE_<FEATURE>:   set to 1 for each enabled features
+#
+##############################################################################
+
 
 macro( ecbuild_install_project )
-
 
     set( options )
     set( single_value_args NAME DESCRIPTION )
@@ -27,9 +89,9 @@ macro( ecbuild_install_project )
 
     ### PACKAGING ########################################################
 
-    string( TOUPPER ${PROJECT_NAME} PNAME )
-    string( TOLOWER ${PROJECT_NAME} LNAME )
-    
+    set( PNAME ${PROJECT_NAME_CAPS} )
+    set( LNAME ${PROJECT_NAME_LOWCASE} )
+
     # components
 
     #    if( DEFINED _PAR_COMPONENTS )
@@ -37,7 +99,7 @@ macro( ecbuild_install_project )
     #    else()
     #        set(CPACK_COMPONENTS_ALL   "${PROJECT_NAME}")
     #    endif()
-    
+
     # name, version, etc ...
 
     set(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
@@ -68,17 +130,17 @@ macro( ecbuild_install_project )
     if( EXISTS ${PROJECT_SOURCE_DIR}/INSTALL )
         set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/INSTALL")
     endif()
-	if( EXISTS ${PROJECT_SOURCE_DIR}/LICENSE )
+    if( EXISTS ${PROJECT_SOURCE_DIR}/LICENSE )
         set(CPACK_RESOURCE_FILE_LICENSE    "${PROJECT_SOURCE_DIR}/LICENSE")
     endif()
 
     # set(CPACK_PACKAGE_EXECUTABLES ${ECBUILD_ALL_EXES})
 
-	list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES
-	   "${PROJECT_SOURCE_DIR}" "."
-	   "${ECBUILD_MACROS_DIR}" "cmake/" )
+    list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES
+          "${PROJECT_SOURCE_DIR}" "."
+          "${ECBUILD_MACROS_DIR}" "cmake/" )
 
-	# what to pack and not
+    # what to pack and not
 
     set(CPACK_SOURCE_IGNORE_FILES
         /build/
@@ -93,6 +155,25 @@ macro( ecbuild_install_project )
 
     list( APPEND CPACK_SOURCE_IGNORE_FILES ${ECBUILD_DONT_PACK_FILES} )
 
+    # Find the ecbuild toolchain files and include in the source package if found
+    find_path( ECBUILD_TOOLCHAIN_DIR ecmwf-XC30-GNU.cmake
+               PATHS ${ECBUILD_MACROS_DIR}/../toolchains
+                     ${ECBUILD_MACROS_DIR}/../share/ecbuild/toolchains )
+
+    if( ECBUILD_TOOLCHAIN_DIR )
+      list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES "${ECBUILD_TOOLCHAIN_DIR}" "share/ecbuild/toolchains/" )
+    endif()
+
+    # Find the ecbuild bin directory and include in the source package if found
+    find_program( ECBUILD_SCRIPT ecbuild
+                  PATHS ${ECBUILD_MACROS_DIR}/../bin
+                        ${ECBUILD_MACROS_DIR}/../../../bin )
+
+    if( ECBUILD_SCRIPT )
+      get_filename_component( ECBUILD_BIN_DIR ${ECBUILD_SCRIPT} PATH )
+      list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES "${ECBUILD_BIN_DIR}" "bin/" )
+    endif()
+
     # cpack config file
 
     # set(CPACK_INSTALL_CMAKE_PROJECTS "${${PROJECT_NAME}_BINARY_DIR}" "${PROJECT_NAME}" "${CPACK_COMPONENTS_ALL}" "*" )
@@ -100,12 +181,13 @@ macro( ecbuild_install_project )
     include( CPack )
 
     ### EXPORTS ########################################################
- 
-    ecbuild_enabled_features( ${PNAME}_FEATURES )
+
+    ecbuild_enabled_features( ${PROJECT_NAME_CAPS}_FEATURES )
     foreach( _f ${${PNAME}_FEATURES} )
         set( ${PNAME}_HAVE_${_f} 1 )
     endforeach()
 
+    message( STATUS "${PROJECT_NAME_CAPS}_TPLS: ${${PROJECT_NAME_CAPS}_TPLS}" )
 
     foreach( _tpl ${${PNAME}_TPLS} )
         string( TOUPPER ${_tpl} _TPL )
@@ -141,24 +223,27 @@ macro( ecbuild_install_project )
 
     if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
-        # exports the package for use from the build-tree -- inserts <package> into the CMake user package registry
-    
-        export( PACKAGE ${PROJECT_NAME} )
-         
+        # exports the package for use from the build-tree but only in DEVELOPER_MODE
+        # inserts <package> into the CMake user package registry
+
+        if( DEVELOPER_MODE )
+            export( PACKAGE ${PROJECT_NAME} )
+        endif()
+
         set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
         if( EXISTS ${LNAME}-config.cmake.in )
             set( _template_config "${LNAME}-config.cmake.in" )
         endif()
-    
+
         set( _template_config_version "${ECBUILD_MACROS_DIR}/project-config-version.cmake.in" )
         if( EXISTS ${LNAME}-config-version.cmake.in )
             set( _template_config_version "${LNAME}-config-version.cmake.in" )
         endif()
-    
+
         # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)
-    
-        set( PACKAGE_VERSION "${${PNAME}_VERSION}" ) 
-        
+
+        set( PACKAGE_VERSION "${${PNAME}_VERSION}" )
+
         configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
 
         install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
@@ -173,7 +258,7 @@ macro( ecbuild_install_project )
         if( ${PNAME}_LIBRARIES )
             set( CONF_LIBRARIES ${${PNAME}_LIBRARIES} )
         endif()
-                    
+
         set( CONF_DEFINITIONS "" )
         if( ${PNAME}_DEFINITIONS )
            set( CONF_DEFINITIONS ${${PNAME}_DEFINITIONS} )
@@ -209,20 +294,20 @@ macro( ecbuild_install_project )
 
         set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
 
-        if( EXISTS "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${CONF_IMPORT_FILE}" )
+        # If <project>-import.cmake.in exist in source tree, configure it to
+        # the build tree and install the configured version
+        if( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
+          configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
+                          "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
           install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
                    DESTINATION "${INSTALL_CMAKE_DIR}" )
-        elseif( EXISTS "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" )
-        elseif( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
-            # For build tree
-            configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
-                            "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
-                            
-            # For install tree
-            configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
-                            "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${CONF_IMPORT_FILE}" @ONLY )
-            install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
-                     DESTINATION "${INSTALL_CMAKE_DIR}" )
+        # Otherwise, if <project>-import.cmake exist in source tree, copy it to
+        # the build tree and install it
+        elseif( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}" )
+          configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}"
+                          "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" COPYONLY )
+          install( FILES "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}"
+                   DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
 
         set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
@@ -248,7 +333,7 @@ macro( ecbuild_install_project )
         endif()
 
         # project-config.cmake @ install tree
-        
+
         file( RELATIVE_PATH REL_INCLUDE_DIR "${${PNAME}_FULL_INSTALL_CMAKE_DIR}" "${${PNAME}_FULL_INSTALL_INCLUDE_DIR}" )
         set( CONF_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
 
@@ -268,17 +353,17 @@ macro( ecbuild_install_project )
                 list( APPEND CONF_TPL_INCLUDE_DIRS ${${TPL}_INCLUDE_DIR} )
             endif()
         endforeach()
-        
+
         set( _is_build_dir_export OFF )
         configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
         install( FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
-     
+
         # install the export
-    
+
         if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
             install( EXPORT ${CMAKE_PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
-    
+
     else()
 
         set( ${PNAME}_FOUND             TRUE                          PARENT_SCOPE )

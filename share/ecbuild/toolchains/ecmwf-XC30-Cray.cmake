@@ -27,9 +27,9 @@ set( OMPSTUBS_C_FLAGS        "-hnoomp" )
 set( OMPSTUBS_CXX_FLAGS      "-hnoomp" )
 set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
 
-set( CMAKE_C_FLAGS_INIT       "" )
-set( CMAKE_CXX_FLAGS_INIT     "" )
-set( CMAKE_Fortran_FLAGS_INIT "-emf -rmoid" )   # -emf activates .mods and uses lower case -rmoid produces a listing file
+set( CMAKE_C_FLAGS       "" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS     "" CACHE STRING "" FORCE )
+set( CMAKE_Fortran_FLAGS "-emf -rmoid" CACHE STRING "" FORCE )   # -emf activates .mods and uses lower case -rmoid produces a listing file
 
 ####################################################################
 # RELEASE FLAGS

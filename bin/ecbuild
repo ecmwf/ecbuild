@@ -43,24 +43,40 @@ Available values for "option":
 
     --prefix=<prefix>
           Set the install path to <prefix>.
-          Equivalent to cmake argument "-D CMAKE_INSTALL_PREFIX=<prefix>"
+          Equivalent to cmake argument "-DCMAKE_INSTALL_PREFIX=<prefix>"
 
     --build=<build-type>
           Set the build-type to <build-type>.
-          Equivalent to cmake argument "-D CMAKE_BUILD_TYPE=<build-type>"
+          Equivalent to cmake argument "-DCMAKE_BUILD_TYPE=<build-type>"
           <build-type> can be any of:
              - debug : Lowest optimization level, useful for debugging
              - release : Highest optimization level, for best performance
              - bit : Highest optimization level while staying bit-reproducible
              - ...others depending on project
 
+    --log=<log-level>
+          Set the ecbuild log-level
+          Equivalent to "-DECBUILD_LOG_LEVEL=<log-level>"
+          <log-level> can be any of:
+             - DEBUG
+             - INFO
+             - WARN
+             - ERROR
+             - CRITICAL
+             - OFF
+          Every choice outputs also the log-levels listed below itself
+
     --static
           Build static libraries.
-          Equivalent to "-D BUILD_SHARED_LIBS=OFF"
+          Equivalent to "-DBUILD_SHARED_LIBS=OFF"
 
     --dynamic
           Build dynamic libraries (usually the default).
-          Equivalent to "-D BUILD_SHARED_LIBS=ON"
+          Equivalent to "-DBUILD_SHARED_LIBS=ON"
+
+    --shared     (same option as --dynamic)
+          Build dynamic libraries (usually the default).
+          Equivalent to "-DBUILD_SHARED_LIBS=ON"
 
     --toolchain=<toolchain>
           Use a platform specific toolchain, containing settings such
@@ -91,7 +107,7 @@ Available values for "cmake-argument":
 
     Any value that can be usually passed to cmake to (re)configure the build.
     Typically these values start with "-D".
-        example:  -D ENABLE_TESTS=ON  -D ENABLE_MPI=OFF  -D ECKIT_PATH=...
+        example:  -DENABLE_TESTS=ON  -DENABLE_MPI=OFF  -DECKIT_PATH=...
 
     They can be explicitly separated from [option...] with a "--", for the case
     there is a conflicting option with the "cmake" executable, and the latter's
@@ -102,7 +118,7 @@ Available values for "cmake-argument":
 NOTE: When reconfiguring a build, it is only necessary to change the relevant
 options, as everything stays cached. For example:
   > ecbuild --prefix=PREFIX .
-  > ecbuild -D ENABLE_TESTS=ON .
+  > ecbuild -DENABLE_TESTS=ON .
 
 ------------------------------------------------------------------------
 
@@ -125,7 +141,7 @@ Installing:
 
   To install the project in location PREFIX with
        "--prefix=PREFIX" or
-       "-D CMAKE_INSTALL_PREFIX=PREFIX"
+       "-DCMAKE_INSTALL_PREFIX=PREFIX"
     > make install
 
 ------------------------------------------------------------------------
@@ -135,11 +151,31 @@ EOF
     exit $1
 }
 
+INSTALL_DIR="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+ECBUILD_MODULE_PATH=""
+# If there is a directory share/ecbuild/cmake relative to the parent directory
+# (as in an install tree), add it to CMAKE_MODULE_PATH
+if [ -d $INSTALL_DIR/../share/ecbuild/cmake ]; then
+  ECBUILD_MODULE_PATH="$( cd "$INSTALL_DIR/../share/ecbuild/cmake" && pwd -P )"
+# If there is a cmake subdirectory relative to the script directory (as in a
+# tarball), add it to CMAKE_MODULE_PATH
+elif [ -d $INSTALL_DIR/../cmake ]; then
+  ECBUILD_MODULE_PATH="$( cd "$INSTALL_DIR/../cmake" && pwd -P )"
+fi
 
-INSTALL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ECBUILD_MODULE_PATH=$INSTALL_DIR/../share/ecbuild/cmake
-ECBUILD_MODULE_PATH=$(cd $(dirname "$ECBUILD_MODULE_PATH") && pwd -P)/$(basename "$ECBUILD_MODULE_PATH")
-ADD_ECBUILD_OPTIONS="-D CMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
+# Fail if we couldn't find ecBuild modules
+if [ ! -f "$ECBUILD_MODULE_PATH/VERSION.cmake" ]; then
+  echo "FATAL: ecBuild modules could not be found in either $INSTALL_DIR/../share/ecbuild/cmake or $INSTALL_DIR/../cmake" >&2
+  exit 1
+fi
+
+ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
+
+if [ -d $INSTALL_DIR/../share/ecbuild/toolchains ]; then
+  ECBUILD_TOOLCHAIN_DIR="$( cd "$INSTALL_DIR/../share/ecbuild/toolchains" && pwd -P )"
+elif [ -d $INSTALL_DIR/share/ecbuild/toolchains ]; then
+  ECBUILD_TOOLCHAIN_DIR="$( cd "$INSTALL_DIR/share/ecbuild/toolchains" && pwd -P )"
+fi
 
 version()
 {
@@ -150,45 +186,50 @@ version()
   exit 0
 }
 
+log()
+{
+  log_level=$(sed 's/.*/\U&/' <<< "$1")
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_LOG_LEVEL=${log_level}"
+}
+
 toolchains()
 {
-  toolchains_dir=$INSTALL_DIR/../share/ecbuild/toolchains/
-  cd $toolchains_dir
-  echo "Available toolchains:"
-  ls | while read fname
-  do
-      echo "  - ${fname%%.*}"
-  done
-  exit 0
+  if [ -d $ECBUILD_TOOLCHAIN_DIR ]; then
+    cd $ECBUILD_TOOLCHAIN_DIR
+    echo "Available toolchains:"
+    ls | while read fname
+    do
+        echo "  - ${fname%%.*}"
+    done
+    exit 0
+  else
+    echo "No toolchains available."
+    exit 1
+  fi
 }
 
 prefix()
 {
-  arg=$1
-  path=$(cd $(dirname "$arg") && pwd -P)/$(basename "$arg")
-  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_INSTALL_PREFIX=${path}"
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_INSTALL_PREFIX=${1/#\~\//$HOME/}"
 }
 
 toolchain()
 {
-  arg=$1
+  arg=${1/#\~\//$HOME/}
   if [ -f $arg ]; then
     toolchain_file=$arg
   else
-    if [ -f $INSTALL_DIR/../share/ecbuild/toolchains/$arg.cmake ]; then
-      toolchain_file=$INSTALL_DIR/../share/ecbuild/toolchains/$arg.cmake
+    if [ -f $ECBUILD_TOOLCHAIN_DIR/$arg.cmake ]; then
+      toolchain_file=$ECBUILD_TOOLCHAIN_DIR/$arg.cmake
     fi
   fi
   if [ -z ${toolchain_file+x} ]; then
-    toolchains_dir=$INSTALL_DIR/../share/ecbuild/toolchains/
-    toolchains_dir=$(cd $(dirname "$toolchains_dir") && pwd -P)/$(basename "$toolchains_dir")
     echo "Error:"
     echo "   Toolchain [$arg] is not valid: [$arg.cmake] cannot be"
-    echo "   found in [$toolchains_dir]"
+    echo "   found in [$ECBUILD_TOOLCHAIN_DIR]"
     exit 1
   else
-    toolchain_file=$(cd $(dirname "$toolchain_file") && pwd -P)/$(basename "$toolchain_file")
-    ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_TOOLCHAIN_FILE=${toolchain_file}"
+    ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_TOOLCHAIN_FILE=${toolchain_file}"
   fi
 }
 
@@ -196,13 +237,13 @@ cache()
 {
   arg=$1
   if [ -f $arg ]; then
-    cache_file=$(cd $(dirname "$arg") && pwd -P)/$(basename "$arg")
+    cache_file=$( cd "$arg" && pwd -P )
   else
     echo "Error:"
-    echo "   Cache file [$arg] is not found."
+    echo "   Cache file [$arg] is not found or is not a file."
     exit 1
   fi
-  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D ECBUILD_CACHE=${cache_file}"
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_CACHE=${cache_file}"
 }
 
 if test $# -eq 0; then
@@ -252,16 +293,22 @@ while test $# -gt 0; do
         cmakebin="$val"
         ;;
       --prefix)
-        prefix $val
+        prefix "$val"
         ;;
       --build)
-        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D CMAKE_BUILD_TYPE=$val"
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_BUILD_TYPE=$val"
+        ;;
+      --log)
+        log $val
         ;;
       --static)
-        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=OFF"
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DBUILD_SHARED_LIBS=OFF"
         ;;
       --dynamic)
-        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -D BUILD_SHARED_LIBS=ON"
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DBUILD_SHARED_LIBS=ON"
+        ;;
+      --shared)
+        ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DBUILD_SHARED_LIBS=ON"
         ;;
       --toolchain)
         toolchain $val
