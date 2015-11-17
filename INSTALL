@@ -12,7 +12,7 @@ QUICK INSTALL
 
 1. Extract the source files
 
- tar zxvf ecbuild-1.0.4-Source.tar.gz -C /path/to/install
+ tar zxvf ecbuild-1.9.0-Source.tar.gz -C /path/to/install
 
 2. Use cmake and point the module path to the installed source.
 
