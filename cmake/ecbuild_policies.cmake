@@ -6,13 +6,17 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-###############################################################################
-# define cmake policies
+##############################################################################
+#
+# ecBuild Policies
+# ================
 #
 # NOTE: This file needs to be included with NO_POLICY_SCOPE or it will have no
 #       effect!
 # NOTE: Policies 1 through 17 will be set to NEW by requiring CMake 2.8.4 i.e.
 #       calling cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
+#
+##############################################################################
 
 # allow for empty spaces around library names 
 if( POLICY CMP0004 )
