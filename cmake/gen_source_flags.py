@@ -26,7 +26,7 @@ def main():
             flags = default_flags[:]
             for pattern, op in rules.items():
                 if fnmatch(source, pattern):
-                    flags += op
+                    flags += [flag for flag in op if flag not in flags]
             if flags:
                 print 'Setting flags for', source, 'to', ' '.join(flags)
                 f.write('set_source_files_properties(%s PROPERTIES COMPILE_FLAGS "%s")\n'
