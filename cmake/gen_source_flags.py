@@ -28,9 +28,8 @@ def main():
                 if fnmatch(source, pattern):
                     flags += op
             if flags:
-                f.write('get_source_file_property(__f_props %s COMPILE_FLAGS)\n'
-                        % source)
-                f.write('set_source_files_properties(%s PROPERTIES COMPILE_FLAGS "${__f_props} %s")\n'
+                print 'Setting flags for', source, 'to', ' '.join(flags)
+                f.write('set_source_files_properties(%s PROPERTIES COMPILE_FLAGS "%s")\n'
                         % (source, ' '.join(flags)))
 
 if __name__ == '__main__':
