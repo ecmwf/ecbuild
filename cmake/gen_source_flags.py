@@ -15,6 +15,7 @@ usage = 'usage: %s RULES.json OUT.cmake DEFAULT_FLAGS FILE [ FILE ... ]' % __fil
 
 
 def main():
+    print sys.argv
     if len(sys.argv) < 5:
         print >> sys.stderr, usage
         sys.exit(1)
@@ -26,6 +27,7 @@ def main():
             flags = default_flags[:]
             for pattern, op in rules.items():
                 if fnmatch(source, pattern):
+                    print pattern, 'matches', source, 'adding', op
                     flags += [flag for flag in op if flag not in flags]
             if flags:
                 print 'Setting flags for', source, 'to', ' '.join(flags)
