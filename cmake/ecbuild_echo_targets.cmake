@@ -32,13 +32,13 @@ function(ecbuild_echo_target_property tgt prop)
   get_property(s TARGET ${tgt} PROPERTY ${prop} SET)
 
   # only produce output for values that are set
-  #if(s)
+  if(s)
     message("tgt='${tgt}' prop='${prop}'")
     message("  value='${v}'")
     message("  defined='${d}'")
     message("  set='${s}'")
     message("")
-  #endif()
+  endif()
 
   cmake_policy(POP)
 
@@ -207,7 +207,7 @@ XCODE_ATTRIBUTE_WHATEVER
 
   message("======================== ${tgt} ========================")
   foreach(p ${props})
-    ecbuild_echo_target_property("${t}" "${p}")
+    ecbuild_echo_target_property("${tgt}" "${p}")
   endforeach()
   message("")
 endfunction()
