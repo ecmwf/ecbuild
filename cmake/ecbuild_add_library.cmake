@@ -195,6 +195,17 @@ function( ecbuild_add_library_impl )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
+    if( ECBUILD_SOURCE_FLAGS )
+      get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
+      foreach( lang ${langs} )
+        # Generate list of default compiler flags and unset global compiler flags
+        set( ECBUILD_${lang}_SOURCE_FLAGS "${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
+        unset( CMAKE_${lang}_FLAGS )
+        unset( CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE} )
+        unset( CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
+      endforeach()
+    endif()
+
     add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} )
 
     # set OUTPUT_NAME
@@ -315,18 +326,42 @@ function( ecbuild_add_library_impl )
 
     # add local flags
 
-    if( DEFINED _PAR_CFLAGS )
+    if( ECBUILD_SOURCE_FLAGS AND ${_PAR_TARGET}_c_srcs )
+      ecbuild_source_flags( ${_PAR_TARGET}_C_SOURCE_FLAGS
+                            ${_PAR_TARGET}
+                            "${ECBUILD_C_SOURCE_FLAGS} ${_PAR_CFLAGS}"
+                            "${${_PAR_TARGET}_c_srcs}" )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file C flags from ${${_PAR_TARGET}_C_SOURCE_FLAGS}")
+      include( ${${_PAR_TARGET}_C_SOURCE_FLAGS} )
+    elseif( DEFINED _PAR_CFLAGS )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use C flags ${_PAR_CFLAGS}")
       set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
     endif()
-    if( DEFINED _PAR_CXXFLAGS )
+
+    if( ECBUILD_SOURCE_FLAGS AND ${_PAR_TARGET}_cxx_srcs )
+      ecbuild_source_flags( ${_PAR_TARGET}_CXX_SOURCE_FLAGS
+                            ${_PAR_TARGET}
+                            "${ECBUILD_CXX_SOURCE_FLAGS} ${_PAR_CXXFLAGS}"
+                            "${${_PAR_TARGET}_cxx_srcs}" )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file CXX flags from ${${_PAR_TARGET}_CXX_SOURCE_FLAGS}")
+      include( ${${_PAR_TARGET}_CXX_SOURCE_FLAGS} )
+    elseif( DEFINED _PAR_CXXFLAGS )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use C++ flags ${_PAR_CFLAGS}")
       set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
     endif()
-    if( DEFINED _PAR_FFLAGS )
+
+    if( ECBUILD_SOURCE_FLAGS AND ${_PAR_TARGET}_f_srcs )
+      ecbuild_source_flags( ${_PAR_TARGET}_Fortran_SOURCE_FLAGS
+                            ${_PAR_TARGET}
+                            "${ECBUILD_Fortran_SOURCE_FLAGS} ${_PAR_FFLAGS}"
+                            "${${_PAR_TARGET}_f_srcs}" )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file Fortran flags from ${${_PAR_TARGET}_Fortran_SOURCE_FLAGS}")
+      include( ${${_PAR_TARGET}_Fortran_SOURCE_FLAGS} )
+    elseif( DEFINED _PAR_FFLAGS )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use Fortran flags ${_PAR_CFLAGS}")
       set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
     endif()
+
     if( DEFINED _PAR_GENERATED )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): mark as generated ${_PAR_GENERATED}")
       set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
