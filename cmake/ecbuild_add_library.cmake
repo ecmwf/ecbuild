@@ -195,23 +195,6 @@ function( ecbuild_add_library_impl )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
-    ### must happen before the addition of the target so we can reset the global flags
-    if( ECBUILD_SOURCE_FLAGS )
-      get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
-      foreach( lang ${langs} )
-
-        # Generate list of default compiler flags and unset global compiler flags
-        set( _save_CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS}" )
-        set( _save_CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS} "${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
-
-        set( CMAKE_${lang}_FLAGS "" )
-        set( CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS} "" )
-
-        set( ECBUILD_${lang}_SOURCE_FLAGS "${_save_CMAKE_${lang}_FLAGS} ${_save_CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
-
-      endforeach()
-    endif()
-
     add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} )
 
     # ecbuild_echo_target( ${_PAR_TARGET} )
@@ -339,7 +322,7 @@ function( ecbuild_add_library_impl )
       if( ECBUILD_SOURCE_FLAGS )
         ecbuild_source_flags( ${_PAR_TARGET}_C_SOURCE_FLAGS
                               ${_PAR_TARGET}
-                              "${ECBUILD_C_SOURCE_FLAGS} ${_PAR_CFLAGS}"
+                              "${_PAR_CFLAGS}"
                               "${${_PAR_TARGET}_c_srcs}" )
 
         ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file C flags from ${${_PAR_TARGET}_C_SOURCE_FLAGS}")
@@ -358,7 +341,7 @@ function( ecbuild_add_library_impl )
       if( ECBUILD_SOURCE_FLAGS )
         ecbuild_source_flags( ${_PAR_TARGET}_CXX_SOURCE_FLAGS
                               ${_PAR_TARGET}
-                              "${ECBUILD_CXX_SOURCE_FLAGS} ${_PAR_CXXFLAGS}"
+                              "${_PAR_CXXFLAGS}"
                               "${${_PAR_TARGET}_cxx_srcs}" )
 
         ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file CXX flags from ${${_PAR_TARGET}_CXX_SOURCE_FLAGS}")
@@ -377,7 +360,7 @@ function( ecbuild_add_library_impl )
       if( ECBUILD_SOURCE_FLAGS )
         ecbuild_source_flags( ${_PAR_TARGET}_Fortran_SOURCE_FLAGS
                               ${_PAR_TARGET}
-                              "${ECBUILD_Fortran_SOURCE_FLAGS} ${_PAR_FFLAGS}"
+                              "${_PAR_FFLAGS}"
                               "${${_PAR_TARGET}_f_srcs}" )
 
         ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file Fortran flags from ${${_PAR_TARGET}_Fortran_SOURCE_FLAGS}")
@@ -389,16 +372,6 @@ function( ecbuild_add_library_impl )
         set_source_files_properties( ${${_PAR_TARGET}_f_srcs}  PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
 
       endif()
-    endif()
-
-    ### put back the global flags
-
-    if( ECBUILD_SOURCE_FLAGS )
-      get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
-      foreach( lang ${langs} )
-        set( CMAKE_${lang}_FLAGS "${_save_CMAKE_${lang}_FLAGS}" )
-        set( CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS} "${_save_CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
-      endforeach()
     endif()
 
     if( DEFINED _PAR_GENERATED )
