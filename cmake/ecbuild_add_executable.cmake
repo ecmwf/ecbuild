@@ -69,7 +69,7 @@
 #
 # NOINSTALL : optional
 #   do not install the executable
-# 
+#
 # VERSION : optional, AUTO_VERSION or LIBS_VERSION is used if not specified
 #   version to use as executable version
 #
@@ -84,7 +84,6 @@
 #
 # FFLAGS : optional
 #   list of Fortran compiler flags to use for all Fortran source files
-#
 #
 # LINKER_LANGUAGE : optional
 #   sets the LINKER_LANGUAGE property on the target
@@ -159,8 +158,26 @@ macro( ecbuild_add_executable )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
-    # add the executable target
+    ### must happen before the addition of the target so we can reset the global flags
+    if( ECBUILD_SOURCE_FLAGS )
+      get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
+      foreach( lang ${langs} )
+
+        # Generate list of default compiler flags and unset global compiler flags
+        set( _save_CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS}" )
+        set( _save_CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS} "${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
+
+        set( CMAKE_${lang}_FLAGS "" )
+        set( CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS} "" )
+
+        set( ECBUILD_${lang}_SOURCE_FLAGS "${_save_CMAKE_${lang}_FLAGS} ${_save_CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
+
+      endforeach()
+    endif()
+
     add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} )
+
+    # ecbuild_echo_target( ${_PAR_TARGET} )
 
     # set OUTPUT_NAME
 
@@ -191,24 +208,71 @@ macro( ecbuild_add_executable )
     endif()
 
     # filter sources
+
     ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
 
+    #   debug_var( ${_PAR_TARGET}_h_srcs )
+    #   debug_var( ${_PAR_TARGET}_c_srcs )
+    #   debug_var( ${_PAR_TARGET}_cxx_srcs )
+    #   debug_var( ${_PAR_TARGET}_f_srcs )
+
     # add local flags
-    if( DEFINED _PAR_CFLAGS )
-      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): use C flags ${_PAR_CFLAGS}")
-      set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
+
+    if( ${_PAR_TARGET}_c_srcs )
+
+      if( ECBUILD_SOURCE_FLAGS )
+        ecbuild_source_flags( ${_PAR_TARGET}_C_SOURCE_FLAGS
+                              ${_PAR_TARGET}
+                              "${ECBUILD_C_SOURCE_FLAGS} ${_PAR_CFLAGS}"
+                              "${${_PAR_TARGET}_c_srcs}" )
+
+        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): setting source file C flags from ${${_PAR_TARGET}_C_SOURCE_FLAGS}")
+        include( ${${_PAR_TARGET}_C_SOURCE_FLAGS} )
+
+      elseif( DEFINED _PAR_CFLAGS )
+
+        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): use C flags ${_PAR_CFLAGS}")
+        set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
+
+      endif()
     endif()
-    if( DEFINED _PAR_CXXFLAGS )
-      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): use C++ flags ${_PAR_CFLAGS}")
-      set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
+
+    if( ${_PAR_TARGET}_cxx_srcs )
+
+      if( ECBUILD_SOURCE_FLAGS )
+        ecbuild_source_flags( ${_PAR_TARGET}_CXX_SOURCE_FLAGS
+                              ${_PAR_TARGET}
+                              "${ECBUILD_CXX_SOURCE_FLAGS} ${_PAR_CXXFLAGS}"
+                              "${${_PAR_TARGET}_cxx_srcs}" )
+
+        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): setting source file CXX flags from ${${_PAR_TARGET}_CXX_SOURCE_FLAGS}")
+        include( ${${_PAR_TARGET}_CXX_SOURCE_FLAGS} )
+
+      elseif( DEFINED _PAR_CXXFLAGS )
+
+        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): use C++ flags ${_PAR_CFLAGS}")
+        set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
+
+      endif()
     endif()
-    if( DEFINED _PAR_FFLAGS )
-      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): use Fortran flags ${_PAR_CFLAGS}")
-      set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
-    endif()
-    if( DEFINED _PAR_GENERATED )
-      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): mark as generated ${_PAR_GENERATED}")
-      set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
+
+    if( ${_PAR_TARGET}_f_srcs )
+
+      if( ECBUILD_SOURCE_FLAGS )
+        ecbuild_source_flags( ${_PAR_TARGET}_Fortran_SOURCE_FLAGS
+                              ${_PAR_TARGET}
+                              "${ECBUILD_Fortran_SOURCE_FLAGS} ${_PAR_FFLAGS}"
+                              "${${_PAR_TARGET}_f_srcs}" )
+
+        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): setting source file Fortran flags from ${${_PAR_TARGET}_Fortran_SOURCE_FLAGS}")
+        include( ${${_PAR_TARGET}_Fortran_SOURCE_FLAGS} )
+
+      elseif( DEFINED _PAR_FFLAGS )
+
+        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): use Fortran flags ${_PAR_CFLAGS}")
+        set_source_files_properties( ${${_PAR_TARGET}_f_srcs}  PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
+
+      endif()
     endif()
 
     # define VERSION if requested
@@ -221,11 +285,6 @@ macro( ecbuild_add_executable )
         set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}" )
       endif()
     endif()
-
-    #    debug_var( ${_PAR_TARGET}_h_srcs )
-    #    debug_var( ${_PAR_TARGET}_c_srcs )
-    #    debug_var( ${_PAR_TARGET}_cxx_srcs )
-    #    debug_var( ${_PAR_TARGET}_f_srcs )
 
     # installation
 
