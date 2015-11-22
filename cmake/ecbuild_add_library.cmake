@@ -16,9 +16,8 @@
 #
 #   ecbuild_add_library( TARGET <name>
 #                        SOURCES <source1> [<source2> ...]
-#                        [ GLOB_SOURCES <expression1> [<expression2> ...] ]
-#                        [ SOURCE_DIR <dir> ]
-#                        [ TYPE SHARED|STATIC|MODULE ]
+#                        [ TYPE SHARED|STATIC|MODULE|OBJECT ]
+#                        [ OBJECTS <obj1> [<obj2> ...] ]
 #                        [ TEMPLATES <template1> [<template2> ...] ]
 #                        [ LIBS <library1> [<library2> ...] ]
 #                        [ INCLUDES <path1> [<path2> ...] ]
@@ -50,12 +49,6 @@
 # SOURCES : required
 #   list of source files
 #
-# GLOB_SOURCES : optional
-#   list of source files patterns to be searched
-#
-# SOURCE_DIR : optional
-#   directory where sources are located or from where the glob search starts
-#
 # TYPE : optional
 #   library type, one of:
 #
@@ -63,6 +56,10 @@
 #   :STATIC: archives of object files for use when linking other targets.
 #   :MODULE: plugins that are not linked into other targets but may be loaded
 #            dynamically at runtime using dlopen-like functionality
+#   :OBJECT: files are just compiled into objects
+#
+# OBJECTS : optional
+#   list of object libraries to add to this target
 #
 # TEMPLATES : optional
 #   list of files specified as SOURCES which are not to be compiled separately
@@ -143,7 +140,7 @@ function( ecbuild_add_library_impl )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS INSTALL_HEADERS_REGEX LINKER_LANGUAGE HEADER_DESTINATION VERSION OUTPUT_NAME )
-  set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+  set( multi_value_args  SOURCES OBJECTS TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -180,8 +177,9 @@ function( ecbuild_add_library_impl )
       # checks that is either SHARED or STATIC or MODULE
       if( NOT _PAR_TYPE MATCHES "STATIC" AND
           NOT _PAR_TYPE MATCHES "SHARED" AND
+          NOT _PAR_TYPE MATCHES "OBJECT" AND
           NOT _PAR_TYPE MATCHES "MODULE" )
-        message( FATAL_ERROR "library type must be one of [ STATIC | SHARED | MODULE ]" )
+        message( FATAL_ERROR "library type must be one of [ STATIC | SHARED | MODULE | OBJECT ]" )
       endif()
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): library type is ${_PAR_TYPE}")
     endif()
@@ -203,7 +201,13 @@ function( ecbuild_add_library_impl )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
-    add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} )
+    # insert already compiled objects (from OBJECT libraries)
+    unset( _all_objects )
+    foreach( _obj ${_PAR_OBJECTS} )
+      list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
+    endforeach()
+
+    add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} ${_all_objects} )
 
     # ecbuild_echo_target( ${_PAR_TARGET} )
 
@@ -393,9 +397,9 @@ function( ecbuild_add_library_impl )
       set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
     endif()
 
-    # installation
+    # installation (except for OBJECT libraries)
 
-    if( NOT _PAR_NOINSTALL )
+    if( NOT _PAR_NOINSTALL AND NOT _PAR_TYPE MATCHES "OBJECT" )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): installing to ${INSTALL_LIB_DIR}")
 
       # and associate with defined component
@@ -476,7 +480,9 @@ function( ecbuild_add_library_impl )
     endif()
 
     # make sure target is removed before - some problems with AIX
-    add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
+    if( NOT _PAR_TYPE MATCHES "OBJECT" )
+      add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
+    endif()
 
     # for the links target
     if( NOT _PAR_NOINSTALL )

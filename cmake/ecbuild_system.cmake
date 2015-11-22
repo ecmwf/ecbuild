@@ -28,7 +28,7 @@ endif()
 ########################################################################################################
 # ecbuild versioning support
 
-set( ECBUILD_CMAKE_MINIMUM "2.8.4" )
+set( ECBUILD_CMAKE_MINIMUM "2.8.10" )
 if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
     message(FATAL_ERROR "${PROJECT_NAME} requires at least CMake ${ECBUILD_CMAKE_MINIMUM} -- you are using ${CMAKE_COMMAND} [${CMAKE_VERSION}]\n Please, get a newer version of CMake @ www.cmake.org" )
 endif()
@@ -169,6 +169,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_generate_config_headers )
     include( ecbuild_generate_rpc )
     include( ecbuild_generate_yy )
+    # include( ecbuild_generate_fortran_interfaces )
     include( ecbuild_echo_targets )
     include( ecbuild_features )
     include( ecbuild_add_option )

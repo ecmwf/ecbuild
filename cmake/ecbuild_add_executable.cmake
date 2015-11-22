@@ -16,6 +16,7 @@
 #
 #   ecbuild_add_executable( TARGET <name>
 #                           SOURCES <source1> [<source2> ...]
+#                           [ OBJECTS <obj1> [<obj2> ...] ]
 #                           [ TEMPLATES <template1> [<template2> ...] ]
 #                           [ LIBS <library1> [<library2> ...] ]
 #                           [ INCLUDES <path1> [<path2> ...] ]
@@ -40,6 +41,9 @@
 #
 # SOURCES : required
 #   list of source files
+#
+# OBJECTS : optional
+#   list of object libraries to add to this target
 #
 # TEMPLATES : optional
 #   list of files specified as SOURCES which are not to be compiled separately
@@ -97,7 +101,7 @@ macro( ecbuild_add_executable )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET COMPONENT LINKER_LANGUAGE VERSION OUTPUT_NAME )
-  set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+  set( multi_value_args  SOURCES OBJECTS TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -158,7 +162,13 @@ macro( ecbuild_add_executable )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
-    add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} )
+    # insert already compiled objects (from OBJECT libraries)
+    unset( _all_objects )
+    foreach( _obj ${_PAR_OBJECTS} )
+      list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
+    endforeach()
+
+    add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
 
     # ecbuild_echo_target( ${_PAR_TARGET} )
 

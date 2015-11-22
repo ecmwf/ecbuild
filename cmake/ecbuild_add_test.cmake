@@ -16,6 +16,7 @@
 #
 #   ecbuild_add_test( [ TARGET <name> ]
 #                     [ SOURCES <source1> [<source2> ...] ]
+#                     [ OBJECTS <obj1> [<obj2> ...] ]
 #                     [ COMMAND <executable> ]
 #                     [ TYPE EXE|SCRIPT|PYTHON ]
 #                     [ ARGS <argument1> [<argument2> ...] ]
@@ -47,6 +48,9 @@
 #
 # SOURCES : required if TARGET is provided
 #   list of source files to be compiled
+#
+# OBJECTS : optional
+#   list of object libraries to add to this target
 #
 # COMMAND : either TARGET or COMMAND must be provided, unless TYPE is PYTHON
 #   command or script to execute (no executable is built)
@@ -127,7 +131,7 @@ macro( ecbuild_add_test )
 
   set( options           BOOST )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI WORKING_DIRECTORY )
-  set( multi_value_args  SOURCES LIBS INCLUDES TEST_DEPENDS DEPENDS ARGS
+  set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS ARGS
                          PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS
                          CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
@@ -266,9 +270,13 @@ macro( ecbuild_add_test )
         endif()
       endif()
 
-      # add the test target
+      # insert already compiled objects (from OBJECT libraries)
+      unset( _all_objects )
+      foreach( _obj ${_PAR_OBJECTS} )
+        list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
+      endforeach()
 
-      add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} )
+      add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
 
       # add extra dependencies
       if( DEFINED _PAR_DEPENDS)
