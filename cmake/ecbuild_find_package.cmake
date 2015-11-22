@@ -103,7 +103,7 @@ macro( ecbuild_find_package )
     message(FATAL_ERROR "Call to ecbuild_find_package() requests EXACT but doesn't specify VERSION.")
   endif()
 
-  # debug_var( _PAR_NAME )
+  # ecbuild_debug_var( _PAR_NAME )
 
   string( TOUPPER ${_PAR_NAME} pkgUPPER )
   string( TOLOWER ${_PAR_NAME} pkgLOWER )

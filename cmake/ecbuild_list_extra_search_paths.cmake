@@ -17,8 +17,8 @@ function( ecbuild_list_extra_search_paths pkg var )
   message( DEPRECATION " ecbuild_list_extra_search_paths should no longer be"
            " used and is going to be removed in a future version of ecBuild." )
 
-	# debug_var( pkg )
-	# debug_var( var )
+	# ecbuild_debug_var( pkg )
+	# ecbuild_debug_var( var )
 
 	string( TOUPPER ${pkg} _PKG )
 
@@ -75,7 +75,7 @@ function( ecbuild_list_extra_search_paths pkg var )
   ecbuild_debug("ecbuild_list_extra_search_paths(${pkg}): setting ${var} to ${${var}}")
 	set( ${var} ${${var}} PARENT_SCOPE )
 
-# debug_var( ${var} )
+# ecbuild_debug_var( ${var} )
 
 endfunction()
 

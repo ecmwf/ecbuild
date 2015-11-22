@@ -47,8 +47,8 @@ cmake_push_check_state()
 
 cmake_pop_check_state()
 
-# debug_var( readline_version )
-# debug_var( __readline_version_out )
+# ecbuild_debug_var( readline_version )
+# ecbuild_debug_var( __readline_version_out )
 
 set( __readline_fail 0 )
 if( __readline_version_out )

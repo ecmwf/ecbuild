@@ -57,7 +57,7 @@ function( ecbuild_list_exclude_pattern )
   set( result "" )
   set( matches_found 0 )
 
-  # debug_var(_p_PATTERNS)
+  # ecbuild_debug_var(_p_PATTERNS)
 
   foreach(item ${${_p_LIST}})
 

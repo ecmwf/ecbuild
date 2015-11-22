@@ -28,6 +28,6 @@ function( ecbuild_add_extra_search_paths pkg )
   ecbuild_list_extra_search_paths( ${pkg} CMAKE_PREFIX_PATH )
 
   set( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE )
-  # debug_var( CMAKE_PREFIX_PATH )
+  # ecbuild_debug_var( CMAKE_PREFIX_PATH )
 
 endfunction()

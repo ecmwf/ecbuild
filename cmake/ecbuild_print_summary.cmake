@@ -89,7 +89,7 @@ macro( ecbuild_print_summary )
 
     ### FEATURE SUMMARY
 
-    # debug_var( CMAKE_VERSION )
+    # ecbuild_debug_var( CMAKE_VERSION )
     if( ${CMAKE_VERSION} VERSION_LESS "2.8.6" )
       feature_summary( WHAT ALL )
     else()

@@ -75,9 +75,9 @@ macro( ecbuild_find_python )
     # endif()
 
     # message( STATUS "Python version ${PYTHON_VERSION_STRING}" )
-    # debug_var(PYTHON_VERSION_MAJOR)
-    # debug_var(PYTHON_VERSION_MINOR)
-    # debug_var(PYTHON_VERSION_PATCH)
+    # ecbuild_debug_var(PYTHON_VERSION_MAJOR)
+    # ecbuild_debug_var(PYTHON_VERSION_MINOR)
+    # ecbuild_debug_var(PYTHON_VERSION_PATCH)
 
     if( PYTHONINTERP_FOUND AND DEFINED _p_VERSION )
         if( _p_VERSION VERSION_GREATER "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" )
@@ -104,12 +104,12 @@ macro( ecbuild_find_python )
 
         # find python libs
 
-        # The OpenBSD python packages have python-config's 
+        # The OpenBSD python packages have python-config's
         # that don't reliably report linking flags that will work.
-        
+
         if( PYTHON_CONFIG AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" )
             ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using ${PYTHON_CONFIG}" )
-            
+
             execute_process(COMMAND "${PYTHON_CONFIG}" --ldflags
                             OUTPUT_VARIABLE PYTHON_LIBRARIES
                             OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -122,12 +122,12 @@ macro( ecbuild_find_python )
 
             string(REGEX REPLACE "^[-I]" "" PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
             string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
-            
+
             separate_arguments(PYTHON_INCLUDE_DIR)
 
         else() # revert to finding pythonlibs the standard way (cmake macro)
             ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package(PythonLibs)" )
-            
+
             find_package(PythonLibs)
             if( PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIR )
                 set(PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}")
@@ -167,11 +167,11 @@ macro( ecbuild_find_python )
 
     endif()
 
-#    debug_var( PYTHONINTERP_FOUND )
-#    debug_var( PYTHON_EXECUTABLE )
-#    debug_var( PYTHONLIBS_FOUND )
-#    debug_var( PYTHON_INCLUDE_DIRS )
-#    debug_var( PYTHON_LIBRARIES )
-#    debug_var( PYTHON_SITE_PACKAGES )
+#    ecbuild_debug_var( PYTHONINTERP_FOUND )
+#    ecbuild_debug_var( PYTHON_EXECUTABLE )
+#    ecbuild_debug_var( PYTHONLIBS_FOUND )
+#    ecbuild_debug_var( PYTHON_INCLUDE_DIRS )
+#    ecbuild_debug_var( PYTHON_LIBRARIES )
+#    ecbuild_debug_var( PYTHON_SITE_PACKAGES )
 
 endmacro( ecbuild_find_python )

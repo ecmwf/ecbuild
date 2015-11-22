@@ -69,8 +69,8 @@ macro( ecbuild_declare_project )
     get_git_head_revision( GIT_REFSPEC ${PNAME}_GIT_SHA1 )
     if( ${PNAME}_GIT_SHA1 )
       string( SUBSTRING "${${PNAME}_GIT_SHA1}" 0 7 ${PNAME}_GIT_SHA1_SHORT )
-      #     debug_var( ${PNAME}_GIT_SHA1 )
-      #     debug_var( ${PNAME}_GIT_SHA1_SHORT )
+      #     ecbuild_debug_var( ${PNAME}_GIT_SHA1 )
+      #     ecbuild_debug_var( ${PNAME}_GIT_SHA1_SHORT )
     else()
       message( STATUS "Could not get git-sha1 for project ${PNAME}")
     endif()
@@ -101,11 +101,11 @@ macro( ecbuild_declare_project )
   set( ${PNAME}_VERSION_STR "${${PROJECT_NAME}_VERSION_STR}"
        CACHE INTERNAL "package ${PNAME} version string" ) # ignore caps
 
-  #    debug_var( ${PNAME}_VERSION )
-  #    debug_var( ${PNAME}_VERSION_STR )
-  #    debug_var( ${PNAME}_MAJOR_VERSION )
-  #    debug_var( ${PNAME}_MINOR_VERSION )
-  #    debug_var( ${PNAME}_PATCH_VERSION )
+  #    ecbuild_debug_var( ${PNAME}_VERSION )
+  #    ecbuild_debug_var( ${PNAME}_VERSION_STR )
+  #    ecbuild_debug_var( ${PNAME}_MAJOR_VERSION )
+  #    ecbuild_debug_var( ${PNAME}_MINOR_VERSION )
+  #    ecbuild_debug_var( ${PNAME}_PATCH_VERSION )
 
   # install dirs for this project
 
@@ -151,7 +151,7 @@ macro( ecbuild_declare_project )
            CACHE INTERNAL "${PNAME} ${p} full install path" )
     endif()
 
-    #        debug_var( ${PNAME}_FULL_INSTALL_${p}_DIR )
+    #        ecbuild_debug_var( ${PNAME}_FULL_INSTALL_${p}_DIR )
 
   endforeach()
 
@@ -162,7 +162,7 @@ macro( ecbuild_declare_project )
     if( ENABLE_RELATIVE_RPATHS )
 
       file( RELATIVE_PATH relative_rpath ${${PNAME}_FULL_INSTALL_BIN_DIR} ${${PNAME}_FULL_INSTALL_LIB_DIR} )
-      # debug_var( relative_rpath )
+      # ecbuild_debug_var( relative_rpath )
 
       ecbuild_append_to_rpath( ${relative_rpath} )
 
@@ -171,14 +171,14 @@ macro( ecbuild_declare_project )
       if( IS_ABSOLUTE ${INSTALL_LIB_DIR} )
         ecbuild_append_to_rpath( "${INSTALL_LIB_DIR}" )
       else()
-        ecbuild_append_to_rpath( "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}" ) 
+        ecbuild_append_to_rpath( "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}" )
       endif()
 
     endif()
 
   endif()
 
-  # debug_var( CMAKE_INSTALL_RPATH )
+  # ecbuild_debug_var( CMAKE_INSTALL_RPATH )
 
   # print project header
 

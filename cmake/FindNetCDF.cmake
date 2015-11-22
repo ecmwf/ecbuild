@@ -76,7 +76,7 @@ if( PREFER_NETCDF4 )
 
   ## hdf5
 
-  # Note: Only the HDF5 C-library is required for NetCDF 
+  # Note: Only the HDF5 C-library is required for NetCDF
   #       ( even for Fortan and CXX bindings)
   find_package( HDF5 COMPONENTS C QUIET )
 
@@ -87,24 +87,24 @@ if( PREFER_NETCDF4 )
   # Find NetCDF4
 
   # message( "NETCDF CMAKE_PREFIX_PATH = [${CMAKE_PREFIX_PATH}]")
-  # debug_var( NETCDF_ROOT )
-  # debug_var( NETCDF_FIND_COMPONENTS )
-  # debug_var( NETCDF_FIND_QUIETLY )
-  # debug_var( NETCDF_FIND_REQUIRED )
+  # ecbuild_debug_var( NETCDF_ROOT )
+  # ecbuild_debug_var( NETCDF_FIND_COMPONENTS )
+  # ecbuild_debug_var( NETCDF_FIND_QUIETLY )
+  # ecbuild_debug_var( NETCDF_FIND_REQUIRED )
   find_package( NetCDF4 COMPONENTS ${NETCDF_FIND_COMPONENTS} )
-  # debug_var( NETCDF4_FOUND )
-  # debug_var( NETCDF_FOUND )
-  # debug_var( NETCDF_LIBRARIES )
-  # debug_var( NETCDF_INCLUDE_DIRS )
+  # ecbuild_debug_var( NETCDF4_FOUND )
+  # ecbuild_debug_var( NETCDF_FOUND )
+  # ecbuild_debug_var( NETCDF_LIBRARIES )
+  # ecbuild_debug_var( NETCDF_INCLUDE_DIRS )
 
   list( APPEND NETCDF_Fortran_LIBRARIES ${NETCDF_FORTRAN_LIBRARIES} ${NETCDF_F90_LIBRARIES} )
   if( NETCDF_Fortran_LIBRARIES )
     list( REMOVE_DUPLICATES NETCDF_Fortran_LIBRARIES )
   endif()
 
-  # debug_var( NETCDF_Fortran_LIBRARIES )
-  # debug_var( NETCDF_C_LIBRARIES )
-  # debug_var( NETCDF_CXX_LIBRARIES )
+  # ecbuild_debug_var( NETCDF_Fortran_LIBRARIES )
+  # ecbuild_debug_var( NETCDF_C_LIBRARIES )
+  # ecbuild_debug_var( NETCDF_CXX_LIBRARIES )
 
 
   set_package_properties( NetCDF4 PROPERTIES TYPE RECOMMENDED PURPOSE "support for NetCDF4 file format" )
@@ -115,13 +115,13 @@ if( PREFER_NETCDF4 )
     list( APPEND NETCDF_INCLUDE_DIRS ${HDF5_INCLUDE_DIRS} )
   endif()
 
-  #debug_var( NETCDF_FOUND )
-  #debug_var( NETCDF_LIBRARIES )
-  #debug_var( NETCDF_INCLUDE_DIRS )
-  #debug_var( HDF5_FOUND )
-  #debug_var( HDF5_INCLUDE_DIRS )
-  #debug_var( HDF5_HL_LIBRARIES )
-  #debug_var( HDF5_LIBRARIES )
+  #ecbuild_debug_var( NETCDF_FOUND )
+  #ecbuild_debug_var( NETCDF_LIBRARIES )
+  #ecbuild_debug_var( NETCDF_INCLUDE_DIRS )
+  #ecbuild_debug_var( HDF5_FOUND )
+  #ecbuild_debug_var( HDF5_INCLUDE_DIRS )
+  #ecbuild_debug_var( HDF5_HL_LIBRARIES )
+  #ecbuild_debug_var( HDF5_LIBRARIES )
 
 endif()
 
@@ -131,9 +131,9 @@ if( PREFER_NETCDF3 )
 
   ecbuild_debug( "FindNetCDF: looking for NetCDF3" )
 
-  # debug_var( NetCDF_FIND_COMPONENTS )
-  # debug_var( NetCDF_FIND_QUIETLY )
-  # debug_var( NetCDF_FIND_REQUIRED )
+  # ecbuild_debug_var( NetCDF_FIND_COMPONENTS )
+  # ecbuild_debug_var( NetCDF_FIND_QUIETLY )
+  # ecbuild_debug_var( NetCDF_FIND_REQUIRED )
 
   list(FIND NetCDF_FIND_COMPONENTS "CXX" _index)
   if(${_index} GREATER -1)

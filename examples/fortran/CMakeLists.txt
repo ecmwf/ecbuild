@@ -25,7 +25,6 @@ ecbuild_add_library(
     SOURCES constants.f90
     )
 
-
 ### lib area_circle
 
 ecbuild_list_add_pattern( LIST area_srcs PATTERNS "*.f*" )
@@ -50,7 +49,9 @@ ecbuild_add_library(
     SOURCES ${api_srcs}
 )
 
-debug_var( intf_circ_includes )
+ecbuild_debug( "intf_circ_includes" )
+
+ecbuild_debug_var( intf_circ_includes )
 
 ecbuild_add_library(
     TARGET  area_circle

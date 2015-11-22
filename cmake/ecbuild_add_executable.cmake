@@ -204,10 +204,10 @@ macro( ecbuild_add_executable )
 
     ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
 
-    #   debug_var( ${_PAR_TARGET}_h_srcs )
-    #   debug_var( ${_PAR_TARGET}_c_srcs )
-    #   debug_var( ${_PAR_TARGET}_cxx_srcs )
-    #   debug_var( ${_PAR_TARGET}_f_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_f_srcs )
 
     # add local flags
 

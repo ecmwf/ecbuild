@@ -70,7 +70,7 @@ set(ECBUILD_ERROR    40)
 set(ECBUILD_CRITICAL 50)
 
 if( NOT DEFINED ECBUILD_LOG_LEVEL )
-  set(ECBUILD_LOG_LEVEL ${ECBUILD_WARN})
+  set(ECBUILD_LOG_LEVEL ${ECBUILD_INFO})
 elseif( NOT ECBUILD_LOG_LEVEL )
   set(ECBUILD_LOG_LEVEL 60)
 elseif( ECBUILD_LOG_LEVEL STREQUAL "DEBUG" )
@@ -127,3 +127,67 @@ macro( ecbuild_critical MSG )
     message(FATAL_ERROR "${BoldMagenta}CRITICAL - ${MSG}${ColourReset}")
   endif()
 endmacro( ecbuild_critical )
+
+##############################################################################
+# macro for debugging a cmake variable
+
+macro( ecbuild_debug_var VAR )
+  if( ECBUILD_LOG_LEVEL LESS 11)
+    message(STATUS "${Blue}DEBUG - ${VAR} : ${${VAR}}${ColourReset}")
+  endif()
+endmacro()
+
+##############################################################################
+# macro for debugging a cmake variable
+
+macro( ecbuild_debug_list VAR )
+  if( ECBUILD_LOG_LEVEL LESS 11)
+    message( STATUS "${Blue}DEBUG - ${VAR}" )
+    foreach( _elem ${${VAR}} )
+      message( STATUS "  ${_elem}" )
+    endforeach()
+    message(STATUS "${ColourReset}")
+  endif()
+endmacro()
+
+##############################################################################
+# macro for debugging a environment variable within cmake
+
+macro( ecbuild_debug_env_var VAR )
+  if( ECBUILD_LOG_LEVEL LESS 11)
+    message(STATUS "${Blue}DEBUG - ENV ${VAR} [$ENV{${VAR}}]${ColourReset}")
+  endif()
+endmacro()
+
+##############################################################################
+# macro for debugging a cmake variable
+
+macro( debug_var VAR )
+
+    message( WARNING "DEPRECATED debug_var() -- ${VAR} [${${VAR}}]" )
+
+endmacro()
+
+##############################################################################
+# macro for debugging a cmake list
+
+macro( debug_list VAR )
+
+    message( WARNING "DEPRECATED debug_list() -- ${VAR}:" )
+    foreach( _elem ${${VAR}} )
+      message( WARNING "  ${_elem}" )
+    endforeach()
+
+endmacro()
+
+##############################################################################
+# macro for debugging a environment variable within cmake
+
+macro( debug_env_var VAR )
+
+    message( WARNING "DEPRECATED debug_env_var() -- ENV ${VAR} [$ENV{${VAR}}]" )
+
+endmacro()
+
+
+

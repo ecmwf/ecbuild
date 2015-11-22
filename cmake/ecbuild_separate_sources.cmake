@@ -83,9 +83,9 @@ macro( ecbuild_separate_sources )
 		endif()
 	endforeach()
 
-#    debug_var( ${_PAR_TARGET}_h_srcs )
-#    debug_var( ${_PAR_TARGET}_c_srcs )
-#    debug_var( ${_PAR_TARGET}_cxx_srcs )
-#    debug_var( ${_PAR_TARGET}_f_srcs )
+#    ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
+#    ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
+#    ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
+#    ecbuild_debug_var( ${_PAR_TARGET}_f_srcs )
 
 endmacro( ecbuild_separate_sources  )

@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2015 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -29,7 +29,7 @@ macro( ecbuild_get_resources )
     if( NOT _PAR_TO_DIR )
 		set( _PAR_TO_DIR ${CMAKE_CURRENT_BINARY_DIR} )
 	endif()
-	
+
     list( LENGTH _PAR_LIST _rsize )
     math( EXPR _max "${_rsize}-1" )
     foreach( i RANGE 0 ${_max} 2 )
@@ -39,14 +39,14 @@ macro( ecbuild_get_resources )
         list( GET _PAR_LIST ${i}  r  )
         list( GET _PAR_LIST ${in} rh )
 
-#        debug_var( r  )
-#        debug_var( rh )
+#        ecbuild_debug_var( r  )
+#        ecbuild_debug_var( rh )
 
         get_filename_component( rf ${r} NAME )
 
         file( DOWNLOAD ${r} ${_PAR_TO_DIR}/${rf} EXPECTED_HASH SHA1=${rh} )
 
     endforeach()
-		
+
 
 endmacro()

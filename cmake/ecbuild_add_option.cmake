@@ -167,9 +167,9 @@ macro( ecbuild_add_option )
           set( pkgproject 0 )
         endif()
 
-        # debug_var( pkg )
-        # debug_var( pkglist )
-        # debug_var( pkgname )
+        # ecbuild_debug_var( pkg )
+        # ecbuild_debug_var( pkglist )
+        # ecbuild_debug_var( pkgname )
 
         string( TOUPPER ${pkgname} pkgUPPER )
         string( TOLOWER ${pkgname} pkgLOWER )
@@ -223,9 +223,9 @@ macro( ecbuild_add_option )
 
         endif()
 
-        # debug_var( ${pkgname}_FOUND  )
-        # debug_var( ${pkgLOWER}_FOUND )
-        # debug_var( ${pkgUPPER}_FOUND )
+        # ecbuild_debug_var( ${pkgname}_FOUND  )
+        # ecbuild_debug_var( ${pkgLOWER}_FOUND )
+        # ecbuild_debug_var( ${pkgUPPER}_FOUND )
 
         # we have feature if all required packages were FOUND
 

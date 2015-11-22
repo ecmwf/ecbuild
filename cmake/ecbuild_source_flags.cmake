@@ -12,10 +12,10 @@ set( __gen_source_flags ${CMAKE_CURRENT_LIST_DIR}/gen_source_flags.py )
 # source file flags for a given target.
 function( ecbuild_source_flags OUT TARGET DEFAULT_FLAGS SOURCES )
 
-  debug_var( OUT )
-  debug_var( TARGET )
-  debug_var( DEFAULT_FLAGS )
-  debug_var( SOURCES )
+#  ecbuild_debug_var( OUT )
+#  ecbuild_debug_var( TARGET )
+#  ecbuild_debug_var( DEFAULT_FLAGS )
+#  ecbuild_debug_var( SOURCES )
 
   if( NOT PYTHONINTERP_FOUND OR PYTHON_VERSION VERSION_LESS 2.7 )
     ecbuild_find_python( VERSION 2.7 REQUIRED )

@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2015 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -93,9 +93,9 @@ macro( ecbuild_check_cxx_source_return SOURCE )
         if( __add_incs )
             set(CHECK_CXX_SOURCE_COMPILES_ADD_INCLUDES "-DINCLUDE_DIRECTORIES:STRING=${__add_incs}")
         endif()
-    
+
         # write the source file
-    
+
         file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_p_VAR}.cxx" "${SOURCE}\n" )
 
         message( STATUS "${_msg}" )
@@ -107,11 +107,11 @@ macro( ecbuild_check_cxx_source_return SOURCE )
           -DCMAKE_SKIP_RPATH:BOOL=${CMAKE_SKIP_RPATH}
           "${CHECK_CXX_SOURCE_COMPILES_ADD_LIBRARIES}"
           "${CHECK_CXX_SOURCE_COMPILES_ADD_INCLUDES}"
-          COMPILE_OUTPUT_VARIABLE compile_OUTPUT 
+          COMPILE_OUTPUT_VARIABLE compile_OUTPUT
           RUN_OUTPUT_VARIABLE     run_OUTPUT )
-   
-        # debug_var( ${_p_VAR}_COMPILED )
-        # debug_var( ${_p_VAR}_EXITCODE )
+
+        # ecbuild_debug_var( ${_p_VAR}_COMPILED )
+        # ecbuild_debug_var( ${_p_VAR}_EXITCODE )
 
         # if it did not compile make the return value fail code of 1
 
@@ -125,21 +125,21 @@ macro( ecbuild_check_cxx_source_return SOURCE )
 
         # if the return value was 0 then it worked
         if( ${_p_VAR}_COMPILED AND "${${_p_VAR}_EXITCODE}" EQUAL 0 )
-    
+
           message(STATUS "${_msg} Success")
-          file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log 
+          file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
             "Performing C++ SOURCE FILE Test ${_p_VAR} succeded with the following compile output:\n"
-            "${compile_OUTPUT}\n" 
+            "${compile_OUTPUT}\n"
             "Performing C++ SOURCE FILE Run ${_p_VAR} succeded with the following run output:\n"
-            "${run_OUTPUT}\n" 
+            "${run_OUTPUT}\n"
             "Return value: ${${_p_VAR}}\n"
             "Source file was:\n${SOURCE}\n")
 
           set( ${_p_VAR}     1              CACHE INTERNAL "Test ${_p_VAR}")
           set( ${_p_OUTPUT} "${run_OUTPUT}" CACHE INTERNAL "Test ${_p_VAR} output")
-    
+
         else()
-    
+
           if(CMAKE_CROSSCOMPILING AND "${${_p_VAR}_EXITCODE}" MATCHES  "FAILED_TO_RUN")
             set(${_p_VAR} "${${_p_VAR}_EXITCODE}")
             set(${OUTPUT} "")
@@ -147,17 +147,17 @@ macro( ecbuild_check_cxx_source_return SOURCE )
             set(${_p_VAR} "" CACHE INTERNAL "Test ${_p_VAR}")
             set(${_p_OUTPUT} "" CACHE INTERNAL "Test ${_p_VAR} output")
           endif()
-    
+
           message(STATUS "Test ${_p_VAR} - Failed")
-          file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log 
+          file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
             "Performing C++ SOURCE FILE Test ${_p_VAR} failed with the following compile output:\n"
-            "${compile_OUTPUT}\n" 
+            "${compile_OUTPUT}\n"
             "Performing C++ SOURCE FILE Run ${_p_VAR} failed with the following run output:\n"
-            "${run_OUTPUT}\n" 
+            "${run_OUTPUT}\n"
             "Return value: ${${_p_VAR}_EXITCODE}\n"
             "Source file was:\n${SOURCE}\n")
         endif()
-    
+
     endif()
 
 endmacro()

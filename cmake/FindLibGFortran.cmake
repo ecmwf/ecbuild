@@ -1,8 +1,8 @@
 # © Copyright 1996-2015 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -23,16 +23,16 @@ if( GFORTRAN_EXECUTABLE )
 		ERROR_VARIABLE _GFORTRAN_ERROR_VALUE
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-#	debug_var(_GFORTRAN_SEARCH_SUCCESS)
-#	debug_var(_GFORTRAN_VALUES_OUTPUT)
-#	debug_var(_GFORTRAN_ERROR_VALUE)
+#	ecbuild_debug_var(_GFORTRAN_SEARCH_SUCCESS)
+#	ecbuild_debug_var(_GFORTRAN_VALUES_OUTPUT)
+#	ecbuild_debug_var(_GFORTRAN_ERROR_VALUE)
 
 	if(_GFORTRAN_SEARCH_SUCCESS MATCHES 0)
 		string(REGEX REPLACE ".*libraries: =(.*)" "\\1" _result  ${_GFORTRAN_VALUES_OUTPUT})
 		string(REGEX REPLACE ":" ";" _gfortran_hints ${_result} )
 	endif()
 
-	debug_var( _gfortran_hints )
+	ecbuild_debug_var( _gfortran_hints )
 
 endif()
 
