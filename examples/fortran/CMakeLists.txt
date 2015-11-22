@@ -30,46 +30,43 @@ ecbuild_add_library(
 
 ecbuild_list_add_pattern( LIST area_srcs PATTERNS "*.f*" )
 
-ecbuild_list_exclude_pattern( LIST area_srcs PATTERNS old.*f90 ^const.* .*f95 main.[fF]90 )
+ecbuild_list_exclude_pattern( LIST area_srcs PATTERNS old.*f90 ^const.* .*f95 main.[fF]90 api/* )
 
 ecbuild_generate_fortran_interfaces(
-
-### INTPUT:
-
-  TARGET
-      intf_circ
-
-  SOURCE_DIR
-      ${CMAKE_CURRENT_SOURCE_DIR}
-
-  DIRECTORIES
+    TARGET      intf_circ
+    SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}
+    DIRECTORIES
       api/utility
       api/aux
+    DESTINATION  api
+    INCLUDE_DIRS intf_circ_includes
+)
 
-  DESTINATION
-      api
+ecbuild_list_add_pattern( LIST api_srcs PATTERNS "api/utility/*.F90" "api/aux/*.F90" )
 
-### OUTPUT:
-
-  INCLUDE_DIRS intf_circ_includes
+ecbuild_add_library(
+    TARGET  api_objs
+    TYPE    OBJECT
+    SOURCES ${api_srcs}
 )
 
 debug_var( intf_circ_includes )
 
 ecbuild_add_library(
-    TARGET area_circle
+    TARGET  area_circle
     SOURCES ${area_srcs}
-    LIBS const
+    OBJECTS api_objs
+    LIBS    const
     DEPENDS intf_circ
-    )
+)
 
 # application conditionally compiled
 
 ecbuild_add_executable(
     TARGET  area_computer
     SOURCES main.F90
-    CONDITION
     LIBS area_circle
+    CONDITION HAVE_AREA_COMPUTER
     )
 
 ### finalize project

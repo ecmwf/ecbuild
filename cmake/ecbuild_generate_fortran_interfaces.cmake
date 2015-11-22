@@ -32,8 +32,6 @@ function( ecbuild_generate_fortran_interfaces )
     message( FATAL_ERROR "ecbuild_generate_fortran_interfaces: fcm executable not found." )
   endif()
 
-  debug_var( FCM_EXECUTABLE )
-
   set( FCM_CONFIG_FILE "${PROJECT_SOURCE_DIR}/cmake/fcm-make-interfaces.cfg")
 
   if( NOT EXISTS ${FCM_CONFIG_FILE} )
@@ -78,8 +76,6 @@ function( ecbuild_generate_fortran_interfaces )
       set( run_fcm 1 )
     endif()
   endforeach()
-
-debug_var(fortran_files)
 
   foreach( fortran_file ${fortran_files} )
     #list( APPEND fullpath_fortran_files ${CMAKE_CURRENT_SOURCE_DIR}/${fortran_file} )
