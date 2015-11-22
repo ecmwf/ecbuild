@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2015 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -56,35 +56,3 @@ function( MAP_GET _map _key _var )
 	set( ${_var} "${_${_map}_${_key}}" PARENT_SCOPE )
 endfunction(MAP_GET)
 
-##############################################################################
-# function to remove items from a list that match a list of patterns
-#
-# examples:
-#
-#   ecbuild_list_remove_pattern( mylist "foo;bar" VAR )
-#
-
-function(ecbuild_list_remove_pattern _list _patterns _var)
-
-#debug_var(  _list )
-#debug_var(  _patterns )
-#debug_var(  _var )
-
-    foreach( _elem ${_list} )
-        set( _keep TRUE)
-        foreach( _pat ${_patterns} )
-            if( ${_elem} MATCHES ${_pat} )
-                set( _keep FALSE)
-            endif()
-        endforeach()
-        if( _keep )
-            list( APPEND _result ${_elem} )
-        endif()
-
-    endforeach()
-
-#debug_var(  _result )
-
-    set( ${_var} "${_result}" PARENT_SCOPE )
-
-endfunction(ecbuild_list_remove_pattern)

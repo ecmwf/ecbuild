@@ -16,6 +16,8 @@
 #
 #   ecbuild_add_library( TARGET <name>
 #                        SOURCES <source1> [<source2> ...]
+#                        [ GLOB_SOURCES <expression1> [<expression2> ...] ]
+#                        [ SOURCE_DIR <dir> ]
 #                        [ TYPE SHARED|STATIC|MODULE ]
 #                        [ TEMPLATES <template1> [<template2> ...] ]
 #                        [ LIBS <library1> [<library2> ...] ]
@@ -47,6 +49,12 @@
 #
 # SOURCES : required
 #   list of source files
+#
+# GLOB_SOURCES : optional
+#   list of source files patterns to be searched
+#
+# SOURCE_DIR : optional
+#   directory where sources are located or from where the glob search starts
 #
 # TYPE : optional
 #   library type, one of:

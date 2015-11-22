@@ -28,7 +28,13 @@ ecbuild_add_library(
 
 ### lib area_circle
 
-file( GLOB area_srcs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*circle.f90" )
+ecbuild_list_add_pattern( LIST area_srcs PATTERNS "*.f*" )
+
+debug_var( area_srcs )
+
+ecbuild_list_exclude_pattern( LIST area_srcs PATTERNS old.*f90 ^const.* .*f95 main.[fF]90 )
+
+debug_var( area_srcs )
 
 ecbuild_add_library(
     TARGET area_circle

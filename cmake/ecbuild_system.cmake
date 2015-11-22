@@ -155,6 +155,8 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_debug_var )
     include( ecbuild_log )
     include( ecbuild_list_macros )
+    include( ecbuild_list_add_pattern )
+    include( ecbuild_list_exclude_pattern )
 
     include( ecbuild_check_c_source_return )
     include( ecbuild_check_cxx_source_return )
