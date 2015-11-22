@@ -30,16 +30,36 @@ ecbuild_add_library(
 
 ecbuild_list_add_pattern( LIST area_srcs PATTERNS "*.f*" )
 
-debug_var( area_srcs )
-
 ecbuild_list_exclude_pattern( LIST area_srcs PATTERNS old.*f90 ^const.* .*f95 main.[fF]90 )
 
-debug_var( area_srcs )
+ecbuild_generate_fortran_interfaces(
+
+### INTPUT:
+
+  TARGET
+      intf_circ
+
+  SOURCE_DIR
+      ${CMAKE_CURRENT_SOURCE_DIR}
+
+  DIRECTORIES
+      utility/
+
+  DESTINATION
+      utility
+
+### OUTPUT:
+
+  INCLUDE_DIRS intf_circ_includes
+)
+
+debug_var( intf_circ_includes )
 
 ecbuild_add_library(
     TARGET area_circle
     SOURCES ${area_srcs}
     LIBS const
+    DEPENDS intf_circ
     )
 
 # application conditionally compiled
