@@ -43,10 +43,11 @@ ecbuild_generate_fortran_interfaces(
       ${CMAKE_CURRENT_SOURCE_DIR}
 
   DIRECTORIES
-      utility/
+      api/utility
+      api/aux
 
   DESTINATION
-      utility
+      api
 
 ### OUTPUT:
 
