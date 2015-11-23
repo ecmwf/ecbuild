@@ -15,22 +15,42 @@ usage = 'usage: %s RULES.json OUT.cmake DEFAULT_FLAGS FILE [ FILE ... ]' % __fil
 
 
 def main():
-    print sys.argv
+    # print sys.argv
     if len(sys.argv) < 5:
         print >> sys.stderr, usage
         sys.exit(1)
+
     default_flags = sys.argv[3].split()
+
     with open(sys.argv[1]) as f:
         rules = JSONDecoder(object_pairs_hook=OrderedDict).decode(f.read())
+
     with open(sys.argv[2], 'w') as f:
         for source in sys.argv[4:]:
+            print source
             flags = default_flags[:]
             for pattern, op in rules.items():
+                print '  ??? -> ', pattern, 'matches', source
                 if fnmatch(source, pattern):
-                    print pattern, 'matches', source, 'adding', op
-                    flags += [flag for flag in op if flag not in flags]
+
+                    print '  -> ', pattern, 'matches', source, ' with ', op[1:]
+
+                    if op[0] == "+":
+                        print '    appending', op[1:]
+                        flags += [flag for flag in op[1:] if flag not in flags]
+
+                    if op[0] == "=":
+                        print '    setting', op[1:]
+                        flags = []
+                        flags += [flag for flag in op[1:] if flag not in flags]
+
+                    if op[0] == "/":
+                        print '    removing', op[1:]
+                        for flag in op[1:]:
+                            flags.remove(flag)
+
             if flags:
-                print 'Setting flags for', source, 'to', ' '.join(flags)
+                print '  ==> setting flags for', source, 'to', ' '.join(flags)
                 f.write('set_source_files_properties(%s PROPERTIES COMPILE_FLAGS "%s")\n'
                         % (source, ' '.join(flags)))
 
