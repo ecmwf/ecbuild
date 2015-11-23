@@ -152,7 +152,7 @@ function( ecbuild_add_library_impl )
     message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the TARGET.")
   endif()
 
-  if( NOT _PAR_SOURCES OR NOT _PAR_OBJECTS)
+  if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS )
     message(FATAL_ERROR "The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS")
   endif()
 
@@ -320,7 +320,9 @@ function( ecbuild_add_library_impl )
 
     # filter sources
 
-    ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+    if( _PAR_SOURCES )
+      ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+    endif()
 
     #   ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
     #   ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
