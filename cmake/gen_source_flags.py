@@ -27,30 +27,30 @@ def main():
 
     with open(sys.argv[2], 'w') as f:
         for source in sys.argv[4:]:
-            print source
+            # print source
             flags = default_flags[:]
             for pattern, op in rules.items():
-                print '  ??? -> ', pattern, 'matches', source
+                # print '  ??? -> ', pattern, 'matches', source
                 if fnmatch(source, pattern):
 
-                    print '  -> ', pattern, 'matches', source, ' with ', op[1:]
+                    # print '  -> ', pattern, 'matches', source, ' with ', op[1:]
 
                     if op[0] == "+":
-                        print '    appending', op[1:]
+                        # print '    appending', op[1:]
                         flags += [flag for flag in op[1:] if flag not in flags]
 
                     if op[0] == "=":
-                        print '    setting', op[1:]
+                        # print '    setting', op[1:]
                         flags = []
                         flags += [flag for flag in op[1:] if flag not in flags]
 
                     if op[0] == "/":
-                        print '    removing', op[1:]
+                        # print '    removing', op[1:]
                         for flag in op[1:]:
                             flags.remove(flag)
 
             if flags:
-                print '  ==> setting flags for', source, 'to', ' '.join(flags)
+                # print '  ==> setting flags for', source, 'to', ' '.join(flags)
                 f.write('set_source_files_properties(%s PROPERTIES COMPILE_FLAGS "%s")\n'
                         % (source, ' '.join(flags)))
 
