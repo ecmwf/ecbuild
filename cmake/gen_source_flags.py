@@ -6,7 +6,6 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-from collections import OrderedDict
 from fnmatch import fnmatch
 from json import JSONDecoder
 import sys
@@ -23,13 +22,13 @@ def main():
     default_flags = sys.argv[3].split()
 
     with open(sys.argv[1]) as f:
-        rules = JSONDecoder(object_pairs_hook=OrderedDict).decode(f.read())
+        rules = JSONDecoder(object_pairs_hook=list).decode(f.read())
 
     with open(sys.argv[2], 'w') as f:
         for source in sys.argv[4:]:
             # print source
             flags = default_flags[:]
-            for pattern, op in rules.items():
+            for pattern, op in rules:
                 # print '  ??? -> ', pattern, 'matches', source
                 if fnmatch(source, pattern):
 
