@@ -152,8 +152,8 @@ function( ecbuild_add_library_impl )
     message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the TARGET.")
   endif()
 
-  if( NOT _PAR_SOURCES )
-    message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the SOURCES.")
+  if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS)
+    message(FATAL_ERROR "The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS")
   endif()
 
   ### conditional build
