@@ -65,6 +65,9 @@ function( ecbuild_generate_fortran_interfaces )
   endif()
 
   foreach( _srcdir ${P_DIRECTORIES} )
+    if( _srcdir MATCHES "/$" )
+      ecbuild_critical("ecbuild_generate_fortran_interfaces: directory ${_srcdir} must not end with /")
+    endif()
     ecbuild_list_add_pattern( LIST fortran_files SOURCE_DIR ${P_SOURCE_DIR} PATTERNS ${_srcdir}/*.F* )
   endforeach()
 

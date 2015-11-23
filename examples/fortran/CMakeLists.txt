@@ -35,8 +35,8 @@ ecbuild_generate_fortran_interfaces(
     TARGET      intf_circ
     SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}
     DIRECTORIES
-      api/utility
       api/aux
+      api/utility
     DESTINATION  api
     INCLUDE_DIRS intf_circ_includes
 )
