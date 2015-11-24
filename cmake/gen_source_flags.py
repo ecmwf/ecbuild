@@ -13,40 +13,45 @@ rules defined in a JSON file.
 
 from argparse import ArgumentParser
 from fnmatch import fnmatch
+import logging
 from json import JSONDecoder
 from os import path
 
+log = logging.getLogger('gen_source_flags')
 
-def generate(rules, out, default_flags, sources):
+
+def generate(rules, out, default_flags, sources, debug=False):
+    logging.basicConfig(level=logging.DEBUG if debug else logging.INFO,
+                        format='-- %(levelname)s - %(name)s: %(message)s')
+
     with open(path.expanduser(rules)) as f:
         rules = JSONDecoder(object_pairs_hook=list).decode(f.read())
 
     with open(path.expanduser(out), 'w') as f:
         for source in sources:
-            # print source
+            log.debug(source)
             flags = default_flags.split()
             for pattern, op in rules:
-                # print '  ??? -> ', pattern, 'matches', source
                 if fnmatch(source, pattern):
 
-                    # print '  -> ', pattern, 'matches', source, ' with ', op[1:]
+                    log.debug(' -> %10s matches %20s with %s', pattern, source, op[1:])
 
                     if op[0] == "+":
-                        # print '    appending', op[1:]
+                        log.debug('  appending %s', op[1:])
                         flags += [flag for flag in op[1:] if flag not in flags]
 
                     if op[0] == "=":
-                        # print '    setting', op[1:]
+                        log.debug('  setting %s', op[1:])
                         flags = []
                         flags += [flag for flag in op[1:] if flag not in flags]
 
                     if op[0] == "/":
-                        # print '    removing', op[1:]
+                        log.debug('  removing %s', op[1:])
                         for flag in op[1:]:
                             flags.remove(flag)
 
             if flags:
-                # print '  ==> setting flags for', source, 'to', ' '.join(flags)
+                log.debug(' ==> setting flags for %s to %s', source, ' '.join(flags))
                 f.write('set_source_files_properties(%s PROPERTIES COMPILE_FLAGS "%s")\n'
                         % (source, ' '.join(flags)))
 
@@ -58,6 +63,7 @@ def main():
     parser.add_argument('out', metavar='OUT.cmake', help='CMake script to generate')
     parser.add_argument('default_flags', help='Default compiler flags to use')
     parser.add_argument('sources', metavar='file', nargs='+', help='Path to file to apply rules to')
+    parser.add_argument('--debug', '-d', action='store_true', help='Log debug messages')
     generate(**vars(parser.parse_args()))
 
 if __name__ == '__main__':
