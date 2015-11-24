@@ -105,6 +105,7 @@ macro( ecbuild_use_package )
   # user defined dir with subprojects
 
   if( NOT DEFINED ${pkgUPPER}_SOURCE AND DEFINED SUBPROJECT_DIRS )
+    ecbuild_warn("ecbuild_use_package(): setting SUBPROJECT_DIRS is deprecated")
     ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): scanning subproject directories ${SUBPROJECT_DIRS}")
     foreach( dir ${SUBPROJECT_DIRS} )
       if( EXISTS ${dir}/${_p_PROJECT} AND EXISTS ${dir}/${_p_PROJECT}/CMakeLists.txt )
@@ -119,7 +120,7 @@ macro( ecbuild_use_package )
   if( DEFINED ${pkgUPPER}_SOURCE )
 
     if( NOT EXISTS ${${pkgUPPER}_SOURCE} OR NOT EXISTS ${${pkgUPPER}_SOURCE}/CMakeLists.txt )
-      message( FATAL_ERROR "User defined source directory '${${pkgUPPER}_SOURCE}' for project '${_p_PROJECT}' does not exist or does not contain a CMakeLists.txt file." )
+      ecbuild_critical("User defined source directory '${${pkgUPPER}_SOURCE}' for project '${_p_PROJECT}' does not exist or does not contain a CMakeLists.txt file.")
     endif()
 
     set( ${pkgUPPER}_subproj_dir_ "${${pkgUPPER}_SOURCE}" )
