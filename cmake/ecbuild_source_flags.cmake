@@ -12,23 +12,11 @@ set( __gen_source_flags ${CMAKE_CURRENT_LIST_DIR}/gen_source_flags.py )
 # source file flags for a given target.
 function( ecbuild_source_flags OUT TARGET DEFAULT_FLAGS SOURCES )
 
-#  ecbuild_debug_var( OUT )
-#  ecbuild_debug_var( TARGET )
-#  ecbuild_debug_var( DEFAULT_FLAGS )
-#  ecbuild_debug_var( SOURCES )
-
   if( NOT PYTHONINTERP_FOUND OR PYTHON_VERSION VERSION_LESS 2.7 )
     ecbuild_find_python( VERSION 2.7 REQUIRED )
   endif()
 
   set( OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_source_flags.cmake )
-
-  # add_custom_command( OUTPUT ${OUTFILE} VERBATIM
-  #                     COMMAND ${PYTHON_EXECUTABLE} ${__gen_source_flags}
-  #                       ${ECBUILD_SOURCE_FLAGS} ${OUTFILE}} ${DEFAULT_FLAGS} ${SOURCES}
-  #                     COMMENT "Generating source flags for target ${TARGET}"
-  #                     DEPENDS ${__gen_source_flags} ${ECBUILD_SOURCE_FLAGS} )
-  # add_custom_target( ${TARGET}_source_flags ALL DEPENDS ${OUTFILE})
 
   execute_process( COMMAND ${PYTHON_EXECUTABLE}
     ${__gen_source_flags} ${ECBUILD_SOURCE_FLAGS} ${OUTFILE} "${DEFAULT_FLAGS}" ${SOURCES} )
