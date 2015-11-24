@@ -61,7 +61,7 @@ endmacro()
 # Declare a subproject to be built as part of this bundle. ::
 #
 #   ecbuild_bundle( PROJECT <name>
-#                   STASH <repository> | GIT <giturl>
+#                   STASH <repository> | GIT <giturl> | SOURCE <path>
 #                   [ BRANCH <gitbranch> | TAG <gittag> ]
 #                   [ UPDATE | NOREMOTE ] )
 #                   [ MANUAL ] )
@@ -72,11 +72,14 @@ endmacro()
 # PROJECT : required
 #   project name for the Git repository to be managed
 #
-# STASH : cannot be combined with GIT, either is required
+# STASH : cannot be combined with GIT or SOURCE
 #   Stash repository in the form <project>/<repository>
 #
-# URL : cannot be combined with STASH, either is required
+# GIT : cannot be combined with STASH or SOURCE
 #   Git URL of the remote repository to clone (see ``git help clone``)
+#
+# SOURCE : cannot be combined with STASH or GIT
+#   Path to an existing local repository, which will be symlinked
 #
 # BRANCH : optional, cannot be combined with TAG
 #   Git branch to check out
@@ -104,6 +107,10 @@ endmacro()
 # The first time a bundle is built, the sources of all subprojects are cloned
 # into directories named according to project in the *source* tree of the
 # bundle (which means these directories should be added to ``.gitignore``).
+# If the ``SOURCE`` option is used it must point to an existing local
+# repository on disk and no new repository is cloned. Be aware that using the
+# ``BRANCH`` or ``TAG`` option leads to the corresponding version being checked
+# out in that repository!
 #
 # Subprojects are configured and built in order. Due to being added as a
 # subproject, the usual project discovery mechanism (i.e. locating and
@@ -119,23 +126,28 @@ endmacro()
 macro( ecbuild_bundle )
 
   set( options )
-  set( single_value_args PROJECT STASH GIT )
+  set( single_value_args PROJECT STASH GIT SOURCE )
   set( multi_value_args )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
   string(TOUPPER "${_PAR_PROJECT}" PNAME)
 
   if( BUNDLE_SKIP_${PNAME} )
-      message( STATUS "Skipping bundle project ${PNAME}" )
+    message( STATUS "Skipping bundle project ${PNAME}" )
   else()
 
-      if( _PAR_STASH )
-          ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} STASH ${_PAR_STASH} ${_PAR_UNPARSED_ARGUMENTS} )
-      elseif( _PAR_GIT )
-          ecbuild_git( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} URL ${_PAR_GIT} ${_PAR_UNPARSED_ARGUMENTS} )
+    if( _PAR_STASH )
+      ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} STASH ${_PAR_STASH} ${_PAR_UNPARSED_ARGUMENTS} )
+    elseif( _PAR_GIT )
+      ecbuild_git( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} URL ${_PAR_GIT} ${_PAR_UNPARSED_ARGUMENTS} )
+    elseif( _PAR_SOURCE )
+      if( DEFINED ${PNAME}_SOURCE )
+        ecbuild_critical( "ecbuild_bundle called with SOURCE for project ${_PAR_PROJECT} but ${PNAME}_SOURCE is defined" )
       endif()
+      execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink ${_PAR_SOURCE} ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} )
+    endif()
 
-      ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
+    ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
   endif()
 
 endmacro()
