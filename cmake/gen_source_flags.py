@@ -8,6 +8,7 @@
 
 from fnmatch import fnmatch
 from json import JSONDecoder
+from os import path
 import sys
 
 usage = 'usage: %s RULES.json OUT.cmake DEFAULT_FLAGS FILE [ FILE ... ]' % __file__
@@ -21,10 +22,10 @@ def main():
 
     default_flags = sys.argv[3].split()
 
-    with open(sys.argv[1]) as f:
+    with open(path.expanduser(sys.argv[1])) as f:
         rules = JSONDecoder(object_pairs_hook=list).decode(f.read())
 
-    with open(sys.argv[2], 'w') as f:
+    with open(path.expanduser(sys.argv[2]), 'w') as f:
         for source in sys.argv[4:]:
             # print source
             flags = default_flags[:]
