@@ -6,29 +6,25 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
+"""
+Generate .cmake file to set source-file specific compiler flags based on
+rules defined in a JSON file.
+"""
+
+from argparse import ArgumentParser
 from fnmatch import fnmatch
 from json import JSONDecoder
 from os import path
-import sys
-
-usage = 'usage: %s RULES.json OUT.cmake DEFAULT_FLAGS FILE [ FILE ... ]' % __file__
 
 
-def main():
-    # print sys.argv
-    if len(sys.argv) < 5:
-        print >> sys.stderr, usage
-        sys.exit(1)
-
-    default_flags = sys.argv[3].split()
-
-    with open(path.expanduser(sys.argv[1])) as f:
+def generate(rules, out, default_flags, sources):
+    with open(path.expanduser(rules)) as f:
         rules = JSONDecoder(object_pairs_hook=list).decode(f.read())
 
-    with open(path.expanduser(sys.argv[2]), 'w') as f:
-        for source in sys.argv[4:]:
+    with open(path.expanduser(out), 'w') as f:
+        for source in sources:
             # print source
-            flags = default_flags[:]
+            flags = default_flags.split()
             for pattern, op in rules:
                 # print '  ??? -> ', pattern, 'matches', source
                 if fnmatch(source, pattern):
@@ -53,6 +49,16 @@ def main():
                 # print '  ==> setting flags for', source, 'to', ' '.join(flags)
                 f.write('set_source_files_properties(%s PROPERTIES COMPILE_FLAGS "%s")\n'
                         % (source, ' '.join(flags)))
+
+
+def main():
+    """Parse arguments"""
+    parser = ArgumentParser(description=__doc__)
+    parser.add_argument('rules', metavar='RULES.json', help='JSON rules file')
+    parser.add_argument('out', metavar='OUT.cmake', help='CMake script to generate')
+    parser.add_argument('default_flags', help='Default compiler flags to use')
+    parser.add_argument('sources', metavar='file', nargs='+', help='Path to file to apply rules to')
+    generate(**vars(parser.parse_args()))
 
 if __name__ == '__main__':
     main()
