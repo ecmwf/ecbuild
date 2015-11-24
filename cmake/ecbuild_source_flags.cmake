@@ -18,8 +18,12 @@ function( ecbuild_source_flags OUT TARGET DEFAULT_FLAGS SOURCES )
 
   set( OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_source_flags.cmake )
 
-  execute_process( COMMAND ${PYTHON_EXECUTABLE}
-    ${__gen_source_flags} ${ECBUILD_SOURCE_FLAGS} ${OUTFILE} "${DEFAULT_FLAGS}" ${SOURCES} )
+  if( ECBUILD_LOG_LEVEL LESS 11)
+    set( __debug "--debug" )
+  endif()
+  execute_process( COMMAND ${PYTHON_EXECUTABLE} ${__gen_source_flags}
+                           ${ECBUILD_SOURCE_FLAGS} ${OUTFILE} "${DEFAULT_FLAGS}"
+                           ${SOURCES} "${__debug}" )
 
   set( ${OUT} ${OUTFILE} PARENT_SCOPE )
 
