@@ -28,11 +28,12 @@
 # Output variables
 # ----------------
 #
-# The following CMake variables are set if perl was found:
+# The following CMake variables are set if python was found:
 #
 # :PYTHONINTERP_FOUND:    Python interpreter was found
 # :PYTHONLIBS_FOUND:      Python libraries were found
 # :PYTHON_FOUND:          Python was found (both interpreter and libraries)
+# :PYTHON_EXECUTABLE:     Python executable
 # :PYTHON_VERSION_MAJOR:  major version number
 # :PYTHON_VERSION_MINOR:  minor version number
 # :PYTHON_VERSION_PATCH:  patch version number
@@ -64,7 +65,7 @@ macro( ecbuild_find_python )
     find_package( PythonInterp )
 
     if( NOT PYTHONINTERP_FOUND AND _p_REQUIRED )
-        message( FATAL_ERROR "Failed to find any Python interpreter (REQUIRED)" )
+        ecbuild_error( "Failed to find any Python interpreter (REQUIRED)" )
     endif()
 
     # find python version
@@ -74,7 +75,7 @@ macro( ecbuild_find_python )
     # endif()
     # endif()
 
-    # message( STATUS "Python version ${PYTHON_VERSION_STRING}" )
+    # ecbuild_debug( "Python version ${PYTHON_VERSION_STRING}" )
     # ecbuild_debug_var(PYTHON_VERSION_MAJOR)
     # ecbuild_debug_var(PYTHON_VERSION_MINOR)
     # ecbuild_debug_var(PYTHON_VERSION_PATCH)
@@ -101,6 +102,8 @@ macro( ecbuild_find_python )
         else()
             find_program( PYTHON_CONFIG NAMES python-config python-config${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} )
         endif()
+
+        ecbuild_debug_var( PYTHON_CONFIG )
 
         # find python libs
 
@@ -138,18 +141,22 @@ macro( ecbuild_find_python )
         # Remove duplicate include directories
         list(REMOVE_DUPLICATES PYTHON_INCLUDE_DIR)
 
-        # Test if we can link against the Python libraries and include Python.h
-        try_compile( PYTHON_LIBS_WORKING ${CMAKE_CURRENT_BINARY_DIR}
-                     ${__test_python}
-                     CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIR}"
-                     LINK_LIBRARIES ${PYTHON_LIBRARIES} )
 
-        # set output variables
+        if( PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIR )
+            # Test if we can link against the Python libraries and include Python.h
+            try_compile( PYTHON_LIBS_WORKING ${CMAKE_CURRENT_BINARY_DIR}
+                         ${__test_python}
+                         CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIR}"
+                         LINK_LIBRARIES ${PYTHON_LIBRARIES} )
 
-        find_package_handle_standard_args( PythonLibs DEFAULT_MSG
-                                           PYTHON_INCLUDE_DIR PYTHON_LIBRARIES PYTHON_LIBS_WORKING )
-        ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR}" )
-        ecbuild_debug( "ecbuild_find_python: PYTHON_LIBRARIES=${PYTHON_LIBRARIES}" )
+            # set output variables
+
+            find_package_handle_standard_args( PythonLibs DEFAULT_MSG
+                                               PYTHON_INCLUDE_DIR PYTHON_LIBRARIES PYTHON_LIBS_WORKING )
+            ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR}" )
+            ecbuild_debug( "ecbuild_find_python: PYTHON_LIBRARIES=${PYTHON_LIBRARIES}" )
+
+        endif()
 
         set( PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIR} )
         set( PYTHON_INCLUDE_PATH ${PYTHON_INCLUDE_DIR} )
@@ -162,16 +169,22 @@ macro( ecbuild_find_python )
 
         # find where python site-packages are ...
 
-        execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+        if( PYTHON_EXECUTABLE )
+            execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+        endif()
         ecbuild_debug( "ecbuild_find_python: PYTHON_SITE_PACKAGES=${PYTHON_SITE_PACKAGES}" )
 
     endif()
 
-#    ecbuild_debug_var( PYTHONINTERP_FOUND )
-#    ecbuild_debug_var( PYTHON_EXECUTABLE )
-#    ecbuild_debug_var( PYTHONLIBS_FOUND )
-#    ecbuild_debug_var( PYTHON_INCLUDE_DIRS )
-#    ecbuild_debug_var( PYTHON_LIBRARIES )
-#    ecbuild_debug_var( PYTHON_SITE_PACKAGES )
+    ecbuild_debug_var( PYTHONINTERP_FOUND )
+    ecbuild_debug_var( PYTHON_FOUND )
+    ecbuild_debug_var( PYTHON_EXECUTABLE )
+    ecbuild_debug_var( PYTHON_VERSION_MAJOR )
+    ecbuild_debug_var( PYTHON_VERSION_MINOR )
+    ecbuild_debug_var( PYTHON_VERSION_PATCH )
+    ecbuild_debug_var( PYTHON_VERSION_STRING )
+    ecbuild_debug_var( PYTHON_INCLUDE_DIRS )
+    ecbuild_debug_var( PYTHON_LIBRARIES )
+    ecbuild_debug_var( PYTHON_SITE_PACKAGES )
 
 endmacro( ecbuild_find_python )
