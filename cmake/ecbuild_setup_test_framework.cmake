@@ -2,7 +2,7 @@ ecbuild_add_option( FEATURE TESTS
                     DEFAULT ON
                     DESCRIPTION "Enable the unit tests" )
 
-if( ENABLE_TESTS )
+if( ENABLE_TESTS AND CMAKE_CXX_COMPILER_LOADED )
 
   # Try to find compiled boost
 
