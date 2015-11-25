@@ -13,7 +13,7 @@ set( __gen_source_flags ${CMAKE_CURRENT_LIST_DIR}/gen_source_flags.py )
 function( ecbuild_source_flags OUT TARGET DEFAULT_FLAGS SOURCES )
 
   if( NOT PYTHONINTERP_FOUND OR PYTHON_VERSION VERSION_LESS 2.7 )
-    ecbuild_find_python( VERSION 2.7 REQUIRED )
+    find_package( PythonInterp 2.7 REQUIRED )
   endif()
 
   set( OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_source_flags.cmake )
