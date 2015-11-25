@@ -58,6 +58,13 @@
 #            dynamically at runtime using dlopen-like functionality
 #   :OBJECT: files are just compiled into objects
 #
+# GLOB_SOURCES : optional
+#   search pattern to find source files to compile (note: not recommend according to CMake guidelines)
+#   it is usually better to explicitly list the source files in the CMakeList.txt
+#
+# GLOB_EXCLUDES : optional
+#   search pattern to exclude source files from compilation, applies o the results of GLOB_SOURCES
+#
 # OBJECTS : optional
 #   list of object libraries to add to this target
 #
@@ -140,7 +147,7 @@ function( ecbuild_add_library_impl )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS INSTALL_HEADERS_REGEX LINKER_LANGUAGE HEADER_DESTINATION VERSION OUTPUT_NAME )
-  set( multi_value_args  SOURCES OBJECTS TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+  set( multi_value_args  SOURCES GLOB_SOURCES OBJECTS TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -152,8 +159,8 @@ function( ecbuild_add_library_impl )
     message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the TARGET.")
   endif()
 
-  if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS )
-    message(FATAL_ERROR "The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS")
+  if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS AND NOT _PAR_GLOB_SOURCES )
+    message(FATAL_ERROR "The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS nor GLOB_SOURCES")
   endif()
 
   ### conditional build
@@ -201,13 +208,23 @@ function( ecbuild_add_library_impl )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
+    # glob sources
+    unset( _glob_srcs )
+    foreach( pattern ${_PAR_GLOB_SOURCES} )
+        ecbuild_list_add_pattern( LIST _glob_srcs PATTERNS "${pattern}" )
+    endforeach()
+
+    foreach( pattern ${_PAR_GLOB_EXCLUDES} )
+        ecbuild_list_exclude_pattern( LIST _glob_srcs PATTERNS "${pattern}" )
+    endforeach()
+
     # insert already compiled objects (from OBJECT libraries)
     unset( _all_objects )
     foreach( _obj ${_PAR_OBJECTS} )
       list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
     endforeach()
 
-    add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} ${_all_objects} )
+    add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} ${_glob_srcs} ${_all_objects} )
 
     # ecbuild_echo_target( ${_PAR_TARGET} )
 
