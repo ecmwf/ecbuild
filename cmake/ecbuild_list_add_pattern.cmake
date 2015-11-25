@@ -45,15 +45,15 @@ function( ecbuild_list_add_pattern )
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_p_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_list_add_pattern(): \"${_p_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_list_add_pattern(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
   if( NOT _p_LIST  )
-    message(FATAL_ERROR "The call to ecbuild_list_add_pattern() doesn't specify the LIST.")
+    ecbuild_critical("The call to ecbuild_list_add_pattern() doesn't specify the LIST.")
   endif()
 
   if( NOT _p_PATTERNS )
-    message(FATAL_ERROR "The call to ecbuild_list_add_pattern() doesn't specify the PATTERNS.")
+    ecbuild_critical("The call to ecbuild_list_add_pattern() doesn't specify the PATTERNS.")
   endif()
 
   #####
@@ -64,16 +64,13 @@ function( ecbuild_list_add_pattern )
   foreach( pattern ${_p_PATTERNS} )
 
     if( IS_ABSOLUTE ${pattern} )
-      ecbuild_debug("pattern ${pattern} is absolute")
       file( GLOB_RECURSE matched_files ${pattern} )
     else()
 
       if(_p_SOURCE_DIR)
         if( IS_ABSOLUTE ${_p_SOURCE_DIR} )
-          ecbuild_debug("source_dir ${_p_SOURCE_DIR} is absolute")
           file( GLOB_RECURSE matched_files ${_p_SOURCE_DIR}/${pattern} )
         else()
-          ecbuild_debug("source_dir ${_p_SOURCE_DIR} is relative")
           file( GLOB_RECURSE matched_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${_p_SOURCE_DIR}/${pattern} )
         endif()
       else()
