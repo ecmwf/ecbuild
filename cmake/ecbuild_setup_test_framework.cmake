@@ -39,3 +39,7 @@ if( ENABLE_TESTS AND CMAKE_CXX_COMPILER_LOADED )
   endif()
 
 endif()
+
+if( NOT ENABLE_TESTS )
+  ecbuild_info("Tests have been disabled")
+endif()
