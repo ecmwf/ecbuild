@@ -27,7 +27,7 @@
 #
 # GLOB : required
 #   Regex pattern of exclusion
-s#
+#
 # SOURCE_DIR : optional
 #   Directory from where to start search
 #
