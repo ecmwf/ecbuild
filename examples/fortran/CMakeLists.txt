@@ -32,21 +32,25 @@ ecbuild_list_add_pattern( LIST area_srcs GLOB "*.f*" )
 ecbuild_list_exclude_pattern( LIST area_srcs REGEX old.*f90 ^const.* .*f95 main.[fF]90 api/* )
 
 ecbuild_generate_fortran_interfaces(
+
     TARGET      intf_circ
+
     SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}
-    DIRECTORIES
-      api/aux
-      api/utility
+
+    DIRECTORIES api/aux api/utility
+
     DESTINATION  api
+
     INCLUDE_DIRS intf_circ_includes
 )
 
-ecbuild_list_add_pattern( LIST api_srcs GLOB "api/utility/*.F90" "api/aux/*.F90" )
-
 ecbuild_add_library(
+
     TARGET  api_objs
+
     TYPE    OBJECT
-    SOURCES ${api_srcs}
+
+    SOURCES_GLOB  "api/utility/*.F90" "api/aux/*.F90"
 )
 
 ecbuild_debug( "intf_circ_includes" )
