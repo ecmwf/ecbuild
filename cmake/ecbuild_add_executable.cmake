@@ -16,6 +16,8 @@
 #
 #   ecbuild_add_executable( TARGET <name>
 #                           SOURCES <source1> [<source2> ...]
+#                           [ SOURCES_GLOB <glob1> [<glob2> ...] ]
+#                           [ SOURCES_EXCLUDE_REGEX <regex1> [<regex2> ...] ]
 #                           [ OBJECTS <obj1> [<obj2> ...] ]
 #                           [ TEMPLATES <template1> [<template2> ...] ]
 #                           [ LIBS <library1> [<library2> ...] ]
@@ -41,6 +43,13 @@
 #
 # SOURCES : required
 #   list of source files
+#
+# SOURCES_GLOB : optional
+#   search pattern to find source files to compile (note: not recommend according to CMake guidelines)
+#   it is usually better to explicitly list the source files in the CMakeList.txt
+#
+# SOURCES_EXCLUDE_REGEX : optional
+#   search pattern to exclude source files from compilation, applies o the results of SOURCES_GLOB
 #
 # OBJECTS : optional
 #   list of object libraries to add to this target
@@ -101,7 +110,7 @@ macro( ecbuild_add_executable )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET COMPONENT LINKER_LANGUAGE VERSION OUTPUT_NAME )
-  set( multi_value_args  SOURCES OBJECTS TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+  set( multi_value_args  SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -113,8 +122,8 @@ macro( ecbuild_add_executable )
     message(FATAL_ERROR "The call to ecbuild_add_executable() doesn't specify the TARGET.")
   endif()
 
-  if( NOT _PAR_SOURCES )
-    message(FATAL_ERROR "The call to ecbuild_add_executable() doesn't specify the SOURCES.")
+  if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS AND NOT _PAR_SOURCES_GLOB )
+    message(FATAL_ERROR "The call to ecbuild_add_executable() specifies neither SOURCES nor OBJECTS nor SOURCES_GLOB.")
   endif()
 
   ### conditional build
@@ -162,13 +171,23 @@ macro( ecbuild_add_executable )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
+    # glob sources
+    unset( _glob_srcs )
+    foreach( pattern ${_PAR_SOURCES_GLOB} )
+        ecbuild_list_add_pattern( LIST _glob_srcs GLOB "${pattern}" )
+    endforeach()
+
+    foreach( pattern ${_PAR_SOURCES_EXCLUDE_REGEX} )
+        ecbuild_list_exclude_pattern( LIST _glob_srcs REGEX "${pattern}" )
+    endforeach()
+
     # insert already compiled objects (from OBJECT libraries)
     unset( _all_objects )
     foreach( _obj ${_PAR_OBJECTS} )
       list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
     endforeach()
 
-    add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
+    add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_glob_srcs} ${_all_objects} )
 
     # ecbuild_echo_target( ${_PAR_TARGET} )
 

@@ -16,6 +16,8 @@
 #
 #   ecbuild_add_library( TARGET <name>
 #                        SOURCES <source1> [<source2> ...]
+#                        [ SOURCES_GLOB <glob1> [<glob2> ...] ]
+#                        [ SOURCES_EXCLUDE_REGEX <regex1> [<regex2> ...] ]
 #                        [ TYPE SHARED|STATIC|MODULE|OBJECT ]
 #                        [ OBJECTS <obj1> [<obj2> ...] ]
 #                        [ TEMPLATES <template1> [<template2> ...] ]
@@ -58,12 +60,12 @@
 #            dynamically at runtime using dlopen-like functionality
 #   :OBJECT: files are just compiled into objects
 #
-# GLOB_SOURCES : optional
+# SOURCES_GLOB : optional
 #   search pattern to find source files to compile (note: not recommend according to CMake guidelines)
 #   it is usually better to explicitly list the source files in the CMakeList.txt
 #
-# GLOB_EXCLUDES : optional
-#   search pattern to exclude source files from compilation, applies o the results of GLOB_SOURCES
+# SOURCES_EXCLUDE_REGEX : optional
+#   search pattern to exclude source files from compilation, applies o the results of SOURCES_GLOB
 #
 # OBJECTS : optional
 #   list of object libraries to add to this target
@@ -147,7 +149,7 @@ function( ecbuild_add_library_impl )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS INSTALL_HEADERS_REGEX LINKER_LANGUAGE HEADER_DESTINATION VERSION OUTPUT_NAME )
-  set( multi_value_args  SOURCES GLOB_SOURCES GLOB_EXCLUDES OBJECTS TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+  set( multi_value_args  SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -159,8 +161,8 @@ function( ecbuild_add_library_impl )
     message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the TARGET.")
   endif()
 
-  if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS AND NOT _PAR_GLOB_SOURCES )
-    message(FATAL_ERROR "The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS nor GLOB_SOURCES")
+  if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS AND NOT _PAR_SOURCES_GLOB )
+    message(FATAL_ERROR "The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS nor SOURCES_GLOB")
   endif()
 
   ### conditional build
@@ -210,12 +212,12 @@ function( ecbuild_add_library_impl )
 
     # glob sources
     unset( _glob_srcs )
-    foreach( pattern ${_PAR_GLOB_SOURCES} )
-        ecbuild_list_add_pattern( LIST _glob_srcs PATTERNS "${pattern}" )
+    foreach( pattern ${_PAR_SOURCES_GLOB} )
+        ecbuild_list_add_pattern( LIST _glob_srcs GLOB "${pattern}" )
     endforeach()
 
-    foreach( pattern ${_PAR_GLOB_EXCLUDES} )
-        ecbuild_list_exclude_pattern( LIST _glob_srcs PATTERNS "${pattern}" )
+    foreach( pattern ${_PAR_SOURCES_EXCLUDE_REGEX} )
+        ecbuild_list_exclude_pattern( LIST _glob_srcs REGEX "${pattern}" )
     endforeach()
 
     # insert already compiled objects (from OBJECT libraries)

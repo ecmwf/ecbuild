@@ -15,7 +15,7 @@
 # Exclude items from a list that match a list of patterns. ::
 #
 #   ecbuild_list_add_pattern( LIST <input_list>
-#                             PATTERNS <pattern1> [ <pattern2> ... ]
+#                             GLOB <pattern1> [ <pattern2> ... ]
 #                             [ SOURCE_DIR <source_dir> ]
 #                             [ QUIET ] )
 #
@@ -25,9 +25,9 @@
 # LIST : required
 #   list variable to be appended to
 #
-# PATTERNS : required
-#   Regex pattern of exclusions
-#
+# GLOB : required
+#   Regex pattern of exclusion
+s#
 # SOURCE_DIR : optional
 #   Directory from where to start search
 #
@@ -40,7 +40,7 @@ function( ecbuild_list_add_pattern )
 
   set( options QUIET )
   set( single_value_args LIST SOURCE_DIR )
-  set( multi_value_args  PATTERNS )
+  set( multi_value_args  GLOB )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -52,8 +52,8 @@ function( ecbuild_list_add_pattern )
     ecbuild_critical("The call to ecbuild_list_add_pattern() doesn't specify the LIST.")
   endif()
 
-  if( NOT _p_PATTERNS )
-    ecbuild_critical("The call to ecbuild_list_add_pattern() doesn't specify the PATTERNS.")
+  if( NOT _p_GLOB )
+    ecbuild_critical("The call to ecbuild_list_add_pattern() doesn't specify the GLOB.")
   endif()
 
   #####
@@ -61,7 +61,7 @@ function( ecbuild_list_add_pattern )
   set( input_list ${${_p_LIST}} )
   unset( matched_files )
 
-  foreach( pattern ${_p_PATTERNS} )
+  foreach( pattern ${_p_GLOB} )
 
     if( IS_ABSOLUTE ${pattern} )
       file( GLOB_RECURSE matched_files ${pattern} )
@@ -87,7 +87,7 @@ function( ecbuild_list_add_pattern )
     set( ${_p_LIST} ${input_list} PARENT_SCOPE )
   else()
     if(NOT _p_QUIET)
-      ecbuild_warn( "ecbuild_list_add_pattern: no matches found for patterns ${_p_PATTERNS}" )
+      ecbuild_warn( "ecbuild_list_add_pattern: no matches found for patterns ${_p_GLOB}" )
     endif()
   endif()
 
