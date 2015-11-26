@@ -27,9 +27,9 @@ ecbuild_add_library(
 
 ### lib area_circle
 
-ecbuild_list_add_pattern( LIST area_srcs PATTERNS "*.f*" )
+ecbuild_list_add_pattern( LIST area_srcs GLOB "*.f*" )
 
-ecbuild_list_exclude_pattern( LIST area_srcs PATTERNS old.*f90 ^const.* .*f95 main.[fF]90 api/* )
+ecbuild_list_exclude_pattern( LIST area_srcs REGEX old.*f90 ^const.* .*f95 main.[fF]90 api/* )
 
 ecbuild_generate_fortran_interfaces(
     TARGET      intf_circ
@@ -41,7 +41,7 @@ ecbuild_generate_fortran_interfaces(
     INCLUDE_DIRS intf_circ_includes
 )
 
-ecbuild_list_add_pattern( LIST api_srcs PATTERNS "api/utility/*.F90" "api/aux/*.F90" )
+ecbuild_list_add_pattern( LIST api_srcs GLOB "api/utility/*.F90" "api/aux/*.F90" )
 
 ecbuild_add_library(
     TARGET  api_objs
