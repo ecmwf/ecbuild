@@ -354,7 +354,7 @@ function( ecbuild_add_library_impl )
 
       if( ECBUILD_SOURCE_FLAGS )
         ecbuild_source_flags( ${_PAR_TARGET}_C_SOURCE_FLAGS
-                              ${_PAR_TARGET}
+                              ${_PAR_TARGET}_c
                               "${_PAR_CFLAGS}"
                               "${${_PAR_TARGET}_c_srcs}" )
 
@@ -373,7 +373,7 @@ function( ecbuild_add_library_impl )
 
       if( ECBUILD_SOURCE_FLAGS )
         ecbuild_source_flags( ${_PAR_TARGET}_CXX_SOURCE_FLAGS
-                              ${_PAR_TARGET}
+                              ${_PAR_TARGET}_cxx
                               "${_PAR_CXXFLAGS}"
                               "${${_PAR_TARGET}_cxx_srcs}" )
 
@@ -392,7 +392,7 @@ function( ecbuild_add_library_impl )
 
       if( ECBUILD_SOURCE_FLAGS )
         ecbuild_source_flags( ${_PAR_TARGET}_Fortran_SOURCE_FLAGS
-                              ${_PAR_TARGET}
+                              ${_PAR_TARGET}_f
                               "${_PAR_FFLAGS}"
                               "${${_PAR_TARGET}_f_srcs}" )
 
