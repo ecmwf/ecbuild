@@ -39,7 +39,12 @@ macro( ecbuild_enable_fortran )
     message(FATAL_ERROR "Unknown keywords given to ecbuild_enable_fortran(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
-  enable_language( Fortran )
+  if( NOT CMAKE_Fortran_COMPILER_LOADED )
+    enable_language( Fortran )
+    if( ECBUILD_Fortran_FLAGS )
+      set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${ECBUILD_Fortran_FLAGS}" )
+    endif()
+  endif()
 
   if( DEFINED _PAR_REQUIRED )
     if( CMAKE_Fortran_COMPILER_FORCED )
