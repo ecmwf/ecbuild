@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
 
-project( mix CXX Fortran )
+project( simple CXX Fortran )
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake" )
 
@@ -12,16 +12,24 @@ ecbuild_requires_macro_version( 1.9 )
 
 ecbuild_declare_project()
 
+### declare options
+
+ecbuild_add_option( FEATURE BESSEL
+                    DESCRIPTION "Compute Bessel function"
+                    REQUIRED_PACKAGES GSL )
+
 ### targets
 
-add_subdirectory( fort )
+add_subdirectory( circle )
 
-add_subdirectory( cpp )
+add_subdirectory( compute )
 
 ### pkgconfig exports
 
-ecbuild_pkgconfig( NAME fortbar DESCRIPTION "A fortran library bar" LIBRARIES fortbar )
-ecbuild_pkgconfig( NAME fortbaz DESCRIPTION "A fortran library baz" LIBRARIES fortbaz )
+ecbuild_pkgconfig(
+    NAME circle
+    DESCRIPTION "Functions on circles"
+    LIBRARIES circle )
 
 ### finalize project
 
