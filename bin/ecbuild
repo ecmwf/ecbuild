@@ -188,7 +188,7 @@ version()
 
 log()
 {
-  log_level=$(sed 's/.*/\U&/' <<< "$1")
+  log_level=$(tr "[a-z]" "[A-Z]" <<< "$1")
   ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_LOG_LEVEL=${log_level}"
 }
 
