@@ -1,7 +1,5 @@
 if( HAVE_MATRIX )
     set( compute_defs HAVE_MATRIX_LAPACK )
-else()
-    set( compute_defs "" )
 endif()
 
 ecbuild_add_executable(
@@ -13,7 +11,7 @@ ecbuild_add_executable(
         compute.cc
 
     DEFINITIONS
-        ${compute_defs}
+        "${compute_defs}"
 
     INCLUDES
         ${GSL_INCLUDE_DIRS}
