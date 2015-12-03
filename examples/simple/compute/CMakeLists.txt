@@ -1,5 +1,5 @@
-if( HAVE_BESSEL )
-    set( compute_defs HAVE_GSL )
+if( HAVE_MATRIX )
+    set( compute_defs HAVE_MATRIX_LAPACK )
 else()
     set( compute_defs "" )
 endif()
@@ -20,7 +20,6 @@ ecbuild_add_executable(
 
     LIBS
         circle
+        ${LAPACK_LIBRARIES}
         ${GSL_LIBRARIES}
 )
-
-ecbuild_info(${GSL_LIBRARIES})

@@ -14,7 +14,12 @@ ecbuild_declare_project()
 
 ### declare options
 
+ecbuild_add_option( FEATURE MATRIX
+                    DESCRIPTION "Use matrix operations"
+                    REQUIRED_PACKAGES LAPACK )
+
 ecbuild_add_option( FEATURE BESSEL
+                    CONDITION HAVE_MATRIX
                     DESCRIPTION "Compute Bessel function"
                     REQUIRED_PACKAGES GSL )
 
