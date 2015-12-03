@@ -140,4 +140,8 @@ foreach( _lang C CXX Fortran )
   if( ECBUILD_${_lang}_LINK_FLAGS )
     set( CMAKE_${_lang}_LINK_FLAGS "${CMAKE_${_lang}_LINK_FLAGS} ${ECBUILD_${_lang}_LINK_FLAGS}" )
   endif()
+  if( ECBUILD_${_lang}_IMPLICIT_LINK_LIBRARIES )
+    list( APPEND CMAKE_${_lang}_IMPLICIT_LINK_LIBRARIES "${ECBUILD_${_lang}_IMPLICIT_LINK_LIBRARIES}" )
+  endif()
+
 endforeach()
