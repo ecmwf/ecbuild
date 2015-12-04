@@ -28,23 +28,24 @@ def match(source, pattern, op, flags, indent=0):
                   ' ' * (indent + 1), pattern, source, suff)
 
         if op[0] == "+":
-            log.debug('%sappending %s', ' ' * (indent + 2), op[1:])
             flags += [flag for flag in op[1:] if flag not in flags]
+            log.debug('%sappending %s --> flags: %s', ' ' * (indent + 2), op[1:], flags)
 
         elif op[0] == "=":
-            log.debug('%ssetting %s', ' ' * (indent + 2), op[1:])
-            flags = []
-            flags += [flag for flag in op[1:] if flag not in flags]
+            flags = op[1:]
+            log.debug('%ssetting %s --> flags: %s', ' ' * (indent + 2), op[1:], flags)
 
         elif op[0] == "/":
-            log.debug('%sremoving %s', ' ' * (indent + 2), op[1:])
-            for flag in op[1:]:
-                flags.remove(flag)
+            flags = [flag for flag in flags if flag not in op[1:]]
+            log.debug('%sremoving %s --> flags: %s', ' ' * (indent + 2), op[1:], flags)
 
         else:  # Nested rule
-            log.debug('%sapplying nested rules for "%s"', ' ' * (indent + 2), pattern)
+            log.debug('%sapplying nested rules for "%s" (flags: %s)',
+                      ' ' * (indent + 2), pattern, flags)
             for nested_pattern, nested_op in op:
-                match(source, nested_pattern, nested_op, flags, indent + 2)
+                flags = match(source, nested_pattern, nested_op, flags, indent + 2)
+
+    return flags
 
 
 def generate(rules, out, default_flags, sources, debug=False):
@@ -56,15 +57,17 @@ def generate(rules, out, default_flags, sources, debug=False):
 
     with open(path.expanduser(out), 'w') as f:
         for source in sources:
-            log.debug(source)
+            log.debug('%s (default flags: "%s")', source, default_flags)
             flags = default_flags.split()
             for pattern, op in rules:
-                match(source, pattern, op, flags)
+                flags = match(source, pattern, op, flags)
 
             if flags:
                 log.debug(' ==> setting flags for %s to %s', source, ' '.join(flags))
                 f.write('set_source_files_properties(%s PROPERTIES COMPILE_FLAGS "%s")\n'
                         % (source, ' '.join(flags)))
+            else:
+                log.debug(' ==> flags for %s empty', source)
 
 
 def main():
