@@ -20,29 +20,31 @@ from os import path
 log = logging.getLogger('gen_source_flags')
 
 
-def match(source, pattern, op, flags):
+def match(source, pattern, op, flags, indent=0):
     if fnmatch(source, pattern) or path.split(source)[0] == pattern:
 
         suff = '' if op[0] in ('+', '=', '/') else ' (nested pattern)'
-        log.debug(' -> pattern "%s" matches "%s"%s', pattern, source, suff)
+        log.debug('%s-> pattern "%s" matches "%s"%s',
+                  ' ' * (indent + 1), pattern, source, suff)
 
         if op[0] == "+":
-            log.debug('  appending %s', op[1:])
+            log.debug('%sappending %s', ' ' * (indent + 2), op[1:])
             flags += [flag for flag in op[1:] if flag not in flags]
 
         elif op[0] == "=":
-            log.debug('  setting %s', op[1:])
+            log.debug('%ssetting %s', ' ' * (indent + 2), op[1:])
             flags = []
             flags += [flag for flag in op[1:] if flag not in flags]
 
         elif op[0] == "/":
-            log.debug('  removing %s', op[1:])
+            log.debug('%sremoving %s', ' ' * (indent + 2), op[1:])
             for flag in op[1:]:
                 flags.remove(flag)
 
         else:  # Nested rule
+            log.debug('%sapplying nested rules for "%s"', ' ' * (indent + 2), pattern)
             for nested_pattern, nested_op in op:
-                match(source, nested_pattern, nested_op, flags)
+                match(source, nested_pattern, nested_op, flags, indent + 2)
 
 
 def generate(rules, out, default_flags, sources, debug=False):
