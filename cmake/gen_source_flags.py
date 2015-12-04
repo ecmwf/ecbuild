@@ -21,7 +21,7 @@ log = logging.getLogger('gen_source_flags')
 
 
 def match(source, pattern, op, flags, indent=0):
-    if fnmatch(source, pattern) or path.split(source)[0] == pattern:
+    if fnmatch(source, pattern):
 
         suff = '' if op[0] in ('+', '=', '/') else ' (nested pattern)'
         log.debug('%s-> pattern "%s" matches "%s"%s',
