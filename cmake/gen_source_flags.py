@@ -20,6 +20,31 @@ from os import path
 log = logging.getLogger('gen_source_flags')
 
 
+def match(source, pattern, op, flags):
+    if fnmatch(source, pattern) or path.split(source)[0] == pattern:
+
+        suff = '' if op[0] in ('+', '=', '/') else ' (nested pattern)'
+        log.debug(' -> pattern "%s" matches "%s"%s', pattern, source, suff)
+
+        if op[0] == "+":
+            log.debug('  appending %s', op[1:])
+            flags += [flag for flag in op[1:] if flag not in flags]
+
+        elif op[0] == "=":
+            log.debug('  setting %s', op[1:])
+            flags = []
+            flags += [flag for flag in op[1:] if flag not in flags]
+
+        elif op[0] == "/":
+            log.debug('  removing %s', op[1:])
+            for flag in op[1:]:
+                flags.remove(flag)
+
+        else:  # Nested rule
+            for nested_pattern, nested_op in op:
+                match(source, nested_pattern, nested_op, flags)
+
+
 def generate(rules, out, default_flags, sources, debug=False):
     logging.basicConfig(level=logging.DEBUG if debug else logging.INFO,
                         format='-- %(levelname)s - %(name)s: %(message)s')
@@ -32,23 +57,7 @@ def generate(rules, out, default_flags, sources, debug=False):
             log.debug(source)
             flags = default_flags.split()
             for pattern, op in rules:
-                if fnmatch(source, pattern):
-
-                    log.debug(' -> %10s matches %20s with %s', pattern, source, op[1:])
-
-                    if op[0] == "+":
-                        log.debug('  appending %s', op[1:])
-                        flags += [flag for flag in op[1:] if flag not in flags]
-
-                    if op[0] == "=":
-                        log.debug('  setting %s', op[1:])
-                        flags = []
-                        flags += [flag for flag in op[1:] if flag not in flags]
-
-                    if op[0] == "/":
-                        log.debug('  removing %s', op[1:])
-                        for flag in op[1:]:
-                            flags.remove(flag)
+                match(source, pattern, op, flags)
 
             if flags:
                 log.debug(' ==> setting flags for %s to %s', source, ' '.join(flags))
