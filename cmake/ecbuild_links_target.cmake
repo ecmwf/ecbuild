@@ -52,6 +52,14 @@ endmacro( ecbuild_link_lib  )
 
 macro( ecbuild_define_links_target )
 
+  add_custom_target( libs )
+
+  add_dependencies( libs ${EC_ALL_LIBS} )
+
+  add_custom_target( execs )
+
+  add_dependencies( execs ${EC_ALL_EXES} )
+
   if( DEFINED EC_LINK_DIR )
 
     foreach( lib ${EC_ALL_LIBS} )
