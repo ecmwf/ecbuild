@@ -9,22 +9,38 @@
 ############################################################################################
 # check size of pointer
 
-ecbuild_cache_check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
+if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
 
-math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
+  enable_language( C )
+  ecbuild_configure_compiler_flags( C )
+  # if( ECBUILD_C_FLAGS )
+  #   set( CMAKE_C_FLAGS "${ECBUILD_C_FLAGS}" )
+  # endif()
 
-# we only support 32 and 64 bit operating systems
-if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
-	message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
 endif()
-ecbuild_cache_var( EC_OS_BITS )
+  
+if( ENABLE_OS_TESTS )
 
-############################################################################################
-# For 64 bit architectures enable PIC (position-independent code)
+  ecbuild_cache_check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
 
-if( ${EC_OS_BITS} EQUAL 64 )
-	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+  math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
+
+  # we only support 32 and 64 bit operating systems
+  if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
+  	message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
+  endif()
+  ecbuild_cache_var( EC_OS_BITS )
+
+  ############################################################################################
+  # For 64 bit architectures enable PIC (position-independent code)
+
+  if( ${EC_OS_BITS} EQUAL 64 )
+  	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+  endif()
+
 endif()
+
+
 
 ############################################################################################
 # check architecture
