@@ -121,19 +121,19 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # include(CMakePrintSystemInformation) # available in cmake 2.8.4
 
     if( CMAKE_CXX_COMPILER_LOADED )
-    include(CheckIncludeFileCXX)
-    include(CheckCXXCompilerFlag)
-    include(CheckCXXSourceCompiles)
-    include(CheckCXXSourceRuns)
+        include(CheckIncludeFileCXX)
+        include(CheckCXXCompilerFlag)
+        include(CheckCXXSourceCompiles)
+        include(CheckCXXSourceRuns)
     endif()
 
     if( CMAKE_Fortran_COMPILER_LOADED )
         set( CMAKE_Fortran_MODULE_DIRECTORY  ${CMAKE_BINARY_DIR}/module CACHE PATH "directory for all fortran modules." )
-    include(CheckFortranFunctionExists)
-    if( CMAKE_C_COMPILER_LOADED AND ENABLE_FORTRAN_C_INTERFACE )
-    include(FortranCInterface)
-    endif()
-    set( EC_HAVE_FORTRAN 1 )
+        include(CheckFortranFunctionExists)
+        if( CMAKE_C_COMPILER_LOADED AND ENABLE_FORTRAN_C_INTERFACE )
+            include(FortranCInterface)
+        endif()
+        set( EC_HAVE_FORTRAN 1 )
     endif()
 
     include(FeatureSummary) # support features in cmake
@@ -144,9 +144,9 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # backport of cmake > 2.8.4 functions
 
     if( "${CMAKE_VERSION}" VERSION_LESS "2.8.6" )
-    include( ${CMAKE_CURRENT_LIST_DIR}/2.8/CMakePushCheckState.cmake )
+        include( ${CMAKE_CURRENT_LIST_DIR}/2.8/CMakePushCheckState.cmake )
     else()
-    include(CMakePushCheckState)
+        include(CMakePushCheckState)
     endif()
 
     ############################################################################################

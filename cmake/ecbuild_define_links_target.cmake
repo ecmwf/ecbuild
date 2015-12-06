@@ -48,25 +48,6 @@ macro( ecbuild_link_lib  TARGET FILENAME FILEPATH )
 endmacro( ecbuild_link_lib  )
 
 ############################################################################################
-# define libs and execs targets
-
-macro( ecbuild_define_libs_and_execs_targets )
-
-  add_custom_target( libs )
-
-  if( EC_ALL_LIBS )
-    add_dependencies( libs "${EC_ALL_LIBS}" )
-  endif()
-
-  add_custom_target( execs )
-
-  if( EC_ALL_EXECS )
-    add_dependencies( execs "${EC_ALL_EXES}" )
-  endif()
-
-endmacro(ecbuild_define_libs_and_execs_targets)
-
-############################################################################################
 # define make links target
 
 macro( ecbuild_define_links_target )
