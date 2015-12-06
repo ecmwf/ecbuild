@@ -12,10 +12,7 @@
 if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
 
   enable_language( C )
-  ecbuild_configure_compiler_flags( C )
-  # if( ECBUILD_C_FLAGS )
-  #   set( CMAKE_C_FLAGS "${ECBUILD_C_FLAGS}" )
-  # endif()
+  ecbuild_compiler_flags( C )
 
 endif()
   
