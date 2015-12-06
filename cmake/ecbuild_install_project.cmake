@@ -70,7 +70,6 @@
 #
 ##############################################################################
 
-
 macro( ecbuild_install_project )
 
     set( options )
@@ -85,6 +84,17 @@ macro( ecbuild_install_project )
 
     if( NOT _PAR_NAME  )
       message(FATAL_ERROR "The call to ecbuild_install_project() doesn't specify the NAME.")
+    endif()
+
+    ### EXTRA TARGETS #####################################################
+
+    # added here to avoid adding another macro call at the end of each project,
+
+    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+
+        ecbuild_define_libs_and_execs_targets()
+        ecbuild_define_links_target()
+
     endif()
 
     ### PACKAGING ########################################################

@@ -38,8 +38,6 @@ macro( ecbuild_print_summary )
 
   if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
-    ecbuild_define_links_target()
-
     get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
 
     message( STATUS "---------------------------------------------------------" )
@@ -101,6 +99,6 @@ macro( ecbuild_print_summary )
     # issue warnings / errors in case there are unused project files
     ecbuild_warn_unused_files()
 
-  endif( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+  endif()
 
 endmacro( ecbuild_print_summary )

@@ -214,14 +214,15 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     ############################################################################################
     # kickstart the build system
 
-      ecbuild_prepare_cache()
+    ecbuild_prepare_cache()
 
     include( ecbuild_define_options )               # define build options
     include( ecbuild_check_compiler )               # check for compiler characteristics
     include( ecbuild_check_os )                     # check for os characteristics
     include( ecbuild_check_functions )              # check for available functions
-    include( ecbuild_define_paths )                 # define installation paths
-    include( ecbuild_links_target )                 # define the links target
+    include( ecbuild_define_paths )                 # defines installation paths
+    include( ecbuild_define_libs_and_execs_target ) # defines the top level execs and libs
+    include( ecbuild_define_links_target )          # defines the links target
     include( ecbuild_setup_test_framework )         # setup test framework
     include( ecbuild_define_uninstall )             # define uninstall target
 
