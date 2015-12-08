@@ -137,8 +137,6 @@ macro( ecbuild_generate_yy )
     set( _PAR_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
   endif()
 
-  add_custom_target( ${_PAR_YYPREFIX}_${DEPENDANT} SOURCES ${_PAR_SOURCE_DIR}/${_PAR_YACC}.y ${_PAR_SOURCE_DIR}/${_PAR_LEX}.l )
-
   if( BISON_FOUND )
     bison_target( ${BASE}_parser ${_PAR_SOURCE_DIR}/${_PAR_YACC}.y ${${BASE}yy_tmp_target} COMPILE_FLAGS "${_PAR_BISON_FLAGS}" )
   else()
