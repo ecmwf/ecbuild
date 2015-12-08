@@ -142,19 +142,6 @@ macro( ecbuild_add_executable )
 
   if( _${_PAR_TARGET}_condition )
 
-    # add include dirs if defined
-    if( DEFINED _PAR_INCLUDES )
-      list(REMOVE_DUPLICATES _PAR_INCLUDES )
-      foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
-        if( path )
-          ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): add ${path} to include_directories")
-          include_directories( ${path} )
-        else()
-          ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
-        endif()
-      endforeach()
-    endif()
-
     # add persistent layer files
     if( DEFINED _PAR_PERSISTENT )
       if( DEFINED PERSISTENT_NAMESPACE )
@@ -190,6 +177,19 @@ macro( ecbuild_add_executable )
     add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_glob_srcs} ${_all_objects} )
 
     # ecbuild_echo_target( ${_PAR_TARGET} )
+
+    # add include dirs if defined
+    if( DEFINED _PAR_INCLUDES )
+      list(REMOVE_DUPLICATES _PAR_INCLUDES )
+      foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
+        if( path )
+          ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): add ${path} to include_directories")
+          target_include_directories( ${_PAR_TARGET} PRIVATE ${path} )
+        else()
+          ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
+        endif()
+      endforeach()
+    endif()
 
     # set OUTPUT_NAME
 
