@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-set( CMAKE_CXX_FLAGS         "-Ktrap=fp" CACHE STRING "Common C++ flags for all build types" FORCE )
+set( CMAKE_CXX_FLAGS         "-Ktrap=fp -h list=amid" CACHE STRING "Common C++ flags for all build types" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -hfp3 -hscalar3 -hvector3" CACHE STRING "Release C++ flags" FORCE )
 set( CMAKE_CXX_FLAGS_BIT     "-O2 -hflex_mp=conservative -hadd_paren -hfp1" CACHE STRING "Bit-reproducible C++ flags" )
 set( CMAKE_CXX_FLAGS_DEBUG   "-O0 -Gfast" CACHE STRING "Debug CXX flags" FORCE )
