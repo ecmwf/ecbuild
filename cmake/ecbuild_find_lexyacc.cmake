@@ -34,6 +34,7 @@
 #
 # The following CMake variables are set if lex and yacc were found:
 #
+# :LEXYACC_FOUND:   Found suitable combination of bison, lex, yacc, flex
 # :LEX_FOUND:       lex was found
 # :YACC_FOUND:      yacc was found
 # :LEX_EXECUTABLE:  path to the lex executable
@@ -59,25 +60,32 @@ macro( ecbuild_find_lexyacc )
 
   endif()
 
+  set( LEXYACC_FOUND 1 )
+
   if( NOT YACC_FOUND AND NOT BISON_FOUND ) # neither bison nor yacc were found
-    message( FATAL_ERROR "neither bison or yacc were found - at least one is required (together with its lexical analyser" )
+    ecbuild_debug( "Neither bison or yacc were found - at least one is required (together with its lexical analyser" )
+    set( LEXYACC_FOUND 0 )
   endif()
 
   if( NOT YACC_FOUND ) # check for both bison & flex together
     if( BISON_FOUND AND NOT FLEX_FOUND )
-      message( FATAL_ERROR "both bison and flex are required - flex not found" )
+      set( LEXYACC_FOUND 0 )
+      ecbuild_debug( "Both bison and flex are required - flex not found" )
     endif()
     if( FLEX_FOUND AND NOT BISON_FOUND )
-      message( FATAL_ERROR "both bison and flex are required - bison not found" )
+      set( LEXYACC_FOUND 0 )
+      ecbuild_debug( "Both bison and flex are required - bison not found" )
     endif()
   endif()
 
   if( NOT BISON_FOUND ) # check for both yacc & lex together
     if( YACC_FOUND AND NOT LEX_FOUND )
-      message( FATAL_ERROR "both yacc and lex are required - lex not found" )
+      set( LEXYACC_FOUND 0 )
+      ecbuild_debug( "Both yacc and lex are required - lex not found" )
     endif()
     if( LEX_FOUND AND NOT YACC_FOUND )
-      message( FATAL_ERROR "both yacc and lex are required - yacc not found" )
+      set( LEXYACC_FOUND 0 )
+      ecbuild_debug( "Both yacc and lex are required - yacc not found" )
     endif()
   endif()
 
