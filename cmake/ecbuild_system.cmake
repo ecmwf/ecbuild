@@ -65,7 +65,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     if( CMAKE_TOOLCHAIN_FILE )
     message( STATUS "toolchain ${CMAKE_TOOLCHAIN_FILE}" )
     endif()
-    
+
     if( ECBUILD_CONFIG_FILE )
     message( STATUS "config    ${ECBUILD_CONFIG_FILE}" )
     endif()
@@ -221,7 +221,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     if( ECBUILD_CONFIG_FILE )
       include( ${ECBUILD_CONFIG_FILE} )
     endif()
-    
+    ecbuild_prepare_cache()
     include( ecbuild_define_options )               # define build options
     include( ecbuild_compiler_flags )               # compiler flags
     include( ecbuild_check_compiler )               # check for compiler characteristics
