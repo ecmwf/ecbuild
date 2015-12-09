@@ -9,22 +9,35 @@
 ############################################################################################
 # check size of pointer
 
-ecbuild_cache_check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
+if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
 
-math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
+  enable_language( C )
+  ecbuild_compiler_flags( C )
 
-# we only support 32 and 64 bit operating systems
-if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
-	message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
 endif()
-ecbuild_cache_var( EC_OS_BITS )
+  
+if( ENABLE_OS_TESTS )
 
-############################################################################################
-# For 64 bit architectures enable PIC (position-independent code)
+  ecbuild_cache_check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
 
-if( ${EC_OS_BITS} EQUAL 64 )
-	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+  math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
+
+  # we only support 32 and 64 bit operating systems
+  if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
+  	message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
+  endif()
+  ecbuild_cache_var( EC_OS_BITS )
+
+  ############################################################################################
+  # For 64 bit architectures enable PIC (position-independent code)
+
+  if( ${EC_OS_BITS} EQUAL 64 )
+  	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+  endif()
+
 endif()
+
+
 
 ############################################################################################
 # check architecture
@@ -255,92 +268,7 @@ if( UNIX )
 	### AIX ###
 
 	if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
-
 		set( EC_OS_NAME "aix" )
-
-		set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -bbigtoc" )
-
-		if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
-			set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Xlinker" )
-		endif()
-
-		if( CMAKE_COMPILER_IS_GNUCC )
-			if( EC_OS_BITS EQUAL "64" )
-				ecbuild_add_c_flags("-maix64")
-			endif()
-			if( EC_OS_BITS EQUAL "32" )
-				ecbuild_add_c_flags("-maix32")
-			endif()
-		endif()
-
-		if( CMAKE_COMPILER_IS_GNUCXX )
-			if( EC_OS_BITS EQUAL "64" )
-				ecbuild_add_cxx_flags("-maix64")
-			endif()
-			if( EC_OS_BITS EQUAL "32" )
-				ecbuild_add_cxx_flags("-maix32")
-			endif()
-		endif()
-
-		if( CMAKE_C_COMPILER_ID MATCHES "XL" )
-
-			ecbuild_add_c_flags("-qpic=large")
-#            ecbuild_add_c_flags("-qweaksymbol")
-
-			if(EC_OS_BITS EQUAL "32" )
-				ecbuild_add_c_flags("-q32")
-			endif()
-
-			if(${CMAKE_BUILD_TYPE} MATCHES "Release" OR ${CMAKE_BUILD_TYPE} MATCHES "Production" )
-					ecbuild_add_c_flags("-qstrict")
-					ecbuild_add_c_flags("-qinline")
-			endif()
-
-			if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-					ecbuild_add_c_flags("-qfullpath")
-					ecbuild_add_c_flags("-qkeepparm")
-			endif()
-
-		endif()
-
-		if( CMAKE_CXX_COMPILER_ID MATCHES "XL" )
-
-			ecbuild_add_cxx_flags("-qpic=large")
-			ecbuild_add_cxx_flags("-bmaxdata:0x40000000")
-			ecbuild_add_cxx_flags("-qrtti")
-			ecbuild_add_cxx_flags("-qfuncsect")
-
-#           ecbuild_add_cxx_flags("-qweaksymbol")
-
-			if(EC_OS_BITS EQUAL "32" )
-				ecbuild_add_cxx_flags("-q32")
-			endif()
-
-			if(${CMAKE_BUILD_TYPE} MATCHES "Release" OR ${CMAKE_BUILD_TYPE} MATCHES "Production" )
-					ecbuild_add_cxx_flags("-qstrict")
-					ecbuild_add_cxx_flags("-qinline")
-			endif()
-
-			if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-					ecbuild_add_cxx_flags("-qfullpath")
-					ecbuild_add_cxx_flags("-qkeepparm")
-			endif()
-
-		endif()
-
-		if( CMAKE_Fortran_COMPILER_ID MATCHES "XL" )
-
-			ecbuild_add_fortran_flags("-qxflag=dealloc_cfptr")
-			ecbuild_add_fortran_flags("-qextname")
-			ecbuild_add_fortran_flags("-qdpc=e")
-			ecbuild_add_fortran_flags("-bmaxdata:0x40000000")
-			ecbuild_add_fortran_flags("-bloadmap:loadmap -bmap:loadmap")
-
-			if(EC_OS_BITS EQUAL "32" )
-				ecbuild_add_fortran_flags("-q32")
-			endif()
-		endif()
-
 	endif()
 
 endif()

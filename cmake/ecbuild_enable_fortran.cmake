@@ -41,9 +41,7 @@ macro( ecbuild_enable_fortran )
 
   if( NOT CMAKE_Fortran_COMPILER_LOADED )
     enable_language( Fortran )
-    if( ECBUILD_Fortran_FLAGS )
-      set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${ECBUILD_Fortran_FLAGS}" )
-    endif()
+    ecbuild_compiler_flags( Fortran )
   endif()
 
   if( DEFINED _PAR_REQUIRED )
