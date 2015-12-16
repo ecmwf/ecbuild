@@ -63,7 +63,7 @@ function( ecbuild_set_feature _name )
   set(oneValueArgs ENABLED )
   set(multiValueArgs ) # none
 
-  CMAKE_PARSE_ARGUMENTS( _PAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  cmake_parse_arguments( _PAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   get_property( _feature_desc      GLOBAL PROPERTY _CMAKE_${_name}_DESCRIPTION )
   get_property( _enabled_features  GLOBAL PROPERTY ENABLED_FEATURES )

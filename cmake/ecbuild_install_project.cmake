@@ -229,16 +229,8 @@ macro( ecbuild_install_project )
         endif()
     endforeach()
 
-    # TOP-LEVEL PROJECT EXPORT
-
-    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
-
-        # exports the package for use from the build-tree but only in DEVELOPER_MODE
-        # inserts <package> into the CMake user package registry
-
-        if( DEVELOPER_MODE )
-            export( PACKAGE ${PROJECT_NAME} )
-        endif()
+    # Generate the project .cmake config files
+    # All variables here must be (sub)project specific in order to work within bundles
 
         set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
         if( EXISTS ${LNAME}-config.cmake.in )
@@ -393,7 +385,18 @@ macro( ecbuild_install_project )
             install( EXPORT ${CMAKE_PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
 
+    # exports the package for use from the build-tree but only in DEVELOPER_MODE
+    # inserts <package> into the CMake user package registry
+
+    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+
+        if( DEVELOPER_MODE )
+            export( PACKAGE ${PROJECT_NAME} )
+        endif()
+
     else()
+
+    # export variables for upper projects
 
         set( ${PNAME}_FOUND             TRUE                          PARENT_SCOPE )
         set( ${PROJECT_NAME}_FOUND      TRUE                          PARENT_SCOPE )
@@ -411,6 +414,7 @@ macro( ecbuild_install_project )
         foreach( _f ${${PNAME}_FEATURES} )
             set( ${PNAME}_HAVE_${_f} ${${PNAME}_HAVE_${_f}} PARENT_SCOPE )
         endforeach()
-     endif()
+
+    endif()
 
 endmacro( ecbuild_install_project )
