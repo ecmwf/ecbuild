@@ -15,10 +15,10 @@
 
 function( ecbuild_add_extra_search_paths pkg )
 
-  message( DEPRECATION " ecbuild_add_extra_search_paths modifies CMAKE_PREFIX_PATH,"
-           " which can affect future package discovery if not undone by the caller."
-           " The current CMAKE_PREFIX_PATH is being backed up as _CMAKE_PREFIX_PATH"
-           " so it can later be restored." )
+  ecbuild_deprecate( " ecbuild_add_extra_search_paths modifies CMAKE_PREFIX_PATH,"
+                     " which can affect future package discovery if not undone by the caller."
+                     " The current CMAKE_PREFIX_PATH is being backed up as _CMAKE_PREFIX_PATH"
+                     " so it can later be restored." )
 
   # Back up current CMAKE_PREFIX_PATH so the caller can reset it
   set( _CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE )

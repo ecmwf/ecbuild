@@ -75,6 +75,6 @@ macro( ecbuild_add_c_flags m_c_flags )
 endmacro()
 
 macro( cmake_add_c_flags m_c_flags )
-  message( DEPRECATION " cmake_add_c_flags is deprecated, use ecbuild_add_c_flags instead." )
+  ecbuild_deprecate( " cmake_add_c_flags is deprecated, use ecbuild_add_c_flags instead." )
   ecbuild_add_c_flags( ${m_c_flags} )
 endmacro()

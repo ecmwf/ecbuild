@@ -14,8 +14,8 @@
 
 function( ecbuild_list_extra_search_paths pkg var )
 
-  message( DEPRECATION " ecbuild_list_extra_search_paths should no longer be"
-           " used and is going to be removed in a future version of ecBuild." )
+  ecbuild_deprecate( " ecbuild_list_extra_search_paths should no longer be"
+                     " used and is going to be removed in a future version of ecBuild." )
 
 	# ecbuild_debug_var( pkg )
 	# ecbuild_debug_var( var )

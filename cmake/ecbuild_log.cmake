@@ -15,11 +15,12 @@
 # ecBuild provides macros for logging based on a log level set by the user,
 # similar to the Python logging module:
 #
-# :ecbuild_debug:    logs a ``STATUS`` message if log level <= ``DEBUG``
-# :ecbuild_info:     logs a ``STATUS`` message if log level <= ``INFO``
-# :ecbuild_warn:     logs a ``WARNING`` message if log level <= ``WARN``
-# :ecbuild_error:    logs a ``SEND_ERROR`` message if log level <= ``ERROR``
-# :ecbuild_critical: logs a ``FATAL_ERROR`` message if log level <= ``CRITICAL``
+# :ecbuild_debug:     logs a ``STATUS`` message if log level <= ``DEBUG``
+# :ecbuild_info:      logs a ``STATUS`` message if log level <= ``INFO``
+# :ecbuild_warn:      logs a ``WARNING`` message if log level <= ``WARN``
+# :ecbuild_error:     logs a ``SEND_ERROR`` message if log level <= ``ERROR``
+# :ecbuild_critical:  logs a ``FATAL_ERROR`` message if log level <= ``CRITICAL``
+# :ecbuild_deprecate: logs a ``DEPRECATION`` message
 #
 # Input variables
 # ---------------
@@ -31,6 +32,10 @@
 #
 # ECBUILD_NO_COLOUR : bool
 #   if set, does not colour log output (by default log output is coloured)
+#
+# ECBUILD_NO_DEPRECATIONS : bool
+#   if set, does not output deprecation messages (only set this if you *really*
+#   know what you are doing!)
 #
 # Usage
 # -----
@@ -119,6 +124,15 @@ macro( ecbuild_error MSG )
     message(SEND_ERROR "${BoldRed}ERROR - ${MSG}${ColourReset}")
   endif()
 endmacro( ecbuild_error )
+
+##############################################################################
+
+macro( ecbuild_deprecate )
+  if( NOT ECBUILD_NO_DEPRECATIONS )
+    string(REPLACE ";" "" MSG ${ARGV})
+    message(DEPRECATION "${BoldRed}${MSG}${ColourReset}")
+  endif()
+endmacro( ecbuild_deprecate )
 
 ##############################################################################
 

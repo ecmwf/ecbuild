@@ -81,6 +81,6 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
 endmacro()
 
 macro( cmake_add_fortran_flags m_fortran_flags )
-  message( DEPRECATION " cmake_add_fortran_flags is deprecated, use ecbuild_add_fortran_flags instead." )
+  ecbuild_deprecate( " cmake_add_fortran_flags is deprecated, use ecbuild_add_fortran_flags instead." )
   ecbuild_add_fortran_flags( ${m_fortran_flags} )
 endmacro()
