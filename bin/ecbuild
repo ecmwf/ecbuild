@@ -76,7 +76,7 @@ Available values for "option":
 
     --config=<config>
           Configuration file using CMake syntax that gets included
-          Equivalent to cmake argument "-DECBUILD_CONFIG_FILE=<config-file>"
+          Equivalent to cmake argument "-DECBUILD_CONFIG=<config-file>"
 
     --toolchain=<toolchain>
           Use a platform specific toolchain, containing settings such
@@ -224,7 +224,7 @@ config()
     echo "   Config file [$arg] is not found or is not a file."
     exit 1
   fi
-  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_CONFIG_FILE=${config_file}"
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_CONFIG=${config_file}"
 }
 
 toolchain()

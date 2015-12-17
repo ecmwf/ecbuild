@@ -66,8 +66,8 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     message( STATUS "toolchain ${CMAKE_TOOLCHAIN_FILE}" )
     endif()
 
-    if( ECBUILD_CONFIG_FILE )
-    message( STATUS "config    ${ECBUILD_CONFIG_FILE}" )
+    if( ECBUILD_CONFIG )
+    message( STATUS "config    ${ECBUILD_CONFIG}" )
     endif()
 
     if( ECBUILD_CACHE )
@@ -218,8 +218,8 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     ############################################################################################
     # kickstart the build system
 
-    if( ECBUILD_CONFIG_FILE )
-      include( ${ECBUILD_CONFIG_FILE} )
+    if( ECBUILD_CONFIG )
+      include( ${ECBUILD_CONFIG} )
     endif()
     ecbuild_prepare_cache()
     include( ecbuild_define_options )               # define build options
@@ -245,5 +245,17 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     message( STATUS "---------------------------------------------------------" )
 
-endif()
+else()
 
+    # Allow subprojects with different compilation flags. This could be done by defining
+    #     set( ECBUILD_C_FLAGS_DEBUG "-O0" )
+    # or
+    #     set( ECBUILD_CONFIG "<subproject-config>.cmake" )
+    if( ECBUILD_CONFIG )
+        message( STATUS "---------------------------------------------------------" )
+        message( STATUS "config    ${ECBUILD_CONFIG}" )
+        include( ${ECBUILD_CONFIG} )
+    endif()
+    include( ecbuild_compiler_flags )
+
+endif()
