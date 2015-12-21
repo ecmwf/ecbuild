@@ -9,22 +9,27 @@
 ############################################################################################
 # check size of pointer
 
-ecbuild_cache_check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
+if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
+
+  enable_language( C )
+  ecbuild_compiler_flags( C )
+
+endif()
 
 math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
 
 # we only support 32 and 64 bit operating systems
 if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
-	message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
+  message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
 endif()
-ecbuild_cache_var( EC_OS_BITS )
 
 ############################################################################################
 # For 64 bit architectures enable PIC (position-independent code)
 
 if( ${EC_OS_BITS} EQUAL 64 )
-	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+  set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 endif()
+
 
 ############################################################################################
 # check architecture
@@ -202,7 +207,7 @@ if( ENABLE_PROFILING )
     unset( _trust_flags )
 
     unset( _flags )
-  
+
   else()
     message( WARNING "Profiling enabled but ecbuild doesn't know how to enable for this particular compiler ${CMAKE_C_COMPILER_ID}")
   endif()

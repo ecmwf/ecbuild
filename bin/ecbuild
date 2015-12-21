@@ -70,13 +70,13 @@ Available values for "option":
           Build static libraries.
           Equivalent to "-DBUILD_SHARED_LIBS=OFF"
 
-    --dynamic
+    --dynamic, --shared
           Build dynamic libraries (usually the default).
           Equivalent to "-DBUILD_SHARED_LIBS=ON"
 
-    --shared     (same option as --dynamic)
-          Build dynamic libraries (usually the default).
-          Equivalent to "-DBUILD_SHARED_LIBS=ON"
+    --config=<config>
+          Configuration file using CMake syntax that gets included
+          Equivalent to cmake argument "-DECBUILD_CONFIG=<config-file>"
 
     --toolchain=<toolchain>
           Use a platform specific toolchain, containing settings such
@@ -213,6 +213,20 @@ prefix()
   ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_INSTALL_PREFIX=${1/#\~\//$HOME/}"
 }
 
+config()
+{
+  arg=${1/#\~\//$HOME/}
+  if [ -f $arg ]; then
+    config_file=$arg
+    config_file="$( cd $( dirname "${config_file}" ) && pwd -P )/$( basename ${config_file} )"
+  else
+    echo "Error:"
+    echo "   Config file [$arg] is not found or is not a file."
+    exit 1
+  fi
+  ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_CONFIG=${config_file}"
+}
+
 toolchain()
 {
   arg=${1/#\~\//$HOME/}
@@ -237,7 +251,8 @@ cache()
 {
   arg=$1
   if [ -f $arg ]; then
-    cache_file=$( cd "$arg" && pwd -P )
+    cache_file=$arg
+    cache_file="$( cd $( dirname "${cache_file}" ) && pwd -P )/$( basename ${cache_file} )"
   else
     echo "Error:"
     echo "   Cache file [$arg] is not found or is not a file."
@@ -312,6 +327,9 @@ while test $# -gt 0; do
         ;;
       --toolchain)
         toolchain $val
+        ;;
+      --config)
+        config $val
         ;;
       --cache)
         cache $val
