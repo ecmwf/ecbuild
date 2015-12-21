@@ -6,9 +6,8 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-set( CMAKE_Fortran_FLAGS         "-ffree-line-length-none" CACHE STRING "Common Fortran flags for all build types" FORCE )
+#list( APPEND CMAKE_Fortran_FLAGS  "" )
 set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -unroll -inline -vec-report0 -heap-arrays" CACHE STRING "Release Fortran flags" FORCE )
 set( CMAKE_Fortran_FLAGS_BIT "-O2 -unroll -inline -vec-report0 -heap-arrays" CACHE STRING "Bit-reproducible Fortran flags" FORCE )
 set( CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -check bounds -traceback -warn all -heap-arrays -fpe-all=0 -fpe:0 -check all" CACHE STRING "Debug Fortran flags" FORCE )
-set( CMAKE_CXX_LINK_FLAGS "" CACHE STRING "" FORCE )
-
+set( CMAKE_Fortran_LINK_FLAGS "" CACHE STRING "" FORCE )

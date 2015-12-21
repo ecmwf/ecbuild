@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-set( CMAKE_Fortran_FLAGS         "-ffree-line-length-none" CACHE STRING "Common Fortran flags for all build types" FORCE )
+list( APPEND CMAKE_Fortran_FLAGS "-ffree-line-length-none" )
 set( CMAKE_Fortran_FLAGS_RELEASE "-O3 -funroll-all-loops -finline-functions" CACHE STRING "Release Fortran flags" FORCE )
 set( CMAKE_Fortran_FLAGS_BIT     "-O2 -g -funroll-all-loops -finline-functions" CACHE STRING "Bit-reproducible Fortran flags" FORCE )
 set( CMAKE_Fortran_FLAGS_DEBUG   "-O0 -g -fcheck=bounds -fbacktrace -finit-real=snan -ffpe-trap=invalid,zero,overflow" CACHE STRING "Debug Fortran flags" FORCE )

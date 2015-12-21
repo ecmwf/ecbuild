@@ -9,7 +9,7 @@
 macro( ecbuild_compiler_flags _lang )
   
   if( CMAKE_${_lang}_COMPILER_LOADED )
-    include( ecbuild_compiler_flags_${CMAKE_${_lang}_COMPILER_ID}_${_lang} OPTIONAL )
+    include( ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake OPTIONAL )
   endif()
 
   # OVERRIDE Compiler FLAGS (we override because CMake forcely defines them)
