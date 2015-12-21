@@ -6,7 +6,6 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# list( APPEND CMAKE_Fortran_FLAGS "" )
 set( CMAKE_Fortran_FLAGS_RELEASE "-fast -O3" CACHE STRING "Release Fortran compiler flags" FORCE )
 
 set( CMAKE_Fortran_LINK_FLAGS "" CACHE STRING "" )

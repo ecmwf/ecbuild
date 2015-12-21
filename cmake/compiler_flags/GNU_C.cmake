@@ -6,7 +6,6 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# list( APPEND CMAKE_C_FLAGS "" )
 set( CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE STRING "Release C compiler flags" FORCE )
 set( CMAKE_C_FLAGS_BIT "-O2 -DNDEBUG -DHELLO" CACHE STRING "Bit-reproducible C compiler flags" FORCE )
 set( CMAKE_C_FLAGS_DEBUG "-O0 -g -ftrapv" CACHE STRING "Debug C compiler flags" FORCE )

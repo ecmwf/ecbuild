@@ -425,6 +425,10 @@ function( ecbuild_add_library_impl )
       endif()
     endif()
 
+    if( ECBUILD_IMPLICIT_LINK_LIBRARIES )
+      target_link_libraries( ${_PAR_TARGET} ${ECBUILD_IMPLICIT_LINK_LIBRARIES} )
+    endif()
+
     # installation (except for OBJECT libraries)
 
     if( NOT _PAR_NOINSTALL AND NOT _PAR_TYPE MATCHES "OBJECT" )

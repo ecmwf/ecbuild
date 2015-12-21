@@ -353,6 +353,10 @@ macro( ecbuild_add_executable )
       endif()
     endif()
 
+    if( ECBUILD_IMPLICIT_LINK_LIBRARIES )
+      target_link_libraries( ${_PAR_TARGET} ${ECBUILD_IMPLICIT_LINK_LIBRARIES} )
+    endif()
+
     # make sure target is removed before - some problems with AIX
     add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
 
