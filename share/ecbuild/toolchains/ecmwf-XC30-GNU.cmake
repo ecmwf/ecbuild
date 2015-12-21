@@ -19,9 +19,9 @@ set( OMP_C_FLAGS             "-fopenmp" )
 set( OMP_CXX_FLAGS           "-fopenmp" )
 set( OMP_Fortran_FLAGS       "-fopenmp" )
 
-set( CMAKE_C_FLAGS       "" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS     "" CACHE STRING "" FORCE )
-set( CMAKE_Fortran_FLAGS "" CACHE STRING "" FORCE )
+set( ECBUILD_C_FLAGS       "" )
+set( ECBUILD_CXX_FLAGS     "" )
+set( ECBUILD_Fortran_FLAGS "" )
 
 ####################################################################
 # RELEASE FLAGS
