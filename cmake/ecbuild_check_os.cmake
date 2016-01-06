@@ -177,7 +177,7 @@ if( ENABLE_OS_ENDINESS_TEST )
   		   return 0;
   		 }" IEEE_LE )
 
-  	if( "${IEEE_BE}" STREQUAL "" )
+  	if( "${IEEE_LE}" STREQUAL "" )
   		set( IEEE_LE 0 CACHE INTERNAL "Test IEEE_LE")
   	endif()
   endif()
