@@ -106,14 +106,19 @@ endif()
 if( ENABLE_OS_ENDINESS_TEST )
 
   if( NOT DEFINED EC_BIG_ENDIAN AND NOT DEFINED EC_LITTLE_ENDIAN )
+
   	test_big_endian( _BIG_ENDIAN )
 
   	if( _BIG_ENDIAN )
-  		set( EC_BIG_ENDIAN    1 )
+        set( EC_BIG_ENDIAN    1 )
+        set( EC_LITTLE_ENDIAN 0 )
   	else()
-  		set( EC_LITTLE_ENDIAN 1 )
+        set( EC_BIG_ENDIAN    0 )
+        set( EC_LITTLE_ENDIAN 1 )
   	endif()
+
   endif()
+
   ecbuild_cache_var( EC_BIG_ENDIAN )
   ecbuild_cache_var( EC_LITTLE_ENDIAN )
 
@@ -147,8 +152,14 @@ if( ENABLE_OS_ENDINESS_TEST )
   	if( "${IEEE_BE}" STREQUAL "" )
   		set( IEEE_BE 0 CACHE INTERNAL "Test IEEE_BE")
   	endif()
+
   endif()
+
   ecbuild_cache_var( IEEE_BE )
+
+  if( EC_BIG_ENDIAN AND NOT IEEE_BE )
+    ecbuild_critical("Failed to sanity check on endiness: OS should be Big-Endian but compiled code runs differently -- to ignore this pass -DIEEE_BE=0 to CMake/ecBuild")
+  endif()
 
     if( NOT DEFINED IEEE_LE )
   	check_c_source_runs(
@@ -181,7 +192,12 @@ if( ENABLE_OS_ENDINESS_TEST )
   		set( IEEE_LE 0 CACHE INTERNAL "Test IEEE_LE")
   	endif()
   endif()
+
   ecbuild_cache_var( IEEE_LE )
+
+  if( EC_LITTLE_ENDIAN AND NOT IEEE_LE )
+    ecbuild_critical("Failed to sanity check on endiness: OS should be Little-Endian but compiled code runs differently -- to ignore this pass -DIEEE_LE=0 to CMake/ecBuild")
+  endif()
 
 endif()
 
