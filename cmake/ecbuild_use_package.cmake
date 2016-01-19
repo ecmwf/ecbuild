@@ -188,6 +188,8 @@ macro( ecbuild_use_package )
       set( ${pkgUPPER}_FOUND 1 )
       set( ${_p_PROJECT}_VERSION ${${pkgUPPER}_VERSION} )
 
+      list( APPEND ${pkgUPPER}_INCLUDE_DIRS ${${pkgUPPER}_TPL_INCLUDE_DIRS} )
+
     endif()
 
   endif()
