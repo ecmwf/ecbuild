@@ -9,6 +9,9 @@
 ############################################################################################
 # check size of pointer
 
+# Re-check size of void pointer since for some compiler combinations this is not properly set
+ecbuild_cache_check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
+
 if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
 
   enable_language( C )
