@@ -7,9 +7,15 @@
 # does it submit to any jurisdiction.
 
 macro( ecbuild_compiler_flags _lang )
-  
+
   if( CMAKE_${_lang}_COMPILER_LOADED )
+    ecbuild_debug( "try include ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake ")
     include( ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake OPTIONAL )
+    ecbuild_debug_var( CMAKE_${_lang}_FLAGS )
+    foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+      ecbuild_debug_var( CMAKE_${_lang}_FLAGS_${_btype} )
+    endforeach()
+
   endif()
 
   # OVERRIDE Compiler FLAGS (we override because CMake forcely defines them)
@@ -22,11 +28,11 @@ macro( ecbuild_compiler_flags _lang )
   if( DEFINED ECBUILD_${_lang}_FLAGS )
     set( CMAKE_${_lang}_FLAGS "${ECBUILD_${_lang}_FLAGS}" )
   endif()
-  
+
   if( DEFINED ECBUILD_${_lang}_LINK_FLAGS )
     set( CMAKE_${_lang}_LINK_FLAGS "${ECBUILD_${_lang}_LINK_FLAGS}" )
   endif()
-  
+
 endmacro()
 
 foreach( _lang C CXX Fortran )

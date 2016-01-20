@@ -10,6 +10,7 @@ set( CMAKE_Fortran_FLAGS_ALL     "-ffree-line-length-none" CACHE STRING "" FORCE
 set( CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS_ALL} -O3 -funroll-all-loops -finline-functions" CACHE STRING "Release Fortran flags" FORCE )
 set( CMAKE_Fortran_FLAGS_BIT     "${CMAKE_Fortran_FLAGS_ALL} -O2 -g -funroll-all-loops -finline-functions" CACHE STRING "Bit-reproducible Fortran flags" FORCE )
 set( CMAKE_Fortran_FLAGS_PRODUCTION "${CMAKE_Fortran_FLAGS_ALL} -O2 -g" CACHE STRING "Flags used by the Fortran compiler during Production builds." FORCE )
+set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_ALL} -O2 -g" CACHE STRING "Flags used by the Fortran compiler during RelWithDebInfo builds." FORCE )
 set( CMAKE_Fortran_FLAGS_DEBUG   "${CMAKE_Fortran_FLAGS_ALL} -O0 -g -fcheck=bounds -fbacktrace -finit-real=snan -ffpe-trap=invalid,zero,overflow" CACHE STRING "Debug Fortran flags" FORCE )
 
 ####################################################################

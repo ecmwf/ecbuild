@@ -10,6 +10,7 @@ set( CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE STRING "Release C++ compiler f
 set( CMAKE_CXX_FLAGS_BIT "-O2 -DNDEBUG" CACHE STRING "Bit-reproducible C++ compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_DEBUG "-O0 -g -ftrapv" CACHE STRING "Debug C++ compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_PRODUCTION "-O2 -g" CACHE STRING "Flags used by the C++ compiler during Production builds." FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g" CACHE STRING "Flags used by the C++ compiler during RelWithDebInfo builds." FORCE )
 set( CMAKE_CXX_LINK_FLAGS "" CACHE STRING "" FORCE )
 
 # NOTE: gcc does not guarrante that -O3 performs better than -O2
