@@ -14,7 +14,7 @@
 #
 # Find Python interpreter, its version and the Python libraries. ::
 #
-#   ecbuild_find_python( [ VERSION <version> ] [ REQUIRED ] )
+#   ecbuild_find_python( [ VERSION <version> ] [ REQUIRED ] [ NO_LIBS ] )
 #
 # Options
 # -------
@@ -24,6 +24,9 @@
 #
 # REQUIRED : optional
 #   fail if Python was not found
+#
+# NO_LIBS : optional
+#   only search for the Python interpreter, not the libraries
 #
 # Output variables
 # ----------------
@@ -50,7 +53,7 @@ macro( ecbuild_find_python )
 
     # parse parameters
 
-    set( options REQUIRED )
+    set( options REQUIRED NO_LIBS )
     set( single_value_args VERSION )
     set( multi_value_args  )
 
@@ -95,6 +98,15 @@ macro( ecbuild_find_python )
     if( PYTHONINTERP_FOUND )
         ecbuild_debug( "ecbuild_find_python: Found Python interpreter version ${PYTHON_VERSION_STRING} at ${PYTHON_EXECUTABLE}" )
 
+        # find where python site-packages are ...
+
+        if( PYTHON_EXECUTABLE )
+            execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+        endif()
+        ecbuild_debug( "ecbuild_find_python: PYTHON_SITE_PACKAGES=${PYTHON_SITE_PACKAGES}" )
+
+    endif()
+    if( PYTHONINTERP_FOUND AND NOT _p_NO_LIBS )
         # find python config
 
         if( PYTHON_EXECUTABLE AND EXISTS ${PYTHON_EXECUTABLE}-config )
@@ -166,13 +178,6 @@ macro( ecbuild_find_python )
           set( PYTHON_FOUND 1 )
           set( Python_FOUND 1 )
         endif()
-
-        # find where python site-packages are ...
-
-        if( PYTHON_EXECUTABLE )
-            execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
-        endif()
-        ecbuild_debug( "ecbuild_find_python: PYTHON_SITE_PACKAGES=${PYTHON_SITE_PACKAGES}" )
 
     endif()
 
