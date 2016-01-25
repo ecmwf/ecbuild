@@ -14,9 +14,9 @@
 #
 # Exclude items from a list that match a list of patterns. ::
 #
-#   ecbuild_list_remove_pattern( LIST <input_list>
-#                                REGEX <regex1> [ <regex2> ... ]
-#                                [ QUIET ] )
+#   ecbuild_list_exclude_pattern( LIST <input_list>
+#                                 REGEX <regex1> [ <regex2> ... ]
+#                                 [ QUIET ] )
 #
 # Options
 # -------
@@ -59,13 +59,13 @@ function( ecbuild_list_exclude_pattern )
 
   # ecbuild_debug_var(_p_REGEX)
 
-  foreach(item ${${_p_LIST}})
+  foreach( item ${${_p_LIST}} )
 
-    set(_keep 1)
+    set( _keep 1 )
 
     foreach( pattern ${_p_REGEX} )
         if( ${item} MATCHES ${pattern} )
-            set( _keep 0)
+            set( _keep 0 )
             set( matches_found 1 )
         endif()
     endforeach()
@@ -77,10 +77,10 @@ function( ecbuild_list_exclude_pattern )
 
   endforeach()
 
-  if(matches_found)
+  if( matches_found )
       set( ${_p_LIST} ${result} PARENT_SCOPE )
   else()
-    if(NOT _p_QUIET)
+    if( NOT _p_QUIET )
         ecbuild_warn( "ecbuild_list_exclude_pattern: no matches found for patterns ${_p_REGEX} in ${_p_LIST}" )
     endif()
   endif()
