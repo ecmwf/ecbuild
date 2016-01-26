@@ -34,6 +34,9 @@
 # DESCRIPTION : optional
 #   string describing the feature (shown in summary and stored in the cache)
 #
+# TYPE : optional, one of RUNTIME|OPTIONAL|RECOMMENDED|REQUIRED
+#   type of dependency of the project on this package (defaults to OPTIONAL)
+#
 # PURPOSE : optional
 #   string describing which functionality this package enables in the project
 #
@@ -76,7 +79,7 @@
 macro( ecbuild_add_option )
 
   set( options ADVANCED )
-  set( single_value_args FEATURE DEFAULT DESCRIPTION PURPOSE )
+  set( single_value_args FEATURE DEFAULT DESCRIPTION TYPE PURPOSE )
   set( multi_value_args  REQUIRED_PACKAGES CONDITION )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -101,6 +104,10 @@ macro( ecbuild_add_option )
     endif()
   endif()
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defaults to ${_p_DEFAULT}")
+
+  if( NOT _p_TYPE  )
+    set( _p_TYPE OPTIONAL )
+  endif()
 
   # check CONDITION parameter
   if( DEFINED _p_CONDITION )
@@ -142,6 +149,7 @@ macro( ecbuild_add_option )
   ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT} )
   set_package_properties( ${_p_FEATURE} PROPERTIES
                           DESCRIPTION "${_p_DESCRIPTION}"
+                          TYPE ${_p_TYPE}
                           PURPOSE "${_p_PURPOSE}" )
 
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} = ${ENABLE_${_p_FEATURE}}")
