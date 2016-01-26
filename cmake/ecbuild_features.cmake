@@ -56,19 +56,6 @@ function( ecbuild_disable_feature _name )
 
 endfunction()
 
-# Set description of feature ${_name} to ${_desc}
-function( ecbuild_set_feature_description _name _desc)
-  set_property(GLOBAL PROPERTY _CMAKE_${_name}_DESCRIPTION "${_desc}" )
-endfunction()
-
-# Set purpose of feature ${_name} to ${_desc}
-function( ecbuild_set_feature_purpose _name _purpose )
-  get_property( _purpose_list  GLOBAL PROPERTY _CMAKE_${_name}_PURPOSE )
-  list( APPEND _purpose_list ${_purpose} )
-  list( REMOVE_DUPLICATES _purpose_list )
-  set_property(GLOBAL PROPERTY _CMAKE_${_name}_PURPOSE "${_purpose_list}" )
-endfunction()
-
 # en/disable feature ${_name} and set its description and purpose
 function( ecbuild_set_feature _name )
 
