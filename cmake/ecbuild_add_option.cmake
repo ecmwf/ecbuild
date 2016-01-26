@@ -17,6 +17,7 @@
 #   ecbuild_add_option( FEATURE <name>
 #                       [ DEFAULT ON|OFF ]
 #                       [ DESCRIPTION <description> ]
+#                       [ PURPOSE <purpose> ]
 #                       [ REQUIRED_PACKAGES <package1> [<package2> ...] ]
 #                       [ CONDITION <condition1> [<condition2> ...] ]
 #                       [ ADVANCED ] )
@@ -32,6 +33,9 @@
 #
 # DESCRIPTION : optional
 #   string describing the feature (shown in summary and stored in the cache)
+#
+# PURPOSE : optional
+#   string describing which functionality this package enables in the project
 #
 # REQUIRED_PACKAGES : optional
 #   list of packages required to be found for this feature to be enabled
@@ -72,7 +76,7 @@
 macro( ecbuild_add_option )
 
   set( options ADVANCED )
-  set( single_value_args FEATURE DEFAULT DESCRIPTION )
+  set( single_value_args FEATURE DEFAULT DESCRIPTION PURPOSE )
   set( multi_value_args  REQUIRED_PACKAGES CONDITION )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -135,7 +139,9 @@ macro( ecbuild_add_option )
   # define the option -- for cmake GUI
 
   option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
-  ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT} PURPOSE "${_p_DESCRIPTION}" )
+  ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT}
+                       DESCRIPTION "${_p_DESCRIPTION}"
+                       PURPOSE "${_p_PURPOSE}" )
 
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} = ${ENABLE_${_p_FEATURE}}")
   set( _do_search ${ENABLE_${_p_FEATURE}} )
