@@ -73,7 +73,7 @@ endfunction()
 function( ecbuild_set_feature _name )
 
   set(options ) # none
-  set(oneValueArgs ENABLED DESCRIPTION PURPOSE )
+  set(oneValueArgs ENABLED )
   set(multiValueArgs ) # none
 
   CMAKE_PARSE_ARGUMENTS( _PAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -104,14 +104,6 @@ function( ecbuild_set_feature _name )
 
   if( NOT _feature_found )
     message( WARNING "Feature ${_name} has not yet been enabled or disabled" )
-  endif()
-
-  if( _PAR_DESCRIPTION )
-    ecbuild_set_feature_description( ${_name} ${_PAR_DESCRIPTION} )
-  endif()
-
-  if( _PAR_PURPOSE )
-    ecbuild_set_feature_purpose( ${_name} ${_PAR_PURPOSE} )
   endif()
 
 endfunction()
