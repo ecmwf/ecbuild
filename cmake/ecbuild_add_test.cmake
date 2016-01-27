@@ -362,9 +362,6 @@ macro( ecbuild_add_test )
                           PRE_BUILD
                           COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME} )
 
-      set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
-      set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
-
     endif() # _PAR_SOURCES
 
     if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET ) # in the absence of target, we use the command as a name
