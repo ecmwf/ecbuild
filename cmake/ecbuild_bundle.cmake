@@ -147,6 +147,10 @@ macro( ecbuild_bundle )
       execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink ${_PAR_SOURCE} ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} )
     endif()
 
+    if( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_PROJECT} OR NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_PROJECT}/CMakeLists.txt )
+      ecbuild_critical("Source directory '${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_PROJECT}' for subproject '${_PAR_PROJECT}' does not exist or does not contain a CMakeLists.txt file.")
+    endif()
+
     ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
   endif()
 
