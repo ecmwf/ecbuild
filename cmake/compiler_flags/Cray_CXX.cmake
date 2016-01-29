@@ -10,7 +10,7 @@ set( CMAKE_CXX_FLAGS_ALL            "-hlist=amid" CACHE STRING "Common flags for
 set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_ALL} -O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" CACHE STRING "Release C++ flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_ALL} -O2 -hfp1 -Gfast -DNDEBUG" CACHE STRING "Release C++ flags" FORCE )
 set( CMAKE_CXX_FLAGS_PRODUCTION     "${CMAKE_CXX_FLAGS_ALL} -O2 -hfp1 -G2" CACHE STRING "Production C++ flags" FORCE )
-set( CMAKE_CXX_FLAGS_BIT            "${CMAKE_CXX_FLAGS_ALL} -O1 -hfp1 -hflex_mp=conservative -hadd_paren -DNDEBUG" CACHE STRING "Bit-reproducible C++ flags" FORCE )
+set( CMAKE_CXX_FLAGS_BIT            "${CMAKE_CXX_FLAGS_ALL} -O2 -hfp1 -hflex_mp=conservative -hadd_paren -DNDEBUG" CACHE STRING "Bit-reproducible C++ flags" FORCE )
 set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_ALL} -O0 -G0" CACHE STRING "Debug CXX flags" FORCE )
 
 set( CMAKE_CXX_LINK_FLAGS  "-Wl,-Map,loadmap -Wl,--as-needed -Ktrap=fp" CACHE STRING "" FORCE )
