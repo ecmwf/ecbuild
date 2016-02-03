@@ -228,7 +228,9 @@ function( ecbuild_add_library_impl )
 
     list( APPEND _PAR_SOURCES ${_glob_srcs} )
 
-    ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
+    if( ECBUILD_LIST_SOURCES )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
+    endif()
 
     add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
 
