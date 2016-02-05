@@ -13,4 +13,4 @@ set( CMAKE_C_FLAGS_PRODUCTION     "${CMAKE_C_FLAGS_ALL} -O2 -hfp1 -G2" CACHE STR
 set( CMAKE_C_FLAGS_BIT            "${CMAKE_C_FLAGS_ALL} -O2 -hfp1 -hflex_mp=conservative -hadd_paren -DNDEBUG" CACHE STRING "Bit-reproducible C flags" FORCE )
 set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_ALL} -O0 -G0" CACHE STRING "Debug Cflags" FORCE )
 
-set( CMAKE_C_LINK_FLAGS  "-Wl,-Map,loadmap -Wl,--as-needed -Ktrap=fp" CACHE STRING "" FORCE )
+set( CMAKE_C_LINK_FLAGS  "-Wl,-Map,loadmap -Wl,--as-needed" CACHE STRING "" FORCE )

@@ -13,5 +13,5 @@ set( CMAKE_CXX_FLAGS_PRODUCTION     "${CMAKE_CXX_FLAGS_ALL} -O2 -hfp1 -G2" CACHE
 set( CMAKE_CXX_FLAGS_BIT            "${CMAKE_CXX_FLAGS_ALL} -O2 -hfp1 -hflex_mp=conservative -hadd_paren -DNDEBUG" CACHE STRING "Bit-reproducible C++ flags" FORCE )
 set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_ALL} -O0 -G0" CACHE STRING "Debug CXX flags" FORCE )
 
-set( CMAKE_CXX_LINK_FLAGS  "-Wl,-Map,loadmap -Wl,--as-needed -Ktrap=fp" CACHE STRING "" FORCE )
+set( CMAKE_CXX_LINK_FLAGS  "-Wl,-Map,loadmap -Wl,--as-needed" CACHE STRING "" FORCE )
 set( ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES "$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so" CACHE STRING "" )
