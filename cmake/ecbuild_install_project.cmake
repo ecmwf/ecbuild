@@ -332,13 +332,28 @@ macro( ecbuild_install_project )
         file( REMOVE ${_lname_config}.tpls.in )
 
         foreach( _tpl ${${PNAME}_TPLS} )
+
             string( TOUPPER ${_tpl} TPL )
-            if( ${TPL}_IMPORT_FILE )
+
+            if( ${TPL}_IMPORT_FILE ) # ecBuild packages should trigger this if they export themselves
+
+              ecbuild_debug( "Adding TPL ${TPL} import file to ${_lname_config}.tpls.in" )
                 set( __import_file "${${TPL}_IMPORT_FILE}" )
                 file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_IMPORT_FILE )\n" )
                 file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
+                file( APPEND "${_lname_config}.tpls.in" "endif()\n" )            
+
+            elseif( ${TPL}_CONFIG ) # cmake built packages (e.g. CGAL) may have exported their targets
+
+              ecbuild_debug( "Adding TPL ${TPL} import file to ${_lname_config}.tpls.in" )
+                set( __import_file "${${TPL}_CONFIG}" )
+                file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_CONFIG )\n" )
+                file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
+                file( APPEND "${_lname_config}.tpls.in" "    set( ${TPL}_CONFIG \"${__import_file}\" )\n" )
                 file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
+
             endif()
+
         endforeach()
 
         if( EXISTS "${_lname_config}.tpls.in" )
