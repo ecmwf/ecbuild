@@ -110,27 +110,27 @@ macro( ecbuild_find_python )
         # find python config
 
         if( PYTHON_EXECUTABLE AND EXISTS ${PYTHON_EXECUTABLE}-config )
-            set(PYTHON_CONFIG ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
+            set(PYTHON_CONFIG_EXECUTABLE ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
         else()
-            find_program( PYTHON_CONFIG NAMES python-config python-config${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} )
+            find_program( PYTHON_CONFIG_EXECUTABLE NAMES python-config python-config${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} )
         endif()
 
-        ecbuild_debug_var( PYTHON_CONFIG )
+        ecbuild_debug_var( PYTHON_CONFIG_EXECUTABLE )
 
         # find python libs
 
         # The OpenBSD python packages have python-config's
         # that don't reliably report linking flags that will work.
 
-        if( PYTHON_CONFIG AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" )
-            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using ${PYTHON_CONFIG}" )
+        if( PYTHON_CONFIG_EXECUTABLE AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" )
+            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using ${PYTHON_CONFIG_EXECUTABLE}" )
 
-            execute_process(COMMAND "${PYTHON_CONFIG}" --ldflags
+            execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --ldflags
                             OUTPUT_VARIABLE PYTHON_LIBRARIES
                             OUTPUT_STRIP_TRAILING_WHITESPACE
                             ERROR_QUIET)
 
-            execute_process(COMMAND "${PYTHON_CONFIG}" --includes
+            execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --includes
                             OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
                             OUTPUT_STRIP_TRAILING_WHITESPACE
                             ERROR_QUIET)
@@ -184,6 +184,7 @@ macro( ecbuild_find_python )
     ecbuild_debug_var( PYTHONINTERP_FOUND )
     ecbuild_debug_var( PYTHON_FOUND )
     ecbuild_debug_var( PYTHON_EXECUTABLE )
+    ecbuild_debug_var( PYTHON_CONFIG_EXECUTABLE )
     ecbuild_debug_var( PYTHON_VERSION_MAJOR )
     ecbuild_debug_var( PYTHON_VERSION_MINOR )
     ecbuild_debug_var( PYTHON_VERSION_PATCH )
