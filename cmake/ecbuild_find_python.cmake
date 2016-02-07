@@ -49,7 +49,7 @@
 
 set( __test_python ${CMAKE_CURRENT_LIST_DIR}/pymain.c )
 
-macro( ecbuild_find_python )
+function( ecbuild_find_python )
 
     # parse parameters
 
@@ -193,4 +193,16 @@ macro( ecbuild_find_python )
     ecbuild_debug_var( PYTHON_LIBRARIES )
     ecbuild_debug_var( PYTHON_SITE_PACKAGES )
 
-endmacro( ecbuild_find_python )
+    set( PYTHONINTERP_FOUND    ${PYTHONINTERP_FOUND} PARENT_SCOPE )
+    set( PYTHONLIBS_FOUND      ${PYTHONLIBS_FOUND} PARENT_SCOPE )
+    set( PYTHON_FOUND          ${PYTHON_FOUND} PARENT_SCOPE )
+    set( PYTHON_EXECUTABLE     ${PYTHON_EXECUTABLE} PARENT_SCOPE )
+    set( PYTHON_VERSION_MAJOR  ${PYTHON_VERSION_MAJOR} PARENT_SCOPE )
+    set( PYTHON_VERSION_MINOR  ${PYTHON_VERSION_MINOR} PARENT_SCOPE )
+    set( PYTHON_VERSION_PATCH  ${PYTHON_VERSION_PATCH} PARENT_SCOPE )
+    set( PYTHON_VERSION_STRING ${PYTHON_VERSION_STRING} PARENT_SCOPE )
+    set( PYTHON_INCLUDE_DIRS   ${PYTHON_INCLUDE_DIRS} PARENT_SCOPE )
+    set( PYTHON_LIBRARIES      ${PYTHON_LIBRARIES} PARENT_SCOPE )
+    set( PYTHON_SITE_PACKAGES  ${PYTHON_SITE_PACKAGES} PARENT_SCOPE )
+
+endfunction( ecbuild_find_python )
