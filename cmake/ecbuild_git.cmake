@@ -106,7 +106,7 @@ macro( ecbuild_git )
         RESULT_VARIABLE nok ERROR_VARIABLE error
         WORKING_DIRECTORY "${PARENT_DIR}")
       if(nok)
-        message(FATAL_ERROR "${_PAR_DIR} git clone failed: ${error}\n")
+        message(FATAL_ERROR "${_PAR_DIR} git clone failed:\n  ${GIT_EXECUTABLE} "clone" ${_PAR_URL} ${clone_args} ${_PAR_DIR} "-q"\n  ${error}\n")
       endif()
       message( STATUS "${_PAR_DIR} retrieved.")
       set( _needs_switch 1 )
@@ -231,7 +231,7 @@ macro( ecbuild_git )
                        RESULT_VARIABLE nok ERROR_VARIABLE error
                        WORKING_DIRECTORY "${ABS_PAR_DIR}")
       if(nok)
-        message(FATAL_ERROR "git checkout ${_gitref} on ${_PAR_DIR} failed:\n ${error}")
+        message(FATAL_ERROR "git checkout ${_gitref} on ${_PAR_DIR} failed:\n  "${GIT_EXECUTABLE}" checkout -q "${_gitref}"\n  ${error}")
       endif()
 
       if( DEFINED _PAR_BRANCH AND _PAR_UPDATE ) #############################################################################
