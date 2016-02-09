@@ -1,19 +1,16 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 # In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
+# granted to it by virtue of its status as an intergovernmental organisation
+# nor does it submit to any jurisdiction.
 
-set( CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE STRING "Release C compiler flags" FORCE )
-set( CMAKE_C_FLAGS_BIT "-O2 -DNDEBUG -DHELLO" CACHE STRING "Bit-reproducible C compiler flags" FORCE )
-set( CMAKE_C_FLAGS_DEBUG "-O0 -g -ftrapv" CACHE STRING "Debug C compiler flags" FORCE )
-set( CMAKE_C_FLAGS_PRODUCTION "-O2 -g" CACHE STRING "Flags used by the C compiler during Production builds." FORCE )
-set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g" CACHE STRING "Flags used by the C compiler during RelWithDebInfo builds." FORCE )
-
-set( CMAKE_C_LINK_FLAGS "" CACHE STRING "" FORCE )
-
+set( CMAKE_C_FLAGS_RELEASE        "-O3 -DNDEBUG"                       CACHE STRING "C compiler flags for Release builds"          FORCE )
+set( CMAKE_C_FLAGS_BIT            "-g -O2 -m64 -march=native -DNDEBUG" CACHE STRING "C compiler flags for Bit-reproducible builds" FORCE )
+set( CMAKE_C_FLAGS_DEBUG          "-O0 -g -ftrapv"                     CACHE STRING "C compiler flags for Debug builds"            FORCE )
+set( CMAKE_C_FLAGS_PRODUCTION     "-O2 -g"                             CACHE STRING "C compiler flags for Production builds."      FORCE )
+set( CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g"                             CACHE STRING "C compiler flags for RelWithDebInfo builds."  FORCE )
 
 # NOTE: gcc does not guarrante that -O3 performs better than -O2
 #       -- it can perform worse due to assembly code bloating.
