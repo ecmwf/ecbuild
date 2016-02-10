@@ -131,47 +131,44 @@ function( ecbuild_find_python )
                             ERROR_QUIET)
 
             execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --includes
-                            OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
+                            OUTPUT_VARIABLE PYTHON_INCLUDE_DIRS
                             OUTPUT_STRIP_TRAILING_WHITESPACE
                             ERROR_QUIET)
 
-            string(REGEX REPLACE "^[-I]" "" PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
-            string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
+            string(REGEX REPLACE "^[-I]" "" PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_DIRS}")
+            string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_DIRS}")
 
-            separate_arguments(PYTHON_INCLUDE_DIR)
+            separate_arguments(PYTHON_INCLUDE_DIRS)
 
         else() # revert to finding pythonlibs the standard way (cmake macro)
             ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package(PythonLibs)" )
 
             find_package(PythonLibs)
-            if( PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIR )
-                set(PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}")
+            if( PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIRS )
+              set(PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_PATH}")
             endif()
 
         endif()
 
         # Remove duplicate include directories
-        list(REMOVE_DUPLICATES PYTHON_INCLUDE_DIR)
+        list(REMOVE_DUPLICATES PYTHON_INCLUDE_DIRS)
 
 
-        if( PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIR )
+        if( PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIRS )
             # Test if we can link against the Python libraries and include Python.h
             try_compile( PYTHON_LIBS_WORKING ${CMAKE_CURRENT_BINARY_DIR}
                          ${__test_python}
-                         CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIR}"
+                         CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIRS}"
                          LINK_LIBRARIES ${PYTHON_LIBRARIES} )
 
             # set output variables
 
             find_package_handle_standard_args( PythonLibs DEFAULT_MSG
-                                               PYTHON_INCLUDE_DIR PYTHON_LIBRARIES PYTHON_LIBS_WORKING )
-            ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR}" )
+                                               PYTHON_INCLUDE_DIRS PYTHON_LIBRARIES PYTHON_LIBS_WORKING )
+            ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIRS=${PYTHON_INCLUDE_DIRS}" )
             ecbuild_debug( "ecbuild_find_python: PYTHON_LIBRARIES=${PYTHON_LIBRARIES}" )
 
         endif()
-
-        set( PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIR} )
-        set( PYTHON_INCLUDE_PATH ${PYTHON_INCLUDE_DIR} )
 
         # Also set PYTHON_FOUND and Python_FOUND for compatibility with ecbuild_add_option
         if( PYTHONLIBS_FOUND )
