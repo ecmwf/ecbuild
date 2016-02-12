@@ -145,13 +145,14 @@ macro( ecbuild_add_test )
 
   # Check for MPI
   if(_PAR_MPI)
-    if( (_PAR_MPI GREATER 1) AND ( (NOT HAVE_MPI) OR (NOT MPIEXEC) ) )
+    if( (_PAR_MPI GREATER 1) AND ( (NOT MPI_FOUND) OR (NOT MPIEXEC) ) )
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${_PAR_MPI} MPI ranks requested but MPI not available - disabling test")
       set( _PAR_ENABLED 0 )
-    endif()
-    if( (_PAR_MPI EQUAL 1) AND (NOT HAVE_MPI) )
+    elseif( (_PAR_MPI EQUAL 1) AND (NOT MPI_FOUND) )
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): 1 MPI rank requested but MPI not available - disabling MPI")
       set( _PAR_MPI 0 )
+    else()
+      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): Running using ${_PAR_MPI} MPI rank(s)")
     endif()
   endif()
 
