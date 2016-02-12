@@ -6,8 +6,8 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-# -emf activates .mods and uses lower case -rmoid produces a listing file
-set( CMAKE_Fortran_FLAGS_ALL            "-emf -rmoid"                                                                          CACHE STRING "Common flags for all build-types"      FORCE )
+# -emf activates .mods and uses lower case
+set( CMAKE_Fortran_FLAGS_ALL            "-emf"                                                                                 CACHE STRING "Common flags for all build-types"      FORCE )
 set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_ALL} -O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG"                    CACHE STRING "Release Fortran flags"                 FORCE )
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_ALL} -O2 -hfp1 -Gfast -DNDEBUG"                                 CACHE STRING "Release-with-debug-info Fortran flags" FORCE )
 set( CMAKE_Fortran_FLAGS_PRODUCTION     "${CMAKE_Fortran_FLAGS_ALL} -O2 -hfp1 -G2"                                             CACHE STRING "Production Fortran flags"              FORCE )
