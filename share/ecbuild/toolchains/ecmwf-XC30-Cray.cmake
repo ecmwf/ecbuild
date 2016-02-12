@@ -33,6 +33,13 @@ set( OMPSTUBS_CXX_FLAGS      "-hnoomp" )
 set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
 
 ####################################################################
+# Fortran FLAGS
+####################################################################
+
+# -emf activates .mods and uses lower case -rmoid produces a listing file
+set( ECBUILD_Fortran_FLAGS   "-emf -rmoid" )
+
+####################################################################
 # LINK FLAGS
 ####################################################################
 
