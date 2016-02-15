@@ -13,10 +13,6 @@ CMAKE_FORCE_C_COMPILER       ( cc  Cray )
 CMAKE_FORCE_CXX_COMPILER     ( CC  Cray )
 CMAKE_FORCE_Fortran_COMPILER ( ftn Cray )
 
-link_libraries("$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so")
-#link_libraries("$ENV{MPICH_DIR}/lib/libmpichf90_cray.so")
-#link_libraries("$ENV{MPICH_DIR}/lib/libmpichcxx_cray.so")
-
 set( ECBUILD_FIND_MPI OFF )
 set( ECBUILD_TRUST_FLAGS ON )
 
