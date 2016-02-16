@@ -382,7 +382,10 @@ macro( ecbuild_add_test )
 
     # define the arguments
     set( TEST_ARGS "" )
-    if( DEFINED _PAR_ARGS  )
+    # Boost Unit Test >= 1.60 requires arguments to be passed to the application to be separated by --
+    if( DEFINED _PAR_ARGS AND _PAR_BOOST )
+      list( APPEND TEST_ARGS "--" ${_PAR_ARGS} )
+    elseif( DEFINED _PAR_ARGS )
       list( APPEND TEST_ARGS ${_PAR_ARGS} )
     endif()
 
