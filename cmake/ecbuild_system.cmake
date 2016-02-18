@@ -222,7 +222,9 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     if( ECBUILD_CONFIG )
       include( ${ECBUILD_CONFIG} )
     endif()
+
     ecbuild_prepare_cache()
+
     include( ecbuild_define_options )               # define build options
     include( ecbuild_compiler_flags )               # compiler flags
     include( ecbuild_check_compiler )               # check for compiler characteristics
@@ -237,7 +239,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     ecbuild_flush_cache()
 
     ############################################################################################
-    # define the build timestamp
+    # define the build timestamp, unless the user provided one via EC_BUILD_TIMESTAMP
 
     if( NOT DEFINED EC_BUILD_TIMESTAMP )
         ecbuild_get_timestamp( EC_BUILD_TIMESTAMP )

@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2015 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -46,3 +46,7 @@ option( ECBUILD_USE_INCLUDE_DIRECTORIES "Forces to use global include_directorie
 mark_as_advanced( ECBUILD_USE_INCLUDE_DIRECTORIES )
 
 set( CMAKE_NO_SYSTEM_FROM_IMPORTED ON )
+
+# hide some CMake options from CMake UI
+
+mark_as_advanced( CMAKE_OSX_ARCHITECTURES CMAKE_OSX_DEPLOYMENT_TARGET CMAKE_OSX_SYSROOT )

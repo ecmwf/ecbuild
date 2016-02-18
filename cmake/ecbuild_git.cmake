@@ -8,6 +8,8 @@
 
 set( ECBUILD_GIT  ON  CACHE BOOL "Turn on/off ecbuild_git() function" )
 
+mark_as_advanced(ECBUILD_GIT)
+
 if( ECBUILD_GIT )
 
   find_package(Git)

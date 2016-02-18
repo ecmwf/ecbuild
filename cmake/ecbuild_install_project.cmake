@@ -170,6 +170,8 @@ macro( ecbuild_install_project )
                PATHS ${ECBUILD_MACROS_DIR}/../toolchains
                      ${ECBUILD_MACROS_DIR}/../share/ecbuild/toolchains )
 
+    mark_as_advanced( ECBUILD_TOOLCHAIN_DIR )
+
     if( ECBUILD_TOOLCHAIN_DIR )
       list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES "${ECBUILD_TOOLCHAIN_DIR}" "share/ecbuild/toolchains/" )
     endif()
@@ -178,6 +180,8 @@ macro( ecbuild_install_project )
     find_program( ECBUILD_SCRIPT ecbuild
                   PATHS ${ECBUILD_MACROS_DIR}/../bin
                         ${ECBUILD_MACROS_DIR}/../../../bin )
+
+    mark_as_advanced( ECBUILD_SCRIPT )
 
     if( ECBUILD_SCRIPT )
       get_filename_component( ECBUILD_BIN_DIR ${ECBUILD_SCRIPT} PATH )
@@ -333,7 +337,7 @@ macro( ecbuild_install_project )
                 set( __import_file "${${TPL}_IMPORT_FILE}" )
                 file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_IMPORT_FILE )\n" )
                 file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
-                file( APPEND "${_lname_config}.tpls.in" "endif()\n" )            
+                file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
 
             elseif( ${TPL}_CONFIG ) # cmake built packages (e.g. CGAL) may have exported their targets
 
