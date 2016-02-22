@@ -44,7 +44,8 @@ set( ECBUILD_Fortran_FLAGS_BIT  "-O2 -xAVX -finline-function -finline-limit=500 
 
 set( ECBUILD_C_FLAGS_DEBUG        "-O0 -g -traceback -fp-trap=common" )
 set( ECBUILD_CXX_FLAGS_DEBUG      "-O0 -g -traceback -fp-trap=common" )
-set( ECBUILD_Fortran_FLAGS_DEBUG  "-O0 -g -check bounds -traceback -warn all -heap-arrays -fpe-all=0 -fpe:0 -check all" )
+# -check all implies -check bounds
+set( ECBUILD_Fortran_FLAGS_DEBUG  "-O0 -g -traceback -warn all -heap-arrays -fpe-all=0 -fpe:0 -check all" )
 
 ####################################################################
 # LINK FLAGS
