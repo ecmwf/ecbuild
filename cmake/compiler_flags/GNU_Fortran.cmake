@@ -9,7 +9,7 @@
 set( CMAKE_Fortran_FLAGS_ALL            "-ffree-line-length-none"                                                                                                    CACHE STRING "Fortran compiler flags common to all build types"   FORCE )
 set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_ALL} -O3 -funroll-all-loops -finline-functions"                                                       CACHE STRING "Fortran compiler flags for Release builds"          FORCE )
 set( CMAKE_Fortran_FLAGS_BIT            "${CMAKE_Fortran_FLAGS_ALL} -g -O2 -m64 -march=native -DNDEBUG -fno-range-check -ffree-line-length-300 -fconvert=big-endian" CACHE STRING "Fortran compiler flags for Bit-reproducible builds" FORCE )
-set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_ALL} -O0 -g -fcheck=bounds -fbacktrace -finit-real=snan -ffpe-trap=invalid,zero,overflow"             CACHE STRING "Fortran compiler flags for Debug builds"            FORCE )
+set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_ALL} -O0 -g -fcheck=bounds -fbacktrace -finit-real=snan"                                              CACHE STRING "Fortran compiler flags for Debug builds"            FORCE )
 set( CMAKE_Fortran_FLAGS_PRODUCTION     "${CMAKE_Fortran_FLAGS_ALL} -O2 -g"                                                                                          CACHE STRING "Fortran compiler flags for Production builds."      FORCE )
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_ALL} -O2 -g"                                                                                          CACHE STRING "Fortran compiler flags for RelWithDebInfo builds."  FORCE )
 
