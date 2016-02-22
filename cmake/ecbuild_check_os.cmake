@@ -29,7 +29,10 @@ endif()
 ############################################################################################
 # For 64 bit architectures enable PIC (position-independent code)
 
-if( ${EC_OS_BITS} EQUAL 64 )
+# Allow overriding the position independent code setting (ECBUILD-220)
+if( DEFINED ECUILD_POSITION_INDEPENDENT_CODE )
+  set( CMAKE_POSITION_INDEPENDENT_CODE ${ECUILD_POSITION_INDEPENDENT_CODE} )
+elseif( ${EC_OS_BITS} EQUAL 64 )
   set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 endif()
 
