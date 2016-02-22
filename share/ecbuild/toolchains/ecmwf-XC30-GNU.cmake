@@ -25,6 +25,14 @@ set( OMP_CXX_FLAGS           "-fopenmp" )
 set( OMP_Fortran_FLAGS       "-fopenmp" )
 
 ####################################################################
+# DEBUG FLAGS
+####################################################################
+
+set( ECBUILD_C_FLAGS_DEBUG        "-O0 -g -ftrapv" )
+set( ECBUILD_CXX_FLAGS_DEBUG      "-O0 -g -ftrapv" )
+set( ECBUILD_Fortran_FLAGS_DEBUG  "-ffree-line-length-none -O0 -g -fcheck=bounds -fbacktrace -finit-real=snan -ffpe-trap=invalid,zero,overflow" )
+
+####################################################################
 # LINK FLAGS
 ####################################################################
 
