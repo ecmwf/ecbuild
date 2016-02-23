@@ -248,7 +248,9 @@ macro( ecbuild_install_project )
 
         # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)
 
-        set( PACKAGE_VERSION "${${PNAME}_VERSION}" )
+        set( PACKAGE_VERSION        "${${PNAME}_VERSION}" )
+        set( PACKAGE_GIT_SHA1       "${${PNAME}_GIT_SHA1}" )
+        set( PACKAGE_GIT_SHA1_SHORT "${${PNAME}_GIT_SHA1_SHORT}" )
 
         configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
 
