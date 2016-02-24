@@ -444,7 +444,7 @@ function( ecbuild_add_library_impl )
       #            endif()
 
       install( TARGETS ${_PAR_TARGET}
-        EXPORT  ${CMAKE_PROJECT_NAME}-targets
+        EXPORT  ${PROJECT_NAME}-targets
         RUNTIME DESTINATION ${INSTALL_BIN_DIR}
         LIBRARY DESTINATION ${INSTALL_LIB_DIR}
         ARCHIVE DESTINATION ${INSTALL_LIB_DIR} )

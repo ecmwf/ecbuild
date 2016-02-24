@@ -389,7 +389,8 @@ macro( ecbuild_install_project )
         # install the export
 
         if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
-            install( EXPORT ${CMAKE_PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
+            install( EXPORT ${PROJECT_NAME}-targets
+                     DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
 
     endif()  # if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
