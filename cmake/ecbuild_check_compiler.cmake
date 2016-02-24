@@ -123,6 +123,10 @@ if( CMAKE_COMPILER_IS_GNUCXX )
 
 endif()
 
+if( ENABLE_WARNINGS AND CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
+  ecbuild_add_fortran_flags("-warn all")
+endif()
+
 ############################################################################################
 # compiler dependent fixes
 
