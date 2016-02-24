@@ -33,7 +33,7 @@
 # the project with cpack and exports the configuration and targets for other
 # projects to use.
 #
-# In a top-level project, the following files are generated:
+# Unless ECBUILD_SKIP_<PNAME>_EXPORT is set, the following files are generated:
 #
 # :<project>-config.cmake:         default project configuration
 # :<project>-config-version.cmake: project version number
@@ -49,7 +49,7 @@
 # and ``<project>-config-version.cmake``.
 #
 # In DEVELOPER_MODE, the build tree location is also added to the CMake user
-# package registry.
+# package registry for top level projects.
 #
 # If the project is added as a subdirectory, the following CMake variables
 # are set in the parent scope:
