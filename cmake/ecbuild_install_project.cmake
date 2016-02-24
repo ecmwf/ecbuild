@@ -235,6 +235,7 @@ macro( ecbuild_install_project )
 
     # Generate the project .cmake config files
     # All variables here must be (sub)project specific in order to work within bundles
+    if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
 
         set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
         if( EXISTS ${LNAME}-config.cmake.in )
@@ -390,6 +391,8 @@ macro( ecbuild_install_project )
         if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
             install( EXPORT ${CMAKE_PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
+
+    endif()  # if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
 
     # exports the package for use from the build-tree but only in DEVELOPER_MODE
     # inserts <package> into the CMake user package registry
