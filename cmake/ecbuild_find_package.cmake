@@ -157,9 +157,9 @@ macro( ecbuild_find_package )
     set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
   endif()
 
-  # Find packages quietly unless in DEVELOPER_MODE, LOG_LEVEL is DEBUG or the package is REQUIRED
+  # Find packages quietly unless in DEVELOPER_MODE or LOG_LEVEL is DEBUG
 
-  if( NOT ( DEVELOPER_MODE OR _PAR_REQUIRED ) AND ( ECBUILD_LOG_LEVEL GREATER ${ECBUILD_DEBUG} ) )
+  if( NOT DEVELOPER_MODE AND ( ECBUILD_LOG_LEVEL GREATER ${ECBUILD_DEBUG} ) )
     set( _find_quiet QUIET )
   endif()
 
