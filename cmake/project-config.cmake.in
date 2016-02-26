@@ -64,6 +64,10 @@ if( EXISTS ${@PNAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@ )
   include( ${@PNAME@_IMPORT_FILE} )
 endif()
 
+# here goes the imports of the TPL's
+
+include( ${CMAKE_CURRENT_LIST_FILE}.tpls OPTIONAL )
+
 # insert definitions for IMPORTED targets
 
 if( NOT @PROJECT_NAME@_BINARY_DIR )
@@ -75,10 +79,6 @@ if( NOT @PROJECT_NAME@_BINARY_DIR )
   endif()
 
 endif()
-
-# here goes the imports of the TPL's
-
-include( ${CMAKE_CURRENT_LIST_FILE}.tpls OPTIONAL )
 
 # publish this file as imported
 
