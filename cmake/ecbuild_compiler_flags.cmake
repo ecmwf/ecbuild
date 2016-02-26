@@ -1,10 +1,37 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 # In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
+
+##############################################################################
+#.rst:
+#
+# ecbuild_compiler_flags
+# ======================
+#
+# Set default compiler flags for a given language. ::
+#
+#   ecbuild_compiler_flags( <lang> )
+#
+# The procedure is as follows:
+#
+# 1.  ecBuild does *not* set ``CMAKE_<lang>_FLAGS`` i.e. the user can set these
+#     via -D or the CMake cache and these will be the "base" flags.
+#
+# 2.  ecBuild *overwrites* ``CMAKE_<lang>_FLAGS_<btype>`` in the CMake cache
+#     for all build types with compiler specific defaults for the currently
+#     loaded compiler i.e. any value set by the user via -D or the CMake cache
+#     *has no effect*.
+#
+# 3.  Any value the user provides via ``ECBUILD_<lang>_FLAGS`` or
+#     ``ECBUILD_<lang>_FLAGS_<btype>`` *overrides* the corresponding
+#     ``CMAKE_<lang>_FLAGS`` or ``CMAKE_<lang>_FLAGS_<btype>`` *without being
+#     written to the CMake cache*.
+#
+##############################################################################
 
 macro( ecbuild_compiler_flags _lang )
 
