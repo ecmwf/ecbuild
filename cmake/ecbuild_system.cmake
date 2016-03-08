@@ -97,7 +97,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     enable_testing()
 
     # keep this until we modify the meaning to 'check' if installation worked
-    add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} -V )
+    add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
 
     ############################################################################################
     # define valid build types
