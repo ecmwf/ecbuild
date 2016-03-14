@@ -77,14 +77,23 @@ if( FFTW_FIND_COMPONENTS )
   ecbuild_debug( "FindFFTW: looking for components: ${FFTW_FIND_COMPONENTS}" )
   foreach( _component ${FFTW_FIND_COMPONENTS} )
     if( _component MATCHES "single" )
+      ecbuild_debug( "FindFFTW: looking for single precision (fftw3f)" )
       set( _require_sp TRUE )
+    elseif( _component MATCHES "double" )
+      ecbuild_debug( "FindFFTW: looking for double precision (fftw3)" )
+      set( _require_dp TRUE )
     elseif( _component MATCHES "long_double" )
+      ecbuild_debug( "FindFFTW: looking for long double precision (fftw3l)" )
       set( _require_lp TRUE )
     elseif( _component MATCHES "quad" )
+      ecbuild_debug( "FindFFTW: looking for quad precision (fftw3q)" )
       set( _require_qp TRUE )
     else()
     endif()
   endforeach()
+else()
+  ecbuild_debug( "FindFFTW: no components specified, looking for double precision (fftw3)" )
+  set( _require_dp TRUE )
 endif()
 
 if( FFTW_ROOT )
@@ -97,13 +106,16 @@ else()
 endif()
 
 #find libs
-find_library(
-  FFTW_LIB
-  NAMES "fftw3"
-  PATHS ${_lib_paths}
-  PATH_SUFFIXES "lib" "lib64"
-  ${_default_paths}
-)
+
+if( _require_dp )
+  find_library(
+    FFTW_LIB
+    NAMES "fftw3"
+    PATHS ${_lib_paths}
+    PATH_SUFFIXES "lib" "lib64"
+    ${_default_paths}
+  )
+endif()
 
 if( _require_sp )
   find_library(
@@ -132,6 +144,7 @@ if( _require_lp )
 endif()
 
 #find includes
+
 find_path(
   FFTW_INCLUDES
   NAMES "fftw3.h"
