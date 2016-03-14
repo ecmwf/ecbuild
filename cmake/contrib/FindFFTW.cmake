@@ -152,6 +152,9 @@ if( _require_dp )
     PATH_SUFFIXES "lib" "lib64"
     ${_default_paths}
   )
+  if( NOT FFTW_LIB )
+    ecbuild_warn("FindFFTW: double precision required, but fftw3 was not found")
+  endif()
 endif()
 
 if( _require_sp )
@@ -176,7 +179,20 @@ if( _require_lp )
     ${_default_paths}
   )
   if( NOT FFTWL_LIB )
-    ecbuild_warn("FindFFTW: single precision required, but fftw3l was not found")
+    ecbuild_warn("FindFFTW: long double precision required, but fftw3l was not found")
+  endif()
+endif()
+
+if( _require_qp )
+  find_library(
+    FFTWQ_LIB
+    NAMES "fftw3q"
+    PATHS ${_lib_paths}
+    PATH_SUFFIXES "lib" "lib64"
+    ${_default_paths}
+  )
+  if( NOT FFTWQ_LIB )
+    ecbuild_warn("FindFFTW: quad precision required, but fftw3q was not found")
   endif()
 endif()
 
@@ -190,7 +206,7 @@ find_path(
   ${_default_paths}
 )
 
-set(FFTW_LIBRARIES ${FFTW_LIB} ${FFTWF_LIB} ${FFTWL_LIB})
+set(FFTW_LIBRARIES ${FFTW_LIB} ${FFTWF_LIB} ${FFTWL_LIB} ${FFTWQ_LIB})
 
 set( CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_SAV} )
 
