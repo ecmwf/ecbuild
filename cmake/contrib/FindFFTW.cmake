@@ -1,7 +1,8 @@
 # - Find the FFTW library
 #
 # Usage:
-#   find_package(FFTW [REQUIRED] [QUIET] )
+#   find_package(FFTW [REQUIRED] [QUIET]
+#                [COMPONENTS [single] [long_double] [quad]])
 #     
 # It sets the following variables:
 #   FFTW_FOUND               ... true if fftw is found on the system
@@ -72,6 +73,20 @@ else()
   set( CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_LIBRARY_SUFFIX} )
 endif()
 
+if( FFTW_FIND_COMPONENTS )
+  ecbuild_debug( "FindFFTW: looking for components: ${FFTW_FIND_COMPONENTS}" )
+  foreach( _component ${FFTW_FIND_COMPONENTS} )
+    if( _component MATCHES "single" )
+      set( _require_sp TRUE )
+    elseif( _component MATCHES "long_double" )
+      set( _require_lp TRUE )
+    elseif( _component MATCHES "quad" )
+      set( _require_qp TRUE )
+    else()
+    endif()
+  endforeach()
+endif()
+
 if( FFTW_ROOT )
   set( _default_paths NO_DEFAULT_PATH )
   set( _lib_paths ${FFTW_ROOT} )
@@ -90,21 +105,31 @@ find_library(
   ${_default_paths}
 )
 
-find_library(
-  FFTWF_LIB
-  NAMES "fftw3f"
-  PATHS ${_lib_paths}
-  PATH_SUFFIXES "lib" "lib64"
-  ${_default_paths}
-)
+if( _require_sp )
+  find_library(
+    FFTWF_LIB
+    NAMES "fftw3f"
+    PATHS ${_lib_paths}
+    PATH_SUFFIXES "lib" "lib64"
+    ${_default_paths}
+  )
+  if( NOT FFTWF_LIB )
+    ecbuild_warn("FindFFTW: single precision required, but fftw3f was not found")
+  endif()
+endif()
 
-find_library(
-  FFTWL_LIB
-  NAMES "fftw3l"
-  PATHS ${_lib_paths}
-  PATH_SUFFIXES "lib" "lib64"
-  ${_default_paths}
-)
+if( _require_lp )
+  find_library(
+    FFTWL_LIB
+    NAMES "fftw3l"
+    PATHS ${_lib_paths}
+    PATH_SUFFIXES "lib" "lib64"
+    ${_default_paths}
+  )
+  if( NOT FFTWL_LIB )
+    ecbuild_warn("FindFFTW: single precision required, but fftw3l was not found")
+  endif()
+endif()
 
 #find includes
 find_path(
@@ -115,11 +140,7 @@ find_path(
   ${_default_paths}
 )
 
-set(FFTW_LIBRARIES ${FFTW_LIB} ${FFTWF_LIB})
-
-if(FFTWL_LIB)
-  set(FFTW_LIBRARIES ${FFTW_LIBRARIES} ${FFTWL_LIB})
-endif()
+set(FFTW_LIBRARIES ${FFTW_LIB} ${FFTWF_LIB} ${FFTWL_LIB})
 
 set( CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_SAV} )
 
