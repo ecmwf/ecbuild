@@ -73,69 +73,47 @@ else()
 endif()
 
 if( FFTW_ROOT )
-
-  #find libs
-  find_library(
-    FFTW_LIB
-    NAMES "fftw3"
-    PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
-  )
-
-  find_library(
-    FFTWF_LIB
-    NAMES "fftw3f"
-    PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
-  )
-
-  find_library(
-    FFTWL_LIB
-    NAMES "fftw3l"
-    PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "lib" "lib64"
-    NO_DEFAULT_PATH
-  )
-
-  #find includes
-  find_path(
-    FFTW_INCLUDES
-    NAMES "fftw3.h"
-    PATHS ${FFTW_ROOT}
-    PATH_SUFFIXES "include"
-    NO_DEFAULT_PATH
-  )
-
+  set( _default_paths NO_DEFAULT_PATH )
+  set( _lib_paths ${FFTW_ROOT} )
+  set( _include_paths ${FFTW_ROOT} )
 else()
+  set( _lib_paths ${PKG_FFTW_LIBRARY_DIRS} ${LIB_INSTALL_DIR} )
+  set( _include_paths ${PKG_FFTW_INCLUDE_DIRS} ${INCLUDE_INSTALL_DIR} )
+endif()
 
-  find_library(
-    FFTW_LIB
-    NAMES "fftw3"
-    PATHS ${PKG_FFTW_LIBRARY_DIRS} ${LIB_INSTALL_DIR}
-  )
+#find libs
+find_library(
+  FFTW_LIB
+  NAMES "fftw3"
+  PATHS ${_lib_paths}
+  PATH_SUFFIXES "lib" "lib64"
+  ${_default_paths}
+)
 
-  find_library(
-    FFTWF_LIB
-    NAMES "fftw3f"
-    PATHS ${PKG_FFTW_LIBRARY_DIRS} ${LIB_INSTALL_DIR}
-  )
+find_library(
+  FFTWF_LIB
+  NAMES "fftw3f"
+  PATHS ${_lib_paths}
+  PATH_SUFFIXES "lib" "lib64"
+  ${_default_paths}
+)
 
+find_library(
+  FFTWL_LIB
+  NAMES "fftw3l"
+  PATHS ${_lib_paths}
+  PATH_SUFFIXES "lib" "lib64"
+  ${_default_paths}
+)
 
-  find_library(
-    FFTWL_LIB
-    NAMES "fftw3l"
-    PATHS ${PKG_FFTW_LIBRARY_DIRS} ${LIB_INSTALL_DIR}
-  )
-
-  find_path(
-    FFTW_INCLUDES
-    NAMES "fftw3.h"
-    PATHS ${PKG_FFTW_INCLUDE_DIRS} ${INCLUDE_INSTALL_DIR}
-  )
-
-endif( FFTW_ROOT )
+#find includes
+find_path(
+  FFTW_INCLUDES
+  NAMES "fftw3.h"
+  PATHS ${_include_paths}
+  PATH_SUFFIXES "include"
+  ${_default_paths}
+)
 
 set(FFTW_LIBRARIES ${FFTW_LIB} ${FFTWF_LIB})
 
