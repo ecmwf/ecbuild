@@ -2,7 +2,18 @@
 #
 # Usage:
 #   find_package(FFTW [REQUIRED] [QUIET]
-#                [COMPONENTS [single] [long_double] [quad]])
+#                [COMPONENTS [single] [double] [long_double] [quad]])
+#
+# By default, search for the double precision library fftw3
+#
+# If a different version or multiple versions of the libraryr are required,
+# these need to be specified as COMPONENTS. Note that double must be given
+# explicitly if any COMPONENTS are specified:
+#
+#   single: fftw3f
+#   double: fftw3
+#   long_double: fftw3l
+#   quad: fftw3q
 #     
 # It sets the following variables:
 #   FFTW_FOUND               ... true if fftw is found on the system
