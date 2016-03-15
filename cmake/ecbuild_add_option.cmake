@@ -43,15 +43,21 @@
 # REQUIRED_PACKAGES : optional
 #   list of packages required to be found for this feature to be enabled
 #
-#   The package specification can be either ::
+#   The package specification can have one of two forms. Either ::
 #
-#     <package> [ <version> ... ]
+#     "<package> [ <version> ... ]"
 #
-#   to search for a given package with option minimum required version or ::
+#   to search for a given package using the CMake ``find_package`` mechanism.
+#   The entire specification must be enclosed in quotes and is passed on
+#   verbatim. Any options of ``find_package`` are supported.
 #
-#     PROJECT <name> [ VERSION <version> ... ]
+#   The other specification must start with ``PROJECT`` like this ::
 #
-#   to search for an ecBuild project with optional minimum required version.
+#     "PROJECT <name> [ VERSION <version> ... ]"
+#
+#   and is used to search for an ecBuild project via ``ecbuild_use_package``.
+#   The entire specification must be enclosed in quotes and is passed on
+#   verbatim. Any options of ``ecbuild_use_package`` are supported.
 #
 # CONDITION : optional
 #   conditional expression which must evaluate to true for this option to be
