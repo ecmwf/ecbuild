@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -18,12 +18,12 @@ find_package(PkgConfig)
 
 pkg_check_modules(PC_LIBPANGOCAIRO QUIET pangocairo)
 
-#debug_var( PC_LIBPANGOCAIRO_FOUND )
-#debug_var( PC_LIBPANGOCAIRO_VERSION )
-#debug_var( PC_LIBPANGOCAIRO_LIBRARIES )
-#debug_var( PC_LIBPANGOCAIRO_LDFLAGS )
-#debug_var( PC_LIBPANGOCAIRO_LDFLAGS_OTHER )
-#debug_var( PC_LIBPANGOCAIRO_INCLUDE_DIRS )
+#ecbuild_debug_var( PC_LIBPANGOCAIRO_FOUND )
+#ecbuild_debug_var( PC_LIBPANGOCAIRO_VERSION )
+#ecbuild_debug_var( PC_LIBPANGOCAIRO_LIBRARIES )
+#ecbuild_debug_var( PC_LIBPANGOCAIRO_LDFLAGS )
+#ecbuild_debug_var( PC_LIBPANGOCAIRO_LDFLAGS_OTHER )
+#ecbuild_debug_var( PC_LIBPANGOCAIRO_INCLUDE_DIRS )
 
 if(PC_LIBPANGOCAIRO_FOUND)
 

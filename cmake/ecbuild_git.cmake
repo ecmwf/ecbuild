@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -7,6 +7,8 @@
 # nor does it submit to any jurisdiction.
 
 set( ECBUILD_GIT  ON  CACHE BOOL "Turn on/off ecbuild_git() function" )
+
+mark_as_advanced(ECBUILD_GIT)
 
 if( ECBUILD_GIT )
 
@@ -106,7 +108,7 @@ macro( ecbuild_git )
         RESULT_VARIABLE nok ERROR_VARIABLE error
         WORKING_DIRECTORY "${PARENT_DIR}")
       if(nok)
-        message(FATAL_ERROR "${_PAR_DIR} git clone failed: ${error}\n")
+        message(FATAL_ERROR "${_PAR_DIR} git clone failed:\n  ${GIT_EXECUTABLE} clone ${_PAR_URL} ${clone_args} ${_PAR_DIR} -q\n  ${error}\n")
       endif()
       message( STATUS "${_PAR_DIR} retrieved.")
       set( _needs_switch 1 )
@@ -133,7 +135,6 @@ macro( ecbuild_git )
         message(STATUS "git rev-parse --abbrev-ref HEAD on ${_PAR_DIR} failed:\n ${error}")
       endif()
 
-      #message(STATUS "git describe --exact-match --abbrev=0 @ ${ABS_PAR_DIR}")
       execute_process( COMMAND ${GIT_EXECUTABLE} describe --exact-match --abbrev=0
                        OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error
                        OUTPUT_STRIP_TRAILING_WHITESPACE  ERROR_STRIP_TRAILING_WHITESPACE
@@ -148,7 +149,6 @@ macro( ecbuild_git )
       endif()
 
       if( NOT _current_tag ) # try nother method
-        #message(STATUS "git name-rev --tags --name-only @ ${ABS_PAR_DIR}")
         execute_process( COMMAND ${GIT_EXECUTABLE} name-rev --tags --name-only ${_sha1}
                          OUTPUT_VARIABLE _current_tag RESULT_VARIABLE nok ERROR_VARIABLE error
                          OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -231,7 +231,7 @@ macro( ecbuild_git )
                        RESULT_VARIABLE nok ERROR_VARIABLE error
                        WORKING_DIRECTORY "${ABS_PAR_DIR}")
       if(nok)
-        message(FATAL_ERROR "git checkout ${_gitref} on ${_PAR_DIR} failed:\n ${error}")
+        message(FATAL_ERROR "git checkout ${_gitref} on ${_PAR_DIR} failed:\n  ${GIT_EXECUTABLE} checkout -q ${_gitref}\n  ${error}")
       endif()
 
       if( DEFINED _PAR_BRANCH AND _PAR_UPDATE ) #############################################################################

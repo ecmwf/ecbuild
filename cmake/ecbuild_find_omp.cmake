@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -206,17 +206,24 @@ endmacro( ecbuild_find_omp )
 
 macro( ecbuild_enable_omp )
 
+  ecbuild_debug("ecbuild_enable_omp: Trying to enable OpenMP")
   ecbuild_find_omp( COMPONENTS C CXX Fortran )
 
+  ecbuild_debug_var("OMP_C_FOUND")
   if( OMP_C_FOUND )
+    ecbuild_debug("Adding ${OMP_C_FLAGS} to CMAKE_C_FLAGS")
     set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OMP_C_FLAGS}" )
   endif()
 
+  ecbuild_debug_var("OMP_CXX_FOUND")
   if( OMP_CXX_FOUND )
+    ecbuild_debug("Adding ${OMP_CXX_FLAGS} to CMAKE_CXX_FLAGS")
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OMP_CXX_FLAGS}" )
   endif()
 
+  ecbuild_debug_var("OMP_Fortran_FOUND")
   if( OMP_Fortran_FOUND )
+    ecbuild_debug("Adding ${OMP_Fortran_FLAGS} to CMAKE_Fortran_FLAGS")
     set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OMP_Fortran_FLAGS}" )
   endif()
 

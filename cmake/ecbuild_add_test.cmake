@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,6 +16,7 @@
 #
 #   ecbuild_add_test( [ TARGET <name> ]
 #                     [ SOURCES <source1> [<source2> ...] ]
+#                     [ OBJECTS <obj1> [<obj2> ...] ]
 #                     [ COMMAND <executable> ]
 #                     [ TYPE EXE|SCRIPT|PYTHON ]
 #                     [ ARGS <argument1> [<argument2> ...] ]
@@ -47,6 +48,9 @@
 #
 # SOURCES : required if TARGET is provided
 #   list of source files to be compiled
+#
+# OBJECTS : optional
+#   list of object libraries to add to this target
 #
 # COMMAND : either TARGET or COMMAND must be provided, unless TYPE is PYTHON
 #   command or script to execute (no executable is built)
@@ -127,7 +131,7 @@ macro( ecbuild_add_test )
 
   set( options           BOOST )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI WORKING_DIRECTORY )
-  set( multi_value_args  SOURCES LIBS INCLUDES TEST_DEPENDS DEPENDS ARGS
+  set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS ARGS
                          PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS
                          CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
@@ -141,13 +145,14 @@ macro( ecbuild_add_test )
 
   # Check for MPI
   if(_PAR_MPI)
-    if( (_PAR_MPI GREATER 1) AND ( (NOT HAVE_MPI) OR (NOT MPIEXEC) ) )
+    if( (_PAR_MPI GREATER 1) AND ( (NOT MPI_FOUND) OR (NOT MPIEXEC) ) )
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${_PAR_MPI} MPI ranks requested but MPI not available - disabling test")
       set( _PAR_ENABLED 0 )
-    endif()
-    if( (_PAR_MPI EQUAL 1) AND (NOT HAVE_MPI) )
+    elseif( (_PAR_MPI EQUAL 1) AND (NOT MPI_FOUND) )
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): 1 MPI rank requested but MPI not available - disabling MPI")
       set( _PAR_MPI 0 )
+    else()
+      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): Running using ${_PAR_MPI} MPI rank(s)")
     endif()
   endif()
 
@@ -266,9 +271,13 @@ macro( ecbuild_add_test )
         endif()
       endif()
 
-      # add the test target
+      # insert already compiled objects (from OBJECT libraries)
+      unset( _all_objects )
+      foreach( _obj ${_PAR_OBJECTS} )
+        list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
+      endforeach()
 
-      add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} )
+      add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
 
       # add extra dependencies
       if( DEFINED _PAR_DEPENDS)
@@ -354,9 +363,6 @@ macro( ecbuild_add_test )
                           PRE_BUILD
                           COMMAND ${CMAKE_COMMAND} -E remove ${EXE_FILENAME} )
 
-      set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
-      set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
-
     endif() # _PAR_SOURCES
 
     if( DEFINED _PAR_COMMAND AND NOT _PAR_TARGET ) # in the absence of target, we use the command as a name
@@ -376,7 +382,10 @@ macro( ecbuild_add_test )
 
     # define the arguments
     set( TEST_ARGS "" )
-    if( DEFINED _PAR_ARGS  )
+    # Boost Unit Test >= 1.60 requires arguments to be passed to the application to be separated by --
+    if( DEFINED _PAR_ARGS AND _PAR_BOOST )
+      list( APPEND TEST_ARGS "--" ${_PAR_ARGS} )
+    elseif( DEFINED _PAR_ARGS )
       list( APPEND TEST_ARGS ${_PAR_ARGS} )
     endif()
 

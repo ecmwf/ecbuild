@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -28,7 +28,7 @@ endif()
 ########################################################################################################
 # ecbuild versioning support
 
-set( ECBUILD_CMAKE_MINIMUM "2.8.4" )
+set( ECBUILD_CMAKE_MINIMUM "2.8.10" )
 if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
     message(FATAL_ERROR "${PROJECT_NAME} requires at least CMake ${ECBUILD_CMAKE_MINIMUM} -- you are using ${CMAKE_COMMAND} [${CMAKE_VERSION}]\n Please, get a newer version of CMake @ www.cmake.org" )
 endif()
@@ -66,6 +66,10 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     message( STATUS "toolchain ${CMAKE_TOOLCHAIN_FILE}" )
     endif()
 
+    if( ECBUILD_CONFIG )
+    message( STATUS "config    ${ECBUILD_CONFIG}" )
+    endif()
+
     if( ECBUILD_CACHE )
     include( ${ECBUILD_CACHE} )
       message( STATUS "cache     ${ECBUILD_CACHE}" )
@@ -93,7 +97,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     enable_testing()
 
     # keep this until we modify the meaning to 'check' if installation worked
-    add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} -V )
+    add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
 
     ############################################################################################
     # define valid build types
@@ -121,19 +125,19 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # include(CMakePrintSystemInformation) # available in cmake 2.8.4
 
     if( CMAKE_CXX_COMPILER_LOADED )
-    include(CheckIncludeFileCXX)
-    include(CheckCXXCompilerFlag)
-    include(CheckCXXSourceCompiles)
-    include(CheckCXXSourceRuns)
+        include(CheckIncludeFileCXX)
+        include(CheckCXXCompilerFlag)
+        include(CheckCXXSourceCompiles)
+        include(CheckCXXSourceRuns)
     endif()
 
     if( CMAKE_Fortran_COMPILER_LOADED )
         set( CMAKE_Fortran_MODULE_DIRECTORY  ${CMAKE_BINARY_DIR}/module CACHE PATH "directory for all fortran modules." )
-    include(CheckFortranFunctionExists)
-    if( CMAKE_C_COMPILER_LOADED AND ENABLE_FORTRAN_C_INTERFACE )
-    include(FortranCInterface)
-    endif()
-    set( EC_HAVE_FORTRAN 1 )
+        include(CheckFortranFunctionExists)
+        if( CMAKE_C_COMPILER_LOADED AND ENABLE_FORTRAN_C_INTERFACE )
+            include(FortranCInterface)
+        endif()
+        set( EC_HAVE_FORTRAN 1 )
     endif()
 
     include(FeatureSummary) # support features in cmake
@@ -144,17 +148,18 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # backport of cmake > 2.8.4 functions
 
     if( "${CMAKE_VERSION}" VERSION_LESS "2.8.6" )
-    include( ${CMAKE_CURRENT_LIST_DIR}/2.8/CMakePushCheckState.cmake )
+        include( ${CMAKE_CURRENT_LIST_DIR}/2.8/CMakePushCheckState.cmake )
     else()
-    include(CMakePushCheckState)
+        include(CMakePushCheckState)
     endif()
 
     ############################################################################################
     # add our macros
 
-    include( ecbuild_debug_var )
     include( ecbuild_log )
     include( ecbuild_list_macros )
+    include( ecbuild_list_add_pattern )
+    include( ecbuild_list_exclude_pattern )
 
     include( ecbuild_check_c_source_return )
     include( ecbuild_check_cxx_source_return )
@@ -167,6 +172,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_generate_config_headers )
     include( ecbuild_generate_rpc )
     include( ecbuild_generate_yy )
+    include( ecbuild_generate_fortran_interfaces )
     include( ecbuild_echo_targets )
     include( ecbuild_features )
     include( ecbuild_add_option )
@@ -202,30 +208,38 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_find_fortranlibs )
     include( ecbuild_git )
     include( ecbuild_enable_fortran )
+    include( ecbuild_source_flags )
     include( ecbuild_bundle )
     include( ecbuild_pkgconfig )
     include( ecbuild_cache )
+    include( ecbuild_remove_fortran_flags )
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
     ############################################################################################
     # kickstart the build system
 
-      ecbuild_prepare_cache()
+    if( ECBUILD_CONFIG )
+      include( ${ECBUILD_CONFIG} )
+    endif()
+
+    ecbuild_prepare_cache()
 
     include( ecbuild_define_options )               # define build options
+    include( ecbuild_compiler_flags )               # compiler flags
     include( ecbuild_check_compiler )               # check for compiler characteristics
     include( ecbuild_check_os )                     # check for os characteristics
     include( ecbuild_check_functions )              # check for available functions
-    include( ecbuild_define_paths )                 # define installation paths
-    include( ecbuild_links_target )                 # define the links target
+    include( ecbuild_define_paths )                 # defines installation paths
+    include( ecbuild_define_libs_and_execs_target ) # defines the top level execs and libs
+    include( ecbuild_define_links_target )          # defines the links target
     include( ecbuild_setup_test_framework )         # setup test framework
     include( ecbuild_define_uninstall )             # define uninstall target
 
     ecbuild_flush_cache()
 
     ############################################################################################
-    # define the build timestamp
+    # define the build timestamp, unless the user provided one via EC_BUILD_TIMESTAMP
 
     if( NOT DEFINED EC_BUILD_TIMESTAMP )
         ecbuild_get_timestamp( EC_BUILD_TIMESTAMP )
@@ -234,5 +248,17 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     message( STATUS "---------------------------------------------------------" )
 
-endif()
+else()
 
+    # Allow subprojects with different compilation flags. This could be done by defining
+    #     set( ECBUILD_C_FLAGS_DEBUG "-O0" )
+    # or
+    #     set( ECBUILD_CONFIG "<subproject-config>.cmake" )
+    if( ECBUILD_CONFIG )
+        message( STATUS "---------------------------------------------------------" )
+        message( STATUS "config    ${ECBUILD_CONFIG}" )
+        include( ${ECBUILD_CONFIG} )
+    endif()
+    include( ecbuild_compiler_flags )
+
+endif()

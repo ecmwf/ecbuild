@@ -1,4 +1,9 @@
 ####################################################################
+# ARCHITECTURE
+####################################################################
+set( CMAKE_SIZEOF_VOID_P 8 )
+
+####################################################################
 # COMPILER
 ####################################################################
 
@@ -8,15 +13,11 @@ CMAKE_FORCE_C_COMPILER       ( cc  Cray )
 CMAKE_FORCE_CXX_COMPILER     ( CC  Cray )
 CMAKE_FORCE_Fortran_COMPILER ( ftn Cray )
 
-link_libraries("$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so")
-link_libraries("-lmpichf90_cray")
-link_libraries("-lmpichcxx_cray")
-
 set( ECBUILD_FIND_MPI OFF )
 set( ECBUILD_TRUST_FLAGS ON )
 
 ####################################################################
-# FLAGS COMMON TO ALL BUILD TYPES
+# OpenMP FLAGS
 ####################################################################
 
 set( OMP_C_FLAGS             "-homp" )
@@ -27,49 +28,12 @@ set( OMPSTUBS_C_FLAGS        "-hnoomp" )
 set( OMPSTUBS_CXX_FLAGS      "-hnoomp" )
 set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
 
-set( CMAKE_C_FLAGS       "" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS     "" CACHE STRING "" FORCE )
-set( CMAKE_Fortran_FLAGS "-emf -rmoid" CACHE STRING "" FORCE )   # -emf activates .mods and uses lower case -rmoid produces a listing file
-
 ####################################################################
-# RELEASE FLAGS
+# Fortran FLAGS
 ####################################################################
 
-set( ECBUILD_C_FLAGS_RELEASE       "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
-set( ECBUILD_CXX_FLAGS_RELEASE     "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
-set( ECBUILD_Fortran_FLAGS_RELEASE "-O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG" )
-
-####################################################################
-# BIT REPRODUCIBLE FLAGS
-####################################################################
-
-set( ECBUILD_C_FLAGS_BIT        "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
-set( ECBUILD_CXX_FLAGS_BIT      "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
-set( ECBUILD_Fortran_FLAGS_BIT  "-O1 -G2 -hflex_mp=conservative -hadd_paren -hfp1 -DNDEBUG" )
-
-####################################################################
-# RELWITHDEBINFO FLAGS
-####################################################################
-
-set( ECBUILD_C_FLAGS_RELWITHDEBINFO        "-O2 -hfp1 -Gfast -DNDEBUG" )
-set( ECBUILD_CXX_FLAGS_RELWITHDEBINFO      "-O2 -hfp1 -Gfast -DNDEBUG" )
-set( ECBUILD_Fortran_FLAGS_RELWITHDEBINFO  "-O2 -hfp1 -Gfast -DNDEBUG" )
-
-####################################################################
-# DEBUG FLAGS
-####################################################################
-
-set( ECBUILD_C_FLAGS_DEBUG        "-O0 -G0" )
-set( ECBUILD_CXX_FLAGS_DEBUG      "-O0 -G0" )
-set( ECBUILD_Fortran_FLAGS_DEBUG  "-O0 -G0" )
-
-####################################################################
-# PRODUCTION FLAGS
-####################################################################
-
-set( ECBUILD_C_FLAGS_PRODUCTION        "-O2 -hfp1 -G2" )
-set( ECBUILD_CXX_FLAGS_PRODUCTION      "-O2 -hfp1 -G2" )
-set( ECBUILD_Fortran_FLAGS_PRODUCTION  "-O2 -hfp1 -G2" )
+# -emf activates .mods and uses lower case -rmoid produces a listing file
+set( ECBUILD_Fortran_FLAGS   "-emf -rmoid" )
 
 ####################################################################
 # LINK FLAGS
@@ -78,4 +42,4 @@ set( ECBUILD_Fortran_FLAGS_PRODUCTION  "-O2 -hfp1 -G2" )
 set( ECBUILD_C_LINK_FLAGS        "-Wl,-Map,loadmap -Wl,--as-needed -Ktrap=fp" )
 set( ECBUILD_CXX_LINK_FLAGS      "-Wl,-Map,loadmap -Wl,--as-needed -Ktrap=fp" )
 set( ECBUILD_Fortran_LINK_FLAGS  "-Wl,-Map,loadmap -Wl,--as-needed -Ktrap=fp" )
-
+set( ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES "$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so" CACHE STRING "" )

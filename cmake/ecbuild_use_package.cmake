@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -105,6 +105,7 @@ macro( ecbuild_use_package )
   # user defined dir with subprojects
 
   if( NOT DEFINED ${pkgUPPER}_SOURCE AND DEFINED SUBPROJECT_DIRS )
+    ecbuild_warn("ecbuild_use_package(): setting SUBPROJECT_DIRS is deprecated")
     ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): scanning subproject directories ${SUBPROJECT_DIRS}")
     foreach( dir ${SUBPROJECT_DIRS} )
       if( EXISTS ${dir}/${_p_PROJECT} AND EXISTS ${dir}/${_p_PROJECT}/CMakeLists.txt )
@@ -119,7 +120,7 @@ macro( ecbuild_use_package )
   if( DEFINED ${pkgUPPER}_SOURCE )
 
     if( NOT EXISTS ${${pkgUPPER}_SOURCE} OR NOT EXISTS ${${pkgUPPER}_SOURCE}/CMakeLists.txt )
-      message( FATAL_ERROR "User defined source directory '${${pkgUPPER}_SOURCE}' for project '${_p_PROJECT}' does not exist or does not contain a CMakeLists.txt file." )
+      ecbuild_critical("User defined source directory '${${pkgUPPER}_SOURCE}' for project '${_p_PROJECT}' does not exist or does not contain a CMakeLists.txt file.")
     endif()
 
     set( ${pkgUPPER}_subproj_dir_ "${${pkgUPPER}_SOURCE}" )
@@ -187,6 +188,8 @@ macro( ecbuild_use_package )
       set( ${pkgUPPER}_FOUND 1 )
       set( ${_p_PROJECT}_VERSION ${${pkgUPPER}_VERSION} )
 
+      list( APPEND ${pkgUPPER}_INCLUDE_DIRS ${${pkgUPPER}_TPL_INCLUDE_DIRS} )
+
     endif()
 
   endif()
@@ -221,15 +224,15 @@ macro( ecbuild_use_package )
 
   # test version for Cases 1,2,3
 
-  # debug_var( _p_PROJECT )
-  # debug_var( _p_VERSION )
-  # debug_var( ${pkgUPPER}_VERSION )
-  # debug_var( ${_p_PROJECT}_VERSION )
-  # debug_var( _just_added )
-  # debug_var( _do_version_check )
-  # debug_var( _source_description )
-  # debug_var( ${pkgUPPER}_FOUND )
-  # debug_var( ${pkgUPPER}_previous_subproj_ )
+  # ecbuild_debug_var( _p_PROJECT )
+  # ecbuild_debug_var( _p_VERSION )
+  # ecbuild_debug_var( ${pkgUPPER}_VERSION )
+  # ecbuild_debug_var( ${_p_PROJECT}_VERSION )
+  # ecbuild_debug_var( _just_added )
+  # ecbuild_debug_var( _do_version_check )
+  # ecbuild_debug_var( _source_description )
+  # ecbuild_debug_var( ${pkgUPPER}_FOUND )
+  # ecbuild_debug_var( ${pkgUPPER}_previous_subproj_ )
 
   if( _p_VERSION AND _do_version_check )
     if( _p_EXACT )

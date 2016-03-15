@@ -38,9 +38,9 @@ if( NOT PROJ4_PATH )
 
     endif()
 
-#    debug_var( PKG_CONFIG_FOUND )
-#    debug_var( PKPROJ4_FOUND )
-#    debug_var( PROJ4_MIN_VERSION )
+#    ecbuild_debug_var( PKG_CONFIG_FOUND )
+#    ecbuild_debug_var( PKPROJ4_FOUND )
+#    ecbuild_debug_var( PROJ4_MIN_VERSION )
 
 endif()
 
@@ -55,8 +55,8 @@ find_path(PROJ4_INCLUDE_DIR NAMES proj_api.h PATHS PATH_SUFFIXES proj4 )
 find_library( PROJ4_LIBRARY NAMES proj       PATHS PATH_SUFFIXES proj4 )
 
 
-# debug_var( PROJ4_INCLUDE_DIR )
-# debug_var( PROJ4_LIBRARY )
+# ecbuild_debug_var( PROJ4_INCLUDE_DIR )
+# ecbuild_debug_var( PROJ4_LIBRARY )
 
 # handle the QUIETLY and REQUIRED arguments and set GRIBAPI_FOUND
 include(FindPackageHandleStandardArgs)

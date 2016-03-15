@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -103,7 +103,7 @@ macro( ecbuild_find_package )
     message(FATAL_ERROR "Call to ecbuild_find_package() requests EXACT but doesn't specify VERSION.")
   endif()
 
-  # debug_var( _PAR_NAME )
+  # ecbuild_debug_var( _PAR_NAME )
 
   string( TOUPPER ${_PAR_NAME} pkgUPPER )
   string( TOLOWER ${_PAR_NAME} pkgLOWER )
@@ -157,9 +157,9 @@ macro( ecbuild_find_package )
     set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
   endif()
 
-  # Find packages quietly unless in DEVELOPER_MODE, LOG_LEVEL is DEBUG or the package is REQUIRED
+  # Find packages quietly unless in DEVELOPER_MODE or LOG_LEVEL is DEBUG
 
-  if( NOT ( DEVELOPER_MODE OR _PAR_REQUIRED ) AND ( ECBUILD_LOG_LEVEL GREATER ${ECBUILD_DEBUG} ) )
+  if( NOT DEVELOPER_MODE AND ( ECBUILD_LOG_LEVEL GREATER ${ECBUILD_DEBUG} ) )
     set( _find_quiet QUIET )
   endif()
 

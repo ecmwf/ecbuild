@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -83,9 +83,9 @@ macro( ecbuild_separate_sources )
 		endif()
 	endforeach()
 
-#    debug_var( ${_PAR_TARGET}_h_srcs )
-#    debug_var( ${_PAR_TARGET}_c_srcs )
-#    debug_var( ${_PAR_TARGET}_cxx_srcs )
-#    debug_var( ${_PAR_TARGET}_f_srcs )
+#    ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
+#    ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
+#    ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
+#    ecbuild_debug_var( ${_PAR_TARGET}_f_srcs )
 
 endmacro( ecbuild_separate_sources  )

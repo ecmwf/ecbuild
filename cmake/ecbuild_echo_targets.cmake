@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -32,13 +32,13 @@ function(ecbuild_echo_target_property tgt prop)
   get_property(s TARGET ${tgt} PROPERTY ${prop} SET)
 
   # only produce output for values that are set
-  #if(s)
+  if(s)
     message("tgt='${tgt}' prop='${prop}'")
     message("  value='${v}'")
     message("  defined='${d}'")
     message("  set='${s}'")
     message("")
-  #endif()
+  endif()
 
   cmake_policy(POP)
 
@@ -207,7 +207,7 @@ XCODE_ATTRIBUTE_WHATEVER
 
   message("======================== ${tgt} ========================")
   foreach(p ${props})
-    ecbuild_echo_target_property("${t}" "${p}")
+    ecbuild_echo_target_property("${tgt}" "${p}")
   endforeach()
   message("")
 endfunction()

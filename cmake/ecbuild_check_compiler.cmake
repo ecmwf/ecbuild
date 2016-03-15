@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -10,7 +10,8 @@
 # enable C to use in system introspection
 
 if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
-	enable_language( C )
+  enable_language( C )
+  ecbuild_compiler_flags( C )
 endif()
 
 ############################################################################################
@@ -120,6 +121,10 @@ if( CMAKE_COMPILER_IS_GNUCXX )
         #    ecbuild_add_cxx_flags("-Wextra")
     endif()
 
+endif()
+
+if( ENABLE_WARNINGS AND CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
+  ecbuild_add_fortran_flags("-warn all")
 endif()
 
 ############################################################################################

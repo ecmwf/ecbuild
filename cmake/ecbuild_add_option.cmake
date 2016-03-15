@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -17,6 +17,7 @@
 #   ecbuild_add_option( FEATURE <name>
 #                       [ DEFAULT ON|OFF ]
 #                       [ DESCRIPTION <description> ]
+#                       [ PURPOSE <purpose> ]
 #                       [ REQUIRED_PACKAGES <package1> [<package2> ...] ]
 #                       [ CONDITION <condition1> [<condition2> ...] ]
 #                       [ ADVANCED ] )
@@ -33,18 +34,30 @@
 # DESCRIPTION : optional
 #   string describing the feature (shown in summary and stored in the cache)
 #
+# TYPE : optional, one of RUNTIME|OPTIONAL|RECOMMENDED|REQUIRED
+#   type of dependency of the project on this package (defaults to OPTIONAL)
+#
+# PURPOSE : optional
+#   string describing which functionality this package enables in the project
+#
 # REQUIRED_PACKAGES : optional
 #   list of packages required to be found for this feature to be enabled
 #
-#   The package specification can be either ::
+#   The package specification can have one of two forms. Either ::
 #
-#     <package> [ <version> ... ]
+#     "<package> [ <version> ... ]"
 #
-#   to search for a given package with option minimum required version or ::
+#   to search for a given package using the CMake ``find_package`` mechanism.
+#   The entire specification must be enclosed in quotes and is passed on
+#   verbatim. Any options of ``find_package`` are supported.
 #
-#     PROJECT <name> [ VERSION <version> ... ]
+#   The other specification must start with ``PROJECT`` like this ::
 #
-#   to search for an ecBuild project with optional minimum required version.
+#     "PROJECT <name> [ VERSION <version> ... ]"
+#
+#   and is used to search for an ecBuild project via ``ecbuild_use_package``.
+#   The entire specification must be enclosed in quotes and is passed on
+#   verbatim. Any options of ``ecbuild_use_package`` are supported.
 #
 # CONDITION : optional
 #   conditional expression which must evaluate to true for this option to be
@@ -72,7 +85,7 @@
 macro( ecbuild_add_option )
 
   set( options ADVANCED )
-  set( single_value_args FEATURE DEFAULT DESCRIPTION )
+  set( single_value_args FEATURE DEFAULT DESCRIPTION TYPE PURPOSE )
   set( multi_value_args  REQUIRED_PACKAGES CONDITION )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -97,6 +110,10 @@ macro( ecbuild_add_option )
     endif()
   endif()
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defaults to ${_p_DEFAULT}")
+
+  if( NOT _p_TYPE  )
+    set( _p_TYPE OPTIONAL )
+  endif()
 
   # check CONDITION parameter
   if( DEFINED _p_CONDITION )
@@ -135,7 +152,12 @@ macro( ecbuild_add_option )
   # define the option -- for cmake GUI
 
   option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
-  ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT} PURPOSE "${_p_DESCRIPTION}" )
+  ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defining option ENABLE_${_p_FEATURE} '${_p_DESCRIPTION}' ${_p_DEFAULT}")
+  ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT} )
+  set_package_properties( ${_p_FEATURE} PROPERTIES
+                          DESCRIPTION "${_p_DESCRIPTION}"
+                          TYPE ${_p_TYPE}
+                          PURPOSE "${_p_PURPOSE}" )
 
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} = ${ENABLE_${_p_FEATURE}}")
   set( _do_search ${ENABLE_${_p_FEATURE}} )
@@ -167,9 +189,9 @@ macro( ecbuild_add_option )
           set( pkgproject 0 )
         endif()
 
-        # debug_var( pkg )
-        # debug_var( pkglist )
-        # debug_var( pkgname )
+        # ecbuild_debug_var( pkg )
+        # ecbuild_debug_var( pkglist )
+        # ecbuild_debug_var( pkgname )
 
         string( TOUPPER ${pkgname} pkgUPPER )
         string( TOLOWER ${pkgname} pkgLOWER )
@@ -206,6 +228,11 @@ macro( ecbuild_add_option )
               list( REMOVE_ITEM _find_args ${pkgname} )
               ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for Python")
               ecbuild_find_python( ${_find_args} )
+            elseif( pkgname STREQUAL "LEXYACC" )
+              set( _find_args ${pkglist} )
+              list( REMOVE_ITEM _find_args ${pkgname} )
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for lex-yacc")
+              ecbuild_find_lexyacc( ${_find_args} )
             else()
               ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for package ${pkgname}")
               find_package( ${pkglist} )
@@ -223,9 +250,9 @@ macro( ecbuild_add_option )
 
         endif()
 
-        # debug_var( ${pkgname}_FOUND  )
-        # debug_var( ${pkgLOWER}_FOUND )
-        # debug_var( ${pkgUPPER}_FOUND )
+        # ecbuild_debug_var( ${pkgname}_FOUND  )
+        # ecbuild_debug_var( ${pkgLOWER}_FOUND )
+        # ecbuild_debug_var( ${pkgUPPER}_FOUND )
 
         # we have feature if all required packages were FOUND
 

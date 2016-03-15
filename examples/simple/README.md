@@ -1,0 +1,5 @@
+Usage:
+=====
+
+ecbuild examples/simple
+

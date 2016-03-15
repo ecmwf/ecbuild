@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -15,10 +15,10 @@
 
 function( ecbuild_add_extra_search_paths pkg )
 
-  message( DEPRECATION " ecbuild_add_extra_search_paths modifies CMAKE_PREFIX_PATH,"
-           " which can affect future package discovery if not undone by the caller."
-           " The current CMAKE_PREFIX_PATH is being backed up as _CMAKE_PREFIX_PATH"
-           " so it can later be restored." )
+  ecbuild_deprecate( " ecbuild_add_extra_search_paths modifies CMAKE_PREFIX_PATH,"
+                     " which can affect future package discovery if not undone by the caller."
+                     " The current CMAKE_PREFIX_PATH is being backed up as _CMAKE_PREFIX_PATH"
+                     " so it can later be restored." )
 
   # Back up current CMAKE_PREFIX_PATH so the caller can reset it
   set( _CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE )
@@ -28,6 +28,6 @@ function( ecbuild_add_extra_search_paths pkg )
   ecbuild_list_extra_search_paths( ${pkg} CMAKE_PREFIX_PATH )
 
   set( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE )
-  # debug_var( CMAKE_PREFIX_PATH )
+  # ecbuild_debug_var( CMAKE_PREFIX_PATH )
 
 endfunction()

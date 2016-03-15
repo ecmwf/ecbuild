@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -47,8 +47,8 @@ cmake_push_check_state()
 
 cmake_pop_check_state()
 
-# debug_var( readline_version )
-# debug_var( __readline_version_out )
+# ecbuild_debug_var( readline_version )
+# ecbuild_debug_var( __readline_version_out )
 
 set( __readline_fail 0 )
 if( __readline_version_out )

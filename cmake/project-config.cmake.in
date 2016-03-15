@@ -1,11 +1,13 @@
 # Config file for the @PROJECT_NAME@ package
 # Defines the following variables:
 #
-#  @PNAME@_INCLUDE_DIRS - include directories
-#  @PNAME@_DEFINITIONS  - preprocessor definitions
-#  @PNAME@_LIBRARIES    - libraries to link against
-#  @PNAME@_FEATURES     - list of enabled features
-#  @PNAME@_VERSION      - version of the package
+#  @PNAME@_INCLUDE_DIRS   - include directories
+#  @PNAME@_DEFINITIONS    - preprocessor definitions
+#  @PNAME@_LIBRARIES      - libraries to link against
+#  @PNAME@_FEATURES       - list of enabled features
+#  @PNAME@_VERSION        - version of the package
+#  @PNAME@_GIT_SHA1       - Git revision of the package
+#  @PNAME@_GIT_SHA1_SHORT - short Git revision of the package
 #
 # Also defines @PROJECT_NAME@ third-party library dependencies:
 #  @PNAME@_TPLS             - package names of  third-party library dependencies
@@ -26,12 +28,16 @@ set( @PNAME@_TPL_INCLUDE_DIRS  "@CONF_TPL_INCLUDE_DIRS@" )
 set( @PNAME@_TPL_DEFINITIONS   "@CONF_TPL_DEFINITIONS@" )
 set( @PNAME@_TPL_LIBRARIES     "@CONF_TPL_LIBRARIES@" )
 
+set( @PNAME@_VERSION           "@PACKAGE_VERSION@" )
+set( @PNAME@_GIT_SHA1          "@PACKAGE_GIT_SHA1@" )
+set( @PNAME@_GIT_SHA1_SHORT    "@PACKAGE_GIT_SHA1_SHORT@" )
+
 ### export include paths as absolute paths
 
 set( @PNAME@_INCLUDE_DIRS "" )
 foreach( path ${@PNAME@_SELF_INCLUDE_DIRS} )
-	get_filename_component( abspath ${path} ABSOLUTE )
-	list( APPEND @PNAME@_INCLUDE_DIRS ${abspath} )
+  get_filename_component( abspath ${path} ABSOLUTE )
+  list( APPEND @PNAME@_INCLUDE_DIRS ${abspath} )
 endforeach()
 list( APPEND @PNAME@_INCLUDE_DIRS ${@PNAME@_TPL_INCLUDE_DIRS} )
 
@@ -47,7 +53,7 @@ set( @PNAME@_LIBRARIES        ${@PNAME@_SELF_LIBRARIES}   ${@PNAME@_TPL_LIBRARIE
 
 set( @PNAME@_FEATURES    "@CONF_FEATURES@" )
 foreach( _f ${@PNAME@_FEATURES} )
-	set( @PNAME@_HAVE_${_f} 1 )
+  set( @PNAME@_HAVE_${_f} 1 )
 endforeach()
 
 # Has this configuration been exported from a build tree?
@@ -58,21 +64,21 @@ if( EXISTS ${@PNAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@ )
   include( ${@PNAME@_IMPORT_FILE} )
 endif()
 
+# here goes the imports of the TPL's
+
+include( ${CMAKE_CURRENT_LIST_FILE}.tpls OPTIONAL )
+
 # insert definitions for IMPORTED targets
 
 if( NOT @PROJECT_NAME@_BINARY_DIR )
 
   if( @PNAME@_IS_BUILD_DIR_EXPORT )
-		include( "@TOP_PROJECT_TARGETS_FILE@" OPTIONAL )
-	else()
-		include( "${@PNAME@_CMAKE_DIR}/@CMAKE_PROJECT_NAME@-targets.cmake" )
-	endif()
+    include( "@TOP_PROJECT_TARGETS_FILE@" OPTIONAL )
+  else()
+    include( "${@PNAME@_CMAKE_DIR}/@PROJECT_NAME@-targets.cmake" )
+  endif()
 
 endif()
-
-# here goes the imports of the TPL's
-
-include( ${CMAKE_CURRENT_LIST_FILE}.tpls OPTIONAL )
 
 # publish this file as imported
 
@@ -82,9 +88,10 @@ mark_as_advanced( @PNAME@_IMPORT_FILE )
 # set @PROJECT_NAME@_BASE_DIR for final installations or build directories
 
 if( NOT @PROJECT_NAME@ )
-	if( @PNAME@_IS_BUILD_DIR_EXPORT )
-		set( @PROJECT_NAME@_BASE_DIR @CMAKE_BINARY_DIR@ )
-	else()
-		set( @PROJECT_NAME@_BASE_DIR @CMAKE_INSTALL_PREFIX@ )
-	endif()
+  if( @PNAME@_IS_BUILD_DIR_EXPORT )
+    set( @PROJECT_NAME@_BASE_DIR @CMAKE_BINARY_DIR@ )
+  else()
+    get_filename_component( abspath ${CMAKE_CURRENT_LIST_DIR}/../../.. ABSOLUTE )
+    set( @PROJECT_NAME@_BASE_DIR ${abspath} )
+  endif()
 endif()

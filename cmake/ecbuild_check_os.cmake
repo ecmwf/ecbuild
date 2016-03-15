@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -9,22 +9,33 @@
 ############################################################################################
 # check size of pointer
 
+# Re-check size of void pointer since for some compiler combinations this is not properly set
 ecbuild_cache_check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
+
+if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
+
+  enable_language( C )
+  ecbuild_compiler_flags( C )
+
+endif()
 
 math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
 
 # we only support 32 and 64 bit operating systems
 if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
-	message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
+  message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
 endif()
-ecbuild_cache_var( EC_OS_BITS )
 
 ############################################################################################
 # For 64 bit architectures enable PIC (position-independent code)
 
-if( ${EC_OS_BITS} EQUAL 64 )
-	set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+# Allow overriding the position independent code setting (ECBUILD-220)
+if( DEFINED ECBUILD_POSITION_INDEPENDENT_CODE )
+  set( CMAKE_POSITION_INDEPENDENT_CODE ${ECBUILD_POSITION_INDEPENDENT_CODE} )
+elseif( ${EC_OS_BITS} EQUAL 64 )
+  set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 endif()
+
 
 ############################################################################################
 # check architecture
@@ -101,14 +112,19 @@ endif()
 if( ENABLE_OS_ENDINESS_TEST )
 
   if( NOT DEFINED EC_BIG_ENDIAN AND NOT DEFINED EC_LITTLE_ENDIAN )
+
   	test_big_endian( _BIG_ENDIAN )
 
   	if( _BIG_ENDIAN )
-  		set( EC_BIG_ENDIAN    1 )
+        set( EC_BIG_ENDIAN    1 )
+        set( EC_LITTLE_ENDIAN 0 )
   	else()
-  		set( EC_LITTLE_ENDIAN 1 )
+        set( EC_BIG_ENDIAN    0 )
+        set( EC_LITTLE_ENDIAN 1 )
   	endif()
+
   endif()
+
   ecbuild_cache_var( EC_BIG_ENDIAN )
   ecbuild_cache_var( EC_LITTLE_ENDIAN )
 
@@ -142,8 +158,14 @@ if( ENABLE_OS_ENDINESS_TEST )
   	if( "${IEEE_BE}" STREQUAL "" )
   		set( IEEE_BE 0 CACHE INTERNAL "Test IEEE_BE")
   	endif()
+
   endif()
+
   ecbuild_cache_var( IEEE_BE )
+
+  if( EC_BIG_ENDIAN AND NOT IEEE_BE )
+    ecbuild_critical("Failed to sanity check on endiness: OS should be Big-Endian but compiled code runs differently -- to ignore this pass -DIEEE_BE=0 to CMake/ecBuild")
+  endif()
 
     if( NOT DEFINED IEEE_LE )
   	check_c_source_runs(
@@ -172,11 +194,16 @@ if( ENABLE_OS_ENDINESS_TEST )
   		   return 0;
   		 }" IEEE_LE )
 
-  	if( "${IEEE_BE}" STREQUAL "" )
+  	if( "${IEEE_LE}" STREQUAL "" )
   		set( IEEE_LE 0 CACHE INTERNAL "Test IEEE_LE")
   	endif()
   endif()
+
   ecbuild_cache_var( IEEE_LE )
+
+  if( EC_LITTLE_ENDIAN AND NOT IEEE_LE )
+    ecbuild_critical("Failed to sanity check on endiness: OS should be Little-Endian but compiled code runs differently -- to ignore this pass -DIEEE_LE=0 to CMake/ecBuild")
+  endif()
 
 endif()
 
@@ -202,7 +229,7 @@ if( ENABLE_PROFILING )
     unset( _trust_flags )
 
     unset( _flags )
-  
+
   else()
     message( WARNING "Profiling enabled but ecbuild doesn't know how to enable for this particular compiler ${CMAKE_C_COMPILER_ID}")
   endif()

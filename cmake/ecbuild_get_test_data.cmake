@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -151,10 +151,10 @@ function( ecbuild_get_test_data )
       set( _p_DIRNAME ${PROJECT_NAME}/${currdir} )
     endif()
 
-#    debug_var( _p_TARGET )
-#    debug_var( _p_NAME )
-#    debug_var( _p_URL )
-#    debug_var( _p_DIRNAME )
+#    ecbuild_debug_var( _p_TARGET )
+#    ecbuild_debug_var( _p_NAME )
+#    ecbuild_debug_var( _p_URL )
+#    ecbuild_debug_var( _p_DIRNAME )
 
     # download the data
 
@@ -326,9 +326,9 @@ function( ecbuild_get_test_multidata )
       message(FATAL_ERROR "ecbuild_get_test_data() expects a TARGET")
     endif()
 
-#    debug_var( _p_TARGET )
-#    debug_var( _p_NAME )
-#    debug_var( _p_DIRNAME )
+#    ecbuild_debug_var( _p_TARGET )
+#    ecbuild_debug_var( _p_NAME )
+#    ecbuild_debug_var( _p_DIRNAME )
 
     if( _p_EXTRACT )
         set( _extract EXTRACT )
@@ -372,11 +372,11 @@ endfunction()\n\n" )
             set( _md5 MD5 ${_md5} )
         endif()
 
-        #debug_var(_f)
-        #debug_var(_file)
-        #debug_var(_dirname)
-        #debug_var(_name)
-        #debug_var(_md5)
+        #ecbuild_debug_var(_f)
+        #ecbuild_debug_var(_file)
+        #ecbuild_debug_var(_dirname)
+        #ecbuild_debug_var(_name)
+        #ecbuild_debug_var(_md5)
 
         ecbuild_get_test_data(
             TARGET __get_data_${_p_TARGET}_${_name}

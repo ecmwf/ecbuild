@@ -158,7 +158,7 @@ else()
     foreach( LANGUAGE ${NETCDF_LANGUAGE_BINDINGS} )
         ecbuild_debug("FindNetCDF4: looking for ${LANGUAGE} language bindings")
         set( NETCDF_${LANGUAGE}_FOUND 1 ) # disable this in following if necessary
-      
+
         # find the NETCDF includes
         foreach( INC ${NETCDF_${LANGUAGE}_INCLUDE_NAMES} )
           find_path( NETCDF_${INC}_INCLUDE_DIR ${INC}
@@ -170,7 +170,7 @@ else()
                   Include
           )
           mark_as_advanced( NETCDF_${INC}_INCLUDE_DIR )
-          # debug_var( NETCDF_${INC}_INCLUDE_DIR)
+          # ecbuild_debug_var( NETCDF_${INC}_INCLUDE_DIR)
           if (NETCDF_${INC}_INCLUDE_DIR)
             list( APPEND NETCDF_INCLUDE_DIRS ${NETCDF_${INC}_INCLUDE_DIR} )
           else()
@@ -249,19 +249,19 @@ else()
 
         # Append the libraries for this language binding to the list of all
         # required libraries.
-        
+
         if( NETCDF_${LANGUAGE}_FOUND )
             ecbuild_debug( "FindNetCDF4: ${LANGUAGE} language bindings found" )
             if( CMAKE_CONFIGURATION_TYPES OR CMAKE_BUILD_TYPE )
-                list( APPEND NETCDF_${LANGUAGE}_LIBRARIES 
+                list( APPEND NETCDF_${LANGUAGE}_LIBRARIES
                     debug ${NETCDF_${LANGUAGE}_LIBRARIES_DEBUG}
                     optimized ${NETCDF_${LANGUAGE}_LIBRARIES_RELEASE} )
             else()
-                list( APPEND NETCDF_${LANGUAGE}_LIBRARIES 
-                    ${NETCDF_${LANGUAGE}_LIBRARIES_RELEASE} )                  
+                list( APPEND NETCDF_${LANGUAGE}_LIBRARIES
+                    ${NETCDF_${LANGUAGE}_LIBRARIES_RELEASE} )
             endif()
         endif()
-        # debug_var( NETCDF_${LANGUAGE}_LIBRARIES )
+        # ecbuild_debug_var( NETCDF_${LANGUAGE}_LIBRARIES )
         list( APPEND NETCDF_FOUND_REQUIRED_VARS NETCDF_${LANGUAGE}_FOUND )
     endforeach()
 

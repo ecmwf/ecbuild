@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -37,8 +37,6 @@ macro( ecbuild_print_summary )
   endif()
 
   if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
-
-    ecbuild_define_links_target()
 
     get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
 
@@ -89,7 +87,7 @@ macro( ecbuild_print_summary )
 
     ### FEATURE SUMMARY
 
-    # debug_var( CMAKE_VERSION )
+    # ecbuild_debug_var( CMAKE_VERSION )
     if( ${CMAKE_VERSION} VERSION_LESS "2.8.6" )
       feature_summary( WHAT ALL )
     else()
@@ -101,6 +99,6 @@ macro( ecbuild_print_summary )
     # issue warnings / errors in case there are unused project files
     ecbuild_warn_unused_files()
 
-  endif( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+  endif()
 
 endmacro( ecbuild_print_summary )

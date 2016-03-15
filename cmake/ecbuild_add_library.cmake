@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,7 +16,10 @@
 #
 #   ecbuild_add_library( TARGET <name>
 #                        SOURCES <source1> [<source2> ...]
-#                        [ TYPE SHARED|STATIC|MODULE ]
+#                        [ SOURCES_GLOB <glob1> [<glob2> ...] ]
+#                        [ SOURCES_EXCLUDE_REGEX <regex1> [<regex2> ...] ]
+#                        [ TYPE SHARED|STATIC|MODULE|OBJECT ]
+#                        [ OBJECTS <obj1> [<obj2> ...] ]
 #                        [ TEMPLATES <template1> [<template2> ...] ]
 #                        [ LIBS <library1> [<library2> ...] ]
 #                        [ INCLUDES <path1> [<path2> ...] ]
@@ -55,6 +58,17 @@
 #   :STATIC: archives of object files for use when linking other targets.
 #   :MODULE: plugins that are not linked into other targets but may be loaded
 #            dynamically at runtime using dlopen-like functionality
+#   :OBJECT: files are just compiled into objects
+#
+# SOURCES_GLOB : optional
+#   search pattern to find source files to compile (note: not recommend according to CMake guidelines)
+#   it is usually better to explicitly list the source files in the CMakeList.txt
+#
+# SOURCES_EXCLUDE_REGEX : optional
+#   search pattern to exclude source files from compilation, applies o the results of SOURCES_GLOB
+#
+# OBJECTS : optional
+#   list of object libraries to add to this target
 #
 # TEMPLATES : optional
 #   list of files specified as SOURCES which are not to be compiled separately
@@ -135,7 +149,7 @@ function( ecbuild_add_library_impl )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS INSTALL_HEADERS_REGEX LINKER_LANGUAGE HEADER_DESTINATION VERSION OUTPUT_NAME )
-  set( multi_value_args  SOURCES TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+  set( multi_value_args  SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -147,8 +161,8 @@ function( ecbuild_add_library_impl )
     message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the TARGET.")
   endif()
 
-  if( NOT _PAR_SOURCES )
-    message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the SOURCES.")
+  if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS AND NOT _PAR_SOURCES_GLOB )
+    message(FATAL_ERROR "The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS nor SOURCES_GLOB")
   endif()
 
   ### conditional build
@@ -172,8 +186,9 @@ function( ecbuild_add_library_impl )
       # checks that is either SHARED or STATIC or MODULE
       if( NOT _PAR_TYPE MATCHES "STATIC" AND
           NOT _PAR_TYPE MATCHES "SHARED" AND
+          NOT _PAR_TYPE MATCHES "OBJECT" AND
           NOT _PAR_TYPE MATCHES "MODULE" )
-        message( FATAL_ERROR "library type must be one of [ STATIC | SHARED | MODULE ]" )
+        message( FATAL_ERROR "library type must be one of [ STATIC | SHARED | MODULE | OBJECT ]" )
       endif()
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): library type is ${_PAR_TYPE}")
     endif()
@@ -195,7 +210,31 @@ function( ecbuild_add_library_impl )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
-    add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES} )
+    # glob sources
+    unset( _glob_srcs )
+    foreach( pattern ${_PAR_SOURCES_GLOB} )
+        ecbuild_list_add_pattern( LIST _glob_srcs GLOB "${pattern}" )
+    endforeach()
+
+    foreach( pattern ${_PAR_SOURCES_EXCLUDE_REGEX} )
+        ecbuild_list_exclude_pattern( LIST _glob_srcs REGEX "${pattern}" )
+    endforeach()
+
+    # insert already compiled objects (from OBJECT libraries)
+    unset( _all_objects )
+    foreach( _obj ${_PAR_OBJECTS} )
+      list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
+    endforeach()
+
+    list( APPEND _PAR_SOURCES ${_glob_srcs} )
+
+    if( ECBUILD_LIST_SOURCES )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
+    endif()
+
+    add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
+
+    # ecbuild_echo_target( ${_PAR_TARGET} )
 
     # set OUTPUT_NAME
 
@@ -306,27 +345,74 @@ function( ecbuild_add_library_impl )
 
     # filter sources
 
-    ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+    if( _PAR_SOURCES )
+      ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+    endif()
 
-    #   debug_var( ${_PAR_TARGET}_h_srcs )
-    #   debug_var( ${_PAR_TARGET}_c_srcs )
-    #   debug_var( ${_PAR_TARGET}_cxx_srcs )
-    #   debug_var( ${_PAR_TARGET}_f_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_f_srcs )
 
     # add local flags
 
-    if( DEFINED _PAR_CFLAGS )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use C flags ${_PAR_CFLAGS}")
-      set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
+    if( ${_PAR_TARGET}_c_srcs )
+
+      if( ECBUILD_SOURCE_FLAGS )
+        ecbuild_source_flags( ${_PAR_TARGET}_C_SOURCE_FLAGS
+                              ${_PAR_TARGET}_c
+                              "${_PAR_CFLAGS}"
+                              "${${_PAR_TARGET}_c_srcs}" )
+
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file C flags from ${${_PAR_TARGET}_C_SOURCE_FLAGS}")
+        include( ${${_PAR_TARGET}_C_SOURCE_FLAGS} )
+
+      elseif( DEFINED _PAR_CFLAGS )
+
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use C flags ${_PAR_CFLAGS}")
+        set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
+
+      endif()
     endif()
-    if( DEFINED _PAR_CXXFLAGS )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use C++ flags ${_PAR_CFLAGS}")
-      set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
+
+    if( ${_PAR_TARGET}_cxx_srcs )
+
+      if( ECBUILD_SOURCE_FLAGS )
+        ecbuild_source_flags( ${_PAR_TARGET}_CXX_SOURCE_FLAGS
+                              ${_PAR_TARGET}_cxx
+                              "${_PAR_CXXFLAGS}"
+                              "${${_PAR_TARGET}_cxx_srcs}" )
+
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file CXX flags from ${${_PAR_TARGET}_CXX_SOURCE_FLAGS}")
+        include( ${${_PAR_TARGET}_CXX_SOURCE_FLAGS} )
+
+      elseif( DEFINED _PAR_CXXFLAGS )
+
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use C++ flags ${_PAR_CFLAGS}")
+        set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
+
+      endif()
     endif()
-    if( DEFINED _PAR_FFLAGS )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use Fortran flags ${_PAR_CFLAGS}")
-      set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
+
+    if( ${_PAR_TARGET}_f_srcs )
+
+      if( ECBUILD_SOURCE_FLAGS )
+        ecbuild_source_flags( ${_PAR_TARGET}_Fortran_SOURCE_FLAGS
+                              ${_PAR_TARGET}_f
+                              "${_PAR_FFLAGS}"
+                              "${${_PAR_TARGET}_f_srcs}" )
+
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file Fortran flags from ${${_PAR_TARGET}_Fortran_SOURCE_FLAGS}")
+        include( ${${_PAR_TARGET}_Fortran_SOURCE_FLAGS} )
+
+      elseif( DEFINED _PAR_FFLAGS )
+
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use Fortran flags ${_PAR_CFLAGS}")
+        set_source_files_properties( ${${_PAR_TARGET}_f_srcs}  PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
+
+      endif()
     endif()
+
     if( DEFINED _PAR_GENERATED )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): mark as generated ${_PAR_GENERATED}")
       set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
@@ -336,11 +422,18 @@ function( ecbuild_add_library_impl )
     if( DEFINED _PAR_LINKER_LANGUAGE )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): using linker language ${_PAR_LINKER_LANGUAGE}")
       set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+      if( ECBUILD_${_PAR_LINKER_LANGUAGE}_IMPLICIT_LINK_LIBRARIES )
+        target_link_libraries( ${_PAR_TARGET} ${ECBUILD_${_PAR_LINKER_LANGUAGE}_IMPLICIT_LINK_LIBRARIES} )
+      endif()
     endif()
 
-    # installation
+    if( ECBUILD_IMPLICIT_LINK_LIBRARIES )
+      target_link_libraries( ${_PAR_TARGET} ${ECBUILD_IMPLICIT_LINK_LIBRARIES} )
+    endif()
 
-    if( NOT _PAR_NOINSTALL )
+    # installation (except for OBJECT libraries)
+
+    if( NOT _PAR_NOINSTALL AND NOT _PAR_TYPE MATCHES "OBJECT" )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): installing to ${INSTALL_LIB_DIR}")
 
       # and associate with defined component
@@ -351,7 +444,7 @@ function( ecbuild_add_library_impl )
       #            endif()
 
       install( TARGETS ${_PAR_TARGET}
-        EXPORT  ${CMAKE_PROJECT_NAME}-targets
+        EXPORT  ${PROJECT_NAME}-targets
         RUNTIME DESTINATION ${INSTALL_BIN_DIR}
         LIBRARY DESTINATION ${INSTALL_LIB_DIR}
         ARCHIVE DESTINATION ${INSTALL_LIB_DIR} )
@@ -421,7 +514,9 @@ function( ecbuild_add_library_impl )
     endif()
 
     # make sure target is removed before - some problems with AIX
-    add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
+    if( NOT _PAR_TYPE MATCHES "OBJECT" )
+      add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
+    endif()
 
     # for the links target
     if( NOT _PAR_NOINSTALL )

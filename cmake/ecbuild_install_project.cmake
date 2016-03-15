@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -33,7 +33,7 @@
 # the project with cpack and exports the configuration and targets for other
 # projects to use.
 #
-# In a top-level project, the following files are generated:
+# Unless ECBUILD_SKIP_<PNAME>_EXPORT is set, the following files are generated:
 #
 # :<project>-config.cmake:         default project configuration
 # :<project>-config-version.cmake: project version number
@@ -49,7 +49,7 @@
 # and ``<project>-config-version.cmake``.
 #
 # In DEVELOPER_MODE, the build tree location is also added to the CMake user
-# package registry.
+# package registry for top level projects.
 #
 # If the project is added as a subdirectory, the following CMake variables
 # are set in the parent scope:
@@ -70,7 +70,6 @@
 #
 ##############################################################################
 
-
 macro( ecbuild_install_project )
 
     set( options )
@@ -85,6 +84,17 @@ macro( ecbuild_install_project )
 
     if( NOT _PAR_NAME  )
       message(FATAL_ERROR "The call to ecbuild_install_project() doesn't specify the NAME.")
+    endif()
+
+    ### EXTRA TARGETS #####################################################
+
+    # added here to avoid adding another macro call at the end of each project,
+
+    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+
+        ecbuild_define_libs_and_execs_targets()
+        ecbuild_define_links_target()
+
     endif()
 
     ### PACKAGING ########################################################
@@ -160,6 +170,8 @@ macro( ecbuild_install_project )
                PATHS ${ECBUILD_MACROS_DIR}/../toolchains
                      ${ECBUILD_MACROS_DIR}/../share/ecbuild/toolchains )
 
+    mark_as_advanced( ECBUILD_TOOLCHAIN_DIR )
+
     if( ECBUILD_TOOLCHAIN_DIR )
       list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES "${ECBUILD_TOOLCHAIN_DIR}" "share/ecbuild/toolchains/" )
     endif()
@@ -168,6 +180,8 @@ macro( ecbuild_install_project )
     find_program( ECBUILD_SCRIPT ecbuild
                   PATHS ${ECBUILD_MACROS_DIR}/../bin
                         ${ECBUILD_MACROS_DIR}/../../../bin )
+
+    mark_as_advanced( ECBUILD_SCRIPT )
 
     if( ECBUILD_SCRIPT )
       get_filename_component( ECBUILD_BIN_DIR ${ECBUILD_SCRIPT} PATH )
@@ -219,16 +233,9 @@ macro( ecbuild_install_project )
         endif()
     endforeach()
 
-    # TOP-LEVEL PROJECT EXPORT
-
-    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
-
-        # exports the package for use from the build-tree but only in DEVELOPER_MODE
-        # inserts <package> into the CMake user package registry
-
-        if( DEVELOPER_MODE )
-            export( PACKAGE ${PROJECT_NAME} )
-        endif()
+    # Generate the project .cmake config files
+    # All variables here must be (sub)project specific in order to work within bundles
+    if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
 
         set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
         if( EXISTS ${LNAME}-config.cmake.in )
@@ -242,7 +249,9 @@ macro( ecbuild_install_project )
 
         # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)
 
-        set( PACKAGE_VERSION "${${PNAME}_VERSION}" )
+        set( PACKAGE_VERSION        "${${PNAME}_VERSION}" )
+        set( PACKAGE_GIT_SHA1       "${${PNAME}_GIT_SHA1}" )
+        set( PACKAGE_GIT_SHA1_SHORT "${${PNAME}_GIT_SHA1_SHORT}" )
 
         configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
 
@@ -297,6 +306,7 @@ macro( ecbuild_install_project )
         # If <project>-import.cmake.in exist in source tree, configure it to
         # the build tree and install the configured version
         if( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in" )
+          ecbuild_debug( "Found ${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in - configuring to ${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" )
           configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in"
                           "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
           install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
@@ -304,10 +314,13 @@ macro( ecbuild_install_project )
         # Otherwise, if <project>-import.cmake exist in source tree, copy it to
         # the build tree and install it
         elseif( EXISTS "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}" )
+          ecbuild_debug( "Found ${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE} - copying to ${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" )
           configure_file( "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}"
                           "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" COPYONLY )
           install( FILES "${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}"
                    DESTINATION "${INSTALL_CMAKE_DIR}" )
+        else()
+          ecbuild_debug( "No ${CONF_IMPORT_FILE} found in ${PROJECT_SOURCE_DIR}" )
         endif()
 
         set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
@@ -318,13 +331,28 @@ macro( ecbuild_install_project )
         file( REMOVE ${_lname_config}.tpls.in )
 
         foreach( _tpl ${${PNAME}_TPLS} )
+
             string( TOUPPER ${_tpl} TPL )
-            if( ${TPL}_IMPORT_FILE )
+
+            if( ${TPL}_IMPORT_FILE ) # ecBuild packages should trigger this if they export themselves
+
+              ecbuild_debug( "Adding TPL ${TPL} import file to ${_lname_config}.tpls.in" )
                 set( __import_file "${${TPL}_IMPORT_FILE}" )
                 file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_IMPORT_FILE )\n" )
                 file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
                 file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
+
+            elseif( ${TPL}_CONFIG ) # cmake built packages (e.g. CGAL) may have exported their targets
+
+              ecbuild_debug( "Adding TPL ${TPL} import file to ${_lname_config}.tpls.in" )
+                set( __import_file "${${TPL}_CONFIG}" )
+                file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_CONFIG )\n" )
+                file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
+                file( APPEND "${_lname_config}.tpls.in" "    set( ${TPL}_CONFIG \"${__import_file}\" )\n" )
+                file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
+
             endif()
+
         endforeach()
 
         if( EXISTS "${_lname_config}.tpls.in" )
@@ -361,14 +389,30 @@ macro( ecbuild_install_project )
         # install the export
 
         if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
-            install( EXPORT ${CMAKE_PROJECT_NAME}-targets DESTINATION "${INSTALL_CMAKE_DIR}" )
+            install( EXPORT ${PROJECT_NAME}-targets
+                     DESTINATION "${INSTALL_CMAKE_DIR}" )
+        endif()
+
+    endif()  # if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
+
+    # exports the package for use from the build-tree but only in DEVELOPER_MODE
+    # inserts <package> into the CMake user package registry
+
+    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+
+        if( DEVELOPER_MODE )
+            export( PACKAGE ${PROJECT_NAME} )
         endif()
 
     else()
 
+    # export variables for upper projects
+
         set( ${PNAME}_FOUND             TRUE                          PARENT_SCOPE )
         set( ${PROJECT_NAME}_FOUND      TRUE                          PARENT_SCOPE )
         set( ${PNAME}_VERSION           ${${PNAME}_VERSION}           PARENT_SCOPE )
+        set( ${PNAME}_GIT_SHA1          ${${PNAME}_GIT_SHA1}          PARENT_SCOPE )
+        set( ${PNAME}_GIT_SHA1_SHORT    ${${PNAME}_GIT_SHA1_SHORT}    PARENT_SCOPE )
         set( ${PROJECT_NAME}_VERSION    ${${PNAME}_VERSION}           PARENT_SCOPE )
         set( ${PNAME}_INCLUDE_DIRS      ${${PNAME}_INCLUDE_DIRS}      PARENT_SCOPE )
         set( ${PNAME}_LIBRARIES         ${${PNAME}_LIBRARIES}         PARENT_SCOPE )
@@ -382,6 +426,7 @@ macro( ecbuild_install_project )
         foreach( _f ${${PNAME}_FEATURES} )
             set( ${PNAME}_HAVE_${_f} ${${PNAME}_HAVE_${_f}} PARENT_SCOPE )
         endforeach()
-     endif()
+
+    endif()
 
 endmacro( ecbuild_install_project )

@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2015 ECMWF.
+# (C) Copyright 1996-2016 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -44,43 +44,55 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
 
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-    if( NOT DEFINED N_FortranFLAG )
-      set( N_FortranFLAG 0 )
-    endif()
-
-    math( EXPR N_FortranFLAG '${N_FortranFLAG}+1' )
-
-    if( NOT ECBUILD_TRUST_FLAGS )
-      if( DEFINED _PAR_NAME )
-        check_fortran_compiler_flag( ${_flags} ${_PAR_NAME} )
-        set( _flag_ok ${${_PAR_NAME}} )
-      else()
-        check_fortran_compiler_flag( ${_flags} Fortran_FLAG_TEST_${N_FortranFLAG} )
-        set( _flag_ok ${Fortran_FLAG_TEST_${N_FortranFLAG}} )
+    set( _try_add_flag TRUE )
+    if( _PAR_BUILD )
+      string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_CAPS )
+      string( TOUPPER ${_PAR_BUILD}  _PAR_BUILD_CAPS )
+      if( NOT CMAKE_BUILD_TYPE_CAPS MATCHES "${_PAR_BUILD_CAPS}" )
+        set( _try_add_flag FALSE )
       endif()
-    else()
-      set( _flag_ok 1 )
     endif()
 
-    if( _flag_ok )
-      if( _PAR_BUILD )
-        set( CMAKE_Fortran_FLAGS_${_PAR_BUILD} "${CMAKE_Fortran_FLAGS_${_PAR_BUILD}} ${_flags}" )
-        ecbuild_debug( "Fortran FLAG [${_flags}] added for build type ${_PAR_BUILD}" )
-      else()
-        set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${_flags}" )
-        ecbuild_debug( "Fortran FLAG [${_flags}] added" )
+    if( _try_add_flag )
+      if( NOT DEFINED N_FortranFLAG )
+        set( N_FortranFLAG 0 )
       endif()
-    else()
-      message( STATUS "Unrecognised Fortran flag [${_flags}] -- skipping" )
+
+      math( EXPR N_FortranFLAG '${N_FortranFLAG}+1' )
+
+      if( NOT ECBUILD_TRUST_FLAGS )
+        if( DEFINED _PAR_NAME )
+          check_fortran_compiler_flag( ${_flags} ${_PAR_NAME} )
+          set( _flag_ok ${${_PAR_NAME}} )
+        else()
+          check_fortran_compiler_flag( ${_flags} Fortran_FLAG_TEST_${N_FortranFLAG} )
+          set( _flag_ok ${Fortran_FLAG_TEST_${N_FortranFLAG}} )
+        endif()
+      else()
+        set( _flag_ok 1 )
+      endif()
+
+      if( _flag_ok )
+        if( _PAR_BUILD )
+          set( CMAKE_Fortran_FLAGS_${_PAR_BUILD} "${CMAKE_Fortran_FLAGS_${_PAR_BUILD}} ${_flags}" )
+          ecbuild_debug( "Fortran FLAG [${_flags}] added for build type ${_PAR_BUILD}" )
+        else()
+          set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${_flags}" )
+          ecbuild_debug( "Fortran FLAG [${_flags}] added" )
+        endif()
+      else()
+        message( STATUS "Unrecognised Fortran flag [${_flags}] -- skipping" )
+      endif()
     endif()
+
+    unset( _flags )
+    unset( _flag_ok )
+    unset( _try_add_flag )
   endif()
-
-  unset( _flags )
-  unset( _flag_ok )
 
 endmacro()
 
 macro( cmake_add_fortran_flags m_fortran_flags )
-  message( DEPRECATION " cmake_add_fortran_flags is deprecated, use ecbuild_add_fortran_flags instead." )
+  ecbuild_deprecate( " cmake_add_fortran_flags is deprecated, use ecbuild_add_fortran_flags instead." )
   ecbuild_add_fortran_flags( ${m_fortran_flags} )
 endmacro()
