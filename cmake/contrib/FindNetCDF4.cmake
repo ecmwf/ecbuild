@@ -142,18 +142,23 @@ else()
         endforeach()
     endif()
 
+    set( _f_mod_ext "mod" )
+    if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
+      set( _f_mod_ext "MOD" )
+    endif()
+
     # seed the initial lists of libraries to find with items we know we need
     set( NETCDF_C_INCLUDE_NAMES netcdf.h )
     set( NETCDF_CXX_INCLUDE_NAMES netcdfcpp.h ${NETCDF_C_INCLUDE_NAMES} )
     set( NETCDF_FORTRAN_INCLUDE_NAMES ${NETCDF_C_INCLUDE_NAMES} )
-    set( NETCDF_F90_INCLUDE_NAMES netcdf.mod typesizes.mod ${NETCDF_C_INCLUDE_NAMES} )
+    set( NETCDF_F90_INCLUDE_NAMES netcdf.${_f_mod_ext} typesizes.${_f_mod_ext} ${NETCDF_C_INCLUDE_NAMES} )
 
     set( NETCDF_C_LIBRARY_NAMES netcdf)
     set( NETCDF_CXX_LIBRARY_NAMES netcdf_c++ ${NETCDF_C_LIBRARY_NAMES} )
     set( NETCDF_FORTRAN_LIBRARY_NAMES netcdff ${NETCDF_C_LIBRARY_NAMES})
     set( NETCDF_F90_LIBRARY_NAMES ${NETCDF_FORTRAN_LIBRARY_NAMES} )
 
-    set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.mod typesizes.mod netcdf netcdff netcdf_c++)
+    set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.${_f_mod_ext} typesizes.${_f_mod_ext} netcdf netcdff netcdf_c++)
 
     foreach( LANGUAGE ${NETCDF_LANGUAGE_BINDINGS} )
         ecbuild_debug("FindNetCDF4: looking for ${LANGUAGE} language bindings")
