@@ -22,6 +22,7 @@ set( ECBUILD_TRUST_FLAGS ON )
 
 set( MPIEXEC                 "aprun" )
 set( MPIEXEC_NUMPROC_FLAG    "-n"    )
+set( MPIEXEC_NUMTHREAD_FLAG  "-d"    )
 
 ####################################################################
 # OpenMP FLAGS
@@ -34,8 +35,6 @@ set( OMP_Fortran_FLAGS       "-homp" )
 set( OMPSTUBS_C_FLAGS        "-hnoomp" )
 set( OMPSTUBS_CXX_FLAGS      "-hnoomp" )
 set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
-
-set( OMP_NUMTHREAD_FLAG      "-d" )
 
 ####################################################################
 # Fortran FLAGS

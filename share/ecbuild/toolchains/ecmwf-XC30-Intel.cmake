@@ -17,6 +17,7 @@ set( ECBUILD_TRUST_FLAGS ON )
 
 set( MPIEXEC                 "aprun" )
 set( MPIEXEC_NUMPROC_FLAG    "-n"    )
+set( MPIEXEC_NUMTHREAD_FLAG  "-d"    )
 
 ####################################################################
 # OpenMP FLAGS
@@ -25,8 +26,6 @@ set( MPIEXEC_NUMPROC_FLAG    "-n"    )
 set( OMP_C_FLAGS             "-qopenmp -qopenmp-threadprivate=compat -qopenmp-report=2 -qopt-report-phase=vec,openmp" )
 set( OMP_CXX_FLAGS           "-qopenmp -qopenmp-threadprivate=compat -qopenmp-report=2 -qopt-report-phase=vec,openmp" )
 set( OMP_Fortran_FLAGS       " -openmp  -openmp-threadprivate=compat  -openmp-report=2  -opt-report-phase=vec,openmp" ) # -[q] is missing on purpose, ifort does not take -q as flag
-
-set( OMP_NUMTHREAD_FLAG      "-d" )
 
 ####################################################################
 # COMMON FLAGS
