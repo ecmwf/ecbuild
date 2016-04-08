@@ -29,39 +29,65 @@ function( ecbuild_generate_fortran_interfaces )
   find_program( FCM_EXECUTABLE fcm REQUIRED DOC "Fortran interface generator" )
 
   if( NOT FCM_EXECUTABLE )
-    message( FATAL_ERROR "ecbuild_generate_fortran_interfaces: fcm executable not found." )
-  endif()
-
-  set( FCM_CONFIG_FILE "${PROJECT_SOURCE_DIR}/cmake/fcm-make-interfaces.cfg")
-
-  if( NOT EXISTS ${FCM_CONFIG_FILE} )
-    message( FATAL_ERROR "ecbuild_generate_fortran_interfaces: needs fcm configuration in ${FCM_CONFIG_FILE}" )
+    ecbuild_error( "ecbuild_generate_fortran_interfaces: fcm executable not found." )
   endif()
 
   set( options )
-  set( single_value_args TARGET DESTINATION PARALLEL INCLUDE_DIRS GENERATED SOURCE_DIR )
+  set( single_value_args TARGET DESTINATION PARALLEL INCLUDE_DIRS GENERATED SOURCE_DIR FCM_CONFIG_FILE )
   set( multi_value_args DIRECTORIES )
 
   cmake_parse_arguments( P "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if( NOT DEFINED P_TARGET )
-    message( FATAL_ERROR "ecbuild_generate_fortran_interfaces: TARGET argument missing" )
+    ecbuild_error( "ecbuild_generate_fortran_interfaces: TARGET argument missing" )
   endif()
 
   if( NOT DEFINED P_DESTINATION )
-    message( FATAL_ERROR "ecbuild_generate_fortran_interfaces: DESTINATION argument missing" )
+    ecbuild_error( "ecbuild_generate_fortran_interfaces: DESTINATION argument missing" )
   endif()
 
   if( NOT DEFINED P_DIRECTORIES )
-    message( FATAL_ERROR "ecbuild_generate_fortran_interfaces: DIRECTORIES argument missing" )
+    ecbuild_error( "ecbuild_generate_fortran_interfaces: DIRECTORIES argument missing" )
   endif()
 
   if( NOT DEFINED P_PARALLEL OR (${CMAKE_SYSTEM_NAME} MATCHES "Darwin") )
     set( P_PARALLEL 1 )
   endif()
 
+  ecbuild_debug_var( P_PARALLEL )
+
   if( NOT DEFINED P_SOURCE_DIR )
-    message( FATAL_ERROR "ecbuild_generate_fortran_interfaces: SOURCE_DIR argument missing")
+    ecbuild_error( "ecbuild_generate_fortran_interfaces: SOURCE_DIR argument missing")
+  endif()
+
+  if( DEFINED P_FCM_CONFIG_FILE )
+    set( FCM_CONFIG_FILE ${P_FCM_CONFIG_FILE} )
+  endif()
+
+  if( NOT FCM_CONFIG_FILE )
+    set( PROJECT_FCM_CONFIG_FILE "${PROJECT_SOURCE_DIR}/cmake/fcm-make-interfaces.cfg" )
+    if( EXISTS ${PROJECT_FCM_CONFIG_FILE} )
+      set( FCM_CONFIG_FILE ${PROJECT_FCM_CONFIG_FILE} )
+      ecbuild_debug( "ecbuild_generate_fortran_interfaces: fcm configuration found in ${PROJECT_FCM_CONFIG_FILE}" )
+    else()
+      ecbuild_debug( "ecbuild_generate_fortran_interfaces: fcm configuration not found in ${PROJECT_FCM_CONFIG_FILE}" )
+    endif()
+  endif()
+
+  if( NOT FCM_CONFIG_FILE )
+    set( DEFAULT_FCM_CONFIG_FILE "${ECBUILD_MACROS_DIR}/fcm-make-interfaces.cfg" )
+    if( EXISTS ${DEFAULT_FCM_CONFIG_FILE} )
+      set( FCM_CONFIG_FILE ${DEFAULT_FCM_CONFIG_FILE} )
+      ecbuild_debug( "ecbuild_generate_fortran_interfaces: fcm configuration found in ${DEFAULT_FCM_CONFIG_FILE}" )
+    else()
+      ecbuild_debug( "ecbuild_generate_fortran_interfaces: fcm configuration not found in ${DEFAULT_FCM_CONFIG_FILE}" )
+    endif()
+  endif()
+
+  ecbuild_debug_var( FCM_CONFIG_FILE )
+
+  if( NOT EXISTS ${FCM_CONFIG_FILE} )
+    ecbuild_error( "ecbuild_generate_fortran_interfaces: needs fcm configuration in ${FCM_CONFIG_FILE}" )
   endif()
 
   foreach( _srcdir ${P_DIRECTORIES} )
@@ -90,6 +116,8 @@ function( ecbuild_generate_fortran_interfaces )
   endforeach()
 
   ecbuild_info("Target ${P_TARGET} will generate ${_cnt} interface files using FCM")
+
+
 
   if( DEFINED P_GENERATED )
     set( ${P_GENERATED} ${interface_files} PARENT_SCOPE )
