@@ -1,4 +1,13 @@
 ####################################################################
+# ARCHITECTURE
+####################################################################
+set( CMAKE_SIZEOF_VOID_P 8 )
+
+# Disable relative rpaths as aprun does not respect it
+set( ENABLE_RELATIVE_RPATHS OFF CACHE STRING "Disable relative rpaths" FORCE )
+
+
+####################################################################
 # COMPILER
 ####################################################################
 
