@@ -142,30 +142,28 @@ else()
         endforeach()
     endif()
 
-    set( _f_mod_ext "mod" )
-    if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
-      set( _f_mod_ext "MOD" )
-    endif()
-
     # seed the initial lists of libraries to find with items we know we need
     set( NETCDF_C_INCLUDE_NAMES netcdf.h )
     set( NETCDF_CXX_INCLUDE_NAMES netcdfcpp.h ${NETCDF_C_INCLUDE_NAMES} )
     set( NETCDF_FORTRAN_INCLUDE_NAMES ${NETCDF_C_INCLUDE_NAMES} )
-    set( NETCDF_F90_INCLUDE_NAMES netcdf.${_f_mod_ext} typesizes.${_f_mod_ext} ${NETCDF_C_INCLUDE_NAMES} )
+    set( NETCDF_F90_INCLUDE_NAMES netcdf.mod typesizes.mod ${NETCDF_C_INCLUDE_NAMES} )
 
     set( NETCDF_C_LIBRARY_NAMES netcdf)
     set( NETCDF_CXX_LIBRARY_NAMES netcdf_c++ ${NETCDF_C_LIBRARY_NAMES} )
     set( NETCDF_FORTRAN_LIBRARY_NAMES netcdff ${NETCDF_C_LIBRARY_NAMES})
     set( NETCDF_F90_LIBRARY_NAMES ${NETCDF_FORTRAN_LIBRARY_NAMES} )
 
-    set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.${_f_mod_ext} typesizes.${_f_mod_ext} netcdf netcdff netcdf_c++)
+    set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.mod typesizes.mod netcdf netcdff netcdf_c++)
 
     foreach( LANGUAGE ${NETCDF_LANGUAGE_BINDINGS} )
         ecbuild_debug("FindNetCDF4: looking for ${LANGUAGE} language bindings")
+
         set( NETCDF_${LANGUAGE}_FOUND 1 ) # disable this in following if necessary
 
         # find the NETCDF includes
         foreach( INC ${NETCDF_${LANGUAGE}_INCLUDE_NAMES} )
+          #ecbuild_debug( "FindNetCDF4: looking for include file ${INC}")
+
           find_path( NETCDF_${INC}_INCLUDE_DIR ${INC}
               HINTS ${NETCDF_${LANGUAGE}_INCLUDE_FLAGS}
                     ${NETCDF_ROOT} ${NETCDF_DIR} ${NETCDF_PATH} ${NETCDF4_DIR}
@@ -174,8 +172,25 @@ else()
                   include
                   Include
           )
+          if( NOT NETCDF_${INC}_INCLUDE_DIR )
+            #ecbuild_debug( "FindNetCDF4: ${INC} not found" )
+            GET_FILENAME_COMPONENT( _basename ${INC} NAME_WE )
+            GET_FILENAME_COMPONENT( _ext ${INC} EXT )
+            string( TOUPPER ${_basename} _BASENAME )
+            set( INC_MOD "${_BASENAME}${_ext}")
+            #ecbuild_debug( "FindNetCDF4:     try ${INC_MOD}" )
+            find_path( NETCDF_${INC}_INCLUDE_DIR ${INC_MOD}
+              HINTS ${NETCDF_${LANGUAGE}_INCLUDE_FLAGS}
+                    ${NETCDF_ROOT} ${NETCDF_DIR} ${NETCDF_PATH} ${NETCDF4_DIR}
+                    ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF_PATH ENV NETCDF4_DIR
+              PATH_SUFFIXES
+                  include
+                  Include
+            )
+          endif()
+
           mark_as_advanced( NETCDF_${INC}_INCLUDE_DIR )
-          # ecbuild_debug_var( NETCDF_${INC}_INCLUDE_DIR)
+          #ecbuild_debug_var( NETCDF_${INC}_INCLUDE_DIR)
           if (NETCDF_${INC}_INCLUDE_DIR)
             list( APPEND NETCDF_INCLUDE_DIRS ${NETCDF_${INC}_INCLUDE_DIR} )
           else()
@@ -183,7 +198,7 @@ else()
             if( ${location} EQUAL -1 )
               else()
               if(NETCDF_FIND_REQUIRED)
-                message( SEND_ERROR "\"${INC}\" is not found for NetCDF component ${LANGUAGE}" )
+                ecbuild_error( "\"${INC}\" is not found for NetCDF component ${LANGUAGE}" )
               elseif( NOT NETCDF_FIND_QUIETLY )
                 message( STATUS "\"${INC}\" is not found for NetCDF component ${LANGUAGE}" )
               endif()
