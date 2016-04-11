@@ -27,6 +27,12 @@
 #
 # CMake variables controlling logging behaviour:
 #
+# ECBUILD_LOG_FILE : path
+#   set the log file, defaults to ``${CMAKE_BINARY_DIR}/ecbuild.log``
+#
+#   All ecBuild log macros write their messages to this log file with a time
+#   stamp. Messages emitted by CMake directly cannot be logged to file.
+#
 # ECBUILD_LOG_LEVEL : string, one of DEBUG, INFO, WARN, ERROR, CRITICAL, OFF
 #   set the desired log level, OFF to disable logging altogether
 #
