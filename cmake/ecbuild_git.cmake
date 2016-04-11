@@ -183,15 +183,6 @@ macro( ecbuild_git )
 
     if( _needs_switch AND IS_DIRECTORY "${_PAR_DIR}/.git" )
 
-      # debug_here( ABS_PAR_DIR )
-      # debug_here( _sha1 )
-      # debug_here( _current_branch )
-      # debug_here( _current_tag )
-      # debug_here( _PAR_TAG )
-      # debug_here( _PAR_BRANCH )
-      # debug_here( _needs_switch )
-      # debug_here( _PAR_UPDATE )
-
       if( DEFINED _PAR_BRANCH )
         set ( _gitref ${_PAR_BRANCH} )
         message(STATUS "Updating ${_PAR_PROJECT} to head of BRANCH ${_PAR_BRANCH}...")

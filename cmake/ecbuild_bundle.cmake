@@ -9,10 +9,6 @@
 # Set policies
 include( ecbuild_policies NO_POLICY_SCOPE )
 
-macro( debug_here VAR )
-  message( STATUS " >>>>> ${VAR} [${${VAR}}]")
-endmacro()
-
 include(CMakeParseArguments)
 
 include(ecbuild_git)
