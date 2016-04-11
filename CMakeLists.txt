@@ -37,9 +37,7 @@ add_subdirectory( share )
 add_subdirectory( cmake )
 add_subdirectory( doc )
 
-if( ENABLE_INSTALL )
-	install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
-endif()
+install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
 
 ############################################################################################
 # finalize

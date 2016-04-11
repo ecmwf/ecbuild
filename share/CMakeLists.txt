@@ -2,6 +2,4 @@
 #	SOURCE_PACK ecmwf_license_header.txt
 #	DONT_PACK_DIRS ecbuild )
 
-if( ENABLE_INSTALL )
-  install( DIRECTORY ecbuild/toolchains DESTINATION ${INSTALL_DATA_DIR} )
-endif()
+install( DIRECTORY ecbuild/toolchains DESTINATION ${INSTALL_DATA_DIR} )
