@@ -21,7 +21,7 @@
 macro( ecbuild_requires_macro_version req_vrs )
 
 	if( ECBUILD_MACRO_VERSION VERSION_LESS ${req_vrs} )
-		message( FATAL_ERROR "${PROJECT_NAME} needs ecbuild macro version >= ${req_vrs}" )
+		ecbuild_critical( "${PROJECT_NAME} needs ecbuild macro version >= ${req_vrs}" )
 	endif()
 
 endmacro()

@@ -45,13 +45,13 @@ macro( ecbuild_find_perl )
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_p_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_find_perl(): \"${_p_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_find_perl(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
   find_package( Perl )
 
   if( NOT PERL_EXECUTABLE AND _p_REQUIRED )
-    message( FATAL_ERROR "Failed to find Perl (REQUIRED)" )
+    ecbuild_critical( "Failed to find Perl (REQUIRED)" )
   endif()
 
   if( PERL_EXECUTABLE )

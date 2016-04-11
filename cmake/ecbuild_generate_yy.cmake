@@ -82,23 +82,23 @@ macro( ecbuild_generate_yy )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_PAR_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_generate_yy(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_generate_yy(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
   if( NOT _PAR_YYPREFIX  )
-    message(FATAL_ERROR "The call to ecbuild_generate_yy() doesn't specify the YYPREFIX.")
+    ecbuild_critical("The call to ecbuild_generate_yy() doesn't specify the YYPREFIX.")
   endif()
 
   if( NOT _PAR_YACC  )
-    message(FATAL_ERROR "The call to ecbuild_generate_yy() doesn't specify the YACC file.")
+    ecbuild_critical("The call to ecbuild_generate_yy() doesn't specify the YACC file.")
   endif()
 
   if( NOT _PAR_LEX  )
-    message(FATAL_ERROR "The call to ecbuild_generate_yy() doesn't specify the LEX file.")
+    ecbuild_critical("The call to ecbuild_generate_yy() doesn't specify the LEX file.")
   endif()
 
   if( NOT _PAR_DEPENDANT )
-    message(FATAL_ERROR "The call to ecbuild_generate_yy() doesn't specify the DEPENDANT files.")
+    ecbuild_critical("The call to ecbuild_generate_yy() doesn't specify the DEPENDANT files.")
   endif()
 
   set( BASE ${_PAR_YYPREFIX}_${_PAR_YACC} )

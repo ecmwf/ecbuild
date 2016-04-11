@@ -55,5 +55,5 @@ if( NOT CMAKE_BUILD_TYPE MATCHES "None"  AND
 	  NOT CMAKE_BUILD_TYPE MATCHES "Production" AND
     NOT CMAKE_BUILD_TYPE MATCHES "Release"  AND
     NOT CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" )
-    message( FATAL_ERROR "CMAKE_BUILD_TYPE is not recognized. ${_BUILD_TYPE_MSG}" )
+    ecbuild_critical( "CMAKE_BUILD_TYPE is not recognized. ${_BUILD_TYPE_MSG}" )
 endif()

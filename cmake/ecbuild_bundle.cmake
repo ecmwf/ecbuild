@@ -129,7 +129,7 @@ macro( ecbuild_bundle )
   string(TOUPPER "${_PAR_PROJECT}" PNAME)
 
   if( BUNDLE_SKIP_${PNAME} )
-    message( STATUS "Skipping bundle project ${PNAME}" )
+    ecbuild_info( "Skipping bundle project ${PNAME}" )
   else()
 
     if( _PAR_STASH )

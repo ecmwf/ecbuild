@@ -19,11 +19,11 @@ macro( ecbuild_get_resources )
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_PAR_UNPARSED_ARGUMENTS)
-        message(FATAL_ERROR "Unknown keywords given to ecbuild_get_resources(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+        ecbuild_critical("Unknown keywords given to ecbuild_get_resources(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
     if( NOT _PAR_LIST )
-        message( FATAL_ERROR "Missing parameter LIST of resources in macro ecbuild_get_resources()" )
+        ecbuild_critical( "Missing parameter LIST of resources in macro ecbuild_get_resources()" )
     endif()
 
     if( NOT _PAR_TO_DIR )

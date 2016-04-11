@@ -81,7 +81,7 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
           ecbuild_debug( "Fortran FLAG [${_flags}] added" )
         endif()
       else()
-        message( STATUS "Unrecognised Fortran flag [${_flags}] -- skipping" )
+        ecbuild_info( "Unrecognised Fortran flag [${_flags}] -- skipping" )
       endif()
     endif()
 

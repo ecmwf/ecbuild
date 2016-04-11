@@ -59,11 +59,11 @@ macro( ecbuild_check_cxx_source_return SOURCE )
     cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_p_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_check_cxx_source_return(): \"${_p_UNPARSED_ARGUMENTS}\"")
+      ecbuild_critical("Unknown keywords given to ecbuild_check_cxx_source_return(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
 
     if( NOT _p_VAR OR NOT _p_OUTPUT )
-      message(FATAL_ERROR "The call to ecbuild_check_cxx_source_return() doesn't specify either SOURCE, VAR or OUTPUT")
+      ecbuild_critical("The call to ecbuild_check_cxx_source_return() doesn't specify either SOURCE, VAR or OUTPUT")
     endif()
 
     set( _msg "Testing ${_p_VAR}:" )
@@ -98,7 +98,7 @@ macro( ecbuild_check_cxx_source_return SOURCE )
 
         file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_p_VAR}.cxx" "${SOURCE}\n" )
 
-        message( STATUS "${_msg}" )
+        ecbuild_debug( "${_msg}" )
         try_run( ${_p_VAR}_EXITCODE ${_p_VAR}_COMPILED
           ${CMAKE_BINARY_DIR}
           ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_p_VAR}.cxx
@@ -116,17 +116,17 @@ macro( ecbuild_check_cxx_source_return SOURCE )
         # if it did not compile make the return value fail code of 1
 
         if( NOT ${_p_VAR}_COMPILED )
-          message( STATUS "${_msg} failed to compile" )
+          ecbuild_debug( "${_msg} failed to compile" )
         endif()
 
         if( "${${_p_VAR}_EXITCODE}" MATCHES  "FAILED_TO_RUN" )
-          message( STATUS "${_msg} failed to run" )
+          ecbuild_debug( "${_msg} failed to run" )
         endif()
 
         # if the return value was 0 then it worked
         if( ${_p_VAR}_COMPILED AND "${${_p_VAR}_EXITCODE}" EQUAL 0 )
 
-          message(STATUS "${_msg} Success")
+          ecbuild_deubg("${_msg} Success")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
             "Performing C++ SOURCE FILE Test ${_p_VAR} succeded with the following compile output:\n"
             "${compile_OUTPUT}\n"
@@ -148,7 +148,7 @@ macro( ecbuild_check_cxx_source_return SOURCE )
             set(${_p_OUTPUT} "" CACHE INTERNAL "Test ${_p_VAR} output")
           endif()
 
-          message(STATUS "Test ${_p_VAR} - Failed")
+          ecbuild_debug("Test ${_p_VAR} - Failed")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
             "Performing C++ SOURCE FILE Test ${_p_VAR} failed with the following compile output:\n"
             "${compile_OUTPUT}\n"

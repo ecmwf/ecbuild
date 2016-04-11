@@ -23,7 +23,7 @@ math( EXPR EC_OS_BITS "${CMAKE_SIZEOF_VOID_P} * 8" )
 
 # we only support 32 and 64 bit operating systems
 if( NOT EC_OS_BITS EQUAL "32" AND NOT EC_OS_BITS EQUAL "64" )
-  message( FATAL_ERROR "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
+  ecbuild_critical( "operating system ${CMAKE_SYSTEM} ${EC_OS_BITS} bits -- ecbuild only supports 32 or 64 bit OS's" )
 endif()
 
 ############################################################################################
@@ -56,21 +56,21 @@ if( ENABLE_OS_TYPES_TEST )
 	ecbuild_cache_check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
 	ecbuild_cache_check_type_size( off_t          EC_SIZEOF_OFF_T       )
 
-#	message( STATUS "sizeof void*  [${EC_SIZEOF_PTR}]" )
-#	message( STATUS "sizeof off_t  [${EC_SIZEOF_OFF_T}]" )
-#	message( STATUS "sizeof int    [${EC_SIZEOF_INT}]" )
-#	message( STATUS "sizeof short  [${EC_SIZEOF_SHORT}]" )
-#	message( STATUS "sizeof long   [${EC_SIZEOF_LONG}]" )
-#	message( STATUS "sizeof size_t [${EC_SIZEOF_SIZE_T}]" )
-#	message( STATUS "sizeof float  [${EC_SIZEOF_FLOAT}]" )
-#	message( STATUS "sizeof double [${EC_SIZEOF_DOUBLE}]" )
-#	message( STATUS "sizeof long long   [${EC_SIZEOF_LONG_LONG}]" )
-#	message( STATUS "sizeof long double [${EC_SIZEOF_LONG_DOUBLE}]" )
+#	ecbuild_info( "sizeof void*  [${EC_SIZEOF_PTR}]" )
+#	ecbuild_info( "sizeof off_t  [${EC_SIZEOF_OFF_T}]" )
+#	ecbuild_info( "sizeof int    [${EC_SIZEOF_INT}]" )
+#	ecbuild_info( "sizeof short  [${EC_SIZEOF_SHORT}]" )
+#	ecbuild_info( "sizeof long   [${EC_SIZEOF_LONG}]" )
+#	ecbuild_info( "sizeof size_t [${EC_SIZEOF_SIZE_T}]" )
+#	ecbuild_info( "sizeof float  [${EC_SIZEOF_FLOAT}]" )
+#	ecbuild_info( "sizeof double [${EC_SIZEOF_DOUBLE}]" )
+#	ecbuild_info( "sizeof long long   [${EC_SIZEOF_LONG_LONG}]" )
+#	ecbuild_info( "sizeof long double [${EC_SIZEOF_LONG_DOUBLE}]" )
 
-#	message( STATUS "system sizeof :" )
-#	message( STATUS "  void*  [${EC_SIZEOF_PTR}]  size_t [${EC_SIZEOF_SIZE_T}]  off_t  [${EC_SIZEOF_OFF_T}]   short  [${EC_SIZEOF_SHORT}]" )
-#	message( STATUS "  int    [${EC_SIZEOF_INT}]  long   [${EC_SIZEOF_LONG}]  long long   [${EC_SIZEOF_LONG_LONG}]" )
-#	message( STATUS "  float  [${EC_SIZEOF_FLOAT}]  double [${EC_SIZEOF_DOUBLE}]  long double [${EC_SIZEOF_LONG_DOUBLE}]" )
+#	ecbuild_info( "system sizeof :" )
+#	ecbuild_info( "  void*  [${EC_SIZEOF_PTR}]  size_t [${EC_SIZEOF_SIZE_T}]  off_t  [${EC_SIZEOF_OFF_T}]   short  [${EC_SIZEOF_SHORT}]" )
+#	ecbuild_info( "  int    [${EC_SIZEOF_INT}]  long   [${EC_SIZEOF_LONG}]  long long   [${EC_SIZEOF_LONG_LONG}]" )
+#	ecbuild_info( "  float  [${EC_SIZEOF_FLOAT}]  double [${EC_SIZEOF_DOUBLE}]  long double [${EC_SIZEOF_LONG_DOUBLE}]" )
 
 endif()
 
@@ -231,7 +231,7 @@ if( ENABLE_PROFILING )
     unset( _flags )
 
   else()
-    message( WARNING "Profiling enabled but ecbuild doesn't know how to enable for this particular compiler ${CMAKE_C_COMPILER_ID}")
+    ecbuild_warn( "Profiling enabled but ecbuild doesn't know how to enable for this particular compiler ${CMAKE_C_COMPILER_ID}")
   endif()
 
 endif()
@@ -377,7 +377,7 @@ endif()
 if( ${CMAKE_SYSTEM_NAME} MATCHES "CYGWIN" )
 
 	set( EC_OS_NAME "cygwin" )
-	message( WARNING "Building on Cygwin should work but is untested" )
+	ecbuild_warn( "Building on Cygwin should work but is untested" )
 
 endif()
 
@@ -386,11 +386,11 @@ endif()
 if( ${EC_OS_NAME} MATCHES "UNKNOWN" )
 
 	if( DISABLE_OS_CHECK )
-		message( WARNING "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]"
-						 " -- DISABLE_OS_CHECK is ON so proceeding at your own risk ..." )
+		ecbuild_warn( "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]"
+                  " -- DISABLE_OS_CHECK is ON so proceeding at your own risk ..." )
 	else()
-		message( FATAL_ERROR "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]"
-							 " -- refusing to continue. Disable this check with -DDISABLE_OS_CHECK=ON" )
+		ecbuild_critical( "ecBuild is untested for this operating system: [${CMAKE_SYSTEM_NAME}]"
+                      " -- refusing to continue. Disable this check with -DDISABLE_OS_CHECK=ON" )
 	endif()
 
 endif()

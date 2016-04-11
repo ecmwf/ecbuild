@@ -145,7 +145,7 @@ macro( ecbuild_add_test )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_PAR_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_add_test(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_add_test(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
   set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
@@ -187,7 +187,7 @@ macro( ecbuild_add_test )
   if( NOT _PAR_TYPE AND DEFINED _PAR_TARGET )
     set( _PAR_TYPE "EXE" )
     if( NOT _PAR_SOURCES )
-      message(FATAL_ERROR "The call to ecbuild_add_test() defines a TARGET without SOURCES.")
+      ecbuild_critical("The call to ecbuild_add_test() defines a TARGET without SOURCES.")
     endif()
   endif()
 
@@ -195,7 +195,7 @@ macro( ecbuild_add_test )
     if( PYTHONINTERP_FOUND )
       set( _PAR_COMMAND ${PYTHON_EXECUTABLE} )
     else()
-      message( WARNING "Requested a python test but python interpreter not found - disabling test\nPYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
+      ecbuild_warn( "Requested a python test but python interpreter not found - disabling test\nPYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
       set( _PAR_ENABLED 0 )
     endif()
   endif()
@@ -203,15 +203,15 @@ macro( ecbuild_add_test )
   ### further checks
 
   if( _PAR_ENABLED AND NOT _PAR_TARGET AND NOT _PAR_COMMAND )
-    message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a TARGET nor a COMMAND.")
+    ecbuild_critical("The call to ecbuild_add_test() defines neither a TARGET nor a COMMAND.")
   endif()
 
   if( _PAR_ENABLED AND NOT _PAR_COMMAND AND NOT _PAR_SOURCES )
-    message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a COMMAND nor SOURCES, so no test can be defined or built.")
+    ecbuild_critical("The call to ecbuild_add_test() defines neither a COMMAND nor SOURCES, so no test can be defined or built.")
   endif()
 
   if( _PAR_TYPE MATCHES "SCRIPT" AND NOT _PAR_COMMAND )
-    message(FATAL_ERROR "The call to ecbuild_add_test() defines a 'script' but doesn't specify the COMMAND.")
+    ecbuild_critical("The call to ecbuild_add_test() defines a 'script' but doesn't specify the COMMAND.")
   endif()
 
   ### conditional build

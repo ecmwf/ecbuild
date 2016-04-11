@@ -42,7 +42,7 @@ function( _download_test_data _p_NAME _p_DIRNAME )
     else()
 
       if( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
-        message( WARNING "Couldn't find curl neither wget -- cannot download test data from server.\nPlease obtain the test data by other means and pleace it in the build directory." )
+        ecbuild_warn( "Couldn't find curl neither wget -- cannot download test data from server.\nPlease obtain the test data by other means and pleace it in the build directory." )
         set( WARNING_CANNOT_DOWNLOAD_TEST_DATA 1 CACHE INTERNAL "Couldn't find curl neither wget -- cannot download test data from server" )
         mark_as_advanced( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
       endif()
@@ -130,7 +130,7 @@ function( ecbuild_get_test_data )
     cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_p_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_get_test_data(): \"${_p_UNPARSED_ARGUMENTS}\"")
+      ecbuild_critical("Unknown keywords given to ecbuild_get_test_data(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
 
     file( RELATIVE_PATH currdir ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
@@ -138,7 +138,7 @@ function( ecbuild_get_test_data )
     ### check parameters
 
     if( NOT _p_NAME )
-      message(FATAL_ERROR "ecbuild_get_test_data() expects a NAME")
+      ecbuild_critical("ecbuild_get_test_data() expects a NAME")
     endif()
 
     if( NOT _p_TARGET )
@@ -168,8 +168,6 @@ function( ecbuild_get_test_data )
 
         if( NOT _p_MD5 AND NOT _p_SHA1) # use remote md5
 
-#            message( STATUS " ---  getting MD5 sum " )
-
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
                                 COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
                                 DEPENDS ${_p_NAME} )
@@ -187,8 +185,6 @@ function( ecbuild_get_test_data )
 
         if( _p_MD5 )
 
-#            message( STATUS " ---  computing MD5 sum [${_p_MD5}]" )
-
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
                                 COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
                                 DEPENDS ${_p_NAME} )
@@ -205,8 +201,6 @@ function( ecbuild_get_test_data )
         endif()
 
 #        if( _p_SHA1 )
-
-##            message( STATUS " ---  computing SHA1 sum [${_p_SHA1}]" )
 
 #            find_program( SHASUM NAMES sha1sum shasum )
 #            if( SHASUM )
@@ -313,17 +307,17 @@ function( ecbuild_get_test_multidata )
     cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_p_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_get_test_data(): \"${_p_UNPARSED_ARGUMENTS}\"")
+      ecbuild_critical("Unknown keywords given to ecbuild_get_test_data(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
 
     ### check parameters
 
     if( NOT _p_NAMES )
-      message(FATAL_ERROR "ecbuild_get_test_data() expects a NAMES")
+      ecbuild_critical("ecbuild_get_test_data() expects a NAMES")
     endif()
 
     if( NOT _p_TARGET )
-      message(FATAL_ERROR "ecbuild_get_test_data() expects a TARGET")
+      ecbuild_critical("ecbuild_get_test_data() expects a TARGET")
     endif()
 
 #    ecbuild_debug_var( _p_TARGET )

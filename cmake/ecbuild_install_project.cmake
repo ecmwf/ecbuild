@@ -79,11 +79,11 @@ macro( ecbuild_install_project )
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_PAR_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_install_project(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+      ecbuild_critical("Unknown keywords given to ecbuild_install_project(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
     if( NOT _PAR_NAME  )
-      message(FATAL_ERROR "The call to ecbuild_install_project() doesn't specify the NAME.")
+      ecbuild_critical("The call to ecbuild_install_project() doesn't specify the NAME.")
     endif()
 
     ### EXTRA TARGETS #####################################################
@@ -201,7 +201,7 @@ macro( ecbuild_install_project )
         set( ${PNAME}_HAVE_${_f} 1 )
     endforeach()
 
-    message( STATUS "${PROJECT_NAME_CAPS}_TPLS: ${${PROJECT_NAME_CAPS}_TPLS}" )
+    ecbuild_info( "${PROJECT_NAME_CAPS}_TPLS: ${${PROJECT_NAME_CAPS}_TPLS}" )
 
     foreach( _tpl ${${PNAME}_TPLS} )
         string( TOUPPER ${_tpl} _TPL )

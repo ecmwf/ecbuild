@@ -80,15 +80,15 @@ macro( ecbuild_git )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
   if( DEFINED _PAR_BRANCH AND DEFINED _PAR_TAG )
-    message( FATAL_ERROR "Cannot defined both BRANCH and TAG in macro ecbuild_git" )
+    ecbuild_critical( "Cannot defined both BRANCH and TAG in macro ecbuild_git" )
   endif()
 
   if( _PAR_UPDATE AND _PAR_NOREMOTE )
-    message( FATAL_ERROR "Cannot pass both NOREMOTE and UPDATE in macro ecbuild_git" )
+    ecbuild_critical( "Cannot pass both NOREMOTE and UPDATE in macro ecbuild_git" )
   endif()
 
   if(_PAR_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_git(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_git(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
   if( ECBUILD_GIT )
@@ -102,15 +102,15 @@ macro( ecbuild_git )
 
     if( NOT EXISTS "${_PAR_DIR}" )
 
-      message( STATUS "Cloning ${_PAR_PROJECT} from ${_PAR_URL} into ${_PAR_DIR}...")
+      ecbuild_info( "Cloning ${_PAR_PROJECT} from ${_PAR_URL} into ${_PAR_DIR}...")
       execute_process(
         COMMAND ${GIT_EXECUTABLE} "clone" ${_PAR_URL} ${clone_args} ${_PAR_DIR} "-q"
         RESULT_VARIABLE nok ERROR_VARIABLE error
         WORKING_DIRECTORY "${PARENT_DIR}")
       if(nok)
-        message(FATAL_ERROR "${_PAR_DIR} git clone failed:\n  ${GIT_EXECUTABLE} clone ${_PAR_URL} ${clone_args} ${_PAR_DIR} -q\n  ${error}\n")
+        ecbuild_critical("${_PAR_DIR} git clone failed:\n  ${GIT_EXECUTABLE} clone ${_PAR_URL} ${clone_args} ${_PAR_DIR} -q\n  ${error}\n")
       endif()
-      message( STATUS "${_PAR_DIR} retrieved.")
+      ecbuild_info( "${_PAR_DIR} retrieved.")
       set( _needs_switch 1 )
 
     endif()
@@ -124,7 +124,7 @@ macro( ecbuild_git )
                        OUTPUT_STRIP_TRAILING_WHITESPACE
                        WORKING_DIRECTORY "${ABS_PAR_DIR}" )
       if(nok)
-        message(STATUS "git rev-parse HEAD on ${_PAR_DIR} failed:\n ${error}")
+        ecbuild_info("git rev-parse HEAD on ${_PAR_DIR} failed:\n ${error}")
       endif()
 
       execute_process( COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
@@ -132,7 +132,7 @@ macro( ecbuild_git )
                        OUTPUT_STRIP_TRAILING_WHITESPACE
                        WORKING_DIRECTORY "${ABS_PAR_DIR}" )
       if( nok OR _current_branch STREQUAL "" )
-        message(STATUS "git rev-parse --abbrev-ref HEAD on ${_PAR_DIR} failed:\n ${error}")
+        ecbuild_info("git rev-parse --abbrev-ref HEAD on ${_PAR_DIR} failed:\n ${error}")
       endif()
 
       execute_process( COMMAND ${GIT_EXECUTABLE} describe --exact-match --abbrev=0
@@ -144,7 +144,7 @@ macro( ecbuild_git )
         unset( _current_tag )
       else()
         if( nok )
-          message(STATUS "git describe --exact-match --abbrev=0 on ${_PAR_DIR} failed:\n ${error}")
+          ecbuild_info("git describe --exact-match --abbrev=0 on ${_PAR_DIR} failed:\n ${error}")
         endif()
       endif()
 
@@ -154,7 +154,7 @@ macro( ecbuild_git )
                          OUTPUT_STRIP_TRAILING_WHITESPACE
                          WORKING_DIRECTORY "${ABS_PAR_DIR}" )
         if( nok OR _current_tag STREQUAL "" )
-          message(STATUS "git name-rev --tags --name-only on ${_PAR_DIR} failed:\n ${error}")
+          ecbuild_info("git name-rev --tags --name-only on ${_PAR_DIR} failed:\n ${error}")
         endif()
       endif()
 
@@ -185,9 +185,9 @@ macro( ecbuild_git )
 
       if( DEFINED _PAR_BRANCH )
         set ( _gitref ${_PAR_BRANCH} )
-        message(STATUS "Updating ${_PAR_PROJECT} to head of BRANCH ${_PAR_BRANCH}...")
+        ecbuild_info("Updating ${_PAR_PROJECT} to head of BRANCH ${_PAR_BRANCH}...")
       else()
-        message(STATUS "Updating ${_PAR_PROJECT} to TAG ${_PAR_TAG}...")
+        ecbuild_info("Updating ${_PAR_PROJECT} to TAG ${_PAR_TAG}...")
         set ( _gitref ${_PAR_TAG} )
       endif()
 
@@ -195,34 +195,34 @@ macro( ecbuild_git )
 
       if( NOT _PAR_NOREMOTE )
 
-        message(STATUS "git fetch --all @ ${ABS_PAR_DIR}")
+        ecbuild_info("git fetch --all @ ${ABS_PAR_DIR}")
         execute_process( COMMAND "${GIT_EXECUTABLE}" fetch --all -q
                          RESULT_VARIABLE nok ERROR_VARIABLE error
                          WORKING_DIRECTORY "${ABS_PAR_DIR}")
         if(nok)
-          message(STATUS "git fetch --all in ${_PAR_DIR} failed:\n ${error}")
+          ecbuild_warn("git fetch --all in ${_PAR_DIR} failed:\n ${error}")
         endif()
 
-        message(STATUS "git fetch --all --tags @ ${ABS_PAR_DIR}")
+        ecbuild_info("git fetch --all --tags @ ${ABS_PAR_DIR}")
         execute_process( COMMAND "${GIT_EXECUTABLE}" fetch --all --tags -q
                          RESULT_VARIABLE nok ERROR_VARIABLE error
                          WORKING_DIRECTORY "${ABS_PAR_DIR}")
         if(nok)
-          message(STATUS "git fetch --all --tags in ${_PAR_DIR} failed:\n ${error}")
+          ecbuild_warn("git fetch --all --tags in ${_PAR_DIR} failed:\n ${error}")
         endif()
 
       else()
-        message(STATUS "${_PAR_DIR} marked NOREMOTE : Skipping git fetch")
+        ecbuild_info("${_PAR_DIR} marked NOREMOTE : Skipping git fetch")
       endif()
 
       # checking out gitref
 
-      message(STATUS "git checkout ${_gitref} @ ${ABS_PAR_DIR}")
+      ecbuild_info("git checkout ${_gitref} @ ${ABS_PAR_DIR}")
       execute_process( COMMAND "${GIT_EXECUTABLE}" checkout -q "${_gitref}"
                        RESULT_VARIABLE nok ERROR_VARIABLE error
                        WORKING_DIRECTORY "${ABS_PAR_DIR}")
       if(nok)
-        message(FATAL_ERROR "git checkout ${_gitref} on ${_PAR_DIR} failed:\n  ${GIT_EXECUTABLE} checkout -q ${_gitref}\n  ${error}")
+        ecbuild_critical("git checkout ${_gitref} on ${_PAR_DIR} failed:\n  ${GIT_EXECUTABLE} checkout -q ${_gitref}\n  ${error}")
       endif()
 
       if( DEFINED _PAR_BRANCH AND _PAR_UPDATE ) #############################################################################
@@ -231,7 +231,7 @@ macro( ecbuild_git )
                          RESULT_VARIABLE nok ERROR_VARIABLE error
                          WORKING_DIRECTORY "${ABS_PAR_DIR}")
         if(nok)
-          message(STATUS "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
+          ecbuild_warn("git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
         endif()
 
       endif() ####################################################################################
