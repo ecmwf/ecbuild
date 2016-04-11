@@ -15,9 +15,9 @@ ecbuild_declare_project()
 # Python
 # Can specify non-default distribution with CMake variable PYTHON_EXECUTABLE
 ecbuild_find_python()
-message( STATUS "PYTHON_EXECUTABLE    : ${PYTHON_EXECUTABLE}")
-message( STATUS "PYTHON_INCLUDE_DIRS  : ${PYTHON_INCLUDE_DIRS}")
-message( STATUS "PYTHON_LIBRARIES     : ${PYTHON_LIBRARIES}")
+ecbuild_info("PYTHON_EXECUTABLE    : ${PYTHON_EXECUTABLE}")
+ecbuild_info("PYTHON_INCLUDE_DIRS  : ${PYTHON_INCLUDE_DIRS}")
+ecbuild_info("PYTHON_LIBRARIES     : ${PYTHON_LIBRARIES}")
 
 # Boost
 # Can specify non-default distribution with CMake variable BOOST_ROOT
@@ -25,7 +25,7 @@ ecbuild_add_extra_search_paths( boost )
 set( Boost_MINIMUM_VERSION "1.47" )
 find_package( Boost ${Boost_MINIMUM_VERSION} REQUIRED
               COMPONENTS python )
-message( STATUS "Boost_LIBRARIES     : ${Boost_LIBRARIES}" )
+ecbuild_info("Boost_LIBRARIES     : ${Boost_LIBRARIES}" )
 
 ###############################################################################
 # Contents
@@ -48,13 +48,13 @@ ecbuild_print_summary()
 
 
 
-message( STATUS "" )
-message( STATUS "To test the library:" )
-message( STATUS "--------------------" )
-message( STATUS "make" )
-message( STATUS "cd ${CMAKE_CURRENT_BINARY_DIR}/lib" )
-message( STATUS "python" )
-message( STATUS ">>> import libmypython" )
-message( STATUS ">>> help(libmypython)" )
-message( STATUS "" )
-message( STATUS "---------------------------------------------------------" )
+ecbuild_info( "" )
+ecbuild_info( "To test the library:" )
+ecbuild_info( "--------------------" )
+ecbuild_info( "make" )
+ecbuild_info( "cd ${CMAKE_CURRENT_BINARY_DIR}/lib" )
+ecbuild_info( "python" )
+ecbuild_info( ">>> import libmypython" )
+ecbuild_info( ">>> help(libmypython)" )
+ecbuild_info( "" )
+ecbuild_info( "---------------------------------------------------------" )
