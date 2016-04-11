@@ -126,7 +126,7 @@ macro( ecbuild_check_cxx_source_return SOURCE )
         # if the return value was 0 then it worked
         if( ${_p_VAR}_COMPILED AND "${${_p_VAR}_EXITCODE}" EQUAL 0 )
 
-          ecbuild_deubg("${_msg} Success")
+          ecbuild_debug("${_msg} Success")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
             "Performing C++ SOURCE FILE Test ${_p_VAR} succeded with the following compile output:\n"
             "${compile_OUTPUT}\n"
