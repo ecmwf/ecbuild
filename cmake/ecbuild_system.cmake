@@ -59,20 +59,23 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     set( ECBUILD_PROJECTS  "" CACHE INTERNAL "list of ecbuild (sub)projects that use ecbuild" )
 
-    message( STATUS "ecbuild   ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
-    message( STATUS "cmake     ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
+    # Include log macros since these are used right away
+    include( ecbuild_log )
+
+    ecbuild_info( "ecbuild   ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
+    ecbuild_info( "cmake     ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
 
     if( CMAKE_TOOLCHAIN_FILE )
-    message( STATUS "toolchain ${CMAKE_TOOLCHAIN_FILE}" )
+      ecbuild_info( "toolchain ${CMAKE_TOOLCHAIN_FILE}" )
     endif()
 
     if( ECBUILD_CONFIG )
-    message( STATUS "config    ${ECBUILD_CONFIG}" )
+      ecbuild_info( "config    ${ECBUILD_CONFIG}" )
     endif()
 
     if( ECBUILD_CACHE )
-    include( ${ECBUILD_CACHE} )
-      message( STATUS "cache     ${ECBUILD_CACHE}" )
+      include( ${ECBUILD_CACHE} )
+      ecbuild_info( "cache     ${ECBUILD_CACHE}" )
     endif()
 
     message( STATUS "---------------------------------------------------------" )
@@ -156,7 +159,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     ############################################################################################
     # add our macros
 
-    include( ecbuild_log )
     include( ecbuild_list_macros )
     include( ecbuild_list_add_pattern )
     include( ecbuild_list_exclude_pattern )
@@ -256,7 +258,7 @@ else()
     #     set( ECBUILD_CONFIG "<subproject-config>.cmake" )
     if( ECBUILD_CONFIG )
         message( STATUS "---------------------------------------------------------" )
-        message( STATUS "config    ${ECBUILD_CONFIG}" )
+        ecbuild_info( "config    ${ECBUILD_CONFIG}" )
         include( ${ECBUILD_CONFIG} )
     endif()
     include( ecbuild_compiler_flags )
