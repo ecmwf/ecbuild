@@ -61,7 +61,10 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args( OPENCL DEFAULT_MSG
+# Handle the QUIET and REQUIRED arguments and set OPENCL_FOUND to TRUE
+# if all listed variables are TRUE
+# Note: capitalisation of the package name must be the same as in the file name
+find_package_handle_standard_args( OpenCL DEFAULT_MSG
                                    OPENCL_LIBRARIES OPENCL_INCLUDE_DIRS )
 
 mark_as_advanced( OPENCL_INCLUDE_DIRS OPENCL_LIBRARIES )

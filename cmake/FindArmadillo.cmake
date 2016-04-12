@@ -34,9 +34,10 @@ set( ARMADILLO_INCLUDE_DIRS ${ARMADILLO_INCLUDE_DIR} )
 
 include(FindPackageHandleStandardArgs)
 
-# handle the QUIETLY and REQUIRED arguments and set ARMADILLO_FOUND to TRUE
+# handle the QUIET and REQUIRED arguments and set ARMADILLO_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(ARMADILLO  DEFAULT_MSG
+# Note: capitalisation of the package name must be the same as in the file name
+find_package_handle_standard_args(Armadillo  DEFAULT_MSG
                                   ARMADILLO_LIBRARY ARMADILLO_INCLUDE_DIR)
 
 mark_as_advanced(ARMADILLO_INCLUDE_DIR ARMADILLO_LIBRARY )
