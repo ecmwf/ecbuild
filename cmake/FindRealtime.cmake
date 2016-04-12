@@ -18,5 +18,7 @@ find_library( RT_LIB rt )
 mark_as_advanced( RT_LIB )
 
 include(FindPackageHandleStandardArgs)
-
-find_package_handle_standard_args(REALTIME  DEFAULT_MSG RT_LIB )
+# Handle the QUIET and REQUIRED arguments and set REALTIME_FOUND to TRUE
+# if all listed variables are TRUE
+# Note: capitalisation of the package name must be the same as in the file name
+find_package_handle_standard_args(Realtime  DEFAULT_MSG RT_LIB )

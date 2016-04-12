@@ -62,7 +62,7 @@ macro( ecbuild_declare_project_files )
         if( EXISTS ${_abspath} )
             list( REMOVE_ITEM EC_UNUSED_FILES ${_abspath} )
         else()
-        message( FATAL_ERROR "In directory ${CMAKE_CURRENT_SOURCE_DIR} file ${_afile} was declared in CMakeLists.txt but not found" )
+        ecbuild_critical( "In directory ${CMAKE_CURRENT_SOURCE_DIR} file ${_afile} was declared in CMakeLists.txt but not found" )
         endif()
       endif()
 

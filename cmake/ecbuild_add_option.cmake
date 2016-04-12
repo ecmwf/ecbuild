@@ -91,13 +91,13 @@ macro( ecbuild_add_option )
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if( _p_UNPARSED_ARGUMENTS )
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_add_option(): \"${_p_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_add_option(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
   # check FEATURE parameter
 
   if( NOT _p_FEATURE  )
-    message(FATAL_ERROR "The call to ecbuild_add_option() doesn't specify the FEATURE.")
+    ecbuild_critical("The call to ecbuild_add_option() doesn't specify the FEATURE.")
   endif()
 
   # check DEFAULT parameter
@@ -106,7 +106,7 @@ macro( ecbuild_add_option )
     set( _p_DEFAULT ON )
   else()
     if( NOT _p_DEFAULT MATCHES "[Oo][Nn]" AND NOT _p_DEFAULT MATCHES "[Oo][Ff][Ff]" )
-      message(FATAL_ERROR "In macro ecbuild_add_option(), DEFAULT is either ON or OFF: \"${_p_DEFAULT}\"")
+      ecbuild_critical("In macro ecbuild_add_option(), DEFAULT is either ON or OFF: \"${_p_DEFAULT}\"")
     endif()
   endif()
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defaults to ${_p_DEFAULT}")
@@ -257,9 +257,9 @@ macro( ecbuild_add_option )
         # we have feature if all required packages were FOUND
 
         if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
-          message( STATUS "Found package ${pkgname} required for feature ${_p_FEATURE}" )
+          ecbuild_info( "Found package ${pkgname} required for feature ${_p_FEATURE}" )
         else()
-          message( STATUS "Could not find package ${pkgname} required for feature ${_p_FEATURE} -- Provide ${pkgname} location with -D${pkgUPPER}_PATH=/..." )
+          ecbuild_info( "Could not find package ${pkgname} required for feature ${_p_FEATURE} -- Provide ${pkgname} location with -D${pkgUPPER}_PATH=/..." )
           set( HAVE_${_p_FEATURE} 0 )
           list( APPEND _failed_to_find_packages ${pkgname} )
         endif()
@@ -274,21 +274,21 @@ macro( ecbuild_add_option )
 
     if( HAVE_${_p_FEATURE} )
 
-      message( STATUS "Feature ${_p_FEATURE} enabled" )
+      ecbuild_info( "Feature ${_p_FEATURE} enabled" )
 
     else() # if user provided input and we cannot satisfy FAIL otherwise WARN
 
       if( ${_p_FEATURE}_user_provided_input )
         if( _${_p_FEATURE}_condition )
-          message( FATAL_ERROR "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
+          ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
         else()
-          message( FATAL_ERROR "Feature ${_p_FEATURE} cannot be enabled -- following condition was not met: ${_p_CONDITION}" )
+          ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following condition was not met: ${_p_CONDITION}" )
         endif()
       else()
         if( _${_p_FEATURE}_condition )
-          message( STATUS "Feature ${_p_FEATURE} was not enabled (also not requested) -- following condition was not met: ${_p_CONDITION}" )
+          ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following condition was not met: ${_p_CONDITION}" )
         else()
-          message( STATUS "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
+          ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
         endif()
         set( ENABLE_${_p_FEATURE} OFF )
         ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )

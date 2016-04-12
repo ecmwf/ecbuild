@@ -92,7 +92,7 @@ function( ecbuild_set_feature _name )
   endif()
 
   if( NOT _feature_found )
-    message( WARNING "Feature ${_name} has not yet been enabled or disabled" )
+    ecbuild_warn( "Feature ${_name} has not yet been enabled or disabled" )
   endif()
 
 endfunction()

@@ -65,7 +65,7 @@ function( ecbuild_get_cxx11_flags CXX11_FLAGS )
   elseif(has_std_cpp0x)
     set(${CXX11_FLAGS} "-std=c++0x" PARENT_SCOPE)
   else()
-    message(FATAL ERROR "Could not detect C++11 flags")
+    ecbuild_critical("Could not detect C++11 flags")
   endif(has_std_gnupp11)
 
 endfunction()

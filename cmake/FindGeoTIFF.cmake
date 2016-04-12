@@ -31,7 +31,8 @@ IF(GEOTIFF_FOUND)
   SET(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
 ENDIF()
 
-# Handle the QUIETLY and REQUIRED arguments and set SPATIALINDEX_FOUND to TRUE
+# Handle the QUIET and REQUIRED arguments and set GEOTIFF_FOUND to TRUE
 # if all listed variables are TRUE
+# Note: capitalisation of the package name must be the same as in the file name
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GEOTIFF DEFAULT_MSG GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(GEOTiff DEFAULT_MSG GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR)

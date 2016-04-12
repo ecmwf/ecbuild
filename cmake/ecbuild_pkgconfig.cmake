@@ -312,7 +312,7 @@ function( ecbuild_pkgconfig )
   string( TOLOWER ${PROJECT_NAME} LNAME )
 
   if(_PAR_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_add_executable(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_add_executable(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
   unset( PKGCONFIG_LANGUAGES )
@@ -412,7 +412,7 @@ function( ecbuild_pkgconfig )
   endif()
 
   configure_file( ${_PAR_TEMPLATE} "${CMAKE_BINARY_DIR}/${_PAR_FILENAME}" @ONLY )
-  message( STATUS "pkg-config file created: ${_PAR_FILENAME}" )
+  ecbuild_info( "pkg-config file created: ${_PAR_FILENAME}" )
 
   install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILENAME}
            DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}/pkgconfig/

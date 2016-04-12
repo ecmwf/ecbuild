@@ -10,14 +10,17 @@
 # CMATH_LIBRARIES      = the library to link against (RT etc)
 
 IF(UNIX)
- if( DEFINED CMATH_PATH )
+  if( DEFINED CMATH_PATH )
     find_library(CMATH_LIBRARIES m PATHS ${CMATH_PATH}/lib NO_DEFAULT_PATH )
- endif()
+  endif()
 
- find_library(CMATH_LIBRARIES m )
+  find_library(CMATH_LIBRARIES m )
 
- include(FindPackageHandleStandardArgs)
+  include(FindPackageHandleStandardArgs)
 
- find_package_handle_standard_args(CMATH  DEFAULT_MSG CMATH_LIBRARIES )
+  # handle the QUIET and REQUIRED arguments and set CMATH_FOUND to TRUE
+  # if all listed variables are TRUE
+  # Note: capitalisation of the package name must be the same as in the file name
+  find_package_handle_standard_args(CMath DEFAULT_MSG CMATH_LIBRARIES )
 
 ENDIF(UNIX)

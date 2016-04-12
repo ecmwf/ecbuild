@@ -45,20 +45,20 @@ macro( ecbuild_generate_rpc )
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_PAR_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_generate_rpc(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+      ecbuild_critical("Unknown keywords given to ecbuild_generate_rpc(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
     if( NOT _PAR_SOURCE  )
-      message(FATAL_ERROR "The call to ecbuild_generate_rpc() doesn't specify the SOURCE file.")
+      ecbuild_critical("The call to ecbuild_generate_rpc() doesn't specify the SOURCE file.")
     endif()
 
 # optional
 #    if( NOT _PAR_DEPENDANT )
-#      message(FATAL_ERROR "The call to ecbuild_generate_rpc() doesn't specify the DEPENDANT files.")
+#      ecbuild_critical("The call to ecbuild_generate_rpc() doesn't specify the DEPENDANT files.")
 #    endif()
 
     if( NOT DEFINED _PAR_TARGET_H AND NOT DEFINED _PAR_TARGET_C )
-      message(FATAL_ERROR "The call to ecbuild_generate_rpc() doesn't specify the _PAR_TARGET_H or _PAR_TARGET_C files.")
+      ecbuild_critical("The call to ecbuild_generate_rpc() doesn't specify the _PAR_TARGET_H or _PAR_TARGET_C files.")
     endif()
 
     find_package( RPCGEN REQUIRED )

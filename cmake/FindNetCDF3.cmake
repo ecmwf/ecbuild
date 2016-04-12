@@ -104,7 +104,10 @@ if( NETCDF_FIND_REQUIRED )
   set( NETCDF3_FIND_REQUIRED ${NETCDF_FIND_REQUIRED} )
 endif()
 
-find_package_handle_standard_args( NETCDF3  DEFAULT_MSG ${NETCDF_REQUIRED_VARS} )
+# Handle the QUIET and REQUIRED arguments and set NETCDF3_FOUND to TRUE
+# if all listed variables are TRUE
+# Note: capitalisation of the package name must be the same as in the file name
+find_package_handle_standard_args( NetCDF3  DEFAULT_MSG ${NETCDF_REQUIRED_VARS} )
 
 set( NETCDF_FOUND ${NETCDF3_FOUND} )
 

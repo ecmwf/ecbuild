@@ -47,6 +47,7 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args( LIBGFORTRAN  DEFAULT_MSG GFORTRAN_LIBRARIES  )
-
-
+# Handle the QUIET and REQUIRED arguments and set LIBGFORTRAN_FOUND to TRUE
+# if all listed variables are TRUE
+# Note: capitalisation of the package name must be the same as in the file name
+find_package_handle_standard_args( LibGFortran DEFAULT_MSG GFORTRAN_LIBRARIES  )

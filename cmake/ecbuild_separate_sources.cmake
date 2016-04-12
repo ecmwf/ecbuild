@@ -48,15 +48,15 @@ macro( ecbuild_separate_sources )
 	cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
 	if(_PAR_UNPARSED_ARGUMENTS)
-	  message(FATAL_ERROR "Unknown keywords given to ecbuild_separate_sources(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+	  ecbuild_critical("Unknown keywords given to ecbuild_separate_sources(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
 	endif()
 
 	if( NOT _PAR_TARGET  )
-	  message(FATAL_ERROR "The call to ecbuild_separate_sources() doesn't specify the TARGET.")
+	  ecbuild_critical("The call to ecbuild_separate_sources() doesn't specify the TARGET.")
 	endif()
 
 	if( NOT _PAR_SOURCES )
-	  message(FATAL_ERROR "The call to ecbuild_separate_sources() doesn't specify the SOURCES.")
+	  ecbuild_critical("The call to ecbuild_separate_sources() doesn't specify the SOURCES.")
 	endif()
 
 	foreach( src ${_PAR_SOURCES} )

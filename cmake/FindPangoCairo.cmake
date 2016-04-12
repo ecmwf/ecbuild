@@ -28,7 +28,10 @@ pkg_check_modules(PC_LIBPANGOCAIRO QUIET pangocairo)
 if(PC_LIBPANGOCAIRO_FOUND)
 
     include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args( pangocairo DEFAULT_MSG PC_LIBPANGOCAIRO_LIBRARIES PC_LIBPANGOCAIRO_INCLUDE_DIRS )
+    # Handle the QUIET and REQUIRED arguments and set PANGOCAIRO_FOUND to TRUE
+    # if all listed variables are TRUE
+    # Note: capitalisation of the package name must be the same as in file name
+    find_package_handle_standard_args( PangoCairo DEFAULT_MSG PC_LIBPANGOCAIRO_LIBRARIES PC_LIBPANGOCAIRO_INCLUDE_DIRS )
     set( PANGOCAIRO_VERSION ${PC_LIBPANGOCAIRO_VERSION} )
     set( PANGOCAIRO_LIBRARIES "${PC_LIBPANGOCAIRO_LDFLAGS} ${PC_LIBPANGOCAIRO_LDFLAGS_OTHER}" )
     set( PANGOCAIRO_INCLUDE_DIRS ${PC_LIBPANGOCAIRO_INCLUDE_DIRS} )
@@ -69,8 +72,6 @@ else()
 	${X11_INCLUDE_DIR}
     )
 
-#message(WARNING "===> ${PANGOCAIRO_INCLUDE_DIRS}")
-
     find_library( _PANGOCAIRO_LIBRARIES NAMES pangocairo pangocairo-${PANGO_VERSION})
     find_library( _PANGO_LIBRARIES NAMES pango pango-${PANGO_VERSION})
     find_library( _CAIRO_LIBRARIES NAMES cairo)
@@ -84,11 +85,12 @@ else()
 	${X11_LIBRARIES}
     )
 
-#message(WARNING "===> ${PANGOCAIRO_LIBRARIES}")
-
-    find_package_handle_standard_args( pangocairo  DEFAULT_MSG
-        PANGOCAIRO_LIBRARIES
-        PANGOCAIRO_INCLUDE_DIRS  )
+    # Handle the QUIET and REQUIRED arguments and set PANGOCAIRO_FOUND to TRUE
+    # if all listed variables are TRUE
+    # Note: capitalisation of the package name must be the same as in file name
+    find_package_handle_standard_args( PangoCairo  DEFAULT_MSG
+                                       PANGOCAIRO_LIBRARIES
+                                       PANGOCAIRO_INCLUDE_DIRS  )
 
 endif()
 

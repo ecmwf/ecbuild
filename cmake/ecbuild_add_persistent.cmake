@@ -49,15 +49,15 @@ macro( ecbuild_add_persistent )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_PAR_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_add_persistent(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_add_persistent(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
   if( NOT _PAR_SRC_LIST  )
-    message(FATAL_ERROR "The call to ecbuild_add_persistent() doesn't specify the SRC_LIST.")
+    ecbuild_critical("The call to ecbuild_add_persistent() doesn't specify the SRC_LIST.")
   endif()
 
   if( NOT _PAR_FILES )
-    message(FATAL_ERROR "The call to ecbuild_add_persistent() doesn't specify the FILES.")
+    ecbuild_critical("The call to ecbuild_add_persistent() doesn't specify the FILES.")
   endif()
 
   foreach( file ${_PAR_FILES} )

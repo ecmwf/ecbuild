@@ -1,4 +1,13 @@
 ####################################################################
+# ARCHITECTURE
+####################################################################
+set( CMAKE_SIZEOF_VOID_P 8 )
+
+# Disable relative rpaths as aprun does not respect it
+set( ENABLE_RELATIVE_RPATHS OFF CACHE STRING "Disable relative rpaths" FORCE )
+
+
+####################################################################
 # COMPILER
 ####################################################################
 
@@ -12,12 +21,20 @@ set( ECBUILD_FIND_MPI OFF )
 set( ECBUILD_TRUST_FLAGS ON )
 
 ####################################################################
+# MPI
+####################################################################
+
+set( MPIEXEC                 "aprun" )
+set( MPIEXEC_NUMPROC_FLAG    "-n"    )
+set( MPIEXEC_NUMTHREAD_FLAG  "-d"    )
+
+####################################################################
 # OpenMP FLAGS
 ####################################################################
 
-set( OMP_C_FLAGS             "-qopenmp -qopenmp-threadprivate=compat -qopenmp-report=2 -qopt-report-phase=vec,openmp" )
-set( OMP_CXX_FLAGS           "-qopenmp -qopenmp-threadprivate=compat -qopenmp-report=2 -qopt-report-phase=vec,openmp" )
-set( OMP_Fortran_FLAGS       " -openmp  -openmp-threadprivate=compat  -openmp-report=2  -opt-report-phase=vec,openmp" ) # -[q] is missing on purpose, ifort does not take -q as flag
+set( OMP_C_FLAGS             "-openmp -openmp-threadprivate=compat" )
+set( OMP_CXX_FLAGS           "-openmp -openmp-threadprivate=compat" )
+set( OMP_Fortran_FLAGS       "-openmp -openmp-threadprivate=compat" )
 
 ####################################################################
 # COMMON FLAGS
@@ -28,7 +45,7 @@ set( OMP_Fortran_FLAGS       " -openmp  -openmp-threadprivate=compat  -openmp-re
 
 set( ECBUILD_C_FLAGS       "-fp-speculation=strict -fp-model precise -traceback")
 set( ECBUILD_CXX_FLAGS     "-fp-speculation=strict -fp-model precise -traceback" )
-set( ECBUILD_Fortran_FLAGS "-fp-speculation=strict -fp-model precise -convert big_endian -assume byterecl -traceback -fpe0" )
+set( ECBUILD_Fortran_FLAGS "-fp-speculation=strict -fp-model source  -convert big_endian -assume byterecl -traceback -fpe0" )
 
 ####################################################################
 # BIT REPRODUCIBLE FLAGS

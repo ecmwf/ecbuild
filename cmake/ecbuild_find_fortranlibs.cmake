@@ -39,7 +39,7 @@ macro( ecbuild_find_fortranlibs )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_PAR_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_find_python(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_find_python(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
   if( NOT FORTRANLIBS_FOUND ) # don't repeat search
@@ -69,7 +69,7 @@ macro( ecbuild_find_fortranlibs )
     endif()
 
     if( _PAR_COMPILER AND NOT __known_fcomp )
-      message( FATAL_ERROR "unknown fortran compiler ${_PAR_COMPILER}" )
+      ecbuild_critical( "unknown fortran compiler ${_PAR_COMPILER}" )
     endif()
 
     ### set path from environment variables
@@ -88,7 +88,7 @@ macro( ecbuild_find_fortranlibs )
              WITH_XL_FORTRAN OR WITH_INTEL_FORTRAN)
         AND NOT (DEFINED PGI_PATH OR DEFINED LIBGFORTRAN_PATH OR
                  DEFINED XLF_PATH OR DEFINED INTEL_PATH) )
-      message( WARNING "Finding fortran libs for unspecified Fortran compiler: default search [ gfortran ]" )
+      ecbuild_warn( "Finding fortran libs for unspecified Fortran compiler: default search [ gfortran ]" )
       set( WITH_LIBGFORTRAN 1 )
     endif()
 
@@ -148,13 +148,13 @@ macro( ecbuild_find_fortranlibs )
       set( FORTRANLIBS_FOUND 1 CACHE INTERNAL "Fortran libraries found" )
       set( FORTRANLIBS_NAME ${_flibs_txt}  CACHE INTERNAL "Fortran library name" )
       set( FORTRAN_LIBRARIES ${FORTRAN_LIBRARIES} CACHE INTERNAL "Fortran libraries" )
-      message( STATUS "Found Fortran libraries: ${_flibs_txt}" )
+      ecbuild_info( "Found Fortran libraries: ${_flibs_txt}" )
     else()
       set( FORTRANLIBS_FOUND 0 )
       if( _PAR_REQUIRED )
-        message( FATAL_ERROR "Failed to find Fortran libraries" )
+        ecbuild_critical( "Failed to find Fortran libraries" )
       else()
-        message( STATUS "Failed to find Fortran libraries" )
+        ecbuild_warn( "Failed to find Fortran libraries" )
       endif()
     endif()
 

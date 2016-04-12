@@ -50,9 +50,10 @@ set( CAIRO_INCLUDE_DIRS ${CAIRO_INCLUDE_DIR} )
 
 include(FindPackageHandleStandardArgs)
 
-# handle the QUIETLY and REQUIRED arguments and set GRIBAPI_FOUND to TRUE
+# handle the QUIET and REQUIRED arguments and set CAIRO_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args(CAIRO  DEFAULT_MSG
+# Note: capitalisation of the package name must be the same as in the file name
+find_package_handle_standard_args(Cairo  DEFAULT_MSG
                                   CAIRO_LIBRARY CAIRO_INCLUDE_DIR)
 
 mark_as_advanced( CAIRO_INCLUDE_DIR CAIRO_LIBRARY )

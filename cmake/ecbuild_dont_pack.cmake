@@ -41,11 +41,11 @@ macro( ecbuild_dont_pack )
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_PAR_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_dont_pack(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+      ecbuild_critical("Unknown keywords given to ecbuild_dont_pack(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
     if( NOT DEFINED _PAR_REGEX AND NOT  DEFINED _PAR_FILES AND NOT  DEFINED _PAR_DIRS )
-      message(FATAL_ERROR "Call to ecbuild_dont_pack does not speficify any list to avoid packing.")
+      ecbuild_critical("Call to ecbuild_dont_pack does not speficify any list to avoid packing.")
     endif()
 
     set( LOCAL_FILES_NOT_TO_PACK "" )

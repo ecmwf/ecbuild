@@ -27,8 +27,10 @@ foreach( lib ${xl_libs} )
 endforeach()
 
 include(FindPackageHandleStandardArgs)
-
-find_package_handle_standard_args( LIBXLFORTRAN DEFAULT_MSG xlf_all_libs_found XLFORTRAN_LIBRARIES  )
+# handle the QUIET and REQUIRED arguments and set XLFORTRANLIBS_FOUND to TRUE
+# if all listed variables are valid
+# Note: capitalisation of the package name must be the same as in the file name
+find_package_handle_standard_args( XLFortranLibs DEFAULT_MSG xlf_all_libs_found XLFORTRAN_LIBRARIES  )
 
 # HACK for support libraries
 

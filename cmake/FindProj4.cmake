@@ -60,7 +60,7 @@ find_library( PROJ4_LIBRARY NAMES proj       PATHS PATH_SUFFIXES proj4 )
 
 # handle the QUIETLY and REQUIRED arguments and set GRIBAPI_FOUND
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PROJ4  DEFAULT_MSG
+find_package_handle_standard_args(Proj4  DEFAULT_MSG
                                   PROJ4_LIBRARY PROJ4_INCLUDE_DIR)
 
 set( PROJ4_LIBRARIES    ${PROJ4_LIBRARY} )

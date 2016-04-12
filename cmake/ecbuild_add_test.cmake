@@ -23,7 +23,8 @@
 #                     [ RESOURCES <file1> [<file2> ...] ]
 #                     [ TEST_DATA <file1> [<file2> ...] ]
 #                     [ BOOST ]
-#                     [ MPI <number-of-ranks> ]
+#                     [ MPI <number-of-mpi-tasks> ]
+#                     [ OMP <number-of-threads-per-mpi-task> ]
 #                     [ ENABLED ON|OFF ]
 #                     [ LIBS <library1> [<library2> ...] ]
 #                     [ INCLUDES <path1> [<path2> ...] ]
@@ -79,6 +80,12 @@
 #
 #   If greater than 1, and MPI is not available, the test is disabled.
 #
+# OMP : optional
+#   number of OpenMP threads per MPI task to use.
+#
+#   If set, the environment variable OMP_NUM_THREADS will set.
+#   Also, in case of launchers like aprun, the OMP_NUMTHREADS_FLAG will be used.
+#
 # ENABLED : optional
 #   if set to OFF, the test is built but not enabled as a test case
 #
@@ -130,7 +137,7 @@
 macro( ecbuild_add_test )
 
   set( options           BOOST )
-  set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI WORKING_DIRECTORY )
+  set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI OMP WORKING_DIRECTORY )
   set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS ARGS
                          PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS
                          CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
@@ -138,7 +145,7 @@ macro( ecbuild_add_test )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_PAR_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_add_test(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_add_test(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
   set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
@@ -155,6 +162,13 @@ macro( ecbuild_add_test )
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): Running using ${_PAR_MPI} MPI rank(s)")
     endif()
   endif()
+
+  # Check for OMP
+  if( NOT DEFINED _PAR_OMP )
+    set( _PAR_OMP 1 )
+  endif()
+  list( APPEND _PAR_ENVIRONMENT "OMP_NUM_THREADS=${_PAR_OMP}" )
+
 
   # default is enabled
   if( NOT DEFINED _PAR_ENABLED )
@@ -173,7 +187,7 @@ macro( ecbuild_add_test )
   if( NOT _PAR_TYPE AND DEFINED _PAR_TARGET )
     set( _PAR_TYPE "EXE" )
     if( NOT _PAR_SOURCES )
-      message(FATAL_ERROR "The call to ecbuild_add_test() defines a TARGET without SOURCES.")
+      ecbuild_critical("The call to ecbuild_add_test() defines a TARGET without SOURCES.")
     endif()
   endif()
 
@@ -181,7 +195,7 @@ macro( ecbuild_add_test )
     if( PYTHONINTERP_FOUND )
       set( _PAR_COMMAND ${PYTHON_EXECUTABLE} )
     else()
-      message( WARNING "Requested a python test but python interpreter not found - disabling test\nPYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
+      ecbuild_warn( "Requested a python test but python interpreter not found - disabling test\nPYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
       set( _PAR_ENABLED 0 )
     endif()
   endif()
@@ -189,15 +203,15 @@ macro( ecbuild_add_test )
   ### further checks
 
   if( _PAR_ENABLED AND NOT _PAR_TARGET AND NOT _PAR_COMMAND )
-    message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a TARGET nor a COMMAND.")
+    ecbuild_critical("The call to ecbuild_add_test() defines neither a TARGET nor a COMMAND.")
   endif()
 
   if( _PAR_ENABLED AND NOT _PAR_COMMAND AND NOT _PAR_SOURCES )
-    message(FATAL_ERROR "The call to ecbuild_add_test() defines neither a COMMAND nor SOURCES, so no test can be defined or built.")
+    ecbuild_critical("The call to ecbuild_add_test() defines neither a COMMAND nor SOURCES, so no test can be defined or built.")
   endif()
 
   if( _PAR_TYPE MATCHES "SCRIPT" AND NOT _PAR_COMMAND )
-    message(FATAL_ERROR "The call to ecbuild_add_test() defines a 'script' but doesn't specify the COMMAND.")
+    ecbuild_critical("The call to ecbuild_add_test() defines a 'script' but doesn't specify the COMMAND.")
   endif()
 
   ### conditional build
@@ -391,12 +405,20 @@ macro( ecbuild_add_test )
 
     # Wrap with MPIEXEC
     if( _PAR_MPI )
+      
+      set( MPIEXEC_TASKS ${MPIEXEC_NUMPROC_FLAG} ${_PAR_MPI} )
+      if( DEFINED MPIEXEC_NUMTHREAD_FLAG )
+        set( MPIEXEC_THREADS ${MPIEXEC_NUMTHREAD_FLAG} ${_PAR_OMP} )
+      endif()
+
+      set( _LAUNCH ${MPIEXEC} ${MPIEXEC_TASKS} ${MPIEXEC_THREADS} )
+
       if( DEFINED _PAR_COMMAND )
-        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): running as ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${_PAR_MPI} ${_PAR_COMMAND}")
-        set( _PAR_COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${_PAR_MPI} ${_PAR_COMMAND} )
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): running as ${_LAUNCH} ${_PAR_COMMAND}")
+        set( _PAR_COMMAND ${_LAUNCH} ${_PAR_COMMAND} )
       else()
-        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): running as ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${_PAR_MPI} ${_TEST_DIR}/${_PAR_TARGET}")
-        set( _PAR_COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${_PAR_MPI} ${_TEST_DIR}/${_PAR_TARGET} )
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): running as ${_LAUNCH} ${_TEST_DIR}/${_PAR_TARGET}")
+        set( _PAR_COMMAND ${_LAUNCH} ${_TEST_DIR}/${_PAR_TARGET} )
       endif()
     endif()
 

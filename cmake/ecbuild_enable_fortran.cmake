@@ -36,7 +36,7 @@ macro( ecbuild_enable_fortran )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_PAR_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_enable_fortran(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_enable_fortran(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
   if( NOT CMAKE_Fortran_COMPILER_LOADED )
@@ -53,7 +53,7 @@ macro( ecbuild_enable_fortran )
       set( CMAKE_Fortran_COMPILER_WORKS 1 )
     endif()
     if( NOT CMAKE_Fortran_COMPILER OR NOT CMAKE_Fortran_COMPILER_WORKS )
-      message( FATAL_ERROR "Fortran compiler required by project ${PROJECT_NAME} but does not seem to work" )
+      ecbuild_critical( "Fortran compiler required by project ${PROJECT_NAME} but does not seem to work" )
     endif()
   endif()
 

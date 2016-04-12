@@ -154,15 +154,15 @@ function( ecbuild_add_library_impl )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_PAR_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_add_library(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_add_library(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
   if( NOT _PAR_TARGET  )
-    message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the TARGET.")
+    ecbuild_critical("The call to ecbuild_add_library() doesn't specify the TARGET.")
   endif()
 
   if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS AND NOT _PAR_SOURCES_GLOB )
-    message(FATAL_ERROR "The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS nor SOURCES_GLOB")
+    ecbuild_critical("The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS nor SOURCES_GLOB")
   endif()
 
   ### conditional build
@@ -188,7 +188,7 @@ function( ecbuild_add_library_impl )
           NOT _PAR_TYPE MATCHES "SHARED" AND
           NOT _PAR_TYPE MATCHES "OBJECT" AND
           NOT _PAR_TYPE MATCHES "MODULE" )
-        message( FATAL_ERROR "library type must be one of [ STATIC | SHARED | MODULE | OBJECT ]" )
+        ecbuild_critical( "library type must be one of [ STATIC | SHARED | MODULE | OBJECT ]" )
       endif()
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): library type is ${_PAR_TYPE}")
     endif()
@@ -564,7 +564,7 @@ macro( ecbuild_add_library )
   else()
 
     if( NOT DEFINED _p_TARGET )
-      message(FATAL_ERROR "The call to ecbuild_add_library() doesn't specify the TARGET.")
+      ecbuild_critical("The call to ecbuild_add_library() doesn't specify the TARGET.")
     else()
 
       if( BUILD_SHARED_LIBS MATCHES "[Bb][Oo][Tt][Hh]" ) # build both types

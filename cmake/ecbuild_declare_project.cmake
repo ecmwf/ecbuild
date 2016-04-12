@@ -72,7 +72,7 @@ macro( ecbuild_declare_project )
       #     ecbuild_debug_var( ${PNAME}_GIT_SHA1 )
       #     ecbuild_debug_var( ${PNAME}_GIT_SHA1_SHORT )
     else()
-      message( STATUS "Could not get git-sha1 for project ${PNAME}")
+      ecbuild_debug( "Could not get git-sha1 for project ${PNAME}")
     endif()
   endif()
 
@@ -133,7 +133,7 @@ macro( ecbuild_declare_project )
 
   foreach( p LIB BIN INCLUDE DATA CMAKE )
     if( IS_ABSOLUTE ${INSTALL_${p}_DIR} )
-      message( WARNING "Defining INSTALL_${p}_DIR as absolute path '${INSTALL_${p}_DIR}' makes this build non-relocatable, possibly breaking the installation of RPMS and DEB packages" )
+      ecbuild_warn( "Defining INSTALL_${p}_DIR as absolute path '${INSTALL_${p}_DIR}' makes this build non-relocatable, possibly breaking the installation of RPMS and DEB packages" )
     endif()
   endforeach()
 
@@ -146,7 +146,7 @@ macro( ecbuild_declare_project )
       set( ${PNAME}_FULL_INSTALL_${p}_DIR "${CMAKE_INSTALL_PREFIX}/${${var}}"
            CACHE INTERNAL "${PNAME} ${p} full install path" )
     else()
-      message( WARNING "Setting an absolute path for ${VAR} in project ${PNAME}, breakes generation of relocatable binary packages (rpm,deb,...)" )
+      ecbuild_warn( "Setting an absolute path for ${VAR} in project ${PNAME}, breakes generation of relocatable binary packages (rpm,deb,...)" )
       set( ${PNAME}_FULL_INSTALL_${p}_DIR "${${var}}"
            CACHE INTERNAL "${PNAME} ${p} full install path" )
     endif()
@@ -185,9 +185,9 @@ macro( ecbuild_declare_project )
   message( STATUS "---------------------------------------------------------" )
 
   if( ${PNAME}_GIT_SHA1_SHORT )
-    message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR}) [${${PNAME}_GIT_SHA1_SHORT}]" )
+    ecbuild_info( "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR}) [${${PNAME}_GIT_SHA1_SHORT}]" )
   else()
-    message( STATUS "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR})" )
+    ecbuild_info( "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR})" )
   endif()
 
 endmacro( ecbuild_declare_project )

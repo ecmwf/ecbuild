@@ -123,7 +123,7 @@ macro( ecbuild_find_omp )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if( NOT _PAR_COMPONENTS )
-    message( FATAL_ERROR "No COMPONENTS were specified, looking for OMP.\n Please find with COMPONENTS C CXX Fortran " )
+    ecbuild_critical( "No COMPONENTS were specified, looking for OMP.\n Please find with COMPONENTS C CXX Fortran " )
   endif()
 
   set( _STUBS "" )

@@ -39,7 +39,7 @@ endfunction()
 macro( ecbuild_append_to_rpath RPATH_DIRS )
    
    if( NOT ${ARGC} EQUAL 1 )
-     message( SEND_ERROR "ecbuild_append_to_rpath takes 1 argument")
+     ecbuild_error( "ecbuild_append_to_rpath takes 1 argument")
    endif()
 
    foreach( RPATH_DIR ${RPATH_DIRS} )

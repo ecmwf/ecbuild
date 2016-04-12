@@ -41,15 +41,15 @@ function( ecbuild_list_exclude_pattern )
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
   if(_p_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unknown keywords given to ecbuild_list_exclude_pattern(): \"${_p_UNPARSED_ARGUMENTS}\"")
+    ecbuild_critical("Unknown keywords given to ecbuild_list_exclude_pattern(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
   if( NOT _p_LIST  )
-    message(FATAL_ERROR "The call to ecbuild_list_exclude_pattern() doesn't specify the LIST.")
+    ecbuild_critical("The call to ecbuild_list_exclude_pattern() doesn't specify the LIST.")
   endif()
 
   if( NOT _p_REGEX )
-    message(FATAL_ERROR "The call to ecbuild_list_exclude_pattern() doesn't specify the REGEX.")
+    ecbuild_critical("The call to ecbuild_list_exclude_pattern() doesn't specify the REGEX.")
   endif()
 
   #####

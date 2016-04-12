@@ -59,11 +59,11 @@ macro( ecbuild_check_c_source_return SOURCE )
     cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_PAR_UNPARSED_ARGUMENTS)
-      message(FATAL_ERROR "Unknown keywords given to ecbuild_check_c_source_return(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+      ecbuild_critical("Unknown keywords given to ecbuild_check_c_source_return(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
     endif()
 
     if( NOT _PAR_VAR OR NOT _PAR_OUTPUT )
-      message(FATAL_ERROR "The call to ecbuild_check_c_source_return() doesn't specify either SOURCE, VAR or OUTPUT")
+      ecbuild_critical("The call to ecbuild_check_c_source_return() doesn't specify either SOURCE, VAR or OUTPUT")
     endif()
 
 
@@ -97,7 +97,7 @@ macro( ecbuild_check_c_source_return SOURCE )
     
         file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.c" "${SOURCE}\n" )
 
-        message( STATUS "Performing Test ${_PAR_VAR}" )
+        ecbuild_debug( "Performing Test ${_PAR_VAR}" )
         try_run( ${_PAR_VAR}_EXITCODE ${_PAR_VAR}_COMPILED
           ${CMAKE_BINARY_DIR}
           ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.c
@@ -117,7 +117,7 @@ macro( ecbuild_check_c_source_return SOURCE )
         # if the return value was 0 then it worked
         if("${${_PAR_VAR}_EXITCODE}" EQUAL 0)
     
-          message(STATUS "Performing Test ${_PAR_VAR} - Success")
+          ecbuild_debug("Performing Test ${_PAR_VAR} - Success")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log 
             "Performing C SOURCE FILE Test ${_PAR_VAR} succeded with the following compile output:\n"
             "${compile_OUTPUT}\n" 
@@ -139,7 +139,7 @@ macro( ecbuild_check_c_source_return SOURCE )
             set(${_PAR_OUTPUT} "" CACHE INTERNAL "Test ${_PAR_VAR} output")
           endif()
     
-          message(STATUS "Performing Test ${_PAR_VAR} - Failed")
+          ecbuild_debug("Performing Test ${_PAR_VAR} - Failed")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log 
             "Performing C SOURCE FILE Test ${_PAR_VAR} failed with the following compile output:\n"
             "${compile_OUTPUT}\n" 

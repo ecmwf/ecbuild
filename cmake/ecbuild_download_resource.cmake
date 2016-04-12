@@ -34,12 +34,12 @@ function( ecbuild_download_resource _p_OUT _p_URL )
         execute_process( COMMAND ${WGET_PROGRAM} -nv -O ${_p_OUT} ${_p_URL}
                          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} RESULT_VARIABLE CMD_RESULT )
       else()
-        message(FATAL_ERROR "Could not find curl or wget. Error downloading ${_p_URL}")
+        ecbuild_critical("Could not find curl or wget. Error downloading ${_p_URL}")
       endif()
     endif()
 
     if(CMD_RESULT)
-      message(FATAL_ERROR "Error downloading ${_p_URL}")
+      ecbuild_critical("Error downloading ${_p_URL}")
     endif()
 
   endif()

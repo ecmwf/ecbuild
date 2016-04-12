@@ -3,6 +3,9 @@
 ####################################################################
 set( CMAKE_SIZEOF_VOID_P 8 )
 
+# Disable relative rpaths as aprun does not respect it
+set( ENABLE_RELATIVE_RPATHS OFF CACHE STRING "Disable relative rpaths" FORCE )
+
 ####################################################################
 # COMPILER
 ####################################################################
@@ -15,6 +18,14 @@ CMAKE_FORCE_Fortran_COMPILER ( ftn Cray )
 
 set( ECBUILD_FIND_MPI OFF )
 set( ECBUILD_TRUST_FLAGS ON )
+
+####################################################################
+# MPI
+####################################################################
+
+set( MPIEXEC                 "aprun" )
+set( MPIEXEC_NUMPROC_FLAG    "-n"    )
+set( MPIEXEC_NUMTHREAD_FLAG  "-d"    )
 
 ####################################################################
 # OpenMP FLAGS

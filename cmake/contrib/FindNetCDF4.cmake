@@ -314,7 +314,10 @@ endif()
 
 set( NETCDF4_FIND_QUIETLY ${NETCDF_FIND_QUIETLY} )
 set( NETCDF4_FIND_REQUIRED ${NETCDF_FIND_REQUIRED} )
-find_package_handle_standard_args( NETCDF4 DEFAULT_MSG
+# handle the QUIET and REQUIRED arguments and set NETCDF4_FOUND to TRUE
+# if all listed variables are valid
+# Note: capitalisation of the package name must be the same as in the file name
+find_package_handle_standard_args( NetCDF4 DEFAULT_MSG
     ${NETCDF_FOUND_REQUIRED_VARS}
     NETCDF_LIBRARIES
     NETCDF_INCLUDE_DIRS
