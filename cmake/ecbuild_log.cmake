@@ -27,6 +27,12 @@
 #
 # CMake variables controlling logging behaviour:
 #
+# ECBUILD_LOG_FILE : path
+#   set the log file, defaults to ``${CMAKE_BINARY_DIR}/ecbuild.log``
+#
+#   All ecBuild log macros write their messages to this log file with a time
+#   stamp. Messages emitted by CMake directly cannot be logged to file.
+#
 # ECBUILD_LOG_LEVEL : string, one of DEBUG, INFO, WARN, ERROR, CRITICAL, OFF
 #   set the desired log level, OFF to disable logging altogether
 #
@@ -93,9 +99,21 @@ else()
   set(ECBUILD_LOG_LEVEL ${ECBUILD_WARN})
 endif()
 
+if( NOT DEFINED ECBUILD_LOG_FILE )
+  set( ECBUILD_LOG_FILE ${CMAKE_BINARY_DIR}/ecbuild.log )
+endif()
+
+##############################################################################
+
+macro( ecbuild_log LEVEL MSG )
+  string( TIMESTAMP _time )
+  file( APPEND ${ECBUILD_LOG_FILE} "${_time} - ${LEVEL} - ${MSG}\n" )
+endmacro( ecbuild_log )
+
 ##############################################################################
 
 macro( ecbuild_debug MSG )
+  ecbuild_log(DEBUG "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 11)
     message(STATUS "${Blue}DEBUG - ${MSG}${ColourReset}")
   endif()
@@ -104,6 +122,7 @@ endmacro( ecbuild_debug )
 ##############################################################################
 
 macro( ecbuild_info MSG )
+  ecbuild_log(INFO "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 21)
     message(STATUS "${Green}INFO - ${MSG}${ColourReset}")
   endif()
@@ -112,6 +131,7 @@ endmacro( ecbuild_info )
 ##############################################################################
 
 macro( ecbuild_warn MSG )
+  ecbuild_log(WARNING "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 31)
     message(WARNING "${Yellow}WARN - ${MSG}${ColourReset}")
   endif()
@@ -120,6 +140,7 @@ endmacro( ecbuild_warn )
 ##############################################################################
 
 macro( ecbuild_error MSG )
+  ecbuild_log(ERROR "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 41)
     message(SEND_ERROR "${BoldRed}ERROR - ${MSG}${ColourReset}")
   endif()
@@ -128,8 +149,9 @@ endmacro( ecbuild_error )
 ##############################################################################
 
 macro( ecbuild_deprecate )
+  string(REPLACE ";" "" MSG ${ARGV})
+  ecbuild_log(DEPRECATION "${MSG}")
   if( NOT ECBUILD_NO_DEPRECATIONS )
-    string(REPLACE ";" "" MSG ${ARGV})
     message(DEPRECATION "${BoldRed}${MSG}${ColourReset}")
   endif()
 endmacro( ecbuild_deprecate )
@@ -137,6 +159,7 @@ endmacro( ecbuild_deprecate )
 ##############################################################################
 
 macro( ecbuild_critical MSG )
+  ecbuild_log(FATAL_ERROR "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 51)
     message(FATAL_ERROR "${BoldMagenta}CRITICAL - ${MSG}${ColourReset}")
   endif()
@@ -146,6 +169,7 @@ endmacro( ecbuild_critical )
 # macro for debugging a cmake variable
 
 macro( ecbuild_debug_var VAR )
+  ecbuild_log(DEBUG "${VAR} : ${${VAR}}")
   if( ECBUILD_LOG_LEVEL LESS 11)
     message(STATUS "${Blue}DEBUG - ${VAR} : ${${VAR}}${ColourReset}")
   endif()
@@ -155,6 +179,10 @@ endmacro()
 # macro for debugging a cmake variable
 
 macro( ecbuild_debug_list VAR )
+  ecbuild_log(DEBUG "${VAR} : ${${VAR}}")
+  foreach( _elem ${${VAR}} )
+    ecbuild_log( DEBUG "  ${_elem}" )
+  endforeach()
   if( ECBUILD_LOG_LEVEL LESS 11)
     message( STATUS "${Blue}DEBUG - ${VAR}" )
     foreach( _elem ${${VAR}} )
@@ -168,6 +196,7 @@ endmacro()
 # macro for debugging a environment variable within cmake
 
 macro( ecbuild_debug_env_var VAR )
+  ecbuild_log(DEBUG "ENV ${VAR} : $ENV{${VAR}}")
   if( ECBUILD_LOG_LEVEL LESS 11)
     message(STATUS "${Blue}DEBUG - ENV ${VAR} [$ENV{${VAR}}]${ColourReset}")
   endif()
@@ -202,6 +231,3 @@ macro( debug_env_var VAR )
     message( WARNING "DEPRECATED debug_env_var() -- ENV ${VAR} [$ENV{${VAR}}]" )
 
 endmacro()
-
-
-
