@@ -29,6 +29,10 @@
 # :ecbuild_debug_list:    logs given CMake lists if log level <= ``DEBUG``
 # :ecbuild_debug_env_var: logs given environment variables if log level <= ``DEBUG``
 #
+# To log a message to the ecBuild log file only at a given log level, use ::
+#
+#   ecbuild_log( <level> <msg> )
+#
 # Input variables
 # ---------------
 #
