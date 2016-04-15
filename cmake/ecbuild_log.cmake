@@ -105,14 +105,16 @@ endif()
 
 ##############################################################################
 
-macro( ecbuild_log LEVEL MSG )
+macro( ecbuild_log LEVEL )
+  string( REPLACE ";" " " MSG "${ARGN}" )
   string( TIMESTAMP _time )
   file( APPEND ${ECBUILD_LOG_FILE} "${_time} - ${LEVEL} - ${MSG}\n" )
 endmacro( ecbuild_log )
 
 ##############################################################################
 
-macro( ecbuild_debug MSG )
+macro( ecbuild_debug )
+  string( REPLACE ";" " " MSG "${ARGV}" )
   ecbuild_log(DEBUG "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 11)
     message(STATUS "${Blue}DEBUG - ${MSG}${ColourReset}")
@@ -121,7 +123,8 @@ endmacro( ecbuild_debug )
 
 ##############################################################################
 
-macro( ecbuild_info MSG )
+macro( ecbuild_info )
+  string( REPLACE ";" " " MSG "${ARGV}" )
   ecbuild_log(INFO "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 21)
     message(STATUS "${Green}INFO - ${MSG}${ColourReset}")
@@ -130,7 +133,8 @@ endmacro( ecbuild_info )
 
 ##############################################################################
 
-macro( ecbuild_warn MSG )
+macro( ecbuild_warn )
+  string( REPLACE ";" " " MSG "${ARGV}" )
   ecbuild_log(WARNING "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 31)
     message(WARNING "${Yellow}WARN - ${MSG}${ColourReset}")
@@ -139,7 +143,8 @@ endmacro( ecbuild_warn )
 
 ##############################################################################
 
-macro( ecbuild_error MSG )
+macro( ecbuild_error )
+  string( REPLACE ";" " " MSG "${ARGV}" )
   ecbuild_log(ERROR "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 41)
     message(SEND_ERROR "${BoldRed}ERROR - ${MSG}${ColourReset}")
@@ -149,7 +154,7 @@ endmacro( ecbuild_error )
 ##############################################################################
 
 macro( ecbuild_deprecate )
-  string(REPLACE ";" "" MSG ${ARGV})
+  string(REPLACE ";" " " MSG ${ARGV})
   ecbuild_log(DEPRECATION "${MSG}")
   if( NOT ECBUILD_NO_DEPRECATIONS )
     message(DEPRECATION "${BoldRed}${MSG}${ColourReset}")
@@ -158,7 +163,8 @@ endmacro( ecbuild_deprecate )
 
 ##############################################################################
 
-macro( ecbuild_critical MSG )
+macro( ecbuild_critical )
+  string(REPLACE ";" " " MSG ${ARGV})
   ecbuild_log(FATAL_ERROR "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 51)
     message(FATAL_ERROR "${BoldMagenta}CRITICAL - ${MSG}${ColourReset}")
