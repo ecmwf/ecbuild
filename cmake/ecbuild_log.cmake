@@ -172,40 +172,46 @@ function( ecbuild_critical )
 endfunction( ecbuild_critical )
 
 ##############################################################################
-# function for debugging a cmake variable
+# function for debugging CMake variables
 
-function( ecbuild_debug_var VAR )
-  ecbuild_log(DEBUG "${VAR} : ${${VAR}}")
-  if( ECBUILD_LOG_LEVEL LESS 11)
-    message(STATUS "${Blue}DEBUG - ${VAR} : ${${VAR}}${ColourReset}")
-  endif()
-endfunction()
-
-##############################################################################
-# function for debugging a cmake variable
-
-function( ecbuild_debug_list VAR )
-  ecbuild_log(DEBUG "${VAR} : ${${VAR}}")
-  foreach( _elem ${${VAR}} )
-    ecbuild_log( DEBUG "  ${_elem}" )
+function( ecbuild_debug_var )
+  foreach( VAR ${ARGV} )
+    ecbuild_log(DEBUG "${VAR} : ${${VAR}}")
+    if( ECBUILD_LOG_LEVEL LESS 11)
+      message(STATUS "${Blue}DEBUG - ${VAR} : ${${VAR}}${ColourReset}")
+    endif()
   endforeach()
-  if( ECBUILD_LOG_LEVEL LESS 11)
-    message( STATUS "${Blue}DEBUG - ${VAR}" )
-    foreach( _elem ${${VAR}} )
-      message( STATUS "  ${_elem}" )
-    endforeach()
-    message(STATUS "${ColourReset}")
-  endif()
 endfunction()
 
 ##############################################################################
-# function for debugging a environment variable within cmake
+# function for debugging CMake lists
 
-function( ecbuild_debug_env_var VAR )
-  ecbuild_log(DEBUG "ENV ${VAR} : $ENV{${VAR}}")
-  if( ECBUILD_LOG_LEVEL LESS 11)
-    message(STATUS "${Blue}DEBUG - ENV ${VAR} [$ENV{${VAR}}]${ColourReset}")
-  endif()
+function( ecbuild_debug_list )
+  foreach( VAR ${ARGV} )
+    ecbuild_log(DEBUG "${VAR} : ${${VAR}}")
+    foreach( _elem ${${VAR}} )
+      ecbuild_log( DEBUG "  ${_elem}" )
+    endforeach()
+    if( ECBUILD_LOG_LEVEL LESS 11)
+      message( STATUS "${Blue}DEBUG - ${VAR}" )
+      foreach( _elem ${${VAR}} )
+        message( STATUS "  ${_elem}" )
+      endforeach()
+      message(STATUS "${ColourReset}")
+    endif()
+  endforeach()
+endfunction()
+
+##############################################################################
+# function for debugging environment variables
+
+function( ecbuild_debug_env_var )
+  foreach( VAR ${ARGV} )
+    ecbuild_log(DEBUG "ENV ${VAR} : $ENV{${VAR}}")
+    if( ECBUILD_LOG_LEVEL LESS 11)
+      message(STATUS "${Blue}DEBUG - ENV ${VAR} [$ENV{${VAR}}]${ColourReset}")
+    endif()
+  endforeach()
 endfunction()
 
 ##############################################################################
