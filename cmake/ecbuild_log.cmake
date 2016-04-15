@@ -22,6 +22,13 @@
 # :ecbuild_critical:  logs a ``FATAL_ERROR`` message if log level <= ``CRITICAL``
 # :ecbuild_deprecate: logs a ``DEPRECATION`` message
 #
+# Furthermore there are auxilliary functions for outputting CMake variables,
+# CMake lists and environment variables if the log level is ``DEBUG``:
+#
+# :ecbuild_debug_var:     logs given CMake variables if log level <= ``DEBUG``
+# :ecbuild_debug_list:    logs given CMake lists if log level <= ``DEBUG``
+# :ecbuild_debug_env_var: logs given environment variables if log level <= ``DEBUG``
+#
 # Input variables
 # ---------------
 #
