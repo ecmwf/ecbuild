@@ -45,7 +45,7 @@
 #   stamp. Messages emitted by CMake directly cannot be logged to file.
 #
 # ECBUILD_LOG_LEVEL : string, one of DEBUG, INFO, WARN, ERROR, CRITICAL, OFF
-#   set the desired log level, OFF to disable logging altogether
+#   desired log level, defaults to ``INFO``, ``OFF`` to disable logging
 #
 # ECBUILD_NO_COLOUR : bool
 #   if set, does not colour log output (by default log output is coloured)
@@ -138,7 +138,7 @@ function( ecbuild_info )
   string( REPLACE ";" " " MSG "${ARGV}" )
   ecbuild_log(INFO "${MSG}")
   if( ECBUILD_LOG_LEVEL LESS 21)
-    message(STATUS "${Green}INFO - ${MSG}${ColourReset}")
+    message(STATUS "${MSG}")
   endif()
 endfunction( ecbuild_info )
 
