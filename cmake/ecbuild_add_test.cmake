@@ -427,9 +427,9 @@ macro( ecbuild_add_test )
     if( _PAR_ENABLED ) # we can disable and still build it but not run it with 'make tests'
 
       if( DEFINED _PAR_COMMAND )
-        add_test( ${_PAR_TARGET} ${_PAR_COMMAND} ${TEST_ARGS} ${_working_dir} ) # run a command as test
+        add_test( NAME ${_PAR_TARGET} COMMAND ${_PAR_COMMAND} ${TEST_ARGS} ${_working_dir} ) # run a command as test
       else()
-        add_test( ${_PAR_TARGET} ${_PAR_TARGET}  ${TEST_ARGS} ${_working_dir} ) # run the test that was generated
+        add_test( NAME ${_PAR_TARGET} COMMAND ${_PAR_TARGET}  ${TEST_ARGS} ${_working_dir} ) # run the test that was generated
       endif()
 
       # get test data
