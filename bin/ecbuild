@@ -93,10 +93,11 @@ Available values for "option":
           that this is only accelerating fresh builds, as cmake internally
           caches also. Therefore this option is *not* recommended.
 
-    --build-cmake
+    --build-cmake[=<prefix>]
           Automatically download and build CMake version $CMAKE_BUILD_VERSION if the CMake
           version found does not meet the minimum requirements (version $CMAKE_MIN_REQUIRED
           is required). Requires an internet connection and may take a while.
+          If no prefix is given, install into $PWD.
 
     --dryrun
           Don't actually execute the cmake call, just print what would have
@@ -275,7 +276,7 @@ while test $# -gt 0; do
     case "$1" in
     --*=*)
       opt=`echo "$1" | sed 's/=.*//'`
-      val=`echo "$1" | sed 's/--[_a-zA-Z0-9]*=//'`
+      val=`echo "$1" | sed 's/--[_a-zA-Z0-9-]*=//'`
       ;;
     --*)
       opt=$1
@@ -336,6 +337,11 @@ while test $# -gt 0; do
         ;;
       --build-cmake)
         build_cmake="yes"
+        if [[ -z $val ]]; then
+          cmake_build_prefix="$PWD"
+        else
+          cmake_build_prefix="$val"
+        fi
         ;;
       --)
         shift
@@ -383,9 +389,9 @@ check_cmake() {
 }
 check_cmake
 # Use already built CMake if any
-if [[ ! $cmake_version_sufficient && -x bin/cmake ]]; then
-  echo "Using already built CMake in $PWD/bin/cmake" >&2
-  cmake=bin/cmake
+if [[ ! $cmake_version_sufficient && -x "${cmake_build_prefix}/bin/cmake" ]]; then
+  echo "Using already built CMake in ${cmake_build_prefix}/bin/cmake" >&2
+  cmake="${cmake_build_prefix}/bin/cmake"
   check_cmake
 fi
 
@@ -411,9 +417,9 @@ if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
   (
     mkdir -p build_cmake
     cd build_cmake
-    ../cmake-${CMAKE_BUILD_VERSION}/bootstrap --prefix=.. && make && make install
+    ../cmake-${CMAKE_BUILD_VERSION}/bootstrap --prefix="${cmake_build_prefix}" && make && make install
   )
-  cmake=bin/cmake
+  cmake="${cmake_build_prefix}/bin/cmake"
   check_cmake
 fi
 
