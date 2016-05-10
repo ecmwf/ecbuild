@@ -94,10 +94,9 @@ Available values for "option":
           caches also. Therefore this option is *not* recommended.
 
     --build-cmake[=<prefix>]
-          Automatically download and build CMake version $CMAKE_BUILD_VERSION if the CMake
-          version found does not meet the minimum requirements (version $CMAKE_MIN_REQUIRED
-          is required). Requires an internet connection and may take a while.
-          If no prefix is given, install into $PWD.
+          Automatically download and build CMake version $CMAKE_BUILD_VERSION.
+          Requires an internet connection and may take a while. If no prefix
+          is given, install into $PWD.
 
     --dryrun
           Don't actually execute the cmake call, just print what would have
@@ -338,9 +337,9 @@ while test $# -gt 0; do
       --build-cmake)
         build_cmake="yes"
         if [[ -z $val ]]; then
-          cmake_build_prefix="$PWD"
+          cmake_prefix="$PWD"
         else
-          cmake_build_prefix="$val"
+          cmake_prefix="$val"
         fi
         ;;
       --)
@@ -375,30 +374,13 @@ version_gte() {
     [  "$2" = "$(echo -e "$1\n$2" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | head -n1)" ]
 }
 
-# Check if the cmake version is sufficient
-check_cmake() {
-  # Check if cmake is available
-  if $(command -v $cmake >/dev/null 2>&1); then
-    cmake_found="yes"
-    cmake_version=$($cmake --version | head -n1 | awk '{ print $3 }')
-    echo "Found CMake version $cmake_version" >& 2
-    if version_gte $cmake_version $CMAKE_MIN_REQUIRED; then
-      cmake_version_sufficient="yes"
-    fi
-  fi
-}
-check_cmake
 # Use already built CMake if any
-if [[ ! $cmake_version_sufficient && -x "${cmake_build_prefix}/bin/cmake" ]]; then
-  echo "Using already built CMake in ${cmake_build_prefix}/bin/cmake" >&2
-  cmake="${cmake_build_prefix}/bin/cmake"
-  check_cmake
-fi
-
+if [[ -x "${cmake_prefix}/bin/cmake" ]]; then
+  echo "Using already built CMake in ${cmake_prefix}/bin/cmake" >&2
+  cmake="${cmake_prefix}/bin/cmake"
 # Build CMake if requested and no sufficient version found
-if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
-  echo "CMake version $CMAKE_MIN_REQUIRED is required but only $cmake_version was found." >&2
-  echo "Building CMake version ${CMAKE_BUILD_VERSION} ..." >&2
+elif [[ $build_cmake ]]; then
+  echo "Building CMake version ${CMAKE_BUILD_VERSION} and installing into ${cmake_prefix} ..." >&2
   tarball=cmake-${CMAKE_BUILD_VERSION}.tar.gz
   if [[ ! -r $tarball ]]; then
     url=http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/$tarball
@@ -417,10 +399,19 @@ if [[ ! $cmake_version_sufficient && $build_cmake ]]; then
   (
     mkdir -p build_cmake
     cd build_cmake
-    ../cmake-${CMAKE_BUILD_VERSION}/bootstrap --prefix="${cmake_build_prefix}" && make && make install
+    ../cmake-${CMAKE_BUILD_VERSION}/bootstrap --prefix="${cmake_prefix}" && make && make install
   )
-  cmake="${cmake_build_prefix}/bin/cmake"
-  check_cmake
+  cmake="${cmake_prefix}/bin/cmake"
+fi
+
+# Check if the cmake version is sufficient
+if $(command -v $cmake >/dev/null 2>&1); then
+  cmake_found="yes"
+  cmake_version=$($cmake --version | head -n1 | awk '{ print $3 }')
+  echo "Found CMake version $cmake_version" >& 2
+  if version_gte $cmake_version $CMAKE_MIN_REQUIRED; then
+    cmake_version_sufficient="yes"
+  fi
 fi
 
 # Fail if we don't have a sufficient CMake
