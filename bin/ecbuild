@@ -336,9 +336,7 @@ while test $# -gt 0; do
         ;;
       --build-cmake)
         build_cmake="yes"
-        if [[ -z $val ]]; then
-          cmake_prefix="$PWD"
-        else
+        if [[ -n $val ]]; then
           cmake_prefix="$val"
         fi
         ;;
@@ -363,6 +361,7 @@ src=${srcARG:=""}
 cmake=${cmakebin:=cmake}
 dryrun=${dryrun:=no}
 build_cmake=${build_cmake:=""}
+cmake_prefix=${cmake_prefix:=$PWD}
 cmake_found=""
 cmake_version_sufficient=""
 
