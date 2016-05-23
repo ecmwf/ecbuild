@@ -16,7 +16,8 @@
 #
 #   ecbuild_add_cxx_flags( <flag1> [ <flag2> ... ]
 #                          [ BUILD <build> ]
-#                          [ NAME <name> ] )
+#                          [ NAME <name> ]
+#                          [ NO_FAIL ] )
 #
 # Options
 # -------
@@ -27,13 +28,16 @@
 # NAME : optional
 #   name of the check (if omitted, checks are enumerated)
 #
+# NO_FAIL : optional
+#   do not fail if the flag cannot be added
+#
 ##############################################################################
 
 macro( ecbuild_add_cxx_flags m_cxx_flags )
 
   set( _flags ${m_cxx_flags} )
   if( _flags AND CMAKE_CXX_COMPILER_LOADED )
-    set( options )
+    set( options NO_FAIL )
     set( single_value_args BUILD NAME )
     set( multi_value_args )
 
@@ -75,8 +79,10 @@ macro( ecbuild_add_cxx_flags m_cxx_flags )
           set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_flags}" )
           ecbuild_debug( "C++ FLAG [${_flags}] added" )
         endif()
-      else()
+      elseif( _PAR_NO_FAIL )
         ecbuild_info( "Unrecognised CXX flag [${_flags}] -- skipping" )
+      else()
+        ecbuild_error( "Unrecognised CXX flag [${_flags}]" )
       endif()
     endif()
     unset( _flags )
