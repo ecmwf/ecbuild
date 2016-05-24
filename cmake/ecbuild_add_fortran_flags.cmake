@@ -17,7 +17,8 @@
 #
 #   ecbuild_add_fortran_flags( <flag1> [ <flag2> ... ]
 #                              [ BUILD <build> ]
-#                              [ NAME <name> ] )
+#                              [ NAME <name> ]
+#                              [ NO_FAIL ] )
 #
 # Options
 # -------
@@ -29,6 +30,9 @@
 # NAME : optional
 #   name of the check (if omitted, checks are enumerated)
 #
+# NO_FAIL : optional
+#   do not fail if the flag cannot be added
+#
 ##############################################################################
 
 include( CheckFortranCompilerFlag )
@@ -38,7 +42,7 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
 
   if( _flags AND CMAKE_Fortran_COMPILER_LOADED )
 
-    set( options )
+    set( options NO_FAIL )
     set( single_value_args BUILD NAME )
     set( multi_value_args )
 
@@ -80,8 +84,10 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
           set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${_flags}" )
           ecbuild_debug( "Fortran FLAG [${_flags}] added" )
         endif()
-      else()
+      elseif( _PAR_NO_FAIL )
         ecbuild_info( "Unrecognised Fortran flag [${_flags}] -- skipping" )
+      else()
+        ecbuild_error( "Unrecognised Fortran flag [${_flags}]" )
       endif()
     endif()
 

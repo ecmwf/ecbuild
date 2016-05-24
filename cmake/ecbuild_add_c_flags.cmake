@@ -16,7 +16,8 @@
 #
 #   ecbuild_add_c_flags( <flag1> [ <flag2> ... ]
 #                        [ BUILD <build> ]
-#                        [ NAME <name> ] )
+#                        [ NAME <name> ]
+#                        [ NO_FAIL ] )
 #
 # Options
 # -------
@@ -27,6 +28,9 @@
 # NAME : optional
 #   name of the check (if omitted, checks are enumerated)
 #
+# NO_FAIL : optional
+#   do not fail if the flag cannot be added
+#
 ##############################################################################
 
 macro( ecbuild_add_c_flags m_c_flags )
@@ -34,7 +38,7 @@ macro( ecbuild_add_c_flags m_c_flags )
   set( _flags ${m_c_flags} )
 
   if( _flags AND CMAKE_C_COMPILER_LOADED )
-    set( options )
+    set( options NO_FAIL )
     set( single_value_args BUILD NAME )
     set( multi_value_args )
 
@@ -75,8 +79,10 @@ macro( ecbuild_add_c_flags m_c_flags )
           set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${_flags}" )
           ecbuild_debug( "C FLAG [${_flags}] added" )
         endif()
+      elseif( _PAR_NO_FAIL )
+        ecbuild_info( "Unrecognised C flag [${_flags}] -- skipping" )
       else()
-        ecbuild_warn( "Unrecognised C flag [${_flags}] -- skipping" )
+        ecbuild_error( "Unrecognised C flag [${_flags}]" )
       endif()
     endif()
     unset( _flags )
