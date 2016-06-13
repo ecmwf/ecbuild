@@ -21,6 +21,7 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     ecbuild_cache_check_symbol_exists( open         "sys/types.h;sys/stat.h;fcntl.h"  EC_HAVE_OPEN   )
     ecbuild_cache_check_symbol_exists( fopen        "stdio.h"                         EC_HAVE_FOPEN  )
     ecbuild_cache_check_symbol_exists( fmemopen     "stdio.h"                         EC_HAVE_FMEMOPEN )
+    ecbuild_cache_check_symbol_exists( funopen      "stdio.h"                         EC_HAVE_FUNOPEN )
     ecbuild_cache_check_symbol_exists( flock        "sys/file.h"                      EC_HAVE_FLOCK  )
     ecbuild_cache_check_symbol_exists( mmap         "sys/mman.h"                      EC_HAVE_MMAP   )
 
