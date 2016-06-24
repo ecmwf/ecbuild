@@ -245,33 +245,41 @@ set( EC_OS_NAME "UNKNOWN" )
 
 if( UNIX )
 
-	### APPLE ###
+  ### APPLE ###
 
-	if( APPLE AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-		set( EC_OS_NAME "macosx" )
-	endif()
+  if( APPLE AND ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    set( EC_OS_NAME "macosx" )
+  endif()
 
-	### Linux ###
+  ### Linux ###
 
-	if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+  if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
 
-		set( EC_OS_NAME "linux" )
+    set( EC_OS_NAME "linux" )
 
-		# recent linkers default to --enable-new-dtags
-		# which then adds both RPATH and RUNPATH to executables
-		# thus invalidating RPATH setting, and making LD_LIBRARY_PATH take precedence
-		# to be sure, use tool 'readelf -a <exe> | grep PATH' to see what paths are built-in
-		# see:
-		#  * http://blog.qt.digia.com/blog/2011/10/28/rpath-and-runpath
-		#  * http://www.cmake.org/Wiki/CMake_RPATH_handling
-		#  * man ld
-		#  * http://blog.tremily.us/posts/rpath
-		#  * http://fwarmerdam.blogspot.co.uk/2010/12/rpath-runpath-and-ldlibrarypath.html
-		set(CMAKE_EXE_LINKER_FLAGS     "${CMAKE_EXE_LINKER_FLAGS}    -Wl,--disable-new-dtags")
-		set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--disable-new-dtags")
-		set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--disable-new-dtags")
+    # The following option allows enabling the new dtags linker option
+    # (when set to OFF). ONLY SET TO OFF IF YOU KNOW WHAT YOU ARE DOING AND
+    # NEVER WHEN BUILDING PRODUCTION SOFTWARE. YOU HAVE BEEN WARNED!
+    option( ECBUILD_DISABLE_NEW_DTAGS "Set the linker flag --disable-new-dtags" ON )
+    mark_as_advanced( ECBUILD_DISABLE_NEW_DTAGS )
 
-	endif()
+    if( ECBUILD_DISABLE_NEW_DTAGS )
+      # recent linkers default to --enable-new-dtags
+      # which then adds both RPATH and RUNPATH to executables
+      # thus invalidating RPATH setting, and making LD_LIBRARY_PATH take precedence
+      # to be sure, use tool 'readelf -a <exe> | grep PATH' to see what paths are built-in
+      # see:
+      #  * http://blog.qt.digia.com/blog/2011/10/28/rpath-and-runpath
+      #  * http://www.cmake.org/Wiki/CMake_RPATH_handling
+      #  * man ld
+      #  * http://blog.tremily.us/posts/rpath
+      #  * http://fwarmerdam.blogspot.co.uk/2010/12/rpath-runpath-and-ldlibrarypath.html
+      set(CMAKE_EXE_LINKER_FLAGS     "${CMAKE_EXE_LINKER_FLAGS}    -Wl,--disable-new-dtags")
+      set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--disable-new-dtags")
+      set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--disable-new-dtags")
+    endif()
+
+  endif()
 
 	### Solaris ###
 

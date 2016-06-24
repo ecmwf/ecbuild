@@ -40,6 +40,8 @@
 #cmakedefine EC_HAVE_FTRUNCATE
 #cmakedefine EC_HAVE_OPEN
 #cmakedefine EC_HAVE_FOPEN
+#cmakedefine EC_HAVE_FMEMOPEN
+#cmakedefine EC_HAVE_FUNOPEN
 #cmakedefine EC_HAVE_FLOCK
 #cmakedefine EC_HAVE_MMAP
 
