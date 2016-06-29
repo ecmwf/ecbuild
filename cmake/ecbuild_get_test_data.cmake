@@ -20,6 +20,7 @@ function( _download_test_data _p_NAME _p_DIRNAME )
   #endif()
 
   find_program( CURL_PROGRAM curl )
+  mark_as_advanced(CURL_PROGRAM)
 
   if( CURL_PROGRAM )
 
