@@ -170,12 +170,12 @@ function( ecbuild_find_python )
 
         endif()
 
-        # Also set PYTHON_FOUND and Python_FOUND for compatibility with ecbuild_add_option
-        if( PYTHONLIBS_FOUND )
-          set( PYTHON_FOUND 1 )
-          set( Python_FOUND 1 )
-        endif()
+    endif()
 
+    # Also set PYTHON_FOUND and Python_FOUND for compatibility with ecbuild_add_option
+    if( PYTHONLIBS_FOUND OR _p_NO_LIBS )
+      set( PYTHON_FOUND 1 )
+      set( Python_FOUND 1 )
     endif()
 
     ecbuild_debug_var( PYTHONINTERP_FOUND )
