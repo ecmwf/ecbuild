@@ -129,12 +129,9 @@ function( ecbuild_find_python )
             separate_arguments(PYTHON_INCLUDE_DIRS)
 
         else() # revert to finding pythonlibs the standard way (cmake macro)
-            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package(PythonLibs)" )
+            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package( PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" ${_p_REQUIRED} )" )
 
-            find_package(PythonLibs)
-            if( PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIRS )
-              set(PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_PATH}")
-            endif()
+            find_package( PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" ${_p_REQUIRED} )
 
         endif()
 
