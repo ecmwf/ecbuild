@@ -28,6 +28,10 @@
 # NO_LIBS : optional
 #   only search for the Python interpreter, not the libraries
 #
+# Unless ``NO_LIBS`` is set, the ``python-config`` utility, if found, is used
+# to determine the Python include directories, libraries and link line. Set the
+# CMake variable ``PYTHON_NO_CONFIG`` to use CMake's FindPythonLibs instead.
+#
 # Output variables
 # ----------------
 #
@@ -106,7 +110,7 @@ function( ecbuild_find_python )
         # The OpenBSD python packages have python-config's
         # that don't reliably report linking flags that will work.
 
-        if( PYTHON_CONFIG_EXECUTABLE AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" )
+        if( PYTHON_CONFIG_EXECUTABLE AND NOT ( PYTHON_NO_CONFIG OR ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" ) )
             ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using ${PYTHON_CONFIG_EXECUTABLE}" )
 
             execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --ldflags
