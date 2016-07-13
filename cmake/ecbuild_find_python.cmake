@@ -114,10 +114,21 @@ function( ecbuild_find_python )
             ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using ${PYTHON_CONFIG_EXECUTABLE}" )
 
             if( NOT PYTHON_LIBRARY )
+              execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --prefix
+                              OUTPUT_VARIABLE PYTHON_PREFIX
+                              OUTPUT_STRIP_TRAILING_WHITESPACE
+                              ERROR_QUIET)
+
               execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --ldflags
                               OUTPUT_VARIABLE PYTHON_LIBRARY
                               OUTPUT_STRIP_TRAILING_WHITESPACE
                               ERROR_QUIET)
+
+              # Prepend -L and and set the RPATH to the lib directory under the
+              # Python install prefix unless it is a standard system prefix path
+              if( PYTHON_LIBRARY AND PYTHON_PREFIX AND NOT CMAKE_SYSTEM_PREFIX_PATH MATCHES ${PYTHON_PREFIX} )
+                set( PYTHON_LIBRARY "-L${PYTHON_PREFIX}/lib -Wl,-rpath,${PYTHON_PREFIX}/lib ${PYTHON_LIBRARY}" )
+              endif()
 
               set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}" CACHE PATH
                    "Path to where Python.h is found" FORCE )
