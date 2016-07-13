@@ -93,7 +93,10 @@ function( ecbuild_find_python )
         if( PYTHON_EXECUTABLE AND EXISTS ${PYTHON_EXECUTABLE}-config )
             set(PYTHON_CONFIG_EXECUTABLE ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
         else()
-            find_program( PYTHON_CONFIG_EXECUTABLE NAMES python-config python-config${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} )
+            find_program( PYTHON_CONFIG_EXECUTABLE
+                          NAMES python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}-config
+                                python${PYTHON_VERSION_MAJOR}-config
+                                python-config )
         endif()
 
         ecbuild_debug_var( PYTHON_CONFIG_EXECUTABLE )
