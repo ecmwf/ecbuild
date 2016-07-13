@@ -97,7 +97,11 @@ function( ecbuild_find_python )
         if( PYTHON_EXECUTABLE AND EXISTS ${PYTHON_EXECUTABLE}-config )
             set(PYTHON_CONFIG_EXECUTABLE ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
         else()
+            get_filename_component( __python_bin_dir ${PYTHON_EXECUTABLE} PATH )
             find_program( PYTHON_CONFIG_EXECUTABLE
+                          NO_CMAKE_PATH NO_CMAKE_SYSTEM_PATH
+                          NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH
+                          HINTS ${__python_bin_dir}
                           NAMES python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}-config
                                 python${PYTHON_VERSION_MAJOR}-config
                                 python-config )
