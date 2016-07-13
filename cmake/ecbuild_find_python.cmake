@@ -178,7 +178,11 @@ function( ecbuild_find_python )
             try_compile( PYTHON_LIBS_WORKING ${CMAKE_CURRENT_BINARY_DIR}
                          ${__test_python}
                          CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIRS}"
-                         LINK_LIBRARIES ${PYTHON_LIBRARIES} )
+                         LINK_LIBRARIES ${PYTHON_LIBRARIES}
+                         OUTPUT_VARIABLE __try_compile_output )
+            if( NOT PYTHON_LIBS_WORKING )
+              ecbuild_debug( "ecbuild_find_python: trying to link executable with Python libraries failed\n${__try_compile_output}" )
+            endif()
 
         endif()
 
