@@ -62,38 +62,15 @@ function( ecbuild_find_python )
     if(_p_UNPARSED_ARGUMENTS)
       ecbuild_critical("Unknown keywords given to ecbuild_find_python(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
+    if( _p_REQUIRED )
+      set( _p_REQUIRED REQUIRED )
+    else()
+      unset( _p_REQUIRED )
+    endif()
 
     # find python executable
 
-    find_package( PythonInterp )
-
-    if( NOT PYTHONINTERP_FOUND AND _p_REQUIRED )
-        ecbuild_error( "Failed to find any Python interpreter (REQUIRED)" )
-    endif()
-
-    # find python version
-    # execute_process( COMMAND ${PYTHON_EXECUTABLE} -V ERROR_VARIABLE _version  RESULT_VARIABLE _return ERROR_STRIP_TRAILING_WHITESPACE)
-    # if( NOT _return )
-    #    string(REGEX REPLACE ".*([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\1.\\2.\\3" PYTHON_VERSION ${_version} )
-    # endif()
-    # endif()
-
-    # ecbuild_debug( "Python version ${PYTHON_VERSION_STRING}" )
-    # ecbuild_debug_var(PYTHON_VERSION_MAJOR)
-    # ecbuild_debug_var(PYTHON_VERSION_MINOR)
-    # ecbuild_debug_var(PYTHON_VERSION_PATCH)
-
-    if( PYTHONINTERP_FOUND AND DEFINED _p_VERSION )
-        if( _p_VERSION VERSION_GREATER "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" )
-            set( PYTHONINTERP_FOUND 0 )
-            set( PYTHON_EXECUTABLE "PYTHON_EXECUTABLE-NOTFOUND" )
-            if( _p_REQUIRED )
-                ecbuild_critical( "Required python version at least ${_p_VERSION} but found only ${PYTHON_VERSION_STRING}" )
-            else()
-                ecbuild_warn( "Looking for python version at least ${_p_VERSION} but found only ${PYTHON_VERSION_STRING}\nMarking Python as NOTFOUND" )
-            endif()
-        endif()
-    endif()
+    find_package( PythonInterp ${_p_VERSION} ${_p_REQUIRED} )
 
     if( PYTHONINTERP_FOUND )
         ecbuild_debug( "ecbuild_find_python: Found Python interpreter version ${PYTHON_VERSION_STRING} at ${PYTHON_EXECUTABLE}" )
@@ -104,8 +81,8 @@ function( ecbuild_find_python )
             execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
         endif()
         ecbuild_debug( "ecbuild_find_python: PYTHON_SITE_PACKAGES=${PYTHON_SITE_PACKAGES}" )
-
     endif()
+
     if( PYTHONINTERP_FOUND AND NOT _p_NO_LIBS )
         # find python config
 
