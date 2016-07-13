@@ -113,20 +113,39 @@ function( ecbuild_find_python )
         if( PYTHON_CONFIG_EXECUTABLE AND NOT ( PYTHON_NO_CONFIG OR ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" ) )
             ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using ${PYTHON_CONFIG_EXECUTABLE}" )
 
-            execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --ldflags
-                            OUTPUT_VARIABLE PYTHON_LIBRARIES
-                            OUTPUT_STRIP_TRAILING_WHITESPACE
-                            ERROR_QUIET)
+            if( NOT PYTHON_LIBRARY )
+              execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --ldflags
+                              OUTPUT_VARIABLE PYTHON_LIBRARY
+                              OUTPUT_STRIP_TRAILING_WHITESPACE
+                              ERROR_QUIET)
 
-            execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --includes
-                            OUTPUT_VARIABLE PYTHON_INCLUDE_DIRS
-                            OUTPUT_STRIP_TRAILING_WHITESPACE
-                            ERROR_QUIET)
+              set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}" CACHE PATH
+                   "Path to where Python.h is found" FORCE )
+            endif()
 
-            string(REGEX REPLACE "^[-I]" "" PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_DIRS}")
-            string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_DIRS}")
+            if(DEFINED PYTHON_INCLUDE_PATH AND NOT DEFINED PYTHON_INCLUDE_DIR)
+              set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}" CACHE PATH
+                   "Path to where Python.h is found" FORCE )
+            elseif( NOT PYTHON_INCLUDE_DIR )
+              execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --includes
+                              OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
+                              OUTPUT_STRIP_TRAILING_WHITESPACE
+                              ERROR_QUIET)
 
-            separate_arguments(PYTHON_INCLUDE_DIRS)
+              string(REGEX REPLACE "^[-I]" "" PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
+              string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
+
+              separate_arguments(PYTHON_INCLUDE_DIR)
+              set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}" CACHE PATH
+                   "Path to where Python.h is found" FORCE )
+
+            endif()
+
+            set(PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_DIR}")
+            set(PYTHON_LIBRARIES "${PYTHON_LIBRARY}")
+
+            find_package_handle_standard_args( PythonLibs DEFAULT_MSG
+                                               PYTHON_INCLUDE_DIRS PYTHON_LIBRARIES )
 
         else() # revert to finding pythonlibs the standard way (cmake macro)
             ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package( PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" ${_p_REQUIRED} )" )
@@ -145,13 +164,6 @@ function( ecbuild_find_python )
                          ${__test_python}
                          CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIRS}"
                          LINK_LIBRARIES ${PYTHON_LIBRARIES} )
-
-            # set output variables
-
-            find_package_handle_standard_args( PythonLibs DEFAULT_MSG
-                                               PYTHON_INCLUDE_DIRS PYTHON_LIBRARIES PYTHON_LIBS_WORKING )
-            ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIRS=${PYTHON_INCLUDE_DIRS}" )
-            ecbuild_debug( "ecbuild_find_python: PYTHON_LIBRARIES=${PYTHON_LIBRARIES}" )
 
         endif()
 
