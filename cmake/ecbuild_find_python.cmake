@@ -72,6 +72,8 @@ function( ecbuild_find_python )
 
     find_package( PythonInterp ${_p_VERSION} ${_p_REQUIRED} )
 
+    set( __required_vars PYTHONINTERP_FOUND )
+
     if( PYTHONINTERP_FOUND )
         ecbuild_debug( "ecbuild_find_python: Found Python interpreter version ${PYTHON_VERSION_STRING} at ${PYTHON_EXECUTABLE}" )
 
@@ -84,6 +86,8 @@ function( ecbuild_find_python )
     endif()
 
     if( PYTHONINTERP_FOUND AND NOT _p_NO_LIBS )
+        list( APPEND __required_vars PYTHONLIBS_FOUND PYTHON_LIBS_WORKING )
+
         # find python config
 
         if( PYTHON_EXECUTABLE AND EXISTS ${PYTHON_EXECUTABLE}-config )
@@ -149,11 +153,7 @@ function( ecbuild_find_python )
 
     endif()
 
-    # Also set PYTHON_FOUND and Python_FOUND for compatibility with ecbuild_add_option
-    if( PYTHONLIBS_FOUND OR _p_NO_LIBS )
-      set( PYTHON_FOUND 1 )
-      set( Python_FOUND 1 )
-    endif()
+    find_package_handle_standard_args( Python DEFAULT_MSG ${__required_vars} )
 
     ecbuild_debug_var( PYTHONINTERP_FOUND )
     ecbuild_debug_var( PYTHON_FOUND )
