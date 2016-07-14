@@ -74,7 +74,24 @@ function( ecbuild_find_python )
 
     # find python executable
 
-    find_package( PythonInterp ${_p_VERSION} ${_p_REQUIRED} )
+    # Search first without specifying the version, since doing so gives preference to the specified
+    # version even though a never version of the interpreter may be available
+    find_package( PythonInterp ${_p_REQUIRED} )
+
+    # If no suitable version was found, search again with the version specified
+    if( PYTHONINTERP_FOUND AND _p_VERSION )
+      if( _p_VERSION VERSION_GREATER "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" )
+        ecbuild_debug( "ecbuild_find_python: Found Python interpreter version ${PYTHON_VERSION_STRING} at ${PYTHON_EXECUTABLE}, however version ${_p_VERSION} is required. Searching again..." )
+        unset( PYTHONINTERP_FOUND )
+        unset( PYTHON_EXECUTABLE )
+        unset( PYTHON_EXECUTABLE CACHE )
+        unset( PYTHON_VERSION_MAJOR )
+        unset( PYTHON_VERSION_MINOR )
+        unset( PYTHON_VERSION_PATCH )
+        unset( PYTHON_VERSION_STRING )
+        find_package( PythonInterp "${_p_VERSION}" ${_p_REQUIRED} )
+      endif()
+    endif()
 
     set( __required_vars PYTHONINTERP_FOUND )
 
@@ -163,7 +180,7 @@ function( ecbuild_find_python )
                                                PYTHON_INCLUDE_DIRS PYTHON_LIBRARIES )
 
         else() # revert to finding pythonlibs the standard way (cmake macro)
-            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package( PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" ${_p_REQUIRED} )" )
+            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package( PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH} ${_p_REQUIRED} )" )
 
             find_package( PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" ${_p_REQUIRED} )
 
