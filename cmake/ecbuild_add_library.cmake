@@ -29,7 +29,7 @@
 #                        [ PERSISTENT <file1> [<file2> ...] ]
 #                        [ GENERATED <file1> [<file2> ...] ]
 #                        [ DEPENDS <target1> [<target2> ...] ]
-#                        [ CONDITION <condition1> [<condition2> ...] ]
+#                        [ CONDITION <condition> ]
 #                        [ NOINSTALL ]
 #                        [ HEADER_DESTINATION <path> ]
 #                        [ INSTALL_HEADERS LISTED|ALL ]

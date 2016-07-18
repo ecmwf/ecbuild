@@ -33,7 +33,7 @@
 #                     [ GENERATED <file1> [<file2> ...] ]
 #                     [ DEPENDS <target1> [<target2> ...] ]
 #                     [ TEST_DEPENDS <target1> [<target2> ...] ]
-#                     [ CONDITION <condition1> [<condition2> ...] ]
+#                     [ CONDITION <condition> ]
 #                     [ ENVIRONMENT <variable1> [<variable2> ...] ]
 #                     [ WORKING_DIRECTORY <path> ]
 #                     [ CFLAGS <flag1> [<flag2> ...] ]

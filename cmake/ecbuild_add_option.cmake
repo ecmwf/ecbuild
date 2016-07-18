@@ -19,7 +19,7 @@
 #                       [ DESCRIPTION <description> ]
 #                       [ PURPOSE <purpose> ]
 #                       [ REQUIRED_PACKAGES <package1> [<package2> ...] ]
-#                       [ CONDITION <condition1> [<condition2> ...] ]
+#                       [ CONDITION <condition> ]
 #                       [ ADVANCED ] )
 #
 # Options
