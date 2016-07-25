@@ -43,7 +43,7 @@ elseif(has_std_cpp11)
 elseif(has_std_cpp0x)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 elseif(has_hstd_cpp11)
-  set($CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -hstd=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -hstd=c++11")
 endif(has_std_gnupp11)
 
 if(MSVC) 
