@@ -24,22 +24,16 @@ ENDIF()
 # e.g. include/openjpeg-2.0 or include/openjpeg-2.1
 # We only support version 2.1.x
 # Also the name of the library is different. In v1.x it was libopenjpeg and now it's libopenjp2
-#
 if( DEFINED OPENJPEG_PATH )
   find_path(OPENJPEG_INCLUDE_DIR openjpeg.h PATHS ${OPENJPEG_PATH}/include PATH_SUFFIXES openjpeg openjpeg-2.1 NO_DEFAULT_PATH)
 
-  find_library(OPENJPEG_LIBRARY  openjpeg   PATHS ${OPENJPEG_PATH}/lib     PATH_SUFFIXES openjpeg  NO_DEFAULT_PATH)
-  if( NOT OPENJPEG_LIBRARY )
-    find_library(OPENJPEG_LIBRARY  openjp2  PATHS ${OPENJPEG_PATH}/lib     PATH_SUFFIXES openjpeg  NO_DEFAULT_PATH)
-  endif()
+  find_library( OPENJPEG_LIBRARY NAMES openjpeg openjp2 PATHS ${OPENJPEG_PATH}/lib
+                PATH_SUFFIXES openjpeg  NO_DEFAULT_PATH )
 endif()
 
 find_path(OPENJPEG_INCLUDE_DIR  openjpeg.h PATH_SUFFIXES openjpeg openjpeg-2.1)
 
-find_library( OPENJPEG_LIBRARY  openjpeg   PATH_SUFFIXES openjpeg )
-if( NOT OPENJPEG_LIBRARY )
-  find_library( OPENJPEG_LIBRARY  openjp2  PATH_SUFFIXES openjpeg )
-endif()
+find_library( OPENJPEG_LIBRARY NAMES openjpeg openjp2 PATH_SUFFIXES openjpeg )
 
 set( OPENJPEG_LIBRARIES    ${OPENJPEG_LIBRARY} )
 set( OPENJPEG_INCLUDE_DIRS ${OPENJPEG_INCLUDE_DIR} )
