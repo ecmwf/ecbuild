@@ -169,6 +169,15 @@ if( ENABLE_OS_FUNCTIONS_TEST )
 #    ecbuild_debug_var(EC_HAVE_PROCFS)
 #    ecbuild_debug_var(EC_HAVE_PROCFS_OUTPUT)
 
+    #### check support for DL library #############
+
+    ecbuild_cache_check_include_files( dlfcn.h  EC_HAVE_DLFCN_H )
+
+    cmake_push_check_state(RESET)
+    set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_DL_LIBS} )
+    ecbuild_cache_check_c_source_compiles( "#define _GNU_SOURCE\n#include <dlfcn.h>\nint main(){ void* addr; Dl_info info; dladdr(addr, &info); }\n" EC_HAVE_DLADDR )
+    cmake_pop_check_state()
+
 endif()
 
 

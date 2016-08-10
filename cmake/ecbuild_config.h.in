@@ -129,6 +129,12 @@
 #cmakedefine EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV
 #cmakedefine EC_HAVE_PROCFS
 
+
+/* --- dl library support --- */
+
+#cmakedefine EC_HAVE_DLFCN_H
+#cmakedefine EC_HAVE_DLADDR
+
 /* --- c compiler support --- */
 
 #cmakedefine EC_HAVE_C_INLINE
