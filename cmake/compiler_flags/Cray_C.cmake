@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-set( CMAKE_C_FLAGS_ALL            "-hlist=amid"                                                                    CACHE STRING "Common flags for all build-types" FORCE )
+set( CMAKE_C_FLAGS_ALL            ""                                                                               CACHE STRING "Common flags for all build-types" FORCE )
 set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_ALL} -O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG"                    CACHE STRING "Release C flags"                  FORCE )
 set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_ALL} -O2 -hfp1 -Gfast -DNDEBUG"                                 CACHE STRING "Release-with-debug-info C flags"  FORCE )
 set( CMAKE_C_FLAGS_PRODUCTION     "${CMAKE_C_FLAGS_ALL} -O2 -hfp1 -G2"                                             CACHE STRING "Production C flags"               FORCE )
