@@ -109,11 +109,22 @@ macro( ecbuild_declare_project )
 
   # install dirs for this project
 
-  set( INSTALL_BIN_DIR bin )
-  set( INSTALL_LIB_DIR lib )
-  set( INSTALL_INCLUDE_DIR include )
-  set( INSTALL_DATA_DIR share/${PROJECT_NAME} )
-  set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
+  # Use defaults unless values are already present in cache
+  if( NOT INSTALL_BIN_DIR )
+    set( INSTALL_BIN_DIR bin )
+  endif()
+  if( NOT INSTALL_LIB_DIR )
+    set( INSTALL_LIB_DIR lib )
+  endif()
+  if( NOT INSTALL_INCLUDE_DIR )
+    set( INSTALL_INCLUDE_DIR include )
+  endif()
+  if( NOT INSTALL_DATA_DIR )
+    set( INSTALL_DATA_DIR share/${PROJECT_NAME} )
+  endif()
+  if( NOT INSTALL_CMAKE_DIR )
+    set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
+  endif()
 
   mark_as_advanced( INSTALL_BIN_DIR )
   mark_as_advanced( INSTALL_LIB_DIR )
