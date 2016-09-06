@@ -23,8 +23,12 @@ function( ecbuild_source_flags OUT TARGET DEFAULT_FLAGS SOURCES )
   endif()
   execute_process( COMMAND ${PYTHON_EXECUTABLE} ${__gen_source_flags}
                            ${ECBUILD_SOURCE_FLAGS} ${OUTFILE} "${DEFAULT_FLAGS}"
-                           ${SOURCES} "${__debug}" )
+                           ${SOURCES} "${__debug}"
+                   RESULT_VARIABLE __res )
 
+  if( __res GREATER 0 )
+    ecbuild_error( "ecbuild_source_flags: failed generating source flags for target ${TARGET} from ${ECBUILD_SOURCE_FLAGS}" )
+  endif()
   set( ${OUT} ${OUTFILE} PARENT_SCOPE )
 
 endfunction()
