@@ -51,6 +51,40 @@
 # ``CMAKE_INSTALL_PREFIX``. Using absolute paths makes the build
 # non-relocatable and may break the generation of relocatable binary packages.
 #
+# Compiler flags can be overridden on a per source file basis by providing a
+# JSON file defining the override rules and setting ``ECBUILD_SOURCE_FLAGS``
+# to the *full path* of this file. If set, ``<PNAME>_ECBUILD_SOURCE_FLAGS``
+# takes precendence and ``ECBUILD_SOURCE_FLAGS`` is ignored.
+#
+# The JSON file lists shell glob patterns and the rule to apply to each source
+# file matching the pattern, defined as an array ``[op, flag1, ...]``
+# containing an operator followed by one or more flags. Valid operators are:
+#
+# :+: Add the flags to the default compilation flags for matching files
+# :=: Set the flags for matching files, disregarding default compilation flags
+# :/: Remove the flags from the default compilation flags for matching files
+#
+# Rules can be nested to e.g. only apply to a subdirectory by setting the rule
+# to a dictionary, which will only apply to source files matching it pattern.
+#
+# An example JSON file demonstrating different rule types is given below: ::
+#
+#   {
+#     "*"       : [ "+", "-g0" ],
+#     "*.cxx"   : [ "+", "-cxx11" ],
+#     "*.f90"   : [ "+", "-pipe" ],
+#     "foo.c"   : [ "+", "-O0" ],
+#     "foo.cc"  : [ "+", "-O2", "-pipe" ],
+#     "bar/*": {
+#       "*.f90" : [ "=", "-O1" ]
+#     },
+#     "baz/*": {
+#       "*.f90" : [ "/", "-pipe" ],
+#       "*.f90" : [ "/", "-O2" ],
+#       "*.f90" : [ "+", "-O3" ]
+#     }
+#   }
+#
 ##############################################################################
 
 macro( ecbuild_declare_project )
