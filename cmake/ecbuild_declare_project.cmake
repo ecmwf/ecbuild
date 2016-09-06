@@ -107,7 +107,7 @@ macro( ecbuild_declare_project )
   #    ecbuild_debug_var( ${PNAME}_MINOR_VERSION )
   #    ecbuild_debug_var( ${PNAME}_PATCH_VERSION )
 
-  # project specific source flags
+  # Override source flags with project specific flags
   if( ${PNAME}_ECBUILD_SOURCE_FLAGS )
     if ( ECBUILD_SOURCE_FLAGS )
       ecbuild_debug( "Override ECBUILD_SOURCE_FLAGS (${ECBUILD_SOURCE_FLAGS}) with ${PROJECT_NAME} specific flags (${${PNAME}_ECBUILD_SOURCE_FLAGS})" )
@@ -115,6 +115,12 @@ macro( ecbuild_declare_project )
       ecbuild_debug( "Use ${PROJECT_NAME} specific ECBUILD_SOURCE_FLAGS (${${PNAME}_ECBUILD_SOURCE_FLAGS})" )
     endif()
     set( ECBUILD_SOURCE_FLAGS ${${PNAME}_ECBUILD_SOURCE_FLAGS} )
+  endif()
+  # Ensure ECBUILD_SOURCE_FLAGS is a valid file path
+  if( NOT EXISTS ${ECBUILD_SOURCE_FLAGS} )
+    ecbuild_warn( "ECBUILD_SOURCE_FLAGS points to non-existent file ${ECBUILD_SOURCE_FLAGS} and will be ignored" )
+    unset( ECBUILD_SOURCE_FLAGS )
+    unset( ECBUILD_SOURCE_FLAGS CACHE )
   endif()
 
   # install dirs for this project
