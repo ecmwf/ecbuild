@@ -107,6 +107,16 @@ macro( ecbuild_declare_project )
   #    ecbuild_debug_var( ${PNAME}_MINOR_VERSION )
   #    ecbuild_debug_var( ${PNAME}_PATCH_VERSION )
 
+  # project specific source flags
+  if( ${PNAME}_ECBUILD_SOURCE_FLAGS )
+    if ( ECBUILD_SOURCE_FLAGS )
+      ecbuild_debug( "Override ECBUILD_SOURCE_FLAGS (${ECBUILD_SOURCE_FLAGS}) with ${PROJECT_NAME} specific flags (${${PNAME}_ECBUILD_SOURCE_FLAGS})" )
+    else()
+      ecbuild_debug( "Use ${PROJECT_NAME} specific ECBUILD_SOURCE_FLAGS (${${PNAME}_ECBUILD_SOURCE_FLAGS})" )
+    endif()
+    set( ECBUILD_SOURCE_FLAGS ${${PNAME}_ECBUILD_SOURCE_FLAGS} )
+  endif()
+
   # install dirs for this project
 
   # Use defaults unless values are already present in cache
