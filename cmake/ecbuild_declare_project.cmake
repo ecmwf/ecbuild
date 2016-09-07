@@ -151,7 +151,7 @@ macro( ecbuild_declare_project )
     set( ECBUILD_SOURCE_FLAGS ${${PNAME}_ECBUILD_SOURCE_FLAGS} )
   endif()
   # Ensure ECBUILD_SOURCE_FLAGS is a valid file path
-  if( NOT EXISTS ${ECBUILD_SOURCE_FLAGS} )
+  if( DEFINED ECBUILD_SOURCE_FLAGS AND NOT EXISTS ${ECBUILD_SOURCE_FLAGS} )
     ecbuild_warn( "ECBUILD_SOURCE_FLAGS points to non-existent file ${ECBUILD_SOURCE_FLAGS} and will be ignored" )
     unset( ECBUILD_SOURCE_FLAGS )
     unset( ECBUILD_SOURCE_FLAGS CACHE )
