@@ -233,6 +233,18 @@ macro( ecbuild_install_project )
         endif()
     endforeach()
 
+    # Deduplicate TPL includes, libs and definitions
+    # The same TPL may indirectly be pulled in multiple times!
+    if( ${PNAME}_TPL_INCLUDE_DIRS )
+      list( REMOVE_DUPLICATES ${PNAME}_TPL_INCLUDE_DIRS )
+    endif()
+    if( ${PNAME}_TPL_LIBRARIES )
+      list( REMOVE_DUPLICATES ${PNAME}_TPL_LIBRARIES )
+    endif()
+    if( ${PNAME}_TPL_DEFINITIONS )
+      list( REMOVE_DUPLICATES ${PNAME}_TPL_DEFINITIONS )
+    endif()
+
     # Generate the project .cmake config files
     # All variables here must be (sub)project specific in order to work within bundles
     if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
