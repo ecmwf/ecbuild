@@ -35,7 +35,8 @@
 # :<target>_h_srcs:   list of sources with extension .h, .hxx, .hh, .hpp, .H
 # :<target>_c_srcs:   list of sources with extension .c
 # :<target>_cxx_srcs: list of sources with extension .cc, .cxx, .cpp, .C
-# :<target>_f_srcs:   list of sources with extension .f, .F, .for, f77, .f90, .f95
+# :<target>_f_srcs:   list of sources with extension .f, .F, .for, f77, .f90,
+#                                                    .f95, .F77, .F90, .F95
 #
 ##############################################################################
 
@@ -78,7 +79,7 @@ macro( ecbuild_separate_sources )
 	endforeach()
 
 	foreach( src ${_PAR_SOURCES} )
-		if(${src} MATCHES "(\\.f$|\\.F$|\\.for$|\\.f77$|\\.f90$|\\.f95$)")
+    if(${src} MATCHES "(\\.f$|\\.F$|\\.for$|\\.f77$|\\.f90$|\\.f95$|\\.F77$|\\.F90$|\\.F95$)")
 			list( APPEND ${_PAR_TARGET}_f_srcs ${src} )
 		endif()
 	endforeach()
