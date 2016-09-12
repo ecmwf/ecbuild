@@ -360,11 +360,32 @@ function( ecbuild_add_library_impl )
       if( "${lang}" STREQUAL "Fortran" )
         set( L "F" )
       endif()
+
       string( TOLOWER ${L} l )
 
       if( ${_PAR_TARGET}_${l}_srcs )
 
-        if( ECBUILD_SOURCE_FLAGS )
+        set( pflags ${${PNAME}_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}} )
+
+        if( pflags )
+
+          foreach( src ${${_PAR_TARGET}_${l}_srcs} )
+            get_property( oflags SOURCE ${src} PROPERTY OVERRIDE_COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
+            if( NOT oflags)
+              get_property( oflags SOURCE ${src} PROPERTY OVERRIDE_COMPILE_FLAGS )
+            endif()
+            if( oflags )
+              set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${oflags}" )
+            else()
+              get_property( flags SOURCE ${src} PROPERTY COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
+              if( NOT flags )
+                get_property( flags SOURCE ${src} PROPERTY COMPILE_FLAGS )
+              endif()
+              set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${pflags} ${flags}" )
+            endif()
+          endforeach()
+
+        elseif( ECBUILD_SOURCE_FLAGS )
           ecbuild_source_flags( ${_PAR_TARGET}_${lang}_SOURCE_FLAGS
             ${_PAR_TARGET}_${l}
             "${_PAR_${L}FLAGS}"
