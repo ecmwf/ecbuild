@@ -79,10 +79,11 @@ macro( ecbuild_separate_sources )
 	endforeach()
 
 	foreach( src ${_PAR_SOURCES} )
-    if(${src} MATCHES "(\\.f$|\\.F$|\\.for$|\\.f77$|\\.f90$|\\.f95$|\\.F77$|\\.F90$|\\.F95$)")
+		if(${src} MATCHES "(\\.f$|\\.F$|\\.for$|\\.f77$|\\.f90$|\\.f95$|\\.f03$|\\.f08$|\\.F77$|\\.F90$|\\.F95$|\\.F03$|\\.F08$)")
 			list( APPEND ${_PAR_TARGET}_f_srcs ${src} )
 		endif()
 	endforeach()
+	set_source_files_properties( ${${_PAR_TARGET}_f_srcs} PROPERTIES LANGUAGE Fortran )
 
 #    ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
 #    ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
