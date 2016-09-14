@@ -1,14 +1,14 @@
 # Checks for C++11 features
-# 
+#
 # USAGE: There are two functions
 #
-# cxx11_find_all_features(OUTPUT_VARIABLE) 
+# cxx11_find_all_features(OUTPUT_VARIABLE)
 # This function returns a variable with all possible features.
 #
 # cxx11_feature_check([feature feature] [REQUIRED [feature feature]])
 # If no arguments are provided, then checks all available features
 # Features appeacing before REQUIRED are optional.
-# If arguments are provided and those features are available, sets 
+# If arguments are provided and those features are available, sets
 # the variable HAS_CXX11_FEATURENAME, where FEATURENAME is the input in capital letters.
 # Fails if required feature are not available
 #
@@ -17,65 +17,66 @@
 # Original script by Rolf Eike Beer
 # Modifications by Andreas Weis
 # Further Modifications by RSDT@UCL
+# Adapted to ecBuild by Florian Rathgeber <florian.rathgeber@ecmwf.int>
 
 set(CPP11_FEATURE_CHECK_DIR ${CMAKE_CURRENT_LIST_DIR}/cpp11 CACHE INTERNAL "c++11 file directory")
 
 MACRO(cxx11_check_single_feature FEATURE_NAME FEATURE_NUMBER RESULT_VAR)
-	IF (NOT DEFINED ${RESULT_VAR})
+  IF (NOT DEFINED ${RESULT_VAR})
     SET(_bindir "${CMAKE_BINARY_DIR}/cxx11_feature_tests/cxx11_${FEATURE_NAME}")
 
-		IF (${FEATURE_NUMBER})
+    IF (${FEATURE_NUMBER})
       SET(_SRCFILE_BASE ${CPP11_FEATURE_CHECK_DIR}/${FEATURE_NAME}-N${FEATURE_NUMBER})
-			SET(_LOG_NAME "\"${FEATURE_NAME}\" (N${FEATURE_NUMBER})")
-		ELSE (${FEATURE_NUMBER})
+      SET(_LOG_NAME "\"${FEATURE_NAME}\" (N${FEATURE_NUMBER})")
+    ELSE (${FEATURE_NUMBER})
       SET(_SRCFILE_BASE ${CPP11_FEATURE_CHECK_DIR}/${FEATURE_NAME})
-			SET(_LOG_NAME "\"${FEATURE_NAME}\"")
-		ENDIF (${FEATURE_NUMBER})
-		MESSAGE(STATUS "Checking C++11 support for ${_LOG_NAME}")
+      SET(_LOG_NAME "\"${FEATURE_NAME}\"")
+    ENDIF (${FEATURE_NUMBER})
+    ecbuild_info("Checking C++11 support for ${_LOG_NAME}")
 
-		SET(_SRCFILE "${_SRCFILE_BASE}.cpp")
-		SET(_SRCFILE_FAIL "${_SRCFILE_BASE}_fail.cpp")
-		SET(_SRCFILE_FAIL_COMPILE "${_SRCFILE_BASE}_fail_compile.cpp")
+    SET(_SRCFILE "${_SRCFILE_BASE}.cpp")
+    SET(_SRCFILE_FAIL "${_SRCFILE_BASE}_fail.cpp")
+    SET(_SRCFILE_FAIL_COMPILE "${_SRCFILE_BASE}_fail_compile.cpp")
 
-		IF (CROSS_COMPILING)
-			try_compile(${RESULT_VAR} "${_bindir}" "${_SRCFILE}")
-			IF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
-				try_compile(${RESULT_VAR} "${_bindir}_fail" "${_SRCFILE_FAIL}")
-			ENDIF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
-		ELSE (CROSS_COMPILING)
-			try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
-					"${_bindir}" "${_SRCFILE}")
-			IF (_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
-				SET(${RESULT_VAR} TRUE)
-			ELSE (_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
-				SET(${RESULT_VAR} FALSE)
-			ENDIF (_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
-			IF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
-				try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
-						"${_bindir}_fail" "${_SRCFILE_FAIL}")
-				IF (_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
-					SET(${RESULT_VAR} TRUE)
-				ELSE (_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
-					SET(${RESULT_VAR} FALSE)
-				ENDIF (_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
-			ENDIF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
-		ENDIF (CROSS_COMPILING)
-		IF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL_COMPILE})
-			try_compile(_TMP_RESULT "${_bindir}_fail_compile" "${_SRCFILE_FAIL_COMPILE}")
-			IF (_TMP_RESULT)
-				SET(${RESULT_VAR} FALSE)
-			ELSE (_TMP_RESULT)
-				SET(${RESULT_VAR} TRUE)
-			ENDIF (_TMP_RESULT)
-		ENDIF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL_COMPILE})
+    IF (CROSS_COMPILING)
+      try_compile(${RESULT_VAR} "${_bindir}" "${_SRCFILE}")
+      IF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
+        try_compile(${RESULT_VAR} "${_bindir}_fail" "${_SRCFILE_FAIL}")
+      ENDIF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
+    ELSE (CROSS_COMPILING)
+      try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
+          "${_bindir}" "${_SRCFILE}")
+      IF (_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
+        SET(${RESULT_VAR} TRUE)
+      ELSE (_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
+        SET(${RESULT_VAR} FALSE)
+      ENDIF (_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
+      IF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
+        try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
+            "${_bindir}_fail" "${_SRCFILE_FAIL}")
+        IF (_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
+          SET(${RESULT_VAR} TRUE)
+        ELSE (_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
+          SET(${RESULT_VAR} FALSE)
+        ENDIF (_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
+      ENDIF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
+    ENDIF (CROSS_COMPILING)
+    IF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL_COMPILE})
+      try_compile(_TMP_RESULT "${_bindir}_fail_compile" "${_SRCFILE_FAIL_COMPILE}")
+      IF (_TMP_RESULT)
+        SET(${RESULT_VAR} FALSE)
+      ELSE (_TMP_RESULT)
+        SET(${RESULT_VAR} TRUE)
+      ENDIF (_TMP_RESULT)
+    ENDIF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL_COMPILE})
 
-		IF (${RESULT_VAR})
-			MESSAGE(STATUS "Checking C++11 support for ${_LOG_NAME} -- works")
-		ELSE (${RESULT_VAR})
-			MESSAGE(STATUS "Checking C++11 support for ${_LOG_NAME} -- not supported")
-		ENDIF (${RESULT_VAR})
-		SET(${RESULT_VAR} ${${RESULT_VAR}} CACHE INTERNAL "C++11 support for ${_LOG_NAME}")
-	ENDIF (NOT DEFINED ${RESULT_VAR})
+    IF (${RESULT_VAR})
+      ecbuild_info("Checking C++11 support for ${_LOG_NAME} -- works")
+    ELSE (${RESULT_VAR})
+      ecbuild_info("Checking C++11 support for ${_LOG_NAME} -- not supported")
+    ENDIF (${RESULT_VAR})
+    SET(${RESULT_VAR} ${${RESULT_VAR}} CACHE INTERNAL "C++11 support for ${_LOG_NAME}")
+  ENDIF (NOT DEFINED ${RESULT_VAR})
 ENDMACRO(cxx11_check_single_feature)
 
 # Find list of all features
@@ -138,12 +139,12 @@ macro(_figure_out_cxx11_feature current_feature)
       list(REMOVE_ITEM ALL_FEATURE_FILES ${filename})
     endif()
   endforeach()
-  
+
   list(LENGTH ALL_FEATURE_FILES NFILES)
   if(NOT ${NFILES} EQUAL 1)
-    message(FATAL_ERROR "[c++11] Expected to find only one feature. Found ${NFILES} -- ${ALL_FEATURE_FILES}.")
+    ecbuild_critical("[c++11] Expected to find only one feature. Found ${NFILES} -- ${ALL_FEATURE_FILES}.")
   endif(NOT ${NFILES} EQUAL 1)
-  
+
   # Now we know which file corresponds to option.
   get_filename_component(basename ${ALL_FEATURE_FILES} NAME_WE)
   # If has feature number, extract it
@@ -165,18 +166,18 @@ function(cxx11_feature_check)
   # Parses input to this function.
   parse_input_features("${ALL_CPP11_FEATURES}" OPTIONALS REQUIRED ERRORS ${ARGN})
   if(NOT ${ERRORS} STREQUAL "")
-    message(STATUS "[c++11] The following features are unknown: ${ERRORS}.")
+    ecbuild_info("[c++11] The following features are unknown: ${ERRORS}.")
   endif()
 
   # MinGW has not implemented std::random_device fully yet. Unfortunately, this can only be detected
   # by running a program which tries to call std::random_device. However that generates an error that
-  # is *not* caught by CMake's try_run. 
+  # is *not* caught by CMake's try_run.
   if(MSYS)
     list(REMOVE_ITEM OPTIONALS "random_device")
     list(FIND REQUIRED "random_device" feature_was_found)
     if(NOT feature_was_found EQUAL "-1")
-      message(FATAL_ERROR "[c++1] MSYS does not implement Random devices fully.\n"
-                          "       It cannot be required on this system.")
+      ecbuild_critical("[c++1] MSYS does not implement Random devices fully.\n"
+                       "       It cannot be required on this system.")
     endif()
   endif()
 
@@ -190,7 +191,7 @@ function(cxx11_feature_check)
     _figure_out_cxx11_feature(${current_feature})
     set(VARNAME HAS_CXX11_${UPPER_OPTIONAL})
     if(NOT ${VARNAME})
-      message(FATAL_ERROR "[c++11] Required feature ${current_feature} is not available.")
+      ecbuild_critical("[c++11] Required feature ${current_feature} is not available.")
     endif(NOT ${VARNAME})
   endforeach(current_feature ${REQUIRED})
 
