@@ -13,7 +13,7 @@ MACRO(fortran_check_single_feature FEATURE_NAME FEATURE_NUMBER RESULT_VAR)
       SET(_SRCFILE_BASE ${Fortran_FEATURE_CHECK_DIR}/${FEATURE_NAME})
       SET(_LOG_NAME "\"${FEATURE_NAME}\"")
     ENDIF (${FEATURE_NUMBER})
-    MESSAGE(STATUS "Checking Fortran support for ${_LOG_NAME}")
+    ecbuild_info("Checking Fortran support for ${_LOG_NAME}")
 
     SET(_SRCFILE "${_SRCFILE_BASE}.F90")
     SET(_SRCFILE_FAIL "${_SRCFILE_BASE}_fail.F90")
@@ -52,9 +52,9 @@ MACRO(fortran_check_single_feature FEATURE_NAME FEATURE_NUMBER RESULT_VAR)
     ENDIF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL_COMPILE})
 
     IF (${RESULT_VAR})
-      MESSAGE(STATUS "Checking Fortran support for ${_LOG_NAME} -- works")
+      ecbuild_info("Checking Fortran support for ${_LOG_NAME} -- works")
     ELSE (${RESULT_VAR})
-      MESSAGE(STATUS "Checking Fortran support for ${_LOG_NAME} -- not supported")
+      ecbuild_info("Checking Fortran support for ${_LOG_NAME} -- not supported")
     ENDIF (${RESULT_VAR})
     SET(${RESULT_VAR} ${${RESULT_VAR}} CACHE INTERNAL "Fortran support for ${_LOG_NAME}")
   ENDIF (NOT DEFINED ${RESULT_VAR})
@@ -123,7 +123,7 @@ macro(_figure_out_fortran_feature current_feature)
 
   list(LENGTH ALL_FEATURE_FILES NFILES)
   if(NOT ${NFILES} EQUAL 1)
-    message(FATAL_ERROR "[Fortran] Expected to find only one feature. Found ${NFILES} -- ${ALL_FEATURE_FILES}.")
+    ecbuild_critical("[Fortran] Expected to find only one feature. Found ${NFILES} -- ${ALL_FEATURE_FILES}.")
   endif(NOT ${NFILES} EQUAL 1)
 
   # Now we know which file corresponds to option.
@@ -147,7 +147,7 @@ function(fortran_feature_check)
   # Parses input to this function.
   parse_input_features("${ALL_Fortran_FEATURES}" OPTIONALS REQUIRED ERRORS ${ARGN})
   if(NOT ${ERRORS} STREQUAL "")
-    message(STATUS "[Fortran] The following features are unknown: ${ERRORS}.")
+    ecbuild_info("[Fortran] The following features are unknown: ${ERRORS}.")
   endif()
 
   # Check optional features
@@ -160,7 +160,7 @@ function(fortran_feature_check)
     _figure_out_fortran_feature(${current_feature})
     set(VARNAME HAS_Fortran_${UPPER_OPTIONAL})
     if(NOT ${VARNAME})
-      message(FATAL_ERROR "[Fortran] Required feature ${current_feature} is not available.")
+      ecbuild_critical("[Fortran] Required feature ${current_feature} is not available.")
     endif(NOT ${VARNAME})
   endforeach(current_feature ${REQUIRED})
 
