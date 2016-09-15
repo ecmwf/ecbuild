@@ -1,0 +1,2 @@
+subroutine foo_intolerant
+end subroutine
