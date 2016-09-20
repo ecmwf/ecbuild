@@ -15,6 +15,7 @@
 #
 # The following paths will be searched with priority if set in CMake or env
 #
+#  MKLROOT           - root directory of the MKL installation
 #  MKL_PATH          - root directory of the MKL installation
 #  MKL_ROOT          - root directory of the MKL installation
 
@@ -34,9 +35,9 @@ else()
 
 endif()
 
-# Search with priority for MKL_ROOT and MKL_PATH if set in CMake or env
+# Search with priority for MKLROOT, MKL_PATH and MKL_ROOT if set in CMake or env
 find_path(MKL_INCLUDE_DIR mkl.h
-          PATHS ${MKL_PATH} ${MKL_ROOT} ENV MKL_PATH MKL_ROOT
+          PATHS ${MKLROOT} ${MKL_PATH} ${MKL_ROOT} ENV MKLROOT ENV MKL_PATH ENV MKL_ROOT
           PATH_SUFFIXES include NO_DEFAULT_PATH)
 find_path(MKL_INCLUDE_DIR mkl.h
           PATH_SUFFIXES include)
@@ -52,8 +53,6 @@ if( MKL_INCLUDE_DIR ) # use include dir to find libs
     get_filename_component( MKL_LIB_PATH ${MKL_INCLUDE_DIR}/../lib/ia32 ABSOLUTE )
     set( __libsfx "" )
   endif()
-
-  message( STATUS "ICC_LIB_PATH ${ICC_LIB_PATH}" )
 
   find_library( MKL_LIB_INTEL         NAMES mkl_intel${__libsfx} PATHS ${MKL_LIB_PATH} )
   find_library( ${__mkl_lib_par}      NAMES ${__mkl_lib_name} PATHS ${MKL_LIB_PATH} )
