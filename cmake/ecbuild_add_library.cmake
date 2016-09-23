@@ -354,61 +354,8 @@ function( ecbuild_add_library_impl )
     #   ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
     #   ecbuild_debug_var( ${_PAR_TARGET}_f_srcs )
 
-    macro( _add_local_flags lang )
-
-      set( L ${lang} )
-      if( "${lang}" STREQUAL "Fortran" )
-        set( L "F" )
-      endif()
-
-      string( TOLOWER ${L} l )
-
-      if( ${_PAR_TARGET}_${l}_srcs )
-
-        set( pflags ${${PNAME}_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}} )
-
-        if( pflags )
-
-          foreach( src ${${_PAR_TARGET}_${l}_srcs} )
-            get_property( oflags SOURCE ${src} PROPERTY OVERRIDE_COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
-            if( NOT oflags)
-              get_property( oflags SOURCE ${src} PROPERTY OVERRIDE_COMPILE_FLAGS )
-            endif()
-            if( oflags )
-              set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${oflags}" )
-            else()
-              get_property( flags SOURCE ${src} PROPERTY COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
-              if( NOT flags )
-                get_property( flags SOURCE ${src} PROPERTY COMPILE_FLAGS )
-              endif()
-              set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${pflags} ${flags}" )
-            endif()
-          endforeach()
-
-        elseif( ECBUILD_SOURCE_FLAGS )
-          ecbuild_source_flags( ${_PAR_TARGET}_${lang}_SOURCE_FLAGS
-            ${_PAR_TARGET}_${l}
-            "${_PAR_${L}FLAGS}"
-            "${${_PAR_TARGET}_${l}_srcs}" )
-
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): setting source file ${lang} flags from ${${_PAR_TARGET}_${lang}_SOURCE_FLAGS}")
-          include( ${${_PAR_TARGET}_${lang}_SOURCE_FLAGS} )
-
-        elseif( DEFINED _PAR_${L}FLAGS )
-
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): use ${lang} flags ${_PAR_${L}FLAGS}")
-          set_source_files_properties( ${${_PAR_TARGET}_${l}_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_${L}FLAGS}" )
-
-        endif()
-      endif()
-
-    endmacro( _add_local_flags )
-
-    get_property( _languages GLOBAL PROPERTY ENABLED_LANGUAGES )
-
-    foreach( _lang ${_languages} )
-      _add_local_flags( ${_lang} )
-    endforeach()
+    # Override compilation flags on a per source file basis
+    ecbuild_target_flags( ${_PAR_TARGET} "${_PAR_CFLAGS}" "${_PAR_CXXFLAGS}" "${_PAR_FFLAGS}" )
 
     if( DEFINED _PAR_GENERATED )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): mark as generated ${_PAR_GENERATED}")
