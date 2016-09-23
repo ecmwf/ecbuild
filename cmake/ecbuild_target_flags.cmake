@@ -19,11 +19,11 @@
 # Required arguments:
 #
 # :target:        Target name
-# :c_flags:       Target specific C flags
-# :cxx_flags:     Target specific CXX flags
-# :fortran_flags: Target specific Fortran flags
+# :c_flags:       Target specific C flags (can be empty)
+# :cxx_flags:     Target specific CXX flags (can be empty)
+# :fortran_flags: Target specific Fortran flags (can be empty)
 #
-# There are 3 cases, only the first applicable is takes effect:
+# There are 3 cases, only the first applicable case takes effect:
 #
 # 1.  Use custom rules from user specified ``ECBUILD_COMPILE_FLAGS`` file and
 #     append target specific flags.
@@ -53,22 +53,22 @@ function( ecbuild_target_flags target c_flags cxx_flags f_flags )
       # 1) Override compile flags from user specified CMake file
       if( ECBUILD_COMPILE_FLAGS )
 
-        # Project specific flags for current language?
+        # Project specific flags for current language and optionally build type
         set( pflags "${${PNAME}_${lang}_FLAGS} ${${PNAME}_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
 
         foreach( src ${${target}_${l}_srcs} )
           get_property( oflags SOURCE ${src} PROPERTY OVERRIDE_COMPILE_FLAGS )
-          get_property( oflags SOURCE ${src} PROPERTY OVERRIDE_COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
+          get_property( oflags_btype SOURCE ${src} PROPERTY OVERRIDE_COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
           # Override compile flags for source file?
-          if( oflags )
-            set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${oflags}" )
-            ecbuild_debug( "ecbuild_target_flags(${target}): setting flags for ${src} to '${oflags}'" )
+          if( oflags OR oflags_btype )
+            set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${oflags} ${oflags_btype}" )
+            ecbuild_debug( "ecbuild_target_flags(${target}): setting flags for ${src} to '${oflags} ${oflags_btype}'" )
           # Otherwise append source file specific flags to project specific and target specific flags
           else()
             get_property( flags SOURCE ${src} PROPERTY COMPILE_FLAGS )
-            get_property( flags SOURCE ${src} PROPERTY COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
-            set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${pflags} ${${l}_flags} ${flags}" )
-            ecbuild_debug( "ecbuild_target_flags(${target}): setting flags for ${src} to '${pflags} ${${l}_flags} ${flags}'" )
+            get_property( flags_btype SOURCE ${src} PROPERTY COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
+            set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${pflags} ${${l}_flags} ${flags} ${flags_btype}" )
+            ecbuild_debug( "ecbuild_target_flags(${target}): setting flags for ${src} to '${pflags} ${${l}_flags} ${flags} ${flags_btype}'" )
           endif()
         endforeach()
 
