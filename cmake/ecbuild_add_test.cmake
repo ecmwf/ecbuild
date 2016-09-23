@@ -322,24 +322,13 @@ macro( ecbuild_add_test )
       # filter sources
       ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
 
-      # add local flags
-      if( DEFINED _PAR_CFLAGS )
-        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): use C flags ${_PAR_CFLAGS}")
-        set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
-      endif()
-      if( DEFINED _PAR_CXXFLAGS )
-        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): use C++ flags ${_PAR_CFLAGS}")
-        set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
-      endif()
-      if( DEFINED _PAR_FFLAGS )
-        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): use Fortran flags ${_PAR_CFLAGS}")
-        set_source_files_properties( ${${_PAR_TARGET}_f_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
-      endif()
+      # Override compilation flags on a per source file basis
+      ecbuild_target_flags( ${_PAR_TARGET} "${_PAR_CFLAGS}" "${_PAR_CXXFLAGS}" "${_PAR_FFLAGS}" )
+
       if( DEFINED _PAR_GENERATED )
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): mark as generated ${_PAR_GENERATED}")
         set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
       endif()
-
 
       # modify definitions to compilation ( -D... )
       get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
@@ -405,7 +394,7 @@ macro( ecbuild_add_test )
 
     # Wrap with MPIEXEC
     if( _PAR_MPI )
-      
+
       set( MPIEXEC_TASKS ${MPIEXEC_NUMPROC_FLAG} ${_PAR_MPI} )
       if( DEFINED MPIEXEC_NUMTHREAD_FLAG )
         set( MPIEXEC_THREADS ${MPIEXEC_NUMTHREAD_FLAG} ${_PAR_OMP} )
