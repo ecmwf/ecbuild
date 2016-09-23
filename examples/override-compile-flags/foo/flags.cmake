@@ -14,9 +14,9 @@ endforeach()
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Cray")
 
   set(FOO_Fortran_FLAGS "-ram -emf -hadd_paren") # common flags for all build types
-  set(FOO_Fortran_FLAGS_RELEASE "${FOO_Fortran_FLAGS} -hflex_mp=conservative -Othread1 -hfp1")
+  set(FOO_Fortran_FLAGS_RELEASE "-hflex_mp=conservative -Othread1 -hfp1")
   set(FOO_Fortran_FLAGS_RELWITHDEBINFO "-G2 ${FOO_Fortran_FLAGS_RELEASE}")
-  set(FOO_Fortran_FLAGS_DEBUG "-G0 ${FOO_Fortran_FLAGS} -hflex_mp=conservative -hfp0")
+  set(FOO_Fortran_FLAGS_DEBUG "-G0 -hflex_mp=conservative -hfp0")
 
   set(FOO_C_FLAGS_RELEASE "-O0 -fPIC")
   set(FOO_C_FLAGS_RELWITHDEBINFO "-g -O0 -fPIC")

@@ -18,10 +18,6 @@ ecbuild_use_package( PROJECT bar REQUIRED )
 
 ### targets
 
-if( NOT FOO_ECBUILD_SOURCE_FLAGS AND FOO_COMPILE_FLAGS )
-  include( ${FOO_COMPILE_FLAGS} )
-endif()
-
 ecbuild_add_library( TARGET  foo
                      SOURCES foo.c
                              foo.f90
