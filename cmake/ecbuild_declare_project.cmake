@@ -33,6 +33,9 @@
 # :INSTALL_DATA_DIR:       relative install directory for data
 # :INSTALL_CMAKE_DIR:      relative install directory for CMake files
 #
+# Customising install locations
+# -----------------------------
+#
 # The relative installation directories of components can be customised by
 # setting the following CMake variables on the command line or in cache:
 #
@@ -51,9 +54,45 @@
 # ``CMAKE_INSTALL_PREFIX``. Using absolute paths makes the build
 # non-relocatable and may break the generation of relocatable binary packages.
 #
-# Compiler flags can be overridden on a per source file basis by providing a
-# JSON file defining the override rules and setting ``ECBUILD_SOURCE_FLAGS``
-# to the *full path* of this file. If set, ``<PNAME>_ECBUILD_SOURCE_FLAGS``
+# Overriding compilation flags on a per source file basis using CMake rules
+# -------------------------------------------------------------------------
+#
+# Compiler flags can be overridden on a per source file basis by setting the
+# CMake variable ``ECBUILD_COMPILE_FLAGS`` to the *full path* of a CMake file
+# defining the override rules. If set, ``<PNAME>_ECBUILD_COMPILE_FLAGS``
+# takes precendence and ``ECBUILD_COMPILE_FLAGS`` is ignored.
+#
+# Flags can be overridden in 3 different ways:
+#
+# 1.  By defining project specific flags for a language and (optionally)
+#     build type e.g. ::
+#
+#       set(<PNAME>_Fortran_FLAGS "...") # common flags for all build types
+#       set(<PNAME>_Fortran_FLAGS_DEBUG "...") # only for DEBUG build type
+#
+# 2.  By defining source file specific flags which are *combined* with the
+#     project and target specific flags ::
+#
+#       set_source_files_properties(<source>
+#         PROPERTIES COMPILE_FLAGS "..."  # common flags for all build types
+#                    COMPILE_FLAGS_DEBUG "...") # only for DEBUG build type
+#
+# 3.  By defining source file specific flags which *override* the project and
+#     target specific flags ::
+#
+#       set_source_files_properties(<source>
+#         PROPERTIES OVERRIDE_COMPILE_FLAGS "..."
+#                    OVERRIDE_COMPILE_FLAGS_DEBUG "...")
+#
+# See ``examples/override-compile-flags`` in the ecBuild source tree for a
+# complete example using this technique.
+#
+# Overriding compilation flags on a per source file basis using JSON rules
+# ------------------------------------------------------------------------
+#
+# Compiler flags can be overridden on a per source file basis by setting the
+# CMake variable ``ECBUILD_SOURCE_FLAGS`` to the *full path* of a JSON file
+# defining the override rules. If set, ``<PNAME>_ECBUILD_SOURCE_FLAGS``
 # takes precendence and ``ECBUILD_SOURCE_FLAGS`` is ignored.
 #
 # The JSON file lists shell glob patterns and the rule to apply to each source
@@ -65,7 +104,7 @@
 # :/: Remove the flags from the default compilation flags for matching files
 #
 # Rules can be nested to e.g. only apply to a subdirectory by setting the rule
-# to a dictionary, which will only apply to source files matching it pattern.
+# to a dictionary, which will only apply to source files matching its pattern.
 #
 # An example JSON file demonstrating different rule types is given below: ::
 #
@@ -84,6 +123,9 @@
 #       "*.f90" : [ "+", "-O3" ]
 #     }
 #   }
+#
+# See ``examples/override-compile-flags`` in the ecBuild source tree for a
+# complete example using this technique.
 #
 ##############################################################################
 
