@@ -62,7 +62,7 @@ function( ecbuild_target_flags target c_flags cxx_flags f_flags )
           # Override compile flags for source file?
           if( oflags OR oflags_btype )
             set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${oflags} ${oflags_btype}" )
-            ecbuild_debug( "ecbuild_target_flags(${target}): setting flags for ${src} to '${oflags} ${oflags_btype}'" )
+            ecbuild_debug( "ecbuild_target_flags(${target}): overriding flags for ${src} with '${oflags} ${oflags_btype}'" )
           # Otherwise append source file specific flags to project specific and target specific flags
           else()
             get_property( flags SOURCE ${src} PROPERTY COMPILE_FLAGS )
