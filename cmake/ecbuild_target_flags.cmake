@@ -35,18 +35,13 @@
 #
 ##############################################################################
 
-function( ecbuild_target_flags target c_flags cxx_flags f_flags )
+function( ecbuild_target_flags target c_flags cxx_flags fortran_flags )
 
   get_property( languages GLOBAL PROPERTY ENABLED_LANGUAGES )
 
   foreach( lang ${languages} )
 
-    set( L ${lang} )
-    if( "${lang}" STREQUAL "Fortran" )
-      set( L "F" )
-    endif()
-
-    string( TOLOWER ${L} l )
+    string( TOLOWER ${lang} l )
 
     if( ${target}_${l}_srcs )
 

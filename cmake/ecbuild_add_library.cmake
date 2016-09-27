@@ -352,7 +352,7 @@ function( ecbuild_add_library_impl )
     #   ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
     #   ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
     #   ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
-    #   ecbuild_debug_var( ${_PAR_TARGET}_f_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_fortran_srcs )
 
     # Override compilation flags on a per source file basis
     ecbuild_target_flags( ${_PAR_TARGET} "${_PAR_CFLAGS}" "${_PAR_CXXFLAGS}" "${_PAR_FFLAGS}" )
