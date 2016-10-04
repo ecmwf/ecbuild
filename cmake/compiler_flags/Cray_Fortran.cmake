@@ -7,9 +7,8 @@
 # nor does it submit to any jurisdiction.
 
 # -emf activates .mods and uses lower case
-set( CMAKE_Fortran_FLAGS_ALL            "-emf"                                                                                 CACHE STRING "Common flags for all build-types"      FORCE )
-set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_ALL} -O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG"                    CACHE STRING "Release Fortran flags"                 FORCE )
-set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_ALL} -O2 -hfp1 -Gfast -DNDEBUG"                                 CACHE STRING "Release-with-debug-info Fortran flags" FORCE )
-set( CMAKE_Fortran_FLAGS_PRODUCTION     "${CMAKE_Fortran_FLAGS_ALL} -O2 -hfp1 -G2"                                             CACHE STRING "Production Fortran flags"              FORCE )
-set( CMAKE_Fortran_FLAGS_BIT            "${CMAKE_Fortran_FLAGS_ALL} -O2 -hfp1 -G2 -hflex_mp=conservative -hadd_paren -DNDEBUG" CACHE STRING "Bit-reproducible Fortran flags"        FORCE )
-set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_ALL} -O0 -G0"                                                   CACHE STRING "Debug Fortran flags"                   FORCE )
+set( CMAKE_Fortran_FLAGS_RELEASE        "-emf -O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG"                    CACHE STRING "Release Fortran flags"                 FORCE )
+set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-emf -O2 -hfp1 -Gfast -DNDEBUG"                                 CACHE STRING "Release-with-debug-info Fortran flags" FORCE )
+set( CMAKE_Fortran_FLAGS_PRODUCTION     "-emf -O2 -hfp1 -G2"                                             CACHE STRING "Production Fortran flags"              FORCE )
+set( CMAKE_Fortran_FLAGS_BIT            "-emf -O2 -hfp1 -G2 -hflex_mp=conservative -hadd_paren -DNDEBUG" CACHE STRING "Bit-reproducible Fortran flags"        FORCE )
+set( CMAKE_Fortran_FLAGS_DEBUG          "-emf -O0 -G0"                                                   CACHE STRING "Debug Fortran flags"                   FORCE )
