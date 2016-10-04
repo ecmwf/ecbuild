@@ -95,10 +95,21 @@ if( ECBUILD_COMPILE_FLAGS )
   include( "${ECBUILD_COMPILE_FLAGS}" )
 endif()
 
-# Load default flags only if custom compilation flags not enabled
 foreach( _lang C CXX Fortran )
-  if( CMAKE_${_lang}_COMPILER_LOADED AND NOT (ECBUILD_SOURCE_FLAGS OR ECBUILD_COMPILE_FLAGS) )
-    ecbuild_compiler_flags( ${_lang} )
+  if( CMAKE_${_lang}_COMPILER_LOADED )
+
+    # Clear default compilation flags potentially inherited from parent scope
+    # when using custom compilation flags
+    if( ECBUILD_SOURCE_FLAGS OR ECBUILD_COMPILE_FLAGS )
+      set(CMAKE_${_lang}_FLAGS "")
+      foreach(_btype ALL RELEASE RELWITHDEBINFO PRODUCTION BIT DEBUG)
+        set(CMAKE_${_lang}_FLAGS_${_btype} "")
+      endforeach()
+    # Load default compilation flags only if custom compilation flags not enabled
+    else()
+      ecbuild_compiler_flags( ${_lang} )
+    endif()
+
   endif()
 endforeach()
 
