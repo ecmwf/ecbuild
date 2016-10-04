@@ -20,7 +20,7 @@
 #                       [ PURPOSE <purpose> ]
 #                       [ REQUIRED_PACKAGES <package1> [<package2> ...] ]
 #                       [ CONDITION <condition> ]
-#                       [ ADVANCED ] )
+#                       [ ADVANCED ] [ NO_TPL ] )
 #
 # Options
 # -------
@@ -66,6 +66,9 @@
 # ADVANCED : optional
 #   mark the feature as advanced
 #
+# NO_TPL : optional
+#   do not add any ``REQUIRED_PACKAGES`` to the list of third party libraries
+#
 # Usage
 # -----
 #
@@ -84,7 +87,7 @@
 
 macro( ecbuild_add_option )
 
-  set( options ADVANCED )
+  set( options ADVANCED NO_TPL )
   set( single_value_args FEATURE DEFAULT DESCRIPTION TYPE PURPOSE )
   set( multi_value_args  REQUIRED_PACKAGES CONDITION )
 
@@ -244,14 +247,6 @@ macro( ecbuild_add_option )
 
         endif()
 
-        # if found append to list of third-party libraries (to be forward to other packages )
-        if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
-
-          list( APPEND ${PROJECT_NAME_CAPS}_TPLS ${pkgname} )
-          list( REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS )
-
-        endif()
-
         # ecbuild_debug_var( ${pkgname}_FOUND  )
         # ecbuild_debug_var( ${pkgLOWER}_FOUND )
         # ecbuild_debug_var( ${pkgUPPER}_FOUND )
@@ -260,6 +255,15 @@ macro( ecbuild_add_option )
 
         if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
           ecbuild_info( "Found package ${pkgname} required for feature ${_p_FEATURE}" )
+
+          # append to list of third-party libraries (to be forward to other packages )
+          # unless the NO_TPL option was given
+          if( NOT _p_NO_TPL )
+            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): appending ${pkgname} to ${PROJECT_NAME_CAPS}_TPLS")
+            list( APPEND ${PROJECT_NAME_CAPS}_TPLS ${pkgname} )
+            list( REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS )
+          endif()
+
         else()
           ecbuild_info( "Could NOT find package ${pkgname} required for feature ${_p_FEATURE} -- ${__help_msg}" )
           set( HAVE_${_p_FEATURE} 0 )
