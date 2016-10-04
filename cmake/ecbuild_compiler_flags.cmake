@@ -12,7 +12,7 @@
 # ecbuild_compiler_flags
 # ======================
 #
-# Set default compiler flags for a given language. ::
+# Set compiler specific default compilation flags for a given language. ::
 #
 #   ecbuild_compiler_flags( <lang> )
 #
@@ -35,38 +35,40 @@
 
 macro( ecbuild_compiler_flags _lang )
 
+  # Set compiler and language specific default flags
   if( CMAKE_${_lang}_COMPILER_LOADED )
-
-    ecbuild_debug( "try include ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake ")
-
+    ecbuild_debug( "ecbuild_compiler_flags(${_lang}): try include ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake ")
     include( ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake OPTIONAL )
-
-    ecbuild_debug_var( CMAKE_${_lang}_FLAGS )
-
-    foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
-      ecbuild_debug_var( CMAKE_${_lang}_FLAGS_${_btype} )
-    endforeach()
-
   endif()
+
+  # Apply user or toolchain specified overrides
 
   foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
     if( DEFINED ECBUILD_${_lang}_FLAGS_${_btype} )
+      ecbuild_debug( "ecbuild_compiler_flags(${_lang}): overriding CMAKE_${_lang}_FLAGS_${_btype} with ${ECBUILD_${_lang}_FLAGS_${_btype}}")
       set( CMAKE_${_lang}_FLAGS_${_btype} ${ECBUILD_${_lang}_FLAGS_${_btype}} )
     endif()
     mark_as_advanced( CMAKE_${_lang}_FLAGS_${_btype} )
   endforeach()
 
   if( DEFINED ECBUILD_${_lang}_FLAGS )
+    ecbuild_debug( "ecbuild_compiler_flags(${_lang}): overriding CMAKE_${_lang}_FLAGS with ${ECBUILD_${_lang}_FLAGS}")
     set( CMAKE_${_lang}_FLAGS "${ECBUILD_${_lang}_FLAGS}" )
   endif()
 
   mark_as_advanced( CMAKE_${_lang}_FLAGS )
 
   if( DEFINED ECBUILD_${_lang}_LINK_FLAGS )
+    ecbuild_debug( "ecbuild_compiler_flags(${_lang}): overriding CMAKE_${_lang}_LINK_FLAGS with ${ECBUILD_${_lang}_LINK_FLAGS}")
     set( CMAKE_${_lang}_LINK_FLAGS "${ECBUILD_${_lang}_LINK_FLAGS}" )
   endif()
 
   mark_as_advanced( CMAKE_${_lang}_LINK_FLAGS )
+
+  ecbuild_debug_var( CMAKE_${_lang}_FLAGS )
+  foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+    ecbuild_debug_var( CMAKE_${_lang}_FLAGS_${_btype} )
+  endforeach()
 
 endmacro()
 
