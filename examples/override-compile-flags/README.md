@@ -14,11 +14,11 @@ needs to override compile flags of several source files.
 
 # Use custom compile flags defined in JSON data file:
 
-    ecbuild --build=None -DFOO_ECBUILD_SOURCE_FLAGS=${SRC_DIR}/foo/flags-cray-debug.json ${SRC_DIR}
+    ecbuild --build=Debug -DFOO_ECBUILD_SOURCE_FLAGS=${SRC_DIR}/foo/flags-cray-debug.json ${SRC_DIR}
     make VERBOSE=1
 
     module switch cdt cdt/15.11
-    ecbuild --build=None -DFOO_ECBUILD_SOURCE_FLAGS=${SRC_DIR}/foo/flags-cray-8.4.1-debug.json ${SRC_DIR}
+    ecbuild --build=Debug -DFOO_ECBUILD_SOURCE_FLAGS=${SRC_DIR}/foo/flags-cray-8.4.1-debug.json ${SRC_DIR}
     make VERBOSE=1
 
 # Use custom compile flags defined in CMake script:
