@@ -183,27 +183,6 @@ macro( ecbuild_declare_project )
   #    ecbuild_debug_var( ${PNAME}_MINOR_VERSION )
   #    ecbuild_debug_var( ${PNAME}_PATCH_VERSION )
 
-  # Override source flags with project specific flags
-  foreach( _flags COMPILE SOURCE )
-    if( ${PNAME}_ECBUILD_${_flags}_FLAGS )
-      if ( ECBUILD_${_flags}_FLAGS )
-        ecbuild_debug( "Override ECBUILD_${_flags}_FLAGS (${ECBUILD_${_flags}_FLAGS}) with ${PROJECT_NAME} specific flags (${${PNAME}_ECBUILD_${_flags}_FLAGS})" )
-      else()
-        ecbuild_debug( "Use ${PROJECT_NAME} specific ECBUILD_${_flags}_FLAGS (${${PNAME}_ECBUILD_${_flags}_FLAGS})" )
-      endif()
-      set( ECBUILD_${_flags}_FLAGS ${${PNAME}_ECBUILD_${_flags}_FLAGS} )
-    endif()
-    # Ensure ECBUILD_${_flags}_FLAGS is a valid file path
-    if( DEFINED ECBUILD_${_flags}_FLAGS AND NOT EXISTS ${ECBUILD_${_flags}_FLAGS} )
-      ecbuild_warn( "ECBUILD_${_flags}_FLAGS points to non-existent file ${ECBUILD_${_flags}_FLAGS} and will be ignored" )
-      unset( ECBUILD_${_flags}_FLAGS )
-      unset( ECBUILD_${_flags}_FLAGS CACHE )
-    endif()
-  endforeach()
-  if( ECBUILD_COMPILE_FLAGS )
-    include( "${ECBUILD_COMPILE_FLAGS}" )
-  endif()
-
   # install dirs for this project
 
   # Use defaults unless values are already present in cache

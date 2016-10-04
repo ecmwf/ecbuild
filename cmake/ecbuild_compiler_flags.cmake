@@ -35,13 +35,13 @@
 
 macro( ecbuild_compiler_flags _lang )
 
-  # Set compiler and language specific default flags
+  # Set compiler and language specific default flags - OVERWRITES variables in CMake cache
   if( CMAKE_${_lang}_COMPILER_LOADED )
     ecbuild_debug( "ecbuild_compiler_flags(${_lang}): try include ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake ")
     include( ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake OPTIONAL )
   endif()
 
-  # Apply user or toolchain specified overrides
+  # Apply user or toolchain specified compilation flag overrides (NOT written to cache)
 
   foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
     if( DEFINED ECBUILD_${_lang}_FLAGS_${_btype} )
@@ -74,16 +74,35 @@ endmacro()
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-### OVERRIDE Compiler FLAGS (we override because CMake forcely defines them) -- see ecbuild_compiler_flags() macro
+# Custom (project specific) compilation flags enabled?
+foreach( _flags COMPILE SOURCE )
+  if( ${PROJECT_NAME_CAPS}_ECBUILD_${_flags}_FLAGS )
+    if ( ECBUILD_${_flags}_FLAGS )
+      ecbuild_debug( "Override ECBUILD_${_flags}_FLAGS (${ECBUILD_${_flags}_FLAGS}) with ${PROJECT_NAME} specific flags (${${PROJECT_NAME_CAPS}_ECBUILD_${_flags}_FLAGS})" )
+    else()
+      ecbuild_debug( "Use ${PROJECT_NAME} specific ECBUILD_${_flags}_FLAGS (${${PROJECT_NAME_CAPS}_ECBUILD_${_flags}_FLAGS})" )
+    endif()
+    set( ECBUILD_${_flags}_FLAGS ${${PROJECT_NAME_CAPS}_ECBUILD_${_flags}_FLAGS} )
+  endif()
+  # Ensure ECBUILD_${_flags}_FLAGS is a valid file path
+  if( DEFINED ECBUILD_${_flags}_FLAGS AND NOT EXISTS ${ECBUILD_${_flags}_FLAGS} )
+    ecbuild_warn( "ECBUILD_${_flags}_FLAGS points to non-existent file ${ECBUILD_${_flags}_FLAGS} and will be ignored" )
+    unset( ECBUILD_${_flags}_FLAGS )
+    unset( ECBUILD_${_flags}_FLAGS CACHE )
+  endif()
+endforeach()
+if( ECBUILD_COMPILE_FLAGS )
+  include( "${ECBUILD_COMPILE_FLAGS}" )
+endif()
 
+# Load default flags only if custom compilation flags not enabled
 foreach( _lang C CXX Fortran )
-  if( CMAKE_${_lang}_COMPILER_LOADED )
+  if( CMAKE_${_lang}_COMPILER_LOADED AND NOT (ECBUILD_SOURCE_FLAGS OR ECBUILD_COMPILE_FLAGS) )
     ecbuild_compiler_flags( ${_lang} )
   endif()
 endforeach()
 
-### OVERRIDE Linker FLAGS per object type (we override because CMake forcely defines them)
-
+# Apply user or toolchain specified linker flag overrides per object type (NOT written to cache)
 foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
 
   foreach( _obj EXE SHARED MODULE )
