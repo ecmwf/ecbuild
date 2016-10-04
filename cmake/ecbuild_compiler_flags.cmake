@@ -72,7 +72,93 @@ macro( ecbuild_compiler_flags _lang )
 
 endmacro()
 
-#-----------------------------------------------------------------------------------------------------------------------
+##############################################################################
+#.rst:
+#
+# Using custom compilation flags
+# ==============================
+#
+# If compilation flags need to be controlled on a per source file basis,
+# ecBuild supports defining custom rules in a CMake or JSON file.
+#
+# When using this approach, *default compilation flags are NOT loaded*!
+#
+# Overriding compilation flags on a per source file basis using CMake rules
+# -------------------------------------------------------------------------
+#
+# Compiler flags can be overridden on a per source file basis by setting the
+# CMake variable ``ECBUILD_COMPILE_FLAGS`` to the *full path* of a CMake file
+# defining the override rules. If set, ``<PNAME>_ECBUILD_COMPILE_FLAGS``
+# takes precendence and ``ECBUILD_COMPILE_FLAGS`` is ignored, allowing for
+# rules that only apply to a subproject (e.g. in a bundle).
+#
+# Flags can be overridden in 3 different ways:
+#
+# 1.  By defining project specific flags for a language and (optionally)
+#     build type e.g. ::
+#
+#       set(<PNAME>_Fortran_FLAGS "...") # common flags for all build types
+#       set(<PNAME>_Fortran_FLAGS_DEBUG "...") # only for DEBUG build type
+#
+# 2.  By defining source file specific flags which are *combined* with the
+#     project and target specific flags ::
+#
+#       set_source_files_properties(<source>
+#         PROPERTIES COMPILE_FLAGS "..."  # common flags for all build types
+#                    COMPILE_FLAGS_DEBUG "...") # only for DEBUG build type
+#
+# 3.  By defining source file specific flags which *override* the project and
+#     target specific flags ::
+#
+#       set_source_files_properties(<source>
+#         PROPERTIES OVERRIDE_COMPILE_FLAGS "..."
+#                    OVERRIDE_COMPILE_FLAGS_DEBUG "...")
+#
+# See ``examples/override-compile-flags`` in the ecBuild source tree for a
+# complete example using this technique.
+#
+# Overriding compilation flags on a per source file basis using JSON rules
+# ------------------------------------------------------------------------
+#
+# Compiler flags can be overridden on a per source file basis by setting the
+# CMake variable ``ECBUILD_SOURCE_FLAGS`` to the *full path* of a JSON file
+# defining the override rules. If set, ``<PNAME>_ECBUILD_SOURCE_FLAGS``
+# takes precendence and ``ECBUILD_SOURCE_FLAGS`` is ignored, allowing for
+# rules that only apply to a subproject (e.g. in a bundle).
+#
+# The JSON file lists shell glob patterns and the rule to apply to each source
+# file matching the pattern, defined as an array ``[op, flag1, ...]``
+# containing an operator followed by one or more flags. Valid operators are:
+#
+# :+: Add the flags to the default compilation flags for matching files
+# :=: Set the flags for matching files, disregarding default compilation flags
+# :/: Remove the flags from the default compilation flags for matching files
+#
+# Rules can be nested to e.g. only apply to a subdirectory by setting the rule
+# to a dictionary, which will only apply to source files matching its pattern.
+#
+# An example JSON file demonstrating different rule types is given below: ::
+#
+#   {
+#     "*"       : [ "+", "-g0" ],
+#     "*.cxx"   : [ "+", "-cxx11" ],
+#     "*.f90"   : [ "+", "-pipe" ],
+#     "foo.c"   : [ "+", "-O0" ],
+#     "foo.cc"  : [ "+", "-O2", "-pipe" ],
+#     "bar/*": {
+#       "*.f90" : [ "=", "-O1" ]
+#     },
+#     "baz/*": {
+#       "*.f90" : [ "/", "-pipe" ],
+#       "*.f90" : [ "/", "-O2" ],
+#       "*.f90" : [ "+", "-O3" ]
+#     }
+#   }
+#
+# See ``examples/override-compile-flags`` in the ecBuild source tree for a
+# complete example using this technique.
+#
+##############################################################################
 
 # Custom (project specific) compilation flags enabled?
 foreach( _flags COMPILE SOURCE )
@@ -123,7 +209,3 @@ foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
   endforeach()
 
 endforeach()
-
-#-----------------------------------------------------------------------------------------------------------------------
-
-mark_as_advanced( CMAKE_C_FLAGS_BIT )
