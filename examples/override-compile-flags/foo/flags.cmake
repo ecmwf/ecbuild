@@ -1,16 +1,3 @@
-
-get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
-
-# Erase preset compile flags -- there can't be any directory scope flags for
-# this workaround to function correctly.
-
-foreach(lang ${languages})
-  set(CMAKE_${lang}_FLAGS "")
-  foreach(btype ALL RELEASE RELWITHDEBINFO PRODUCTION BIT DEBUG)
-    set(CMAKE_${lang}_FLAGS_${btype} "")
-  endforeach()
-endforeach()
-
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Cray")
 
   set(FOO_Fortran_FLAGS "-ram -emf -hadd_paren") # common flags for all build types
