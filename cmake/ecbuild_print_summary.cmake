@@ -71,7 +71,8 @@ macro( ecbuild_print_summary )
 
     foreach( lang ${langs} )
       ecbuild_info( "${lang} -- ${CMAKE_${lang}_COMPILER_ID} ${CMAKE_${lang}_COMPILER_VERSION}"  )
-      ecbuild_info( "    compiler   : ${CMAKE_${lang}_COMPILER} ${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
+      ecbuild_info( "    compiler   : ${CMAKE_${lang}_COMPILER}" )
+      ecbuild_info( "    flags      : ${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}} ${${PNAME}_${lang}_FLAGS} ${${PNAME}_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
       ecbuild_info( "    link flags : ${CMAKE_${lang}_LINK_FLAGS}" )
     endforeach()
 

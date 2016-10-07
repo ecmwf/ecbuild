@@ -1,0 +1,6 @@
+{
+    "*.f90" : [ "=", "-G0 -ram -emf -hadd_paren -hflex_mp=conservative -hfp0" ],
+    "*.c" : [ "=", "-g -O0 -fPIC" ],
+    "*foo_contiguous.f90" : [ "+", "-hcontiguous" ],
+    "*foo_intolerant.f90" : [ "=", "-G0 -ram -emf -hadd_paren -hflex_mp=intolerant -hfp0" ]
+}

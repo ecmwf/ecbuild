@@ -32,11 +32,11 @@
 # If any file of the following group of extensions is present in the list of
 # sources, the corresponding CMake variable is set:
 #
-# :<target>_h_srcs:   list of sources with extension .h, .hxx, .hh, .hpp, .H
-# :<target>_c_srcs:   list of sources with extension .c
-# :<target>_cxx_srcs: list of sources with extension .cc, .cxx, .cpp, .C
-# :<target>_f_srcs:   list of sources with extension .f, .F, .for, f77, .f90,
-#                                                    .f95, .F77, .F90, .F95
+# :<target>_h_srcs:       source files with extension .h, .hxx, .hh, .hpp, .H
+# :<target>_c_srcs:       source files with extension .c
+# :<target>_cxx_srcs:     source files with extension .cc, .cxx, .cpp, .C
+# :<target>_fortran_srcs: source files with extension .f, .F, .for, f77, .f90,
+#                                                     .f95, .F77, .F90, .F95
 #
 ##############################################################################
 
@@ -80,14 +80,14 @@ macro( ecbuild_separate_sources )
 
 	foreach( src ${_PAR_SOURCES} )
 		if(${src} MATCHES "(\\.f$|\\.F$|\\.for$|\\.f77$|\\.f90$|\\.f95$|\\.f03$|\\.f08$|\\.F77$|\\.F90$|\\.F95$|\\.F03$|\\.F08$)")
-			list( APPEND ${_PAR_TARGET}_f_srcs ${src} )
+			list( APPEND ${_PAR_TARGET}_fortran_srcs ${src} )
 		endif()
 	endforeach()
-	set_source_files_properties( ${${_PAR_TARGET}_f_srcs} PROPERTIES LANGUAGE Fortran )
+	set_source_files_properties( ${${_PAR_TARGET}_fortran_srcs} PROPERTIES LANGUAGE Fortran )
 
 #    ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
 #    ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
 #    ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
-#    ecbuild_debug_var( ${_PAR_TARGET}_f_srcs )
+#    ecbuild_debug_var( ${_PAR_TARGET}_fortran_srcs )
 
 endmacro( ecbuild_separate_sources )

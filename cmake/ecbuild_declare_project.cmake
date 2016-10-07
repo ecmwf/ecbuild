@@ -33,6 +33,9 @@
 # :INSTALL_DATA_DIR:       relative install directory for data
 # :INSTALL_CMAKE_DIR:      relative install directory for CMake files
 #
+# Customising install locations
+# -----------------------------
+#
 # The relative installation directories of components can be customised by
 # setting the following CMake variables on the command line or in cache:
 #
@@ -50,40 +53,6 @@
 # Using *relative* paths is recommended, which are interpreted relative to the
 # ``CMAKE_INSTALL_PREFIX``. Using absolute paths makes the build
 # non-relocatable and may break the generation of relocatable binary packages.
-#
-# Compiler flags can be overridden on a per source file basis by providing a
-# JSON file defining the override rules and setting ``ECBUILD_SOURCE_FLAGS``
-# to the *full path* of this file. If set, ``<PNAME>_ECBUILD_SOURCE_FLAGS``
-# takes precendence and ``ECBUILD_SOURCE_FLAGS`` is ignored.
-#
-# The JSON file lists shell glob patterns and the rule to apply to each source
-# file matching the pattern, defined as an array ``[op, flag1, ...]``
-# containing an operator followed by one or more flags. Valid operators are:
-#
-# :+: Add the flags to the default compilation flags for matching files
-# :=: Set the flags for matching files, disregarding default compilation flags
-# :/: Remove the flags from the default compilation flags for matching files
-#
-# Rules can be nested to e.g. only apply to a subdirectory by setting the rule
-# to a dictionary, which will only apply to source files matching it pattern.
-#
-# An example JSON file demonstrating different rule types is given below: ::
-#
-#   {
-#     "*"       : [ "+", "-g0" ],
-#     "*.cxx"   : [ "+", "-cxx11" ],
-#     "*.f90"   : [ "+", "-pipe" ],
-#     "foo.c"   : [ "+", "-O0" ],
-#     "foo.cc"  : [ "+", "-O2", "-pipe" ],
-#     "bar/*": {
-#       "*.f90" : [ "=", "-O1" ]
-#     },
-#     "baz/*": {
-#       "*.f90" : [ "/", "-pipe" ],
-#       "*.f90" : [ "/", "-O2" ],
-#       "*.f90" : [ "+", "-O3" ]
-#     }
-#   }
 #
 ##############################################################################
 
@@ -140,22 +109,6 @@ macro( ecbuild_declare_project )
   #    ecbuild_debug_var( ${PNAME}_MAJOR_VERSION )
   #    ecbuild_debug_var( ${PNAME}_MINOR_VERSION )
   #    ecbuild_debug_var( ${PNAME}_PATCH_VERSION )
-
-  # Override source flags with project specific flags
-  if( ${PNAME}_ECBUILD_SOURCE_FLAGS )
-    if ( ECBUILD_SOURCE_FLAGS )
-      ecbuild_debug( "Override ECBUILD_SOURCE_FLAGS (${ECBUILD_SOURCE_FLAGS}) with ${PROJECT_NAME} specific flags (${${PNAME}_ECBUILD_SOURCE_FLAGS})" )
-    else()
-      ecbuild_debug( "Use ${PROJECT_NAME} specific ECBUILD_SOURCE_FLAGS (${${PNAME}_ECBUILD_SOURCE_FLAGS})" )
-    endif()
-    set( ECBUILD_SOURCE_FLAGS ${${PNAME}_ECBUILD_SOURCE_FLAGS} )
-  endif()
-  # Ensure ECBUILD_SOURCE_FLAGS is a valid file path
-  if( DEFINED ECBUILD_SOURCE_FLAGS AND NOT EXISTS ${ECBUILD_SOURCE_FLAGS} )
-    ecbuild_warn( "ECBUILD_SOURCE_FLAGS points to non-existent file ${ECBUILD_SOURCE_FLAGS} and will be ignored" )
-    unset( ECBUILD_SOURCE_FLAGS )
-    unset( ECBUILD_SOURCE_FLAGS CACHE )
-  endif()
 
   # install dirs for this project
 
