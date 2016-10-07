@@ -12,7 +12,7 @@
 # ecbuild_generate_fortran_interfaces
 # ===================================
 #
-# Generates interfaces form the Fortran source files. ::
+# Generates interfaces from the Fortran source files. ::
 #
 #   ecbuild_generate_fortran_interfaces()
 #
