@@ -20,7 +20,9 @@ include(ecbuild_git)
 # =========================
 #
 # Initialise the ecBuild environment for a bundle. *Must* be called *before*
-# any call to ecbuild_bundle.
+# any call to ``ecbuild_bundle``. ::
+#
+#   ecbuild_bundle_initialize()
 #
 ##############################################################################
 
@@ -159,7 +161,9 @@ endmacro()
 # =======================
 #
 # Finalise the ecBuild environment for a bundle. *Must* be called *after* the
-# last call to ecbuild_bundle.
+# last call to ``ecbuild_bundle``. ::
+#
+#   ecbuild_bundle_finalize()
 #
 ##############################################################################
 
