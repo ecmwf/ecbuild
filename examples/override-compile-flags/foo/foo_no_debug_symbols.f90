@@ -1,0 +1,2 @@
+subroutine foo_no_debug_symbols
+end subroutine

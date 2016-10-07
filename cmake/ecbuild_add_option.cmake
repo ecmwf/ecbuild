@@ -19,8 +19,8 @@
 #                       [ DESCRIPTION <description> ]
 #                       [ PURPOSE <purpose> ]
 #                       [ REQUIRED_PACKAGES <package1> [<package2> ...] ]
-#                       [ CONDITION <condition1> [<condition2> ...] ]
-#                       [ ADVANCED ] )
+#                       [ CONDITION <condition> ]
+#                       [ ADVANCED ] [ NO_TPL ] )
 #
 # Options
 # -------
@@ -66,6 +66,9 @@
 # ADVANCED : optional
 #   mark the feature as advanced
 #
+# NO_TPL : optional
+#   do not add any ``REQUIRED_PACKAGES`` to the list of third party libraries
+#
 # Usage
 # -----
 #
@@ -84,7 +87,7 @@
 
 macro( ecbuild_add_option )
 
-  set( options ADVANCED )
+  set( options ADVANCED NO_TPL )
   set( single_value_args FEATURE DEFAULT DESCRIPTION TYPE PURPOSE )
   set( multi_value_args  REQUIRED_PACKAGES CONDITION )
 
@@ -196,6 +199,7 @@ macro( ecbuild_add_option )
         string( TOUPPER ${pkgname} pkgUPPER )
         string( TOLOWER ${pkgname} pkgLOWER )
 
+        set( __help_msg "Provide ${pkgname} location with -D${pkgUPPER}_PATH=/..." )
         if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
 
           ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ${pkgname} has already been found")
@@ -205,7 +209,7 @@ macro( ecbuild_add_option )
 
           if( pkgproject )
 
-            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for ecbuild project ${pkgname}")
+            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for ecbuild project ${pkgname} - ecbuild_use_package( ${pkglist} )")
             ecbuild_use_package( ${pkglist} )
 
           else()
@@ -213,7 +217,7 @@ macro( ecbuild_add_option )
             if( pkgname STREQUAL "MPI" )
               set( _find_args ${pkglist} )
               list( REMOVE_ITEM _find_args "MPI" )
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for MPI")
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for MPI - ecbuild_find_mpi( ${_find_args} )")
               ecbuild_find_mpi( ${_find_args} )
             elseif( pkgname STREQUAL "OMP" )
               set( _find_args ${pkglist} )
@@ -221,32 +225,25 @@ macro( ecbuild_add_option )
               if( NOT ENABLE_${_p_FEATURE} )
                 list( APPEND _find_args STUBS )
               endif()
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for OpenMP")
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for OpenMP - ecbuild_find_omp( ${_find_args} )")
               ecbuild_find_omp( ${_find_args} )
             elseif( pkgname STREQUAL "Python" OR pkgname STREQUAL "PYTHON" )
               set( _find_args ${pkglist} )
               list( REMOVE_ITEM _find_args ${pkgname} )
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for Python")
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for Python - ecbuild_find_python( ${_find_args} )")
               ecbuild_find_python( ${_find_args} )
+              set( __help_msg "Specify the location of the Python interpreter with -DPYTHON_EXECUTABLE=/..." )
             elseif( pkgname STREQUAL "LEXYACC" )
               set( _find_args ${pkglist} )
               list( REMOVE_ITEM _find_args ${pkgname} )
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for lex-yacc")
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for lex-yacc - ecbuild_find_lexyacc( ${_find_args} )")
               ecbuild_find_lexyacc( ${_find_args} )
             else()
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for package ${pkgname}")
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for package ${pkgname} - find_package( ${pkglist} )")
               find_package( ${pkglist} )
             endif()
 
           endif()
-
-        endif()
-
-        # if found append to list of third-party libraries (to be forward to other packages )
-        if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
-
-          list( APPEND ${PROJECT_NAME_CAPS}_TPLS ${pkgname} )
-          list( REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS )
 
         endif()
 
@@ -258,8 +255,17 @@ macro( ecbuild_add_option )
 
         if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
           ecbuild_info( "Found package ${pkgname} required for feature ${_p_FEATURE}" )
+
+          # append to list of third-party libraries (to be forward to other packages )
+          # unless the NO_TPL option was given
+          if( NOT _p_NO_TPL )
+            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): appending ${pkgname} to ${PROJECT_NAME_CAPS}_TPLS")
+            list( APPEND ${PROJECT_NAME_CAPS}_TPLS ${pkgname} )
+            list( REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS )
+          endif()
+
         else()
-          ecbuild_info( "Could not find package ${pkgname} required for feature ${_p_FEATURE} -- Provide ${pkgname} location with -D${pkgUPPER}_PATH=/..." )
+          ecbuild_info( "Could NOT find package ${pkgname} required for feature ${_p_FEATURE} -- ${__help_msg}" )
           set( HAVE_${_p_FEATURE} 0 )
           list( APPEND _failed_to_find_packages ${pkgname} )
         endif()
@@ -279,15 +285,16 @@ macro( ecbuild_add_option )
     else() # if user provided input and we cannot satisfy FAIL otherwise WARN
 
       if( ${_p_FEATURE}_user_provided_input )
-        if( _${_p_FEATURE}_condition )
-          ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
-        else()
+        if( NOT _${_p_FEATURE}_condition )
           string(REPLACE ";" " " _condition_msg "${_p_CONDITION}")
           ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following condition was not met: ${_condition_msg}" )
+        else()
+          ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
         endif()
       else()
-        if( _${_p_FEATURE}_condition )
-          ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following condition was not met: ${_p_CONDITION}" )
+        if( NOT _${_p_FEATURE}_condition )
+          string(REPLACE ";" " " _condition_msg "${_p_CONDITION}")
+          ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following condition was not met: ${_condition_msg}" )
         else()
           ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
         endif()

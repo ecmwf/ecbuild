@@ -177,6 +177,7 @@ macro( ecbuild_use_package )
       # add as a subproject
 
       set( ${pkgUPPER}_subproj_dir_ ${${pkgUPPER}_subproj_dir_} CACHE PATH "Path to ${_p_PROJECT} source directory" )
+      mark_as_advanced( ${pkgUPPER}_subproj_dir_ )
 
       set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${_p_PROJECT} CACHE INTERNAL "" )
 

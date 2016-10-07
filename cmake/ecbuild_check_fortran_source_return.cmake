@@ -52,7 +52,6 @@
 
 macro( ecbuild_check_fortran_source_return SOURCE )
 
-    ecbuild_warn( "This macro ecbuild_check_fortran_source has never been tested" )
     set( options )
     set( single_value_args VAR  OUTPUT )
     set( multi_value_args  INCLUDES LIBS DEFINITIONS )
@@ -93,15 +92,15 @@ macro( ecbuild_check_fortran_source_return SOURCE )
         if( __add_libs )
             set(CHECK_Fortran_SOURCE_COMPILES_ADD_INCLUDES "-DINCLUDE_DIRECTORIES:STRING=${__add_incs}")
         endif()
-    
+
         # write the source file
-    
-        file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.f" "${SOURCE}\n" )
+
+        file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.F90" "${SOURCE}\n" )
 
         ecbuild_debug( "Performing Test ${_PAR_VAR}" )
         try_run( ${_PAR_VAR}_EXITCODE ${_PAR_VAR}_COMPILED
           ${CMAKE_BINARY_DIR}
-          ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.f
+          ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.F90
           COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
           CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${MACRO_CHECK_FUNCTION_DEFINITIONS}
           -DCMAKE_SKIP_RPATH:BOOL=${CMAKE_SKIP_RPATH}
@@ -142,9 +141,9 @@ macro( ecbuild_check_fortran_source_return SOURCE )
     
           ecbuild_debug("Performing Test ${_PAR_VAR} - Failed")
           file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log 
-            "Performing C SOURCE FILE Test ${_PAR_VAR} failed with the following compile output:\n"
+            "Performing Fortran SOURCE FILE Test ${_PAR_VAR} failed with the following compile output:\n"
             "${compile_OUTPUT}\n" 
-            "Performing C SOURCE FILE Run ${_PAR_VAR} failed with the following run output:\n"
+            "Performing Fortran SOURCE FILE Run ${_PAR_VAR} failed with the following run output:\n"
             "${run_OUTPUT}\n" 
             "Return value: ${${_PAR_VAR}_EXITCODE}\n"
             "Source file was:\n${SOURCE}\n")

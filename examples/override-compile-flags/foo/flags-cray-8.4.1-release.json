@@ -1,0 +1,7 @@
+{
+    "*.f90" : [ "=", "-ram -emf -hadd_paren -Othread1 -hflex_mp=conservative -hfp1" ],
+    "*.c" : [ "=", "-O0 -fPIC" ],
+    "*foo_contiguous.f90" : [ "+", "-hcontiguous" ],
+    "*foo_intolerant.f90" : [ "=", "-ram -emf -hadd_paren -hflex_mp=intolerant -hfp1" ],
+    "*foo_ivybridge.f90" : [ "+", "-hcpu=ivybridge" ]
+}

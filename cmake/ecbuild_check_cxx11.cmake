@@ -23,14 +23,19 @@
 # Options
 # -------
 #
-# FEATURES : optional, checks for all features if omitted
-#   list of features to check for
+# FEATURES : optional
+#   list of optional features to check for
 #
 # REQUIRED : optional
 #   list of required features to check for
 #
 # PRINT : optional
-#   print a summary of features check for, found and not found
+#   print a summary of features checked for, found and not found
+#
+# Note
+# ----
+#
+# If neither ``FEATURES`` nor ``REQUIRED`` are given, check for all features.
 #
 ##############################################################################
 

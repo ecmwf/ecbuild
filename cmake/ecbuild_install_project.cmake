@@ -233,6 +233,18 @@ macro( ecbuild_install_project )
         endif()
     endforeach()
 
+    # Deduplicate TPL includes, libs and definitions
+    # The same TPL may indirectly be pulled in multiple times!
+    if( ${PNAME}_TPL_INCLUDE_DIRS )
+      list( REMOVE_DUPLICATES ${PNAME}_TPL_INCLUDE_DIRS )
+    endif()
+    if( ${PNAME}_TPL_LIBRARIES )
+      list( REMOVE_DUPLICATES ${PNAME}_TPL_LIBRARIES )
+    endif()
+    if( ${PNAME}_TPL_DEFINITIONS )
+      list( REMOVE_DUPLICATES ${PNAME}_TPL_DEFINITIONS )
+    endif()
+
     # Generate the project .cmake config files
     # All variables here must be (sub)project specific in order to work within bundles
     if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
@@ -278,8 +290,6 @@ macro( ecbuild_install_project )
            set( CONF_TPL_LIBRARIES ${${PNAME}_TPL_LIBRARIES} )
         endif()
 
-        # project-config.cmake @ build tree
-
         set( CONF_TPLS ${${PNAME}_TPLS} )
 
         set( CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}" )
@@ -288,18 +298,11 @@ macro( ecbuild_install_project )
         endif()
 
         set( CONF_TPL_INCLUDE_DIRS "" )
-        foreach( _tpl ${${PNAME}_TPLS} )
-            string( TOUPPER ${_tpl} TPL )
-            if( ${_tpl}_INCLUDE_DIRS )
-                list( APPEND CONF_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIRS} )
-            elseif( ${_tpl}_INCLUDE_DIR )
-                list( APPEND CONF_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIR} )
-            elseif( ${TPL}_INCLUDE_DIRS )
-                list( APPEND CONF_TPL_INCLUDE_DIRS ${${TPL}_INCLUDE_DIRS} )
-            elseif( ${TPL}_INCLUDE_DIR )
-                list( APPEND CONF_TPL_INCLUDE_DIRS ${${TPL}_INCLUDE_DIR} )
-            endif()
-        endforeach()
+        if( ${PNAME}_TPL_INCLUDE_DIRS )
+            set( CONF_TPL_INCLUDE_DIRS ${${PNAME}_TPL_INCLUDE_DIRS} )
+        endif()
+
+        # Generate <project>-import.cmake (if it exists)
 
         set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
 
@@ -323,10 +326,16 @@ macro( ecbuild_install_project )
           ecbuild_debug( "No ${CONF_IMPORT_FILE} found in ${PROJECT_SOURCE_DIR}" )
         endif()
 
+        # Generate <project>-config.cmake for use from the build tree
+
         set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
 
+        # Include directories (may) reference source and build tree and the
+        # config file is marked as coming from a build tree
         set( _is_build_dir_export ON )
         configure_file( "${_template_config}" "${_lname_config}" @ONLY )
+
+        # Generate <project>-config.cmake.tpls (if there are any TPLs)
 
         file( REMOVE ${_lname_config}.tpls.in )
 
@@ -360,27 +369,12 @@ macro( ecbuild_install_project )
             install( FILES "${_lname_config}.tpls" DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
 
-        # project-config.cmake @ install tree
+        # Generate <project>-config.cmake for use in the install tree
 
+        # Compute path to the include dir relative to the project's CMake dir
+        # where <project>-config.cmake is installed to
         file( RELATIVE_PATH REL_INCLUDE_DIR "${${PNAME}_FULL_INSTALL_CMAKE_DIR}" "${${PNAME}_FULL_INSTALL_INCLUDE_DIR}" )
         set( CONF_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
-
-        set( CONF_TPL_INCLUDE_DIRS "" )
-        foreach( _tpl ${${PNAME}_TPLS} )
-            string( TOUPPER ${_tpl} TPL )
-            if( ${TPL}_FULL_INSTALL_INCLUDE_DIR )
-                 list( APPEND CONF_TPL_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
-            endif()
-            if( ${_tpl}_INCLUDE_DIRS )
-                list( APPEND CONF_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIRS} )
-            elseif( ${_tpl}_INCLUDE_DIR )
-                list( APPEND CONF_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIR} )
-            elseif( ${TPL}_INCLUDE_DIRS )
-                list( APPEND CONF_TPL_INCLUDE_DIRS ${${TPL}_INCLUDE_DIRS} )
-            elseif( ${TPL}_INCLUDE_DIR )
-                list( APPEND CONF_TPL_INCLUDE_DIRS ${${TPL}_INCLUDE_DIR} )
-            endif()
-        endforeach()
 
         set( _is_build_dir_export OFF )
         configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )

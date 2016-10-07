@@ -26,7 +26,7 @@
 #                           [ PERSISTENT <file1> [<file2> ...] ]
 #                           [ GENERATED <file1> [<file2> ...] ]
 #                           [ DEPENDS <target1> [<target2> ...] ]
-#                           [ CONDITION <condition1> [<condition2> ...] ]
+#                           [ CONDITION <condition> ]
 #                           [ NOINSTALL ]
 #                           [ VERSION <version> | AUTO_VERSION ]
 #                           [ CFLAGS <flag1> [<flag2> ...] ]
@@ -232,66 +232,10 @@ macro( ecbuild_add_executable )
     #   ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
     #   ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
     #   ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
-    #   ecbuild_debug_var( ${_PAR_TARGET}_f_srcs )
+    #   ecbuild_debug_var( ${_PAR_TARGET}_fortran_srcs )
 
-    # add local flags
-
-    if( ${_PAR_TARGET}_c_srcs )
-
-      if( ECBUILD_SOURCE_FLAGS )
-        ecbuild_source_flags( ${_PAR_TARGET}_C_SOURCE_FLAGS
-                              ${_PAR_TARGET}_c
-                              "${_PAR_CFLAGS}"
-                              "${${_PAR_TARGET}_c_srcs}" )
-
-        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): setting source file C flags from ${${_PAR_TARGET}_C_SOURCE_FLAGS}")
-        include( ${${_PAR_TARGET}_C_SOURCE_FLAGS} )
-
-      elseif( DEFINED _PAR_CFLAGS )
-
-        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): use C flags ${_PAR_CFLAGS}")
-        set_source_files_properties( ${${_PAR_TARGET}_c_srcs}   PROPERTIES COMPILE_FLAGS "${_PAR_CFLAGS}" )
-
-      endif()
-    endif()
-
-    if( ${_PAR_TARGET}_cxx_srcs )
-
-      if( ECBUILD_SOURCE_FLAGS )
-        ecbuild_source_flags( ${_PAR_TARGET}_CXX_SOURCE_FLAGS
-                              ${_PAR_TARGET}_cxx
-                              "${_PAR_CXXFLAGS}"
-                              "${${_PAR_TARGET}_cxx_srcs}" )
-
-        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): setting source file CXX flags from ${${_PAR_TARGET}_CXX_SOURCE_FLAGS}")
-        include( ${${_PAR_TARGET}_CXX_SOURCE_FLAGS} )
-
-      elseif( DEFINED _PAR_CXXFLAGS )
-
-        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): use C++ flags ${_PAR_CFLAGS}")
-        set_source_files_properties( ${${_PAR_TARGET}_cxx_srcs} PROPERTIES COMPILE_FLAGS "${_PAR_CXXFLAGS}" )
-
-      endif()
-    endif()
-
-    if( ${_PAR_TARGET}_f_srcs )
-
-      if( ECBUILD_SOURCE_FLAGS )
-        ecbuild_source_flags( ${_PAR_TARGET}_Fortran_SOURCE_FLAGS
-                              ${_PAR_TARGET}_f
-                              "${_PAR_FFLAGS}"
-                              "${${_PAR_TARGET}_f_srcs}" )
-
-        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): setting source file Fortran flags from ${${_PAR_TARGET}_Fortran_SOURCE_FLAGS}")
-        include( ${${_PAR_TARGET}_Fortran_SOURCE_FLAGS} )
-
-      elseif( DEFINED _PAR_FFLAGS )
-
-        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): use Fortran flags ${_PAR_CFLAGS}")
-        set_source_files_properties( ${${_PAR_TARGET}_f_srcs}  PROPERTIES COMPILE_FLAGS "${_PAR_FFLAGS}" )
-
-      endif()
-    endif()
+    # Override compilation flags on a per source file basis
+    ecbuild_target_flags( ${_PAR_TARGET} "${_PAR_CFLAGS}" "${_PAR_CXXFLAGS}" "${_PAR_FFLAGS}" )
 
     # define VERSION if requested
     if( DEFINED _PAR_VERSION )

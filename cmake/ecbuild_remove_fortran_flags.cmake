@@ -10,9 +10,9 @@
 #.rst:
 #
 # ecbuild_remove_fortran_flags
-# =========================
+# ============================
 #
-# Remove Fortran compiler flags from CMAKE_Fortran_FLAGS. ::
+# Remove Fortran compiler flags from ``CMAKE_Fortran_FLAGS``. ::
 #
 #   ecbuild_remove_fortran_flags( <flag1> [ <flag2> ... ] [ BUILD <build> ] )
 #
@@ -58,4 +58,3 @@ macro( ecbuild_remove_fortran_flags m_flags )
   unset( _flags )
 
 endmacro()
-

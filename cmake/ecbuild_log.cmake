@@ -20,7 +20,9 @@
 # :ecbuild_warn:      logs a ``WARNING`` message if log level <= ``WARN``
 # :ecbuild_error:     logs a ``SEND_ERROR`` message if log level <= ``ERROR``
 # :ecbuild_critical:  logs a ``FATAL_ERROR`` message if log level <= ``CRITICAL``
-# :ecbuild_deprecate: logs a ``DEPRECATION`` message
+# :ecbuild_deprecate: logs a ``DEPRECATION`` message as a warning
+#                     enable CMAKE_ERROR_DEPRECATED to raise an error instead
+#                     disable CMAKE_WARN_DEPRECATED to hide deprecations
 #
 # Furthermore there are auxilliary functions for outputting CMake variables,
 # CMake lists and environment variables if the log level is ``DEBUG``:
@@ -49,10 +51,6 @@
 #
 # ECBUILD_NO_COLOUR : bool
 #   if set, does not colour log output (by default log output is coloured)
-#
-# ECBUILD_NO_DEPRECATIONS : bool
-#   if set, does not output deprecation messages (only set this if you *really*
-#   know what you are doing!)
 #
 # Usage
 # -----
@@ -113,6 +111,9 @@ endif()
 if( NOT DEFINED ECBUILD_LOG_FILE )
   set( ECBUILD_LOG_FILE ${CMAKE_BINARY_DIR}/ecbuild.log )
 endif()
+if( NOT DEFINED CMAKE_ERROR_DEPRECATED AND NOT DEFINED CMAKE_WARN_DEPRECATED )
+  set( CMAKE_WARN_DEPRECATED ON )
+endif()
 
 ##############################################################################
 
@@ -167,7 +168,15 @@ endfunction( ecbuild_error )
 function( ecbuild_deprecate )
   string(REPLACE ";" " " MSG ${ARGV})
   ecbuild_log(DEPRECATION "${MSG}")
-  if( NOT ECBUILD_NO_DEPRECATIONS )
+  # DEPRECATION message type was only introduced in CMake 3.0, provide
+  # consistent behaviour for CMake < 3.0
+  if( CMAKE_VERSION VERSION_LESS 3.0 )
+    if( CMAKE_ERROR_DEPRECATED )
+      message(FATAL_ERROR "${BoldRed}DEPRECATION - ${MSG}${ColourReset}")
+    elseif( CMAKE_WARN_DEPRECATED )
+      message(WARNING "${Yellow}DEPRECATION - ${MSG}${ColourReset}")
+    endif()
+  else()
     message(DEPRECATION "${BoldRed}${MSG}${ColourReset}")
   endif()
 endfunction( ecbuild_deprecate )

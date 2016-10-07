@@ -28,24 +28,27 @@
 # :<PNAME>_MINOR_VERSION:  minor version number
 # :<PNAME>_PATCH_VERSION:  patch version number
 # :INSTALL_BIN_DIR:        relative install directory for executables
-#                          (default: ``bin``)
 # :INSTALL_LIB_DIR:        relative install directory for libraries
-#                          (default: ``lib``)
 # :INSTALL_INCLUDE_DIR:    relative install directory for include files
-#                          (default: ``include``)
 # :INSTALL_DATA_DIR:       relative install directory for data
-#                          (default: ``share/<project_name>``)
 # :INSTALL_CMAKE_DIR:      relative install directory for CMake files
-#                          (default: ``share/<project_name>/cmake``)
+#
+# Customising install locations
+# -----------------------------
 #
 # The relative installation directories of components can be customised by
 # setting the following CMake variables on the command line or in cache:
 #
-# :<PNAME>_INSTALL_BIN_DIR:     directory for installing executables
-# :<PNAME>_INSTALL_LIB_DIR:     directory for installing libraries
-# :<PNAME>_INSTALL_INCLUDE_DIR: directory for installing include files
-# :<PNAME>_INSTALL_DATA_DIR:    directory for installing data
-# :<PNAME>_INSTALL_CMAKE_DIR:   directory for installing CMake files
+# :INSTALL_BIN_DIR:        directory for installing executables
+#                          (default: ``bin``)
+# :INSTALL_LIB_DIR:        directory for installing libraries
+#                          (default: ``lib``)
+# :INSTALL_INCLUDE_DIR:    directory for installing include files
+#                          (default: ``include``)
+# :INSTALL_DATA_DIR:       directory for installing data
+#                          (default: ``share/<project_name>``)
+# :INSTALL_CMAKE_DIR:      directory for installing CMake files
+#                          (default: ``share/<project_name>/cmake``)
 #
 # Using *relative* paths is recommended, which are interpreted relative to the
 # ``CMAKE_INSTALL_PREFIX``. Using absolute paths makes the build
@@ -109,11 +112,22 @@ macro( ecbuild_declare_project )
 
   # install dirs for this project
 
-  set( INSTALL_BIN_DIR bin )
-  set( INSTALL_LIB_DIR lib )
-  set( INSTALL_INCLUDE_DIR include )
-  set( INSTALL_DATA_DIR share/${PROJECT_NAME} )
-  set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
+  # Use defaults unless values are already present in cache
+  if( NOT INSTALL_BIN_DIR )
+    set( INSTALL_BIN_DIR bin )
+  endif()
+  if( NOT INSTALL_LIB_DIR )
+    set( INSTALL_LIB_DIR lib )
+  endif()
+  if( NOT INSTALL_INCLUDE_DIR )
+    set( INSTALL_INCLUDE_DIR include )
+  endif()
+  if( NOT INSTALL_DATA_DIR )
+    set( INSTALL_DATA_DIR share/${PROJECT_NAME} )
+  endif()
+  if( NOT INSTALL_CMAKE_DIR )
+    set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
+  endif()
 
   mark_as_advanced( INSTALL_BIN_DIR )
   mark_as_advanced( INSTALL_LIB_DIR )
@@ -121,10 +135,11 @@ macro( ecbuild_declare_project )
   mark_as_advanced( INSTALL_DATA_DIR )
   mark_as_advanced( INSTALL_CMAKE_DIR )
 
-  # overrides of install dirs
+  # overrides of install dirs (deprecated in ecBuild 2.4.0)
 
   foreach( p LIB BIN INCLUDE DATA CMAKE )
     if( ${PNAME}_INSTALL_${p}_DIR )
+      ecbuild_deprecate( "Use of ${PNAME}_INSTALL_${p}_DIR is deprecated and will be removed in a future release. Use INSTALL_${p}_DIR instead." )
       set( INSTALL_${p}_DIR ${${PNAME}_INSTALL_${p}_DIR} )
     endif()
   endforeach()

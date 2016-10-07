@@ -28,6 +28,10 @@
 # NO_LIBS : optional
 #   only search for the Python interpreter, not the libraries
 #
+# Unless ``NO_LIBS`` is set, the ``python-config`` utility, if found, is used
+# to determine the Python include directories, libraries and link line. Set the
+# CMake variable ``PYTHON_NO_CONFIG`` to use CMake's FindPythonLibs instead.
+#
 # Output variables
 # ----------------
 #
@@ -62,38 +66,34 @@ function( ecbuild_find_python )
     if(_p_UNPARSED_ARGUMENTS)
       ecbuild_critical("Unknown keywords given to ecbuild_find_python(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
+    if( _p_REQUIRED )
+      set( _p_REQUIRED REQUIRED )
+    else()
+      unset( _p_REQUIRED )
+    endif()
 
     # find python executable
 
-    find_package( PythonInterp )
+    # Search first without specifying the version, since doing so gives preference to the specified
+    # version even though a never version of the interpreter may be available
+    find_package( PythonInterp ${_p_REQUIRED} )
 
-    if( NOT PYTHONINTERP_FOUND AND _p_REQUIRED )
-        ecbuild_error( "Failed to find any Python interpreter (REQUIRED)" )
+    # If no suitable version was found, search again with the version specified
+    if( PYTHONINTERP_FOUND AND _p_VERSION )
+      if( _p_VERSION VERSION_GREATER "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" )
+        ecbuild_debug( "ecbuild_find_python: Found Python interpreter version ${PYTHON_VERSION_STRING} at ${PYTHON_EXECUTABLE}, however version ${_p_VERSION} is required. Searching again..." )
+        unset( PYTHONINTERP_FOUND )
+        unset( PYTHON_EXECUTABLE )
+        unset( PYTHON_EXECUTABLE CACHE )
+        unset( PYTHON_VERSION_MAJOR )
+        unset( PYTHON_VERSION_MINOR )
+        unset( PYTHON_VERSION_PATCH )
+        unset( PYTHON_VERSION_STRING )
+        find_package( PythonInterp "${_p_VERSION}" ${_p_REQUIRED} )
+      endif()
     endif()
 
-    # find python version
-    # execute_process( COMMAND ${PYTHON_EXECUTABLE} -V ERROR_VARIABLE _version  RESULT_VARIABLE _return ERROR_STRIP_TRAILING_WHITESPACE)
-    # if( NOT _return )
-    #    string(REGEX REPLACE ".*([0-9]+)\\.([0-9]+)\\.([0-9]+)" "\\1.\\2.\\3" PYTHON_VERSION ${_version} )
-    # endif()
-    # endif()
-
-    # ecbuild_debug( "Python version ${PYTHON_VERSION_STRING}" )
-    # ecbuild_debug_var(PYTHON_VERSION_MAJOR)
-    # ecbuild_debug_var(PYTHON_VERSION_MINOR)
-    # ecbuild_debug_var(PYTHON_VERSION_PATCH)
-
-    if( PYTHONINTERP_FOUND AND DEFINED _p_VERSION )
-        if( _p_VERSION VERSION_GREATER "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" )
-            set( PYTHONINTERP_FOUND 0 )
-            set( PYTHON_EXECUTABLE "PYTHON_EXECUTABLE-NOTFOUND" )
-            if( _p_REQUIRED )
-                ecbuild_critical( "Required python version at least ${_p_VERSION} but found only ${PYTHON_VERSION_STRING}" )
-            else()
-                ecbuild_warn( "Looking for python version at least ${_p_VERSION} but found only ${PYTHON_VERSION_STRING}\nMarking Python as NOTFOUND" )
-            endif()
-        endif()
-    endif()
+    set( __required_vars PYTHONINTERP_FOUND )
 
     if( PYTHONINTERP_FOUND )
         ecbuild_debug( "ecbuild_find_python: Found Python interpreter version ${PYTHON_VERSION_STRING} at ${PYTHON_EXECUTABLE}" )
@@ -104,15 +104,24 @@ function( ecbuild_find_python )
             execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
         endif()
         ecbuild_debug( "ecbuild_find_python: PYTHON_SITE_PACKAGES=${PYTHON_SITE_PACKAGES}" )
-
     endif()
+
     if( PYTHONINTERP_FOUND AND NOT _p_NO_LIBS )
+        list( APPEND __required_vars PYTHONLIBS_FOUND PYTHON_LIBS_WORKING )
+
         # find python config
 
         if( PYTHON_EXECUTABLE AND EXISTS ${PYTHON_EXECUTABLE}-config )
             set(PYTHON_CONFIG_EXECUTABLE ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
         else()
-            find_program( PYTHON_CONFIG_EXECUTABLE NAMES python-config python-config${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} )
+            get_filename_component( __python_bin_dir ${PYTHON_EXECUTABLE} PATH )
+            find_program( PYTHON_CONFIG_EXECUTABLE
+                          NO_CMAKE_PATH NO_CMAKE_SYSTEM_PATH
+                          NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH
+                          HINTS ${__python_bin_dir}
+                          NAMES python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}-config
+                                python${PYTHON_VERSION_MAJOR}-config
+                                python-config )
         endif()
 
         ecbuild_debug_var( PYTHON_CONFIG_EXECUTABLE )
@@ -122,31 +131,58 @@ function( ecbuild_find_python )
         # The OpenBSD python packages have python-config's
         # that don't reliably report linking flags that will work.
 
-        if( PYTHON_CONFIG_EXECUTABLE AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" )
+        if( PYTHON_CONFIG_EXECUTABLE AND NOT ( PYTHON_NO_CONFIG OR ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" ) )
             ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using ${PYTHON_CONFIG_EXECUTABLE}" )
 
-            execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --ldflags
-                            OUTPUT_VARIABLE PYTHON_LIBRARIES
-                            OUTPUT_STRIP_TRAILING_WHITESPACE
-                            ERROR_QUIET)
+            if( NOT PYTHON_LIBRARY )
+              execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --prefix
+                              OUTPUT_VARIABLE PYTHON_PREFIX
+                              OUTPUT_STRIP_TRAILING_WHITESPACE
+                              ERROR_QUIET)
 
-            execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --includes
-                            OUTPUT_VARIABLE PYTHON_INCLUDE_DIRS
-                            OUTPUT_STRIP_TRAILING_WHITESPACE
-                            ERROR_QUIET)
+              execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --ldflags
+                              OUTPUT_VARIABLE PYTHON_LIBRARY
+                              OUTPUT_STRIP_TRAILING_WHITESPACE
+                              ERROR_QUIET)
 
-            string(REGEX REPLACE "^[-I]" "" PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_DIRS}")
-            string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_DIRS}")
+              # Prepend -L and and set the RPATH to the lib directory under the
+              # Python install prefix unless it is a standard system prefix path
+              if( PYTHON_LIBRARY AND PYTHON_PREFIX AND NOT CMAKE_SYSTEM_PREFIX_PATH MATCHES ${PYTHON_PREFIX} )
+                set( PYTHON_LIBRARY "-L${PYTHON_PREFIX}/lib -Wl,-rpath,${PYTHON_PREFIX}/lib ${PYTHON_LIBRARY}" )
+              endif()
 
-            separate_arguments(PYTHON_INCLUDE_DIRS)
+              set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}" CACHE PATH
+                   "Path to where Python.h is found" FORCE )
+            endif()
+
+            if(DEFINED PYTHON_INCLUDE_PATH AND NOT DEFINED PYTHON_INCLUDE_DIR)
+              set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}" CACHE PATH
+                   "Path to where Python.h is found" FORCE )
+            elseif( NOT PYTHON_INCLUDE_DIR )
+              execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --includes
+                              OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
+                              OUTPUT_STRIP_TRAILING_WHITESPACE
+                              ERROR_QUIET)
+
+              string(REGEX REPLACE "^[-I]" "" PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
+              string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
+
+              separate_arguments(PYTHON_INCLUDE_DIR)
+              set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}" CACHE PATH
+                   "Path to where Python.h is found" FORCE )
+
+            endif()
+
+            set(PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_DIR}")
+            set(PYTHON_LIBRARIES "${PYTHON_LIBRARY}")
+
+            find_package_handle_standard_args( PythonLibs DEFAULT_MSG
+                                               PYTHON_INCLUDE_DIRS PYTHON_LIBRARIES )
 
         else() # revert to finding pythonlibs the standard way (cmake macro)
-            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package(PythonLibs)" )
+            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package( PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH} ${_p_REQUIRED} )" )
 
-            find_package(PythonLibs)
-            if( PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIRS )
-              set(PYTHON_INCLUDE_DIRS "${PYTHON_INCLUDE_PATH}")
-            endif()
+            find_package( PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" ${_p_REQUIRED} )
 
         endif()
 
@@ -159,24 +195,17 @@ function( ecbuild_find_python )
             try_compile( PYTHON_LIBS_WORKING ${CMAKE_CURRENT_BINARY_DIR}
                          ${__test_python}
                          CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIRS}"
-                         LINK_LIBRARIES ${PYTHON_LIBRARIES} )
+                         LINK_LIBRARIES ${PYTHON_LIBRARIES}
+                         OUTPUT_VARIABLE __try_compile_output )
+            if( NOT PYTHON_LIBS_WORKING )
+              ecbuild_debug( "ecbuild_find_python: trying to link executable with Python libraries failed\n${__try_compile_output}" )
+            endif()
 
-            # set output variables
-
-            find_package_handle_standard_args( PythonLibs DEFAULT_MSG
-                                               PYTHON_INCLUDE_DIRS PYTHON_LIBRARIES PYTHON_LIBS_WORKING )
-            ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIRS=${PYTHON_INCLUDE_DIRS}" )
-            ecbuild_debug( "ecbuild_find_python: PYTHON_LIBRARIES=${PYTHON_LIBRARIES}" )
-
-        endif()
-
-        # Also set PYTHON_FOUND and Python_FOUND for compatibility with ecbuild_add_option
-        if( PYTHONLIBS_FOUND )
-          set( PYTHON_FOUND 1 )
-          set( Python_FOUND 1 )
         endif()
 
     endif()
+
+    find_package_handle_standard_args( Python DEFAULT_MSG ${__required_vars} )
 
     ecbuild_debug_var( PYTHONINTERP_FOUND )
     ecbuild_debug_var( PYTHON_FOUND )

@@ -25,6 +25,7 @@ function( ecbuild_download_resource _p_OUT _p_URL )
   if( NOT EXISTS ${_p_OUT} )
 
     find_program( CURL_PROGRAM curl )
+    mark_as_advanced(CURL_PROGRAM)
     if( CURL_PROGRAM )
       execute_process( COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_OUT} ${_p_URL}
                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} RESULT_VARIABLE CMD_RESULT )
