@@ -78,7 +78,7 @@
 # MPI : optional
 #   number of MPI tasks to use.
 #
-#   If greater than 1, and MPI is not available, the test is disabled.
+#   If greater than 1, and ``MPIEXEC`` is not available, the test is disabled.
 #
 # OMP : optional
 #   number of OpenMP threads per MPI task to use.
@@ -150,16 +150,19 @@ macro( ecbuild_add_test )
 
   set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
 
-  # Check for MPI
   if(_PAR_MPI)
-    if( (_PAR_MPI GREATER 1) AND ( (NOT MPI_FOUND) OR (NOT MPIEXEC) ) )
-      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${_PAR_MPI} MPI ranks requested but MPI not available - disabling test")
+    # Check for MPIEXEC if it not set
+    find_program( MPIEXEC NAMES mpiexec mpirun lamexec srun
+                  DOC "Executable for running MPI programs." )
+    if( MPIEXEC )
+      set(MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING "Flag used by MPI to specify the number of processes for MPIEXEC")
+      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): Running using ${MPIEXEC} on ${_PAR_MPI} MPI rank(s)")
+    elseif( _PAR_MPI GREATER 1 )
+      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${_PAR_MPI} MPI ranks requested but MPIEXEC not available - disabling test")
       set( _PAR_ENABLED 0 )
-    elseif( (_PAR_MPI EQUAL 1) AND (NOT MPI_FOUND) )
-      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): 1 MPI rank requested but MPI not available - disabling MPI")
-      set( _PAR_MPI 0 )
     else()
-      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): Running using ${_PAR_MPI} MPI rank(s)")
+      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): 1 MPI rank requested but MPIEXEC not available - running sequentially")
+      set( _PAR_MPI 0 )
     endif()
   endif()
 
