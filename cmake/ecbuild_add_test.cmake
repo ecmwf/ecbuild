@@ -19,6 +19,7 @@
 #                     [ OBJECTS <obj1> [<obj2> ...] ]
 #                     [ COMMAND <executable> ]
 #                     [ TYPE EXE|SCRIPT|PYTHON ]
+#                     [ LABELS <label1> [<label2> ...] ]
 #                     [ ARGS <argument1> [<argument2> ...] ]
 #                     [ RESOURCES <file1> [<file2> ...] ]
 #                     [ TEST_DATA <file1> [<file2> ...] ]
@@ -62,6 +63,12 @@
 #   :EXE:    run built executable, default if TARGET is provided
 #   :SCRIPT: run command or script, default if COMMAND is provided
 #   :PYTHON: run a Python script (requires the Python interpreter to be found)
+#
+# LABELS : optional
+#   list of labels to assign to the test
+#
+#   This allows selecting tests to run via ``ctest -L <regex>`` or tests
+#   to exclude via ``ctest -LE <regex>``.
 #
 # ARGS : optional
 #   list of arguments to pass to TARGET or COMMAND when running the test
@@ -138,7 +145,7 @@ macro( ecbuild_add_test )
 
   set( options           BOOST )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI OMP WORKING_DIRECTORY )
-  set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS ARGS
+  set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS LABELS ARGS
                          PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS
                          CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
@@ -429,6 +436,10 @@ macro( ecbuild_add_test )
 
         list( APPEND _PAR_TEST_DEPENDS ${_PAR_TARGET}_data )
 
+      endif()
+
+      if( DEFINED _PAR_LABELS )
+        set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "${_PAR_LABELS}" )
       endif()
 
       if( DEFINED _PAR_ENVIRONMENT )
