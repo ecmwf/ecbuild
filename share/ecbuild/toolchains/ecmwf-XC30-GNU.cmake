@@ -47,6 +47,6 @@ set( ECBUILD_Fortran_FLAGS_DEBUG  "-ffree-line-length-none -O0 -g -fcheck=bounds
 # LINK FLAGS
 ####################################################################
 
-set( ECBUILD_C_LINK_FLAGS        "-Wl,-Map,load.map -Wl,--as-needed" )
-set( ECBUILD_CXX_LINK_FLAGS      "-Wl,-Map,load.map -Wl,--as-needed" )
-set( ECBUILD_Fortran_LINK_FLAGS  "-Wl,-Map,load.map -Wl,--as-needed" )
+set( ECBUILD_C_LINK_FLAGS        "-Wl,-Map,load.map -Wl,--as-needed -Wl,--eh-frame-hdr" )
+set( ECBUILD_CXX_LINK_FLAGS      "-Wl,-Map,load.map -Wl,--as-needed -Wl,--eh-frame-hdr" )
+set( ECBUILD_Fortran_LINK_FLAGS  "-Wl,-Map,load.map -Wl,--as-needed -Wl,--eh-frame-hdr" )
