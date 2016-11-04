@@ -20,14 +20,6 @@ set( ECBUILD_FIND_MPI OFF )
 set( ECBUILD_TRUST_FLAGS ON )
 
 ####################################################################
-# MPI
-####################################################################
-
-set( MPIEXEC                 "aprun" )
-set( MPIEXEC_NUMPROC_FLAG    "-n"    )
-set( MPIEXEC_NUMTHREAD_FLAG  "-d"    )
-
-####################################################################
 # OpenMP FLAGS
 ####################################################################
 
@@ -47,6 +39,6 @@ set( ECBUILD_Fortran_FLAGS_DEBUG  "-ffree-line-length-none -O0 -g -fcheck=bounds
 # LINK FLAGS
 ####################################################################
 
-set( ECBUILD_C_LINK_FLAGS        "-Wl,-Map,load.map -Wl,--as-needed" )
-set( ECBUILD_CXX_LINK_FLAGS      "-Wl,-Map,load.map -Wl,--as-needed" )
-set( ECBUILD_Fortran_LINK_FLAGS  "-Wl,-Map,load.map -Wl,--as-needed" )
+set( ECBUILD_C_LINK_FLAGS        "-Wl,-Map,load.map -Wl,--as-needed -Wl,--eh-frame-hdr" )
+set( ECBUILD_CXX_LINK_FLAGS      "-Wl,-Map,load.map -Wl,--as-needed -Wl,--eh-frame-hdr" )
+set( ECBUILD_Fortran_LINK_FLAGS  "-Wl,-Map,load.map -Wl,--as-needed -Wl,--eh-frame-hdr" )

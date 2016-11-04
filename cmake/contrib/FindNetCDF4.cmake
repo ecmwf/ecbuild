@@ -149,11 +149,11 @@ else()
     set( NETCDF_F90_INCLUDE_NAMES netcdf.mod typesizes.mod ${NETCDF_C_INCLUDE_NAMES} )
 
     set( NETCDF_C_LIBRARY_NAMES netcdf)
-    set( NETCDF_CXX_LIBRARY_NAMES netcdf_c++ ${NETCDF_C_LIBRARY_NAMES} )
+    set( NETCDF_CXX_LIBRARY_NAMES netcdf_c++ netcdf_c++4 ${NETCDF_C_LIBRARY_NAMES} )
     set( NETCDF_FORTRAN_LIBRARY_NAMES netcdff ${NETCDF_C_LIBRARY_NAMES})
     set( NETCDF_F90_LIBRARY_NAMES ${NETCDF_FORTRAN_LIBRARY_NAMES} )
 
-    set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.mod typesizes.mod netcdf netcdff netcdf_c++)
+    set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.mod typesizes.mod netcdf netcdff netcdf_c++ netcdf_c++4)
 
     foreach( LANGUAGE ${NETCDF_LANGUAGE_BINDINGS} )
         ecbuild_debug("FindNetCDF4: looking for ${LANGUAGE} language bindings")
