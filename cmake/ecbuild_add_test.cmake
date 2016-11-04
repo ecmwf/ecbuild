@@ -83,7 +83,7 @@
 #   use the Boost Unit Test Framework
 #
 # MPI : optional
-#   number of MPI tasks to use.
+#   Run with MPI using the given number of MPI tasks.
 #
 #   If greater than 1, and ``MPIEXEC`` is not available, the test is disabled.
 #
@@ -157,7 +157,11 @@ macro( ecbuild_add_test )
 
   set( _TEST_DIR ${CMAKE_CURRENT_BINARY_DIR} )
 
-  if(_PAR_MPI)
+  # Undocumented flag for disabling all MPI tests for test environment without suitable MPI(EXEC)
+  if( _PAR_MPI AND ECBUILD_DISABLE_MPI_TESTS )
+    ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ECBUILD_DISABLE_MPI_TESTS set - disabling test")
+    set( _PAR_ENABLED 0 )
+  elseif( _PAR_MPI )
     # Check for MPIEXEC if it not set
     find_program( MPIEXEC NAMES mpiexec mpirun lamexec srun
                   DOC "Executable for running MPI programs." )
