@@ -30,7 +30,7 @@ macro( lookup_omp_flags )
   #ifdef _OPENMP
     #pragma omp parallel
     {
-      int id = omp_get_thread_num();
+      (void)omp_get_thread_num();
     }
     return 0;
   #else
@@ -53,7 +53,7 @@ macro( lookup_omp_flags )
     #pragma omp parallel
     {
       // This pragma should have passed compilation
-      int id = 0;
+      (void)0;
     }
     return 0;
   #endif
