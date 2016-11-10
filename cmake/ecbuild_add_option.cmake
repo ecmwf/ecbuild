@@ -161,13 +161,9 @@ macro( ecbuild_add_option )
                           TYPE ${_p_TYPE}
                           PURPOSE "${_p_PURPOSE}" )
 
-  ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} = ${ENABLE_${_p_FEATURE}}")
-  set( _do_search ${ENABLE_${_p_FEATURE}} )
-  if( _p_FEATURE STREQUAL "OMP" )
-    set( _do_search TRUE )
-  endif()
+  ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
 
-  if( _do_search  )
+  if( ENABLE_${_p_FEATURE} )
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature enabled")
 
     set( HAVE_${_p_FEATURE} 1 )
@@ -303,13 +299,13 @@ macro( ecbuild_add_option )
 
     endif()
 
-  else( _do_search )
+  else()
 
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature disabled")
     set( HAVE_${_p_FEATURE} 0 )
     ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
 
-  endif( _do_search )
+  endif()
 
 
   if( ${_p_ADVANCED} )
