@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2016 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -16,24 +16,26 @@
 #  OPENJPEG_LIBRARY, where to find the OpenJPEG library.
 #  OPENJPEG_INCLUDE_DIR, where to find the openjpeg.h header
 
-IF( NOT DEFINED OPENJPEG_PATH AND NOT "$ENV{OPENJPEG_PATH}" STREQUAL "" )
-  SET( OPENJPEG_PATH "$ENV{OPENJPEG_PATH}" )
-ENDIF()
-
 # Note: OpenJPEG version 2.x.y onwards has a variable-name sub-dir in the include
 # e.g. include/openjpeg-2.0 or include/openjpeg-2.1
 # We only support version 2.1.x
 # Also the name of the library is different. In v1.x it was libopenjpeg and now it's libopenjp2
-if( DEFINED OPENJPEG_PATH )
-  find_path(OPENJPEG_INCLUDE_DIR openjpeg.h PATHS ${OPENJPEG_PATH}/include PATH_SUFFIXES openjpeg openjpeg-2.1 NO_DEFAULT_PATH)
 
-  find_library( OPENJPEG_LIBRARY NAMES openjpeg openjp2 PATHS ${OPENJPEG_PATH}/lib
-                PATH_SUFFIXES openjpeg  NO_DEFAULT_PATH )
-endif()
+find_path( OPENJPEG_INCLUDE_DIR openjpeg.h
+           PATHS ${OPENJPEG_PATH} ENV OPENJPEG_PATH
+                 ${OPENJPEG_DIR}  ENV OPENJPEG_DIR
+           PATH_SUFFIXES include include/openjpeg include/openjpeg-2.1
+           NO_DEFAULT_PATH )
+find_path( OPENJPEG_INCLUDE_DIR  openjpeg.h
+           PATH_SUFFIXES include include/openjpeg include/openjpeg-2.1 )
 
-find_path(OPENJPEG_INCLUDE_DIR  openjpeg.h PATH_SUFFIXES openjpeg openjpeg-2.1)
-
-find_library( OPENJPEG_LIBRARY NAMES openjpeg openjp2 PATH_SUFFIXES openjpeg )
+find_library( OPENJPEG_LIBRARY NAMES openjpeg openjp2
+              PATHS ${OPENJPEG_PATH} ENV OPENJPEG_PATH
+                    ${OPENJPEG_DIR}  ENV OPENJPEG_DIR
+              PATH_SUFFIXES lib lib/openjpeg
+              NO_DEFAULT_PATH )
+find_library( OPENJPEG_LIBRARY NAMES openjpeg openjp2
+              PATH_SUFFIXES lib lib/openjpeg )
 
 set( OPENJPEG_LIBRARIES    ${OPENJPEG_LIBRARY} )
 set( OPENJPEG_INCLUDE_DIRS ${OPENJPEG_INCLUDE_DIR} )
@@ -45,4 +47,4 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenJPEG  DEFAULT_MSG
                                   OPENJPEG_LIBRARY OPENJPEG_INCLUDE_DIR)
 
-mark_as_advanced(OPENJPEG_INCLUDE_DIR OPENJPEG_LIBRARY )
+mark_as_advanced( OPENJPEG_INCLUDE_DIR OPENJPEG_LIBRARY )
