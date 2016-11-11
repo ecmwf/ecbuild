@@ -21,13 +21,15 @@
 # We only support version 2.1.x
 # Also the name of the library is different. In v1.x it was libopenjpeg and now it's libopenjp2
 
+set( _suff include include/openjpeg include/openjpeg-1.5 include/openjpeg-2.1 )
 find_path( OPENJPEG_INCLUDE_DIR openjpeg.h
            PATHS ${OPENJPEG_PATH} ENV OPENJPEG_PATH
                  ${OPENJPEG_DIR}  ENV OPENJPEG_DIR
-           PATH_SUFFIXES include include/openjpeg include/openjpeg-2.1
+           PATH_SUFFIXES ${_suff}
            NO_DEFAULT_PATH )
 find_path( OPENJPEG_INCLUDE_DIR  openjpeg.h
-           PATH_SUFFIXES include include/openjpeg include/openjpeg-2.1 )
+           PATH_SUFFIXES ${_suff} )
+unset( _suff )
 
 find_library( OPENJPEG_LIBRARY NAMES openjpeg openjp2
               PATHS ${OPENJPEG_PATH} ENV OPENJPEG_PATH
