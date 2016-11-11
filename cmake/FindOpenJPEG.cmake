@@ -6,20 +6,22 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# - Try to find the OpenJPEG includes and library
+# - Try to find the OpenJPEG includes and library (version 1.5.x or 2.1.x)
 # This module defines
+#
 #  OPENJPEG_FOUND         - System has OpenJPEG
 #  OPENJPEG_INCLUDE_DIRS  - the OpenJPEG include directories
 #  OPENJPEG_LIBRARIES     - the libraries needed to use OpenJPEG
 #
-# also defined internally:
-#  OPENJPEG_LIBRARY, where to find the OpenJPEG library.
-#  OPENJPEG_INCLUDE_DIR, where to find the openjpeg.h header
+# The following paths will be searched with priority if set in CMake or env
+#
+#  OPENJPEG_DIR   - root folder of the OpenJPEG installation
+#  OPENJPEG_PATH  - root folder of the OpenJPEG installation
 
-# Note: OpenJPEG version 2.x.y onwards has a variable-name sub-dir in the include
-# e.g. include/openjpeg-2.0 or include/openjpeg-2.1
-# We only support version 2.1.x
-# Also the name of the library is different. In v1.x it was libopenjpeg and now it's libopenjp2
+# Note: OpenJPEG has a version-specific subdirectory in the include
+# e.g. include/openjpeg-2.0 or include/openjpeg-2.1.
+# Only version 1.5.x and 2.1.x are supported.
+# The library name is different for 1.x (libopenjpeg) and 2.x (libopenjp2).
 
 set( _suff include include/openjpeg include/openjpeg-1.5 include/openjpeg-2.1 )
 find_path( OPENJPEG_INCLUDE_DIR openjpeg.h
