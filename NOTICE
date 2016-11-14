@@ -11,4 +11,8 @@ Notice
    distributed under Boost license.
 
 3. FindNetCDF4 macro is based on the macro FindNetCDF from project UCLALES from
-   Max-Planck-Institut für Meteorologie. 
+   Max-Planck-Institut für Meteorologie.
+
+4. CheckFortranCompilerFlag, CheckFortranSourceCompiles and
+   CMakeCheckCompilerFlagCommonPatterns are distributed from CMake 3.7.0 with
+   the original license headers preserved.
