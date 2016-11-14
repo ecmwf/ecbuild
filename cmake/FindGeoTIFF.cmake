@@ -1,38 +1,46 @@
-###############################################################################
+# (C) Copyright 1996-2016 ECMWF.
 #
-# CMake module to search for GeoTIFF library
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation
+# nor does it submit to any jurisdiction.
+
+# - Try to find the GeoTIFF includes and library
+# This module defines
 #
-# On success, the macro sets the following variables:
-# GEOTIFF_FOUND       = if the library found
-# GEOTIFF_LIBRARIES   = full path to the library
-# GEOTIFF_INCLUDE_DIR = where to find the library headers 
-# also defined, but not for general use are
-# GEOTIFF_LIBRARY, where to find the PROJ.4 library.
+#  GEOTIFF_FOUND         - System has GeoTIFF
+#  GEOTIFF_INCLUDE_DIRS  - the GeoTIFF include directories
+#  GEOTIFF_LIBRARIES     - the libraries needed to use GeoTIFF
 #
-# Copyright (c) 2009 Mateusz Loskot <mateusz@loskot.net>
+# The following paths will be searched with priority if set in CMake or env
 #
-# Module source: http://github.com/mloskot/workshop/tree/master/cmake/
-#
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
-#
-###############################################################################
+#  GEOTIFF_DIR   - root folder of the GeoTIFF installation
+#  GEOTIFF_PATH  - root folder of the GeoTIFF installation
 
-SET(GEOTIFF_NAMES geotiff)
+find_path( GEOTIFF_INCLUDE_DIR geotiff.h
+           PATHS ${GEOTIFF_PATH} ENV GEOTIFF_PATH
+                 ${GEOTIFF_DIR}  ENV GEOTIFF_DIR
+           PATH_SUFFIXES include include/libgeotiff
+           NO_DEFAULT_PATH )
+find_path( GEOTIFF_INCLUDE_DIR  openjpeg.h
+           PATH_SUFFIXES include include/libgeotiff )
 
+find_library( GEOTIFF_LIBRARY NAMES geotiff
+              PATHS ${GEOTIFF_PATH} ENV GEOTIFF_PATH
+                    ${GEOTIFF_DIR}  ENV GEOTIFF_DIR
+              PATH_SUFFIXES lib lib64
+              NO_DEFAULT_PATH )
+find_library( GEOTIFF_LIBRARY NAMES geotiff )
 
-    FIND_PATH(GEOTIFF_INCLUDE_DIR geotiff.h PATH_PREFIXES geotiff 
-         PATHS /usr/local/include/libgeotiff /usr/include/libgeotiff)
+set( GEOTIFF_LIBRARIES    ${GEOTIFF_LIBRARY} )
+set( GEOTIFF_INCLUDE_DIRS ${GEOTIFF_INCLUDE_DIR} )
 
-    FIND_LIBRARY(GEOTIFF_LIBRARY NAMES ${GEOTIFF_NAMES})
+include(FindPackageHandleStandardArgs)
 
-
-IF(GEOTIFF_FOUND)
-  SET(GEOTIFF_LIBRARIES ${GEOTIFF_LIBRARY})
-ENDIF()
-
-# Handle the QUIET and REQUIRED arguments and set GEOTIFF_FOUND to TRUE
+# handle the QUIETLY and REQUIRED arguments and set GEOTIFF_FOUND to TRUE
 # if all listed variables are TRUE
-# Note: capitalisation of the package name must be the same as in the file name
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(GEOTiff DEFAULT_MSG GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR)
+find_package_handle_standard_args( GeoTIFF DEFAULT_MSG
+                                   GEOTIFF_LIBRARY GEOTIFF_INCLUDE_DIR )
+
+mark_as_advanced( GEOTIFF_INCLUDE_DIR GEOTIFF_LIBRARY )
