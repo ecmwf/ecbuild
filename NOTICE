@@ -10,9 +10,12 @@ Notice
    CMakeCheckCompilerFlagCommonPatterns are from CMake 3.7.0 and distributed
    under the BSD 3-Clause License.
 
-3. FindNetCDF4 macro is based on the macro FindNetCDF from project UCLALES from
+3. FindEigen3 is based on a macro from Montel Laurent and others and
+   distributed under the BSD 2-Clause License.
+
+4. FindNetCDF4 macro is based on the macro FindNetCDF from project UCLALES from
    Max-Planck-Institut für Meteorologie.
 
-4. GetGitRevisionDescription macros are based on the macro with smae name from
+5. GetGitRevisionDescription macros are based on the macro with smae name from
    Ryan Pavlik <rpavlik@iastate.edu> and  Iowa State University, and
    distributed under Boost license.
