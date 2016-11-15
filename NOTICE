@@ -21,3 +21,6 @@ Notice
 6. GetGitRevisionDescription macros are based on the macro with smae name from
    Ryan Pavlik <rpavlik@iastate.edu> and  Iowa State University, and
    distributed under Boost license.
+
+7. CMake modules from GreatCMakeCookOff are by University College London and
+   distributed under the MIT License (see the accompanying LICENSE file).
