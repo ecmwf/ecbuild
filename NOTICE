@@ -13,9 +13,11 @@ Notice
 3. FindEigen3 is based on a macro from Montel Laurent and others and
    distributed under the BSD 2-Clause License.
 
-4. FindNetCDF4 macro is based on the macro FindNetCDF from project UCLALES from
+4. FindNetCDF4 is based on the macro FindNetCDF from project UCLALES from
    Max-Planck-Institut für Meteorologie.
 
-5. GetGitRevisionDescription macros are based on the macro with smae name from
+5. FindNumPy is by Continuum Analytics and distributed under the MIT License.
+
+6. GetGitRevisionDescription macros are based on the macro with smae name from
    Ryan Pavlik <rpavlik@iastate.edu> and  Iowa State University, and
    distributed under Boost license.
