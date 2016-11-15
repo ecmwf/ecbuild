@@ -6,13 +6,13 @@ Notice
    As requested, the License text has been preserved. The modifications are
    governed by the Apache License as described in COPYING.
 
-2. GetGitRevisionDescription macros are based on the macro with smae name from
-   Ryan Pavlik <rpavlik@iastate.edu> and  Iowa State University, and
-   distributed under Boost license.
+2. CheckFortranCompilerFlag, CheckFortranSourceCompiles and
+   CMakeCheckCompilerFlagCommonPatterns are from CMake 3.7.0 and distributed
+   under the BSD 3-Clause License.
 
 3. FindNetCDF4 macro is based on the macro FindNetCDF from project UCLALES from
    Max-Planck-Institut für Meteorologie.
 
-4. CheckFortranCompilerFlag, CheckFortranSourceCompiles and
-   CMakeCheckCompilerFlagCommonPatterns are distributed from CMake 3.7.0 with
-   the original license headers preserved.
+4. GetGitRevisionDescription macros are based on the macro with smae name from
+   Ryan Pavlik <rpavlik@iastate.edu> and  Iowa State University, and
+   distributed under Boost license.
