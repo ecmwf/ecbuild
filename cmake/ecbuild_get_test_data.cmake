@@ -241,6 +241,7 @@ endfunction(ecbuild_get_test_data)
 #   ecbuild_get_test_multidata( NAMES <name1> [ <name2> ... ]
 #                               TARGET <target>
 #                               [ DIRNAME <dir> ]
+#                               [ LABELS <label1> [<label2> ...] ]
 #                               [ EXTRACT ]
 #                               [ NOCHECK ] )
 #
@@ -257,6 +258,14 @@ endfunction(ecbuild_get_test_data)
 #
 # DIRNAME : optional, defaults to <project>/<relative path to current dir>
 #   directory in which the test data resides
+#
+# LABELS : optional
+#   list of labels to assign to the test
+#
+#   Lower case project name and ``download_data`` are always added as labels.
+#
+#   This allows selecting tests to run via ``ctest -L <regex>`` or tests
+#   to exclude via ``ctest -LE <regex>``.
 #
 # EXTRACT : optional
 #   extract downloaded files (supported archives: tar, zip, tar.gz, tar.bz2)
@@ -303,7 +312,7 @@ function( ecbuild_get_test_multidata )
 
     set( options EXTRACT NOCHECK )
     set( single_value_args TARGET DIRNAME )
-    set( multi_value_args  NAMES )
+    set( multi_value_args  NAMES LABELS )
 
     cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -386,6 +395,9 @@ endfunction()\n\n" )
 
     if( ENABLE_TESTS )
       add_test(  NAME ${_p_TARGET} COMMAND ${CMAKE_COMMAND} -P ${_script} )
+      set( _p_LABELS ${PROJECT_NAME_LOWCASE} download_data ${_p_LABELS} )
+      list( REMOVE_DUPLICATES _p_LABELS )
+      set_property( TEST ${_p_TARGET} APPEND PROPERTY LABELS "${_p_LABELS}" )
     endif()
 
 endfunction(ecbuild_get_test_multidata)
