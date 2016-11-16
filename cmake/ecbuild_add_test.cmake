@@ -67,6 +67,8 @@
 # LABELS : optional
 #   list of labels to assign to the test
 #
+#   The project name in lower case is always added as a label.
+#
 #   This allows selecting tests to run via ``ctest -L <regex>`` or tests
 #   to exclude via ``ctest -LE <regex>``.
 #
@@ -445,9 +447,11 @@ macro( ecbuild_add_test )
 
       endif()
 
-      if( DEFINED _PAR_LABELS )
-        set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "${_PAR_LABELS}" )
-      endif()
+      # Add lower case project name to custom test labels
+      set( _PAR_LABELS ${PROJECT_NAME_LOWCASE} ${_PAR_LABELS} )
+      list( REMOVE_DUPLICATES _PAR_LABELS )
+      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): assign labels ${_PAR_LABELS}")
+      set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "${_PAR_LABELS}" )
 
       if( DEFINED _PAR_ENVIRONMENT )
         set_property( TEST ${_PAR_TARGET} APPEND PROPERTY ENVIRONMENT "${_PAR_ENVIRONMENT}" )
