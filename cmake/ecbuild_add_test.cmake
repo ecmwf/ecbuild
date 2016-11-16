@@ -67,7 +67,14 @@
 # LABELS : optional
 #   list of labels to assign to the test
 #
-#   The project name in lower case is always added as a label.
+#   The project name in lower case is always added as a label. Additional
+#   labels are assigned depending on the type of test:
+#
+#   :executable: for type ``EXE``
+#   :script:     for type ``SCRIPT``
+#   :python:     for type ``PYTHON``
+#   :mpi:        if ``MPI`` is set
+#   :openmp:     if ``OMP`` is set
 #
 #   This allows selecting tests to run via ``ctest -L <regex>`` or tests
 #   to exclude via ``ctest -LE <regex>``.
@@ -170,6 +177,7 @@ macro( ecbuild_add_test )
     if( MPIEXEC )
       set(MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING "Flag used by MPI to specify the number of processes for MPIEXEC")
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): Running using ${MPIEXEC} on ${_PAR_MPI} MPI rank(s)")
+      set( _PAR_LABELS mpi ${_PAR_LABELS} )
     elseif( _PAR_MPI GREATER 1 )
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${_PAR_MPI} MPI ranks requested but MPIEXEC not available - disabling test")
       set( _PAR_ENABLED 0 )
@@ -180,7 +188,9 @@ macro( ecbuild_add_test )
   endif()
 
   # Check for OMP
-  if( NOT DEFINED _PAR_OMP )
+  if( DEFINED _PAR_OMP )
+    set( _PAR_LABELS openmp ${_PAR_LABELS} )
+  else()
     set( _PAR_OMP 1 )
   endif()
   list( APPEND _PAR_ENVIRONMENT "OMP_NUM_THREADS=${_PAR_OMP}" )
@@ -197,11 +207,13 @@ macro( ecbuild_add_test )
   # command implies script
   if( DEFINED _PAR_COMMAND )
     set( _PAR_TYPE "SCRIPT" )
+    set( _PAR_LABELS script ${_PAR_LABELS} )
   endif()
 
   # default of TYPE
   if( NOT _PAR_TYPE AND DEFINED _PAR_TARGET )
     set( _PAR_TYPE "EXE" )
+    set( _PAR_LABELS executable ${_PAR_LABELS} )
     if( NOT _PAR_SOURCES )
       ecbuild_critical("The call to ecbuild_add_test() defines a TARGET without SOURCES.")
     endif()
@@ -210,6 +222,7 @@ macro( ecbuild_add_test )
   if( _PAR_TYPE MATCHES "PYTHON" )
     if( PYTHONINTERP_FOUND )
       set( _PAR_COMMAND ${PYTHON_EXECUTABLE} )
+      set( _PAR_LABELS python ${_PAR_LABELS} )
     else()
       ecbuild_warn( "Requested a python test but python interpreter not found - disabling test\nPYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
       set( _PAR_ENABLED 0 )
