@@ -62,7 +62,7 @@
 #
 ##############################################################################
 
-# Define colour escape sequences (https://stackoverflow.com/a/19578320/396967)
+# Define colour escape sequences (not available on Windows)
 if(NOT (WIN32 OR ECBUILD_NO_COLOUR))
   string(ASCII 27 Esc)
   set(ColourReset "${Esc}[m")

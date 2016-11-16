@@ -132,17 +132,16 @@ macro( ecbuild_add_option )
     set( _${_p_FEATURE}_condition TRUE )
   endif()
 
-  # check if user provided value
-
-  get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE )
+  # Check if user explicitly enabled/disabled the feature in cache
+  get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE SET )
 
   # A feature set to REQUIRE is always treated as explicitly enabled
   if( ENABLE_${_p_FEATURE} MATCHES "REQUIRE" )
     set( ENABLE_${_p_FEATURE} ON CACHE BOOL "" FORCE )
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was required")
     set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" FORCE )
-  elseif( NOT "${ENABLE_${_p_FEATURE}}" STREQUAL "" AND _in_cache )
-    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was found in cache")
+  elseif( NOT ENABLE_${_p_FEATURE} STREQUAL "" AND _in_cache )
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}} was found in cache")
     set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" )
   else()
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} not found in cache")
@@ -162,13 +161,9 @@ macro( ecbuild_add_option )
                           TYPE ${_p_TYPE}
                           PURPOSE "${_p_PURPOSE}" )
 
-  ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} = ${ENABLE_${_p_FEATURE}}")
-  set( _do_search ${ENABLE_${_p_FEATURE}} )
-  if( _p_FEATURE STREQUAL "OMP" )
-    set( _do_search TRUE )
-  endif()
+  ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
 
-  if( _do_search  )
+  if( ENABLE_${_p_FEATURE} )
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature enabled")
 
     set( HAVE_${_p_FEATURE} 1 )
@@ -304,13 +299,13 @@ macro( ecbuild_add_option )
 
     endif()
 
-  else( _do_search )
+  else()
 
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature disabled")
     set( HAVE_${_p_FEATURE} 0 )
     ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
 
-  endif( _do_search )
+  endif()
 
 
   if( ${_p_ADVANCED} )

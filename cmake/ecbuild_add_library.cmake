@@ -36,6 +36,7 @@
 #                        [ INSTALL_HEADERS_LIST <header1> [<header2> ...] ]
 #                        [ INSTALL_HEADERS_REGEX <pattern> ]
 #                        [ VERSION <version> | AUTO_VERSION ]
+#                        [ SOVERSION <soversion> | AUTO_SOVERSION ]
 #                        [ CFLAGS <flag1> [<flag2> ...] ]
 #                        [ CXXFLAGS <flag1> [<flag2> ...] ]
 #                        [ FFLAGS <flag1> [<flag2> ...] ]
@@ -123,10 +124,16 @@
 #   regular expression to match extra headers to install
 #
 # VERSION : optional, AUTO_VERSION or LIBS_VERSION is used if not specified
-#   version to use as library version
+#   build version of the library
 #
 # AUTO_VERSION : optional, ignored if VERSION is specified
-#   automatically version the library with the package version
+#   use MAJOR.MINOR package version as build version of the library
+#
+# SOVERSION : optional, AUTO_SOVERSION or LIBS_SOVERSION is used if not specified
+#   ABI version of the library
+#
+# AUTO_SOVERSION : optional, ignored if SOVERSION is specified
+#   use MAJOR package version as ABI version of the library
 #
 # CFLAGS : optional
 #   list of C compiler flags to use for all C source files
@@ -147,8 +154,8 @@
 
 function( ecbuild_add_library_impl )
 
-  set( options NOINSTALL AUTO_VERSION )
-  set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS INSTALL_HEADERS_REGEX LINKER_LANGUAGE HEADER_DESTINATION VERSION OUTPUT_NAME )
+  set( options NOINSTALL AUTO_VERSION AUTO_SOVERSION )
+  set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS INSTALL_HEADERS_REGEX LINKER_LANGUAGE HEADER_DESTINATION VERSION SOVERSION OUTPUT_NAME )
   set( multi_value_args  SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -330,16 +337,29 @@ function( ecbuild_add_library_impl )
 
     # define VERSION if requested
     if( DEFINED _PAR_VERSION )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set version to ${_PAR_VERSION}")
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set build version to ${_PAR_VERSION}")
       set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${_PAR_VERSION}" )
     else()
       if( _PAR_AUTO_VERSION OR LIBS_VERSION MATCHES "[Aa][Uu][Tt][Oo]")
-        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set version to ${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION} (auto)")
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set build version to ${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION} (auto)")
         set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}" )
-      endif()
-      if( LIBS_VERSION AND NOT LIBS_VERSION MATCHES "[Aa][Uu][Tt][Oo]" )
-        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set version to ${LIBS_VERSION}")
+      elseif( DEFINED LIBS_VERSION )
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set build version to ${LIBS_VERSION}")
         set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${LIBS_VERSION}" )
+      endif()
+    endif()
+
+    # define SOVERSION if requested
+    if( DEFINED _PAR_SOVERSION )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set ABI version to ${_PAR_SOVERSION}")
+      set_target_properties( ${_PAR_TARGET} PROPERTIES SOVERSION "${_PAR_SOVERSION}" )
+    else()
+      if( _PAR_AUTO_SOVERSION OR LIBS_SOVERSION MATCHES "[Aa][Uu][Tt][Oo]")
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set ABI version to ${${PNAME}_MAJOR_VERSION} (auto)")
+        set_target_properties( ${_PAR_TARGET} PROPERTIES SOVERSION "${${PNAME}_MAJOR_VERSION}" )
+      elseif( DEFINED LIBS_SOVERSION )
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): set ABI version to ${LIBS_SOVERSION}")
+        set_target_properties( ${_PAR_TARGET} PROPERTIES SOVERSION "${LIBS_SOVERSION}" )
       endif()
     endif()
 

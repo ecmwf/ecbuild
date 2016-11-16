@@ -19,6 +19,7 @@
 #                     [ OBJECTS <obj1> [<obj2> ...] ]
 #                     [ COMMAND <executable> ]
 #                     [ TYPE EXE|SCRIPT|PYTHON ]
+#                     [ LABELS <label1> [<label2> ...] ]
 #                     [ ARGS <argument1> [<argument2> ...] ]
 #                     [ RESOURCES <file1> [<file2> ...] ]
 #                     [ TEST_DATA <file1> [<file2> ...] ]
@@ -62,6 +63,22 @@
 #   :EXE:    run built executable, default if TARGET is provided
 #   :SCRIPT: run command or script, default if COMMAND is provided
 #   :PYTHON: run a Python script (requires the Python interpreter to be found)
+#
+# LABELS : optional
+#   list of labels to assign to the test
+#
+#   The project name in lower case is always added as a label. Additional
+#   labels are assigned depending on the type of test:
+#
+#   :executable: for type ``EXE``
+#   :script:     for type ``SCRIPT``
+#   :python:     for type ``PYTHON``
+#   :boost:      uses Boost unit test
+#   :mpi:        if ``MPI`` is set
+#   :openmp:     if ``OMP`` is set
+#
+#   This allows selecting tests to run via ``ctest -L <regex>`` or tests
+#   to exclude via ``ctest -LE <regex>``.
 #
 # ARGS : optional
 #   list of arguments to pass to TARGET or COMMAND when running the test
@@ -138,7 +155,7 @@ macro( ecbuild_add_test )
 
   set( options           BOOST )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI OMP WORKING_DIRECTORY )
-  set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS ARGS
+  set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS LABELS ARGS
                          PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS
                          CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
 
@@ -161,6 +178,7 @@ macro( ecbuild_add_test )
     if( MPIEXEC )
       set(MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING "Flag used by MPI to specify the number of processes for MPIEXEC")
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): Running using ${MPIEXEC} on ${_PAR_MPI} MPI rank(s)")
+      set( _PAR_LABELS mpi ${_PAR_LABELS} )
     elseif( _PAR_MPI GREATER 1 )
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${_PAR_MPI} MPI ranks requested but MPIEXEC not available - disabling test")
       set( _PAR_ENABLED 0 )
@@ -171,7 +189,9 @@ macro( ecbuild_add_test )
   endif()
 
   # Check for OMP
-  if( NOT DEFINED _PAR_OMP )
+  if( DEFINED _PAR_OMP )
+    set( _PAR_LABELS openmp ${_PAR_LABELS} )
+  else()
     set( _PAR_OMP 1 )
   endif()
   list( APPEND _PAR_ENVIRONMENT "OMP_NUM_THREADS=${_PAR_OMP}" )
@@ -188,11 +208,13 @@ macro( ecbuild_add_test )
   # command implies script
   if( DEFINED _PAR_COMMAND )
     set( _PAR_TYPE "SCRIPT" )
+    set( _PAR_LABELS script ${_PAR_LABELS} )
   endif()
 
   # default of TYPE
   if( NOT _PAR_TYPE AND DEFINED _PAR_TARGET )
     set( _PAR_TYPE "EXE" )
+    set( _PAR_LABELS executable ${_PAR_LABELS} )
     if( NOT _PAR_SOURCES )
       ecbuild_critical("The call to ecbuild_add_test() defines a TARGET without SOURCES.")
     endif()
@@ -201,6 +223,7 @@ macro( ecbuild_add_test )
   if( _PAR_TYPE MATCHES "PYTHON" )
     if( PYTHONINTERP_FOUND )
       set( _PAR_COMMAND ${PYTHON_EXECUTABLE} )
+      set( _PAR_LABELS python ${_PAR_LABELS} )
     else()
       ecbuild_warn( "Requested a python test but python interpreter not found - disabling test\nPYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
       set( _PAR_ENABLED 0 )
@@ -240,6 +263,7 @@ macro( ecbuild_add_test )
   if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
 
     if( HAVE_BOOST_UNIT_TEST )
+      set( _PAR_LABELS boost ${_PAR_LABELS} )
       if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
         include_directories( ${ECBUILD_BOOST_HEADER_DIRS} )
         include_directories( ${Boost_INCLUDE_DIRS}  ) # temporary until we ship Boost Unit Test with ecBuild
@@ -437,6 +461,12 @@ macro( ecbuild_add_test )
         list( APPEND _PAR_TEST_DEPENDS ${_PAR_TARGET}_data )
 
       endif()
+
+      # Add lower case project name to custom test labels
+      set( _PAR_LABELS ${PROJECT_NAME_LOWCASE} ${_PAR_LABELS} )
+      list( REMOVE_DUPLICATES _PAR_LABELS )
+      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): assign labels ${_PAR_LABELS}")
+      set_property( TEST ${_PAR_TARGET} APPEND PROPERTY LABELS "${_PAR_LABELS}" )
 
       if( DEFINED _PAR_ENVIRONMENT )
         set_property( TEST ${_PAR_TARGET} APPEND PROPERTY ENVIRONMENT "${_PAR_ENVIRONMENT}" )
