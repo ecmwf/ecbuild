@@ -14,7 +14,8 @@ Notice
    distributed under the BSD 2-Clause License.
 
 4. FindNetCDF4 is based on the macro FindNetCDF from project UCLALES from
-   Max-Planck-Institut für Meteorologie.
+   Max-Planck-Institut für Meteorologie and distributed under the Academic
+   Free License v3.0.
 
 5. FindNumPy is by Continuum Analytics and distributed under the MIT License.
 
