@@ -73,6 +73,7 @@
 #   :executable: for type ``EXE``
 #   :script:     for type ``SCRIPT``
 #   :python:     for type ``PYTHON``
+#   :boost:      uses Boost unit test
 #   :mpi:        if ``MPI`` is set
 #   :openmp:     if ``OMP`` is set
 #
@@ -262,6 +263,7 @@ macro( ecbuild_add_test )
   if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
 
     if( HAVE_BOOST_UNIT_TEST )
+      set( _PAR_LABELS boost ${_PAR_LABELS} )
       if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
         include_directories( ${ECBUILD_BOOST_HEADER_DIRS} )
         include_directories( ${Boost_INCLUDE_DIRS}  ) # temporary until we ship Boost Unit Test with ecBuild
