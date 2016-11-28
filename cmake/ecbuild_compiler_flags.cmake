@@ -200,6 +200,12 @@ foreach( _lang C CXX Fortran )
 endforeach()
 
 # Apply user or toolchain specified linker flag overrides per object type (NOT written to cache)
+foreach( _obj EXE SHARED MODULE )
+  if( ECBUILD_${_obj}_LINKER_FLAGS )
+    set( CMAKE_${_obj}_LINKER_FLAGS ${ECBUILD_${_obj}_LINKER_FLAGS} )
+  endif()
+endforeach()
+
 foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
 
   foreach( _obj EXE SHARED MODULE )
