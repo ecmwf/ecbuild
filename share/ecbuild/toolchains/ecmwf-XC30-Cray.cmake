@@ -39,3 +39,11 @@ set( ECBUILD_SHARED_LINKER_FLAGS "-Wl,--eh-frame-hdr -Ktrap=fp" )
 set( ECBUILD_MODULE_LINKER_FLAGS "-Wl,--eh-frame-hdr -Ktrap=fp -Wl,-Map,loadmap" )
 set( ECBUILD_EXE_LINKER_FLAGS    "-Wl,--eh-frame-hdr -Ktrap=fp -Wl,-Map,loadmap -Wl,--as-needed" )
 set( ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES "$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so" CACHE STRING "" )
+
+####################################################################
+# LIBRARIES
+####################################################################
+
+# Don't search for LAPACK as it is provided by the cray-libsci module which is
+# loaded by default
+set( LAPACK_FOUND $ENV{CRAY_LIBSCI_PREFIX_DIR} )

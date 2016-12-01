@@ -42,3 +42,11 @@ set( ECBUILD_Fortran_FLAGS_DEBUG  "-ffree-line-length-none -O0 -g -fcheck=bounds
 set( ECBUILD_SHARED_LINKER_FLAGS "-Wl,--eh-frame-hdr" )
 set( ECBUILD_MODULE_LINKER_FLAGS "-Wl,--eh-frame-hdr -Wl,-Map,loadmap" )
 set( ECBUILD_EXE_LINKER_FLAGS    "-Wl,--eh-frame-hdr -Wl,-Map,loadmap -Wl,--as-needed" )
+
+####################################################################
+# LIBRARIES
+####################################################################
+
+# Don't search for LAPACK as it is provided by the cray-libsci module which is
+# loaded by default
+set( LAPACK_FOUND $ENV{CRAY_LIBSCI_PREFIX_DIR} )
