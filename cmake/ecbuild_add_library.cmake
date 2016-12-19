@@ -536,7 +536,10 @@ macro( ecbuild_add_library )
         ecbuild_add_library_impl( TARGET ${_p_TARGET}        TYPE SHARED ${_p_UNPARSED_ARGUMENTS} )
         ecbuild_add_library_impl( TARGET ${_p_TARGET}-static TYPE STATIC ${_p_UNPARSED_ARGUMENTS} DEPENDS ${_p_TARGET} )
 
-        set_target_properties( ${_p_TARGET}-static PROPERTIES OUTPUT_NAME ${_p_TARGET} )
+        # If the library is built conditionally the target might not exist
+        if ( TARGET ${_p_TARGET}-static )
+          set_target_properties( ${_p_TARGET}-static PROPERTIES OUTPUT_NAME ${_p_TARGET} )
+        endif()
 
       else()
 
