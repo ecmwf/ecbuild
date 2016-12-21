@@ -239,8 +239,29 @@ function( ecbuild_add_library_impl )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
     endif()
 
-    add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
+    set( _use_cuda FALSE )
+    foreach( _source ${_PAR_SOURCES} )
+      get_filename_component( _ext ${_source} EXT )
+      if( _ext MATCHES "cu" )
+        set( _use_cuda TRUE )
+      endif()
+    endforeach()
 
+    if( _use_cuda )
+        if( NOT CUDA_FOUND )
+            ecbuild_error("ecbuild_add_library(${_PAR_TARGET}): CUDA source files detected"
+                          "but CUDA was not found.")
+        endif()
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): CUDA sources detected."
+                      "Building library with cuda_add_library() rather than intrinsic"
+                      "add_library().")
+    endif()
+
+    if( NOT _use_cuda )
+      add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
+    else()
+      cuda_add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
+    endif()
     # ecbuild_echo_target( ${_PAR_TARGET} )
 
     # set OUTPUT_NAME
