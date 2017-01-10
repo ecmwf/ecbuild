@@ -233,33 +233,3 @@ function( ecbuild_debug_env_var )
     endif()
   endforeach()
 endfunction()
-
-##############################################################################
-# macro for debugging a cmake variable
-
-macro( debug_var VAR )
-
-    message( WARNING "DEPRECATED debug_var() -- ${VAR} [${${VAR}}]" )
-
-endmacro()
-
-##############################################################################
-# macro for debugging a cmake list
-
-macro( debug_list VAR )
-
-    message( WARNING "DEPRECATED debug_list() -- ${VAR}:" )
-    foreach( _elem ${${VAR}} )
-      message( WARNING "  ${_elem}" )
-    endforeach()
-
-endmacro()
-
-##############################################################################
-# macro for debugging a environment variable within cmake
-
-macro( debug_env_var VAR )
-
-    message( WARNING "DEPRECATED debug_env_var() -- ENV ${VAR} [$ENV{${VAR}}]" )
-
-endmacro()
