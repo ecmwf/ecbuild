@@ -17,7 +17,6 @@
 #   ecbuild_add_option( FEATURE <name>
 #                       [ DEFAULT ON|OFF ]
 #                       [ DESCRIPTION <description> ]
-#                       [ PURPOSE <purpose> ]
 #                       [ REQUIRED_PACKAGES <package1> [<package2> ...] ]
 #                       [ CONDITION <condition> ]
 #                       [ ADVANCED ] [ NO_TPL ] )
@@ -33,12 +32,6 @@
 #
 # DESCRIPTION : optional
 #   string describing the feature (shown in summary and stored in the cache)
-#
-# TYPE : optional, one of RUNTIME|OPTIONAL|RECOMMENDED|REQUIRED
-#   type of dependency of the project on this package (defaults to OPTIONAL)
-#
-# PURPOSE : optional
-#   string describing which functionality this package enables in the project
 #
 # REQUIRED_PACKAGES : optional
 #   list of packages required to be found for this feature to be enabled
@@ -114,8 +107,11 @@ macro( ecbuild_add_option )
   endif()
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defaults to ${_p_DEFAULT}")
 
-  if( NOT _p_TYPE  )
-    set( _p_TYPE OPTIONAL )
+  if( _p_PURPOSE  )
+    ecbuild_deprecate( "ecbuild_add_option: argument PURPOSE is ignored and will be removed in a future release." )
+  endif()
+  if( _p_TYPE  )
+    ecbuild_deprecate( "ecbuild_add_option: argument TYPE is ignored and will be removed in a future release." )
   endif()
 
   # check CONDITION parameter
@@ -156,10 +152,6 @@ macro( ecbuild_add_option )
   option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defining option ENABLE_${_p_FEATURE} '${_p_DESCRIPTION}' ${_p_DEFAULT}")
   ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT} )
-  set_package_properties( ${_p_FEATURE} PROPERTIES
-                          DESCRIPTION "${_p_DESCRIPTION}"
-                          TYPE ${_p_TYPE}
-                          PURPOSE "${_p_PURPOSE}" )
 
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
 
