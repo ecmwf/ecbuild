@@ -27,9 +27,10 @@
 # Furthermore there are auxilliary functions for outputting CMake variables,
 # CMake lists and environment variables if the log level is ``DEBUG``:
 #
-# :ecbuild_debug_var:     logs given CMake variables if log level <= ``DEBUG``
-# :ecbuild_debug_list:    logs given CMake lists if log level <= ``DEBUG``
-# :ecbuild_debug_env_var: logs given environment variables if log level <= ``DEBUG``
+# :ecbuild_debug_var:      logs given CMake variables if log level <= ``DEBUG``
+# :ecbuild_debug_list:     logs given CMake lists if log level <= ``DEBUG``
+# :ecbuild_debug_env_var:  logs given environment variables if log level <= ``DEBUG``
+# :ecbuild_debug_property: logs given global CMake property if log level <= ``DEBUG``
 #
 # To log a message to the ecBuild log file only at a given log level, use ::
 #
@@ -230,6 +231,19 @@ function( ecbuild_debug_env_var )
     ecbuild_log(DEBUG "ENV ${VAR} : $ENV{${VAR}}")
     if( ECBUILD_LOG_LEVEL LESS 11)
       message(STATUS "${Blue}DEBUG - ENV ${VAR} [$ENV{${VAR}}]${ColourReset}")
+    endif()
+  endforeach()
+endfunction()
+
+##############################################################################
+# function for debugging a CMake global property
+
+function( ecbuild_debug_property )
+  foreach( VAR ${ARGV} )
+    get_property( __prop GLOBAL PROPERTY ${VAR} )
+    ecbuild_log(DEBUG "PROPERTY ${VAR} : ${__prop}")
+    if( ECBUILD_LOG_LEVEL LESS 11)
+      message(STATUS "${Blue}DEBUG - PROPERTY ${VAR} [${__prop}]${ColourReset}")
     endif()
   endforeach()
 endfunction()
