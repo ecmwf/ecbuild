@@ -63,6 +63,11 @@ macro( ecbuild_enable_fortran )
       include(FortranCInterface)
     endif()
     set( EC_HAVE_FORTRAN 1 )
+   
+    if( CMAKE_Fortran_COMPILER_ID MATCHES PGI )
+      unset( CMAKE_Fortran_COMPILE_OPTIONS_PIE )
+      unset( CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS )
+    endif()
   endif()
 
   if( DEFINED _PAR_MODULE_DIRECTORY )
