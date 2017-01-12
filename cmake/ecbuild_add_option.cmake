@@ -180,6 +180,11 @@ macro( ecbuild_add_option )
         if( pkgname STREQUAL "PROJECT" )  # if 1st entry is PROJECT, then we are looking for a ecbuild project
           set( pkgproject 1 )
           list( GET pkglist 1 pkgname )
+          # Use feature description as package description if there is none
+          list( FIND pkglist DESCRIPTION __description )
+          if( __description LESS 0 )
+            list( APPEND pkglist DESCRIPTION "${_p_DESCRIPTION}" )
+          endif()
         else()                            # else 1st entry is package name
           set( pkgproject 0 )
         endif()
