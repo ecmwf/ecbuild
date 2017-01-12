@@ -92,11 +92,11 @@ function( ecbuild_separate_sources )
 
     set_source_files_properties( ${${_PAR_TARGET}_fortran_srcs} PROPERTIES LANGUAGE Fortran )
 
-    set( ${_PAR_TARGET}_h_srcs       ${${_PAR_TARGET}_h_srcs}       PARENT_SCOPE )
-    set( ${_PAR_TARGET}_c_srcs       ${${_PAR_TARGET}_c_srcs}       PARENT_SCOPE )
-    set( ${_PAR_TARGET}_cxx_srcs     ${${_PAR_TARGET}_cxx_srcs}     PARENT_SCOPE )
-    set( ${_PAR_TARGET}_fortran_srcs ${${_PAR_TARGET}_fortran_srcs} PARENT_SCOPE )
-    set( ${_PAR_TARGET}_cuda_srcs    ${${_PAR_TARGET}_cuda_srcs}    PARENT_SCOPE )
+    set( ${_PAR_TARGET}_h_srcs       "${${_PAR_TARGET}_h_srcs}"       PARENT_SCOPE )
+    set( ${_PAR_TARGET}_c_srcs       "${${_PAR_TARGET}_c_srcs}"       PARENT_SCOPE )
+    set( ${_PAR_TARGET}_cxx_srcs     "${${_PAR_TARGET}_cxx_srcs}"     PARENT_SCOPE )
+    set( ${_PAR_TARGET}_fortran_srcs "${${_PAR_TARGET}_fortran_srcs}" PARENT_SCOPE )
+    set( ${_PAR_TARGET}_cuda_srcs    "${${_PAR_TARGET}_cuda_srcs}"    PARENT_SCOPE )
 
 
 endfunction( ecbuild_separate_sources )
