@@ -37,6 +37,7 @@
 # :<target>_cxx_srcs:     source files with extension .cc, .cxx, .cpp, .C
 # :<target>_fortran_srcs: source files with extension .f, .F, .for, f77, .f90,
 #                                                     .f95, .F77, .F90, .F95
+# :<target>_cuda_srcs:    source files with extension .cu
 #
 ##############################################################################
 
