@@ -269,14 +269,17 @@ macro( ecbuild_add_option )
       set( HAVE_${_p_FEATURE} 0 )
     endif( _${_p_FEATURE}_condition )
 
-    ecbuild_set_feature( ${_p_FEATURE} ENABLED ${HAVE_${_p_FEATURE}} )
     # FINAL CHECK
 
     if( HAVE_${_p_FEATURE} )
 
+      ecbuild_enable_feature( ${_p_FEATURE} )
+
       ecbuild_info( "Feature ${_p_FEATURE} enabled" )
 
     else() # if user provided input and we cannot satisfy FAIL otherwise WARN
+
+      ecbuild_disable_feature( ${_p_FEATURE} )
 
       if( ${_p_FEATURE}_user_provided_input )
         if( NOT _${_p_FEATURE}_condition )
@@ -293,7 +296,7 @@ macro( ecbuild_add_option )
           ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
         endif()
         set( ENABLE_${_p_FEATURE} OFF )
-        ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
+        ecbuild_disable_feature( ${_p_FEATURE} )
       endif()
 
     endif()
@@ -302,7 +305,7 @@ macro( ecbuild_add_option )
 
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature disabled")
     set( HAVE_${_p_FEATURE} 0 )
-    ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
+    ecbuild_disable_feature( ${_p_FEATURE} )
 
   endif()
 
