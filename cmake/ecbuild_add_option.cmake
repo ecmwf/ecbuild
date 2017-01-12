@@ -150,7 +150,12 @@ macro( ecbuild_add_option )
   # define the option -- for cmake GUI
 
   option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
-  add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" )
+  get_property( _feature_desc GLOBAL PROPERTY _CMAKE_${_p_FEATURE}_DESCRIPTION )
+  if( _feature_desc )
+    add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_feature_desc}, ${PROJECT_NAME}: ${_p_DESCRIPTION}" )
+  else()
+    add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${PROJECT_NAME}: ${_p_DESCRIPTION}" )
+  endif()
 
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defining option ENABLE_${_p_FEATURE} '${_p_DESCRIPTION}' ${_p_DEFAULT}")
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
