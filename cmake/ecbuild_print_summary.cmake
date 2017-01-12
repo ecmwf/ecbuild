@@ -89,16 +89,22 @@ macro( ecbuild_print_summary )
 
     ecbuild_info( "common definitions: ${defs}" )
 
-    ecbuild_info( "---------------------------------------------------------" )
-
     ### FEATURE SUMMARY
 
-    # ecbuild_debug_var( CMAKE_VERSION )
+    ecbuild_info( "---------------------------------------------------------" )
+    ecbuild_info( "Feature summary" )
+    ecbuild_info( "---------------------------------------------------------" )
+
     if( ${CMAKE_VERSION} VERSION_LESS "2.8.6" )
-      feature_summary( WHAT ALL )
+      set( __what ALL )
     else()
-      feature_summary( WHAT ALL INCLUDE_QUIET_PACKAGES )
+      set( __what ALL INCLUDE_QUIET_PACKAGES )
     endif()
+
+    # Print feature summary
+    feature_summary( WHAT ${__what} )
+    # Write feature summary to ecbuild.log
+    feature_summary( WHAT ${__what} FILENAME ${ECBUILD_LOG_FILE} APPEND )
 
     ### WARNINGS
 

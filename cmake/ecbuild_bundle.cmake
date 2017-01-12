@@ -165,13 +165,30 @@ endmacro()
 #
 #   ecbuild_bundle_finalize()
 #
+# Options
+# -------
+#
+# See documentation for ecbuild_install_project() since all arguments are
+# forwarded to an internal call to that macro.
+#
+# If no arguments are passed, then the default installation NAME is set to
+# the default project name ${CMAKE_PROJECT_NAME}
+#
 ##############################################################################
 
 macro( ecbuild_bundle_finalize )
 
   add_custom_target( update DEPENDS ${git_update_targets} )
 
-  ecbuild_install_project( NAME ${CMAKE_PROJECT_NAME} )
+  ecbuild_info("---------------------------------------------------------")
+  ecbuild_info("Bundle ${CMAKE_PROJECT_NAME}")
+  ecbuild_info("---------------------------------------------------------")
+
+  if("${ARGV1}")
+      ecbuild_install_project( ${ARGV} )
+  else()
+      ecbuild_install_project( NAME ${CMAKE_PROJECT_NAME} )
+  endif()
 
   ecbuild_print_summary()
 
