@@ -40,7 +40,7 @@
 #
 ##############################################################################
 
-macro( ecbuild_separate_sources )
+function( ecbuild_separate_sources )
 
 	set( options )
 	set( single_value_args TARGET  )
@@ -83,11 +83,20 @@ macro( ecbuild_separate_sources )
 			list( APPEND ${_PAR_TARGET}_fortran_srcs ${src} )
 		endif()
 	endforeach()
-	set_source_files_properties( ${${_PAR_TARGET}_fortran_srcs} PROPERTIES LANGUAGE Fortran )
 
-#    ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
-#    ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
-#    ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
-#    ecbuild_debug_var( ${_PAR_TARGET}_fortran_srcs )
+    foreach( src ${_PAR_SOURCES} )
+        if(${src} MATCHES "(\\.cu$)")
+            list( APPEND ${_PAR_TARGET}_cuda_srcs ${src} )
+        endif()
+    endforeach()
 
-endmacro( ecbuild_separate_sources )
+    set_source_files_properties( ${${_PAR_TARGET}_fortran_srcs} PROPERTIES LANGUAGE Fortran )
+
+    set( ${_PAR_TARGET}_h_srcs       ${${_PAR_TARGET}_h_srcs}       PARENT_SCOPE )
+    set( ${_PAR_TARGET}_c_srcs       ${${_PAR_TARGET}_c_srcs}       PARENT_SCOPE )
+    set( ${_PAR_TARGET}_cxx_srcs     ${${_PAR_TARGET}_cxx_srcs}     PARENT_SCOPE )
+    set( ${_PAR_TARGET}_fortran_srcs ${${_PAR_TARGET}_fortran_srcs} PARENT_SCOPE )
+    set( ${_PAR_TARGET}_cuda_srcs    ${${_PAR_TARGET}_cuda_srcs}    PARENT_SCOPE )
+
+
+endfunction( ecbuild_separate_sources )
