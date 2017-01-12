@@ -16,6 +16,10 @@
 #
 #   ecbuild_use_package( PROJECT <name>
 #                        [ VERSION <version> [ EXACT ] ]
+#                        [ URL <url> ]
+#                        [ DESCRIPTION <description> ]
+#                        [ TYPE <type> ]
+#                        [ PURPOSE <purpose> ]
 #                        [ REQUIRED ]
 #                        [ QUIET ] )
 #
@@ -30,6 +34,18 @@
 #
 # EXACT : optional, requires VERSION
 #   require the exact version rather than a minimum version
+#
+# URL : optional
+#   homepage of the package (shown in summary and stored in the cache)
+#
+# DESCRIPTION : optional
+#   string describing the package (shown in summary and stored in the cache)
+#
+# TYPE : optional, one of RUNTIME|OPTIONAL|RECOMMENDED|REQUIRED
+#   type of dependency of the project on this package (defaults to OPTIONAL)
+#
+# PURPOSE : optional
+#   string describing which functionality this package enables in the project
 #
 # REQUIRED : optional
 #   fail if package cannot be found
@@ -81,7 +97,7 @@
 macro( ecbuild_use_package )
 
   set( options            REQUIRED QUIET EXACT )
-  set( single_value_args  PROJECT VERSION )
+  set( single_value_args  PROJECT VERSION URL DESCRIPTION TYPE PURPOSE )
   set( multi_value_args )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -96,6 +112,12 @@ macro( ecbuild_use_package )
 
   if( _p_EXACT AND NOT _p_VERSION )
     ecbuild_critical("Call to ecbuild_use_package() requests EXACT but doesn't specify VERSION.")
+  endif()
+
+  # If the package is required, set TYPE to REQUIRED
+  # Due to shortcomings in CMake's argument parser, passing TYPE REQUIRED has no effect
+  if( _p_REQUIRED )
+    set( _p_TYPE REQUIRED )
   endif()
 
   # try to find the package as a subproject and build it
@@ -252,7 +274,16 @@ macro( ecbuild_use_package )
   # Case 4) is NOT FOUND so far, NOT as sub-project (now or before), and NOT as binary neither
   #         so try to find precompiled binaries or a build tree
 
-  if( NOT ${pkgUPPER}_FOUND )
+  if( ${pkgUPPER}_FOUND )
+    # Only set package properties if ecbuild_find_package, which itself calls
+    # set_package_properties, is not subsequently called since doing so would
+    # duplicate the purpose
+    set_package_properties( ${_p_PROJECT} PROPERTIES
+                            URL "${_p_URL}"
+                            DESCRIPTION "${_p_DESCRIPTION}"
+                            TYPE "${_p_TYPE}"
+                            PURPOSE "${_p_PURPOSE}" )
+  else()
 
     ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 4) project has NOT been added as a subproject and is NOT already FOUND")
 
@@ -265,6 +296,18 @@ macro( ecbuild_use_package )
     endif()
     if( _p_REQUIRED )
       list( APPEND _opts REQUIRED )
+    endif()
+    if( _p_URL )
+      list( APPEND _opts URL ${_p_URL} )
+    endif()
+    if( _p_DESCRIPTION )
+      list( APPEND _opts DESCRIPTION "${_p_DESCRIPTION}" )
+    endif()
+    if( _p_TYPE )
+      list( APPEND _opts TYPE ${_p_TYPE} )
+    endif()
+    if( _p_PURPOSE )
+      list( APPEND _opts PURPOSE "${_p_PURPOSE}" )
     endif()
 
     ecbuild_find_package( NAME ${_p_PROJECT} ${_opts} )
