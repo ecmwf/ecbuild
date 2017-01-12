@@ -17,6 +17,10 @@
 #   ecbuild_find_package( NAME <name>
 #                         [ VERSION <version> [ EXACT ] ]
 #                         [ COMPONENTS <component1> [ <component2> ... ] ]
+#                         [ URL <url> ]
+#                         [ DESCRIPTION <description> ]
+#                         [ TYPE <type> ]
+#                         [ PURPOSE <purpose> ]
 #                         [ REQUIRED ]
 #                         [ QUIET ] )
 #
@@ -34,6 +38,18 @@
 #
 # EXACT : optional, requires VERSION
 #   require the exact version rather than a minimum version
+#
+# URL : optional
+#   homepage of the package (shown in summary and stored in the cache)
+#
+# DESCRIPTION : optional
+#   string describing the package (shown in summary and stored in the cache)
+#
+# TYPE : optional, one of RUNTIME|OPTIONAL|RECOMMENDED|REQUIRED
+#   type of dependency of the project on this package (defaults to OPTIONAL)
+#
+# PURPOSE : optional
+#   string describing which functionality this package enables in the project
 #
 # REQUIRED : optional
 #   fail if package cannot be found
@@ -86,7 +102,7 @@
 macro( ecbuild_find_package )
 
   set( options REQUIRED QUIET EXACT )
-  set( single_value_args NAME VERSION )
+  set( single_value_args NAME VERSION URL DESCRIPTION TYPE PURPOSE )
   set( multi_value_args COMPONENTS )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -101,6 +117,12 @@ macro( ecbuild_find_package )
 
   if( _PAR_EXACT AND NOT _PAR_VERSION )
     ecbuild_critical("Call to ecbuild_find_package() requests EXACT but doesn't specify VERSION.")
+  endif()
+
+  # If the package is required, set TYPE to REQUIRED
+  # Due to shortcomings in CMake's argument parser, passing TYPE REQUIRED has no effect
+  if( _PAR_REQUIRED )
+    set( _PAR_TYPE REQUIRED )
   endif()
 
   # ecbuild_debug_var( _PAR_NAME )
@@ -302,6 +324,7 @@ macro( ecbuild_find_package )
     )
 
   if( ${_PAR_NAME}_FOUND OR ${pkgUPPER}_FOUND )
+
     if( NOT _PAR_QUIET )
       ecbuild_info( "[${_PAR_NAME}] (${${_PAR_NAME}_VERSION})" )
       foreach( var in ITEMS INCLUDE_DIR INCLUDE_DIRS DEFINITIONS LIBRARY LIBRARIES )
@@ -312,7 +335,15 @@ macro( ecbuild_find_package )
         endif()
       endforeach()
     endif()
+
+    set_package_properties( ${_PAR_NAME} PROPERTIES
+                            URL "${_PAR_URL}"
+                            DESCRIPTION "${_PAR_DESCRIPTION}"
+                            TYPE "${_PAR_TYPE}"
+                            PURPOSE "${_PAR_PURPOSE}" )
+
   else()
+
     if( _PAR_REQUIRED )
       ecbuild_critical( ${_failed_message} " !! ${PROJECT_NAME} requires package ${_PAR_NAME} !!" )
     else()
@@ -320,6 +351,7 @@ macro( ecbuild_find_package )
         ecbuild_warn( ${_failed_message} )
       endif()
     endif()
+
   endif()
 
 endmacro()
