@@ -52,6 +52,12 @@
 #   The entire specification must be enclosed in quotes and is passed on
 #   verbatim. Any options of ``ecbuild_use_package`` are supported.
 #
+#   .. note::
+#
+#     Arguments inside the package string that require quoting need to use the
+#     `bracket argument syntax`_ introduced in CMake 3.0 since
+#     regular quotes even when escaped are swallowed by the CMake parser.
+#
 # CONDITION : optional
 #   conditional expression which must evaluate to true for this option to be
 #   enabled (must be valid in a CMake ``if`` statement)
@@ -75,6 +81,8 @@
 # configuration fails. This only applies when configuring from *clean cache*.
 # With an already populated cache, use ``-DENABLE_<FEATURE>=REQUIRE`` to make
 # the feature a required feature (this cannot be done via the CMake GUI).
+#
+# .. _bracket argument syntax: https://cmake.org/cmake/help/latest/manual/cmake-language.7.html#bracket-argument
 #
 ##############################################################################
 
