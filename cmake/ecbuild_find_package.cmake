@@ -21,6 +21,7 @@
 #                         [ DESCRIPTION <description> ]
 #                         [ TYPE <type> ]
 #                         [ PURPOSE <purpose> ]
+#                         [ FAILURE_MSG <message> ]
 #                         [ REQUIRED ]
 #                         [ QUIET ] )
 #
@@ -50,6 +51,9 @@
 #
 # PURPOSE : optional
 #   string describing which functionality this package enables in the project
+#
+# FAILURE_MSG : optional
+#   string to be appended to the failure message if the package is not found
 #
 # REQUIRED : optional
 #   fail if package cannot be found
@@ -102,7 +106,7 @@
 macro( ecbuild_find_package )
 
   set( options REQUIRED QUIET EXACT )
-  set( single_value_args NAME VERSION URL DESCRIPTION TYPE PURPOSE )
+  set( single_value_args NAME VERSION URL DESCRIPTION TYPE PURPOSE FAILURE_MSG )
   set( multi_value_args COMPONENTS )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -311,16 +315,13 @@ macro( ecbuild_find_package )
   ### final messages
 
   set( _failed_message
-    "\n"
     "  ${PROJECT_NAME} FAILED to find package ${_PAR_NAME}\n"
-    "\n"
     "    Provide location with \"-D${pkgUPPER}_PATH=/...\" or \"-D${_PAR_NAME}_DIR=/...\" \n"
     "    You may also export environment variables ${pkgUPPER}_PATH or ${_PAR_NAME}_DIR\n"
-    "\n"
     "  Values (note CAPITALISATION):\n"
     "    ${pkgUPPER}_PATH should contain the path to the install prefix (as in <install>/bin <install>/lib <install>/include)\n"
     "    ${_PAR_NAME}_DIR should be a directory containing a <package>-config.cmake file (usually <install>/share/<package>/cmake)\n"
-    "\n"
+    "${_PAR_FAILURE_MSG}"
     )
 
   if( ${_PAR_NAME}_FOUND OR ${pkgUPPER}_FOUND )
@@ -345,7 +346,7 @@ macro( ecbuild_find_package )
   else()
 
     if( _PAR_REQUIRED )
-      ecbuild_critical( ${_failed_message} " !! ${PROJECT_NAME} requires package ${_PAR_NAME} !!" )
+      ecbuild_critical( "${_failed_message}\n!! ${PROJECT_NAME} requires package ${_PAR_NAME} !!" )
     else()
       if( NOT _PAR_QUIET )
         ecbuild_warn( ${_failed_message} )
