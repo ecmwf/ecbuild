@@ -78,7 +78,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
       ecbuild_info( "cache     ${ECBUILD_CACHE}" )
     endif()
 
-    message( STATUS "---------------------------------------------------------" )
+    ecbuild_info( "---------------------------------------------------------" )
 
     # clear the build dir exported targets file (only on the top project)
 
@@ -250,7 +250,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
         set( EC_BUILD_TIMESTAMP  "${EC_BUILD_TIMESTAMP}" CACHE INTERNAL "Build timestamp" )
     endif()
 
-    message( STATUS "---------------------------------------------------------" )
+    ecbuild_info( "---------------------------------------------------------" )
 
 else()
 
@@ -259,7 +259,7 @@ else()
     # or
     #     set( ECBUILD_CONFIG "<subproject-config>.cmake" )
     if( ECBUILD_CONFIG )
-        message( STATUS "---------------------------------------------------------" )
+        ecbuild_info( "---------------------------------------------------------" )
         ecbuild_info( "config    ${ECBUILD_CONFIG}" )
         include( ${ECBUILD_CONFIG} )
     endif()
