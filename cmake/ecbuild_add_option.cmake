@@ -183,6 +183,7 @@ macro( ecbuild_add_option )
           # Use feature description as package description if there is none
           list( FIND pkglist DESCRIPTION __description )
           if( __description LESS 0 )
+            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): no description for ${pkgname}, using feature description '${_p_DESCRIPTION}'")
             list( APPEND pkglist DESCRIPTION "${_p_DESCRIPTION}" )
           endif()
         else()                            # else 1st entry is package name
