@@ -62,6 +62,12 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # Include log macros since these are used right away
     include( ecbuild_log )
 
+    execute_process( COMMAND env OUTPUT_VARIABLE __env )
+    ecbuild_debug( "---------------------------------------------------------" )
+    ecbuild_debug( "Environment:" )
+    ecbuild_debug( "---------------------------------------------------------\n${__env}" )
+    ecbuild_debug( "---------------------------------------------------------" )
+
     ecbuild_info( "ecbuild   ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
     ecbuild_info( "cmake     ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
 
