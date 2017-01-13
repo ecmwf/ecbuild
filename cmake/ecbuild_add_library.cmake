@@ -200,6 +200,26 @@ function( ecbuild_add_library_impl )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): library type is ${_PAR_TYPE}")
     endif()
 
+    # insert already compiled objects (from OBJECT libraries)
+    unset( _all_objects )
+    foreach( _obj ${_PAR_OBJECTS} )
+      list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
+    endforeach()
+
+    # glob sources
+    unset( _glob_srcs )
+    foreach( pattern ${_PAR_SOURCES_GLOB} )
+      ecbuild_list_add_pattern( LIST _glob_srcs GLOB "${pattern}" )
+    endforeach()
+
+    foreach( pattern ${_PAR_SOURCES_EXCLUDE_REGEX} )
+      ecbuild_list_exclude_pattern( LIST _glob_srcs REGEX "${pattern}" )
+    endforeach()
+    list( APPEND _PAR_SOURCES ${_glob_srcs} )
+
+    if( ECBUILD_LIST_SOURCES )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
+    endif()
 
     # add persistent layer files
     if( DEFINED _PAR_PERSISTENT )
@@ -217,30 +237,30 @@ function( ecbuild_add_library_impl )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
-    # glob sources
-    unset( _glob_srcs )
-    foreach( pattern ${_PAR_SOURCES_GLOB} )
-        ecbuild_list_add_pattern( LIST _glob_srcs GLOB "${pattern}" )
-    endforeach()
-
-    foreach( pattern ${_PAR_SOURCES_EXCLUDE_REGEX} )
-        ecbuild_list_exclude_pattern( LIST _glob_srcs REGEX "${pattern}" )
-    endforeach()
-
-    # insert already compiled objects (from OBJECT libraries)
-    unset( _all_objects )
-    foreach( _obj ${_PAR_OBJECTS} )
-      list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
-    endforeach()
-
-    list( APPEND _PAR_SOURCES ${_glob_srcs} )
-
-    if( ECBUILD_LIST_SOURCES )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
+    # Separate sources
+    if( _PAR_SOURCES )
+      ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
     endif()
 
-    add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
+    if( ${_PAR_TARGET}_cuda_srcs )
+      if( NOT CUDA_FOUND )
+          ecbuild_error("ecbuild_add_library(${_PAR_TARGET}): CUDA source files detected"
+                        "but CUDA was not found.")
+      endif()
+      if( _PAR_TYPE MATCHES "OBJECT" )
+          ecbuild_error("ecbuild_add_library(${_PAR_TARGET}): CUDA source files detected"
+                        "but CMake OBJECT libraries with CUDA are not supported.")
+      endif()
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): CUDA sources detected."
+                    "Building library with cuda_add_library() rather than intrinsic"
+                    "add_library().")
+    endif()
 
+    if( NOT ${_PAR_TARGET}_cuda_srcs )
+      add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
+    else()
+      cuda_add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
+    endif()
     # ecbuild_echo_target( ${_PAR_TARGET} )
 
     # set OUTPUT_NAME
@@ -362,17 +382,6 @@ function( ecbuild_add_library_impl )
         set_target_properties( ${_PAR_TARGET} PROPERTIES SOVERSION "${LIBS_SOVERSION}" )
       endif()
     endif()
-
-    # filter sources
-
-    if( _PAR_SOURCES )
-      ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
-    endif()
-
-    #   ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
-    #   ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
-    #   ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
-    #   ecbuild_debug_var( ${_PAR_TARGET}_fortran_srcs )
 
     # Override compilation flags on a per source file basis
     ecbuild_target_flags( ${_PAR_TARGET} "${_PAR_CFLAGS}" "${_PAR_CXXFLAGS}" "${_PAR_FFLAGS}" )
