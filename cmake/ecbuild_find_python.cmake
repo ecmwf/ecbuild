@@ -95,6 +95,10 @@ function( ecbuild_find_python )
       endif()
     endif()
 
+    set_package_properties( PythonInterp PROPERTIES
+                            URL http://python.org
+                            DESCRIPTION "Python interpreter" )
+
     set( __required_vars PYTHONINTERP_FOUND )
 
     if( PYTHONINTERP_FOUND )
@@ -197,6 +201,10 @@ function( ecbuild_find_python )
             ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using find_package( PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH} ${_p_REQUIRED} )" )
 
             find_package( PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" ${_p_REQUIRED} )
+
+            set_package_properties( PythonLibs PROPERTIES
+                                    URL http://python.org
+                                    DESCRIPTION "Python library and header" )
 
         endif()
 
