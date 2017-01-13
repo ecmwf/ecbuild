@@ -20,6 +20,7 @@
 #                        [ DESCRIPTION <description> ]
 #                        [ TYPE <type> ]
 #                        [ PURPOSE <purpose> ]
+#                        [ FAILURE_MSG <message> ]
 #                        [ REQUIRED ]
 #                        [ QUIET ] )
 #
@@ -46,6 +47,9 @@
 #
 # PURPOSE : optional
 #   string describing which functionality this package enables in the project
+#
+# FAILURE_MSG : optional
+#   string to be appended to the failure message if the package is not found
 #
 # REQUIRED : optional
 #   fail if package cannot be found
@@ -97,7 +101,7 @@
 macro( ecbuild_use_package )
 
   set( options            REQUIRED QUIET EXACT )
-  set( single_value_args  PROJECT VERSION URL DESCRIPTION TYPE PURPOSE )
+  set( single_value_args  PROJECT VERSION URL DESCRIPTION TYPE PURPOSE FAILURE_MSG )
   set( multi_value_args )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -308,6 +312,10 @@ macro( ecbuild_use_package )
     endif()
     if( _p_PURPOSE )
       list( APPEND _opts PURPOSE "${_p_PURPOSE}" )
+    endif()
+    if( _p_FAILURE_MSG )
+      ecbuild_debug_var( _p_FAILURE_MSG )
+      list( APPEND _opts FAILURE_MSG "${_p_FAILURE_MSG}" )
     endif()
 
     ecbuild_find_package( NAME ${_p_PROJECT} ${_opts} )
