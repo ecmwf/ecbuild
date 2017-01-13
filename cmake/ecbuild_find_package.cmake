@@ -213,10 +213,10 @@ macro( ecbuild_find_package )
 
     if( NOT ${_PAR_NAME}_FOUND )
       if( ${_PAR_NAME}_PATH )
-        ecbuild_critical( "${_PAR_NAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found" )
+        ecbuild_critical( "${_PAR_NAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found at '${${_PAR_NAME}_PATH}'" )
       endif()
       if( ${pkgUPPER}_PATH )
-        ecbuild_critical( "${pkgUPPER}_PATH was provided by user but package ${_PAR_NAME} wasn't found" )
+        ecbuild_critical( "${pkgUPPER}_PATH was provided by user but package ${_PAR_NAME} wasn't found at '${${pkgUPPER}_PATH}'" )
       endif()
     endif()
 
