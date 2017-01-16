@@ -44,16 +44,18 @@
 #   homepage of the package (shown in summary and stored in the cache)
 #
 # DESCRIPTION : optional
-#   string describing the package (shown in summary and stored in the cache)
+#   literal string or name of CMake variable describing the package
 #
 # TYPE : optional, one of RUNTIME|OPTIONAL|RECOMMENDED|REQUIRED
 #   type of dependency of the project on this package (defaults to OPTIONAL)
 #
 # PURPOSE : optional
-#   string describing which functionality this package enables in the project
+#   literal string or name of CMake variable describing which functionality
+#   this package enables in the project
 #
 # FAILURE_MSG : optional
-#   string to be appended to the failure message if the package is not found
+#   literal string or name of CMake variable containing a message to be
+#   appended to the failure message if the package is not found
 #
 # REQUIRED : optional
 #   fail if package cannot be found
@@ -314,6 +316,9 @@ macro( ecbuild_find_package )
 
   ### final messages
 
+  if( DEFINED ${_PAR_FAILURE_MSG} )
+    set( _PAR_FAILURE_MSG ${${_PAR_FAILURE_MSG}} )
+  endif()
   set( _failed_message
     "  ${PROJECT_NAME} FAILED to find package ${_PAR_NAME}\n"
     "    Provide location with \"-D${pkgUPPER}_PATH=/...\" or \"-D${_PAR_NAME}_DIR=/...\" \n"
@@ -337,6 +342,12 @@ macro( ecbuild_find_package )
       endforeach()
     endif()
 
+    if( DEFINED ${_PAR_DESCRIPTION} )
+      set( _PAR_DESCRIPTION ${${_PAR_DESCRIPTION}} )
+    endif()
+    if( DEFINED ${_PAR_PURPOSE} )
+      set( _PAR_PURPOSE ${${_PAR_PURPOSE}} )
+    endif()
     set_package_properties( ${_PAR_NAME} PROPERTIES
                             URL "${_PAR_URL}"
                             DESCRIPTION "${_PAR_DESCRIPTION}"
