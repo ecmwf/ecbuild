@@ -1,23 +1,23 @@
 #!/usr/bin/perl
 
-# (C) Copyright 1996-2016 ECMWF.
-# 
+# (C) Copyright 1996-2017 ECMWF.
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation
+# nor does it submit to any jurisdiction.
 
 use strict;
 
 my $LICENSE = <<"EOF";
-(C) Copyright 1996-2016 ECMWF.
+(C) Copyright 1996-2017 ECMWF.
 
 This software is licensed under the terms of the Apache Licence Version 2.0
-which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-In applying this licence, ECMWF does not waive the privileges and immunities 
-granted to it by virtue of its status as an intergovernmental organisation nor
-does it submit to any jurisdiction.
+which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+In applying this licence, ECMWF does not waive the privileges and immunities
+granted to it by virtue of its status as an intergovernmental organisation
+nor does it submit to any jurisdiction.
 EOF
 
 my %COMMENTS = (
@@ -52,7 +52,7 @@ my %COMMENTS = (
 		def        => { comment => "# ", end => "\n" },
 
 		);
-        
+
 my %cmdargs = map { $_ => 1 } @ARGV;
 
 foreach my $file ( @ARGV )
@@ -77,7 +77,7 @@ foreach my $file ( @ARGV )
 	my @text = <IN>;
 	close(IN);
 
-	if(join("",@text) =~ /icensed under the/gs) 
+	if(join("",@text) =~ /icensed under the/gs)
 	{
         if( exists( $cmdargs{"-u"} ) or exists( $cmdargs{"--update"} ) )
         {
@@ -90,7 +90,7 @@ foreach my $file ( @ARGV )
             }
         }
         else
-        {    
+        {
             print "$file: License already stated. File ignored\n";
         }
 		next;
@@ -147,4 +147,3 @@ foreach my $file ( @ARGV )
 
 
 }
-
