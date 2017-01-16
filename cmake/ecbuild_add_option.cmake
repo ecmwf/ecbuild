@@ -58,6 +58,16 @@
 #     `bracket argument syntax`_ introduced in CMake 3.0 since
 #     regular quotes even when escaped are swallowed by the CMake parser.
 #
+#     Alternatively, the name of a CMake variable containing the string can be
+#     passed, which will be expanded by ``ecbuild_find_package``: ::
+#
+#       set( ECCODES_FAIL_MSG
+#            "grib_api can be used instead (select with -DENABLE_ECCODES=OFF)" )
+#       ecbuild_add_option( FEATURE ECCODES
+#                           DESCRIPTION "Use eccodes instead of grib_api"
+#                           REQUIRED_PACKAGES "PROJECT eccodes REQUIRED FAILURE_MSG ECCODES_FAIL_MSG"
+#                           DEFAULT ON )
+#
 # CONDITION : optional
 #   conditional expression which must evaluate to true for this option to be
 #   enabled (must be valid in a CMake ``if`` statement)
