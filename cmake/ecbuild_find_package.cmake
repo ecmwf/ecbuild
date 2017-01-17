@@ -316,19 +316,6 @@ macro( ecbuild_find_package )
 
   ### final messages
 
-  if( DEFINED ${_PAR_FAILURE_MSG} )
-    set( _PAR_FAILURE_MSG ${${_PAR_FAILURE_MSG}} )
-  endif()
-  set( _failed_message
-    "  ${PROJECT_NAME} FAILED to find package ${_PAR_NAME}\n"
-    "    Provide location with \"-D${pkgUPPER}_PATH=/...\" or \"-D${_PAR_NAME}_DIR=/...\" \n"
-    "    You may also export environment variables ${pkgUPPER}_PATH or ${_PAR_NAME}_DIR\n"
-    "  Values (note CAPITALISATION):\n"
-    "    ${pkgUPPER}_PATH should contain the path to the install prefix (as in <install>/bin <install>/lib <install>/include)\n"
-    "    ${_PAR_NAME}_DIR should be a directory containing a <package>-config.cmake file (usually <install>/share/<package>/cmake)\n"
-    "${_PAR_FAILURE_MSG}"
-    )
-
   if( ${_PAR_NAME}_FOUND OR ${pkgUPPER}_FOUND )
 
     if( NOT _PAR_QUIET )
@@ -356,11 +343,23 @@ macro( ecbuild_find_package )
 
   else()
 
+    if( DEFINED ${_PAR_FAILURE_MSG} )
+      set( _PAR_FAILURE_MSG ${${_PAR_FAILURE_MSG}} )
+    endif()
+    set( _failed_message
+      "  ${PROJECT_NAME} FAILED to find package ${_PAR_NAME}\n"
+      "    Provide location with \"-D${pkgUPPER}_PATH=/...\" or \"-D${_PAR_NAME}_DIR=/...\" \n"
+      "    You may also export environment variables ${pkgUPPER}_PATH or ${_PAR_NAME}_DIR\n"
+      "  Values (note CAPITALISATION):\n"
+      "    ${pkgUPPER}_PATH should contain the path to the install prefix (as in <install>/bin <install>/lib <install>/include)\n"
+      "    ${_PAR_NAME}_DIR should be a directory containing a <package>-config.cmake file (usually <install>/share/<package>/cmake)\n"
+      )
+
     if( _PAR_REQUIRED )
-      ecbuild_critical( "${_failed_message}\n!! ${PROJECT_NAME} requires package ${_PAR_NAME} !!" )
+      ecbuild_critical( "${_failed_message}!! ${PROJECT_NAME} requires package ${_PAR_NAME} !!\n${_PAR_FAILURE_MSG}" )
     else()
       if( NOT _PAR_QUIET )
-        ecbuild_warn( ${_failed_message} )
+        ecbuild_warn( "${_failed_message}\n${_PAR_FAILURE_MSG}" )
       endif()
     endif()
 
