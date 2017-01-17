@@ -19,6 +19,11 @@ function( _download_test_data _p_NAME _p_DIRNAME )
   #set(ENV{http_proxy} "http://proxy.ecmwf.int:3333")
   #endif()
 
+  # Use default timeout of 30s if not specified (ECBUILD-307)
+  if( NOT DEFINED ECBUILD_DOWNLOAD_TIMEOUT )
+    set( ECBUILD_DOWNLOAD_TIMEOUT 30 )
+  endif()
+
   find_program( CURL_PROGRAM curl )
   mark_as_advanced(CURL_PROGRAM)
 
@@ -27,6 +32,7 @@ function( _download_test_data _p_NAME _p_DIRNAME )
     add_custom_command( OUTPUT ${_p_NAME}
       COMMENT "(curl) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
       COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_NAME}
+              --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
               http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
 
   else()
@@ -37,7 +43,7 @@ function( _download_test_data _p_NAME _p_DIRNAME )
 
       add_custom_command( OUTPUT ${_p_NAME}
         COMMENT "(wget) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
-        COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME}
+        COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
                 http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
 
     else()
@@ -104,6 +110,9 @@ endfunction()
 # By default, the downloaded file is verified against an md5 checksum, either
 # given as the ``MD5`` argument or downloaded from the server otherwise. Use
 # the argument ``NOCHECK`` to disable this check.
+#
+# The default timeout is 30 seconds, which can be overridden with
+# ``ECBUILD_DOWNLOAD_TIMEOUT``.
 #
 # Examples
 # --------
