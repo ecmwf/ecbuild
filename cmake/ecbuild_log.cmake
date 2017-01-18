@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2016 ECMWF.
+# (C) Copyright 1996-2017 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -27,9 +27,10 @@
 # Furthermore there are auxilliary functions for outputting CMake variables,
 # CMake lists and environment variables if the log level is ``DEBUG``:
 #
-# :ecbuild_debug_var:     logs given CMake variables if log level <= ``DEBUG``
-# :ecbuild_debug_list:    logs given CMake lists if log level <= ``DEBUG``
-# :ecbuild_debug_env_var: logs given environment variables if log level <= ``DEBUG``
+# :ecbuild_debug_var:      logs given CMake variables if log level <= ``DEBUG``
+# :ecbuild_debug_list:     logs given CMake lists if log level <= ``DEBUG``
+# :ecbuild_debug_env_var:  logs given environment variables if log level <= ``DEBUG``
+# :ecbuild_debug_property: logs given global CMake property if log level <= ``DEBUG``
 #
 # To log a message to the ecBuild log file only at a given log level, use ::
 #
@@ -235,31 +236,14 @@ function( ecbuild_debug_env_var )
 endfunction()
 
 ##############################################################################
-# macro for debugging a cmake variable
+# function for debugging a CMake global property
 
-macro( debug_var VAR )
-
-    message( WARNING "DEPRECATED debug_var() -- ${VAR} [${${VAR}}]" )
-
-endmacro()
-
-##############################################################################
-# macro for debugging a cmake list
-
-macro( debug_list VAR )
-
-    message( WARNING "DEPRECATED debug_list() -- ${VAR}:" )
-    foreach( _elem ${${VAR}} )
-      message( WARNING "  ${_elem}" )
-    endforeach()
-
-endmacro()
-
-##############################################################################
-# macro for debugging a environment variable within cmake
-
-macro( debug_env_var VAR )
-
-    message( WARNING "DEPRECATED debug_env_var() -- ENV ${VAR} [$ENV{${VAR}}]" )
-
-endmacro()
+function( ecbuild_debug_property )
+  foreach( VAR ${ARGV} )
+    get_property( __prop GLOBAL PROPERTY ${VAR} )
+    ecbuild_log(DEBUG "PROPERTY ${VAR} : ${__prop}")
+    if( ECBUILD_LOG_LEVEL LESS 11)
+      message(STATUS "${Blue}DEBUG - PROPERTY ${VAR} [${__prop}]${ColourReset}")
+    endif()
+  endforeach()
+endfunction()

@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2016 ECMWF.
+# (C) Copyright 1996-2017 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -67,8 +67,10 @@ function( ecbuild_find_python )
       ecbuild_critical("Unknown keywords given to ecbuild_find_python(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
     if( _p_REQUIRED )
+      ecbuild_debug( "ecbuild_find_python: Searching for Python interpreter (required) ..." )
       set( _p_REQUIRED REQUIRED )
     else()
+      ecbuild_debug( "ecbuild_find_python: Searching for Python interpreter ..." )
       unset( _p_REQUIRED )
     endif()
 
@@ -81,7 +83,7 @@ function( ecbuild_find_python )
     # If no suitable version was found, search again with the version specified
     if( PYTHONINTERP_FOUND AND _p_VERSION )
       if( _p_VERSION VERSION_GREATER "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" )
-        ecbuild_debug( "ecbuild_find_python: Found Python interpreter version ${PYTHON_VERSION_STRING} at ${PYTHON_EXECUTABLE}, however version ${_p_VERSION} is required. Searching again..." )
+        ecbuild_debug( "ecbuild_find_python: Found Python interpreter version '${PYTHON_VERSION_STRING}' at '${PYTHON_EXECUTABLE}', however version '${_p_VERSION}' is required. Searching again..." )
         unset( PYTHONINTERP_FOUND )
         unset( PYTHON_EXECUTABLE )
         unset( PYTHON_EXECUTABLE CACHE )
@@ -93,10 +95,14 @@ function( ecbuild_find_python )
       endif()
     endif()
 
+    set_package_properties( PythonInterp PROPERTIES
+                            URL http://python.org
+                            DESCRIPTION "Python interpreter" )
+
     set( __required_vars PYTHONINTERP_FOUND )
 
     if( PYTHONINTERP_FOUND )
-        ecbuild_debug( "ecbuild_find_python: Found Python interpreter version ${PYTHON_VERSION_STRING} at ${PYTHON_EXECUTABLE}" )
+        ecbuild_debug( "ecbuild_find_python: Found Python interpreter version '${PYTHON_VERSION_STRING}' at '${PYTHON_EXECUTABLE}'" )
 
         # find where python site-packages are ...
 
@@ -104,10 +110,15 @@ function( ecbuild_find_python )
             execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
         endif()
         ecbuild_debug( "ecbuild_find_python: PYTHON_SITE_PACKAGES=${PYTHON_SITE_PACKAGES}" )
+    else()
+        ecbuild_debug( "ecbuild_find_python: could NOT find Python interpreter!" )
     endif()
 
-    if( PYTHONINTERP_FOUND AND NOT _p_NO_LIBS )
+    if( PYTHONINTERP_FOUND AND _p_NO_LIBS )
+        ecbuild_debug( "ecbuild_find_python: NOT searching for Python libraries" )
+    elseif( PYTHONINTERP_FOUND )
         list( APPEND __required_vars PYTHONLIBS_FOUND PYTHON_LIBS_WORKING )
+        ecbuild_debug( "ecbuild_find_python: Searching for Python libraries ..." )
 
         # find python config
 
@@ -124,7 +135,7 @@ function( ecbuild_find_python )
                                 python-config )
         endif()
 
-        ecbuild_debug_var( PYTHON_CONFIG_EXECUTABLE )
+        ecbuild_debug( "ecbuild_find_python: found python-config at '${PYTHON_CONFIG_EXECUTABLE}'" )
 
         # find python libs
 
@@ -132,33 +143,39 @@ function( ecbuild_find_python )
         # that don't reliably report linking flags that will work.
 
         if( PYTHON_CONFIG_EXECUTABLE AND NOT ( PYTHON_NO_CONFIG OR ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD" ) )
-            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using ${PYTHON_CONFIG_EXECUTABLE}" )
+            ecbuild_debug( "ecbuild_find_python: Searching for Python include directories and libraries using '${PYTHON_CONFIG_EXECUTABLE}'" )
 
-            if( NOT PYTHON_LIBRARY )
+            if( DEFINED PYTHON_LIBRARY )
+              ecbuild_debug( "ecbuild_find_python: PYTHON_LIBRARY already set to '${PYTHON_LIBRARY}'" )
+            else()
               execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --prefix
                               OUTPUT_VARIABLE PYTHON_PREFIX
                               OUTPUT_STRIP_TRAILING_WHITESPACE
                               ERROR_QUIET)
+              ecbuild_debug( "ecbuild_find_python: PYTHON_PREFIX=${PYTHON_PREFIX}" )
 
               execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --ldflags
                               OUTPUT_VARIABLE PYTHON_LIBRARY
                               OUTPUT_STRIP_TRAILING_WHITESPACE
                               ERROR_QUIET)
+              ecbuild_debug( "ecbuild_find_python: PYTHON_LIBRARY=${PYTHON_LIBRARY}" )
 
               # Prepend -L and and set the RPATH to the lib directory under the
               # Python install prefix unless it is a standard system prefix path
               if( PYTHON_LIBRARY AND PYTHON_PREFIX AND NOT CMAKE_SYSTEM_PREFIX_PATH MATCHES ${PYTHON_PREFIX} )
+                ecbuild_debug( "ecbuild_find_python: Python libraries not in CMAKE_SYSTEM_PREFIX_PATH, prepending PYTHON_PREFIX '${PYTHON_PREFIX}' to PYTHON_LIBRARY" )
                 set( PYTHON_LIBRARY "-L${PYTHON_PREFIX}/lib -Wl,-rpath,${PYTHON_PREFIX}/lib ${PYTHON_LIBRARY}" )
               endif()
-
-              set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}" CACHE PATH
-                   "Path to where Python.h is found" FORCE )
             endif()
 
-            if(DEFINED PYTHON_INCLUDE_PATH AND NOT DEFINED PYTHON_INCLUDE_DIR)
+            if( DEFINED PYTHON_INCLUDE_DIR )
+              ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIR already set to '${PYTHON_INCLUDE_DIR}'" )
+            elseif(DEFINED PYTHON_INCLUDE_PATH AND NOT DEFINED PYTHON_INCLUDE_DIR)
+              ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_PATH already set to '${PYTHON_INCLUDE_PATH}'" )
+              ecbuild_deprecate( "ecbuild_find_python: PYTHON_INCLUDE_PATH is deprecated, use PYTHON_INCLUDE_DIR instead!" )
               set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}" CACHE PATH
                    "Path to where Python.h is found" FORCE )
-            elseif( NOT PYTHON_INCLUDE_DIR )
+            else()
               execute_process(COMMAND "${PYTHON_CONFIG_EXECUTABLE}" --includes
                               OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
                               OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -168,6 +185,7 @@ function( ecbuild_find_python )
               string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
 
               separate_arguments(PYTHON_INCLUDE_DIR)
+              ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR}" )
               set( PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}" CACHE PATH
                    "Path to where Python.h is found" FORCE )
 
@@ -184,23 +202,34 @@ function( ecbuild_find_python )
 
             find_package( PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}" ${_p_REQUIRED} )
 
+            set_package_properties( PythonLibs PROPERTIES
+                                    URL http://python.org
+                                    DESCRIPTION "Python library and header" )
+
         endif()
 
         # Remove duplicate include directories
         list(REMOVE_DUPLICATES PYTHON_INCLUDE_DIRS)
 
+        ecbuild_debug( "ecbuild_find_python: PYTHON_INCLUDE_DIRS=${PYTHON_INCLUDE_DIRS}" )
+        ecbuild_debug( "ecbuild_find_python: PYTHON_LIBRARIES=${PYTHON_LIBRARIES}" )
 
         if( PYTHON_LIBRARIES AND PYTHON_INCLUDE_DIRS )
+            ecbuild_debug( "ecbuild_find_python: trying to link executable with Python libraries ..." )
             # Test if we can link against the Python libraries and include Python.h
             try_compile( PYTHON_LIBS_WORKING ${CMAKE_CURRENT_BINARY_DIR}
                          ${__test_python}
                          CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${PYTHON_INCLUDE_DIRS}"
                          LINK_LIBRARIES ${PYTHON_LIBRARIES}
                          OUTPUT_VARIABLE __try_compile_output )
-            if( NOT PYTHON_LIBS_WORKING )
+            if( PYTHON_LIBS_WORKING )
+              ecbuild_debug( "ecbuild_find_python: trying to link executable with Python libraries successful" )
+            else()
               ecbuild_debug( "ecbuild_find_python: trying to link executable with Python libraries failed\n${__try_compile_output}" )
             endif()
 
+        else()
+            ecbuild_debug( "ecbuild_find_python: Python library and include diretory not found" )
         endif()
 
     endif()

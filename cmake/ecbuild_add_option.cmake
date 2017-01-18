@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2016 ECMWF.
+# (C) Copyright 1996-2017 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -17,7 +17,6 @@
 #   ecbuild_add_option( FEATURE <name>
 #                       [ DEFAULT ON|OFF ]
 #                       [ DESCRIPTION <description> ]
-#                       [ PURPOSE <purpose> ]
 #                       [ REQUIRED_PACKAGES <package1> [<package2> ...] ]
 #                       [ CONDITION <condition> ]
 #                       [ ADVANCED ] [ NO_TPL ] )
@@ -33,12 +32,6 @@
 #
 # DESCRIPTION : optional
 #   string describing the feature (shown in summary and stored in the cache)
-#
-# TYPE : optional, one of RUNTIME|OPTIONAL|RECOMMENDED|REQUIRED
-#   type of dependency of the project on this package (defaults to OPTIONAL)
-#
-# PURPOSE : optional
-#   string describing which functionality this package enables in the project
 #
 # REQUIRED_PACKAGES : optional
 #   list of packages required to be found for this feature to be enabled
@@ -58,6 +51,22 @@
 #   and is used to search for an ecBuild project via ``ecbuild_use_package``.
 #   The entire specification must be enclosed in quotes and is passed on
 #   verbatim. Any options of ``ecbuild_use_package`` are supported.
+#
+#   .. note::
+#
+#     Arguments inside the package string that require quoting need to use the
+#     `bracket argument syntax`_ introduced in CMake 3.0 since
+#     regular quotes even when escaped are swallowed by the CMake parser.
+#
+#     Alternatively, the name of a CMake variable containing the string can be
+#     passed, which will be expanded by ``ecbuild_find_package``: ::
+#
+#       set( ECCODES_FAIL_MSG
+#            "grib_api can be used instead (select with -DENABLE_ECCODES=OFF)" )
+#       ecbuild_add_option( FEATURE ECCODES
+#                           DESCRIPTION "Use eccodes instead of grib_api"
+#                           REQUIRED_PACKAGES "PROJECT eccodes REQUIRED FAILURE_MSG ECCODES_FAIL_MSG"
+#                           DEFAULT ON )
 #
 # CONDITION : optional
 #   conditional expression which must evaluate to true for this option to be
@@ -82,6 +91,8 @@
 # configuration fails. This only applies when configuring from *clean cache*.
 # With an already populated cache, use ``-DENABLE_<FEATURE>=REQUIRE`` to make
 # the feature a required feature (this cannot be done via the CMake GUI).
+#
+# .. _bracket argument syntax: https://cmake.org/cmake/help/latest/manual/cmake-language.7.html#bracket-argument
 #
 ##############################################################################
 
@@ -114,8 +125,11 @@ macro( ecbuild_add_option )
   endif()
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defaults to ${_p_DEFAULT}")
 
-  if( NOT _p_TYPE  )
-    set( _p_TYPE OPTIONAL )
+  if( _p_PURPOSE  )
+    ecbuild_deprecate( "ecbuild_add_option: argument PURPOSE is ignored and will be removed in a future release." )
+  endif()
+  if( _p_TYPE  )
+    ecbuild_deprecate( "ecbuild_add_option: argument TYPE is ignored and will be removed in a future release." )
   endif()
 
   # check CONDITION parameter
@@ -154,13 +168,14 @@ macro( ecbuild_add_option )
   # define the option -- for cmake GUI
 
   option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
-  ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defining option ENABLE_${_p_FEATURE} '${_p_DESCRIPTION}' ${_p_DEFAULT}")
-  ecbuild_set_feature( ${_p_FEATURE} ENABLED ${_p_DEFAULT} )
-  set_package_properties( ${_p_FEATURE} PROPERTIES
-                          DESCRIPTION "${_p_DESCRIPTION}"
-                          TYPE ${_p_TYPE}
-                          PURPOSE "${_p_PURPOSE}" )
+  get_property( _feature_desc GLOBAL PROPERTY _CMAKE_${_p_FEATURE}_DESCRIPTION )
+  if( _feature_desc )
+    add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_feature_desc}, ${PROJECT_NAME}: ${_p_DESCRIPTION}" )
+  else()
+    add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${PROJECT_NAME}: ${_p_DESCRIPTION}" )
+  endif()
 
+  ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defining option ENABLE_${_p_FEATURE} '${_p_DESCRIPTION}' ${_p_DEFAULT}")
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
 
   if( ENABLE_${_p_FEATURE} )
@@ -183,6 +198,12 @@ macro( ecbuild_add_option )
         if( pkgname STREQUAL "PROJECT" )  # if 1st entry is PROJECT, then we are looking for a ecbuild project
           set( pkgproject 1 )
           list( GET pkglist 1 pkgname )
+          # Use feature description as package description if there is none
+          list( FIND pkglist DESCRIPTION __description )
+          if( __description LESS 0 )
+            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): no description for ${pkgname}, using feature description '${_p_DESCRIPTION}'")
+            list( APPEND pkglist DESCRIPTION "${_p_DESCRIPTION}" )
+          endif()
         else()                            # else 1st entry is package name
           set( pkgproject 0 )
         endif()
@@ -209,7 +230,14 @@ macro( ecbuild_add_option )
 
           else()
 
-            if( pkgname STREQUAL "MPI" )
+            if( pkgname STREQUAL "LAPACK" )
+              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for LAPACK - ecbuild_find_package( NAME ${pkglist} )")
+              ecbuild_find_package( NAME ${pkglist} )
+              if( HAVE_LAPACK AND TARGET lapack )
+                ecbuild_debug( "LAPACK found as CMake target lapack" )
+                set( LAPACK_LIBRARIES lapack )
+              endif()
+            elseif( pkgname STREQUAL "MPI" )
               set( _find_args ${pkglist} )
               list( REMOVE_ITEM _find_args "MPI" )
               ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for MPI - ecbuild_find_mpi( ${_find_args} )")
@@ -270,14 +298,17 @@ macro( ecbuild_add_option )
       set( HAVE_${_p_FEATURE} 0 )
     endif( _${_p_FEATURE}_condition )
 
-    ecbuild_set_feature( ${_p_FEATURE} ENABLED ${HAVE_${_p_FEATURE}} )
     # FINAL CHECK
 
     if( HAVE_${_p_FEATURE} )
 
+      ecbuild_enable_feature( ${_p_FEATURE} )
+
       ecbuild_info( "Feature ${_p_FEATURE} enabled" )
 
     else() # if user provided input and we cannot satisfy FAIL otherwise WARN
+
+      ecbuild_disable_feature( ${_p_FEATURE} )
 
       if( ${_p_FEATURE}_user_provided_input )
         if( NOT _${_p_FEATURE}_condition )
@@ -294,7 +325,7 @@ macro( ecbuild_add_option )
           ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
         endif()
         set( ENABLE_${_p_FEATURE} OFF )
-        ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
+        ecbuild_disable_feature( ${_p_FEATURE} )
       endif()
 
     endif()
@@ -303,7 +334,7 @@ macro( ecbuild_add_option )
 
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature disabled")
     set( HAVE_${_p_FEATURE} 0 )
-    ecbuild_set_feature( ${_p_FEATURE} ENABLED OFF )
+    ecbuild_disable_feature( ${_p_FEATURE} )
 
   endif()
 

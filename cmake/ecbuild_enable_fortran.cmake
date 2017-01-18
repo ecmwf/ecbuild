@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2016 ECMWF.
+# (C) Copyright 1996-2017 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -58,11 +58,19 @@ macro( ecbuild_enable_fortran )
   endif()
 
   if( CMAKE_Fortran_COMPILER_LOADED )
+
     include(CheckFortranFunctionExists)
     if( CMAKE_C_COMPILER_LOADED AND ENABLE_FORTRAN_C_INTERFACE )
       include(FortranCInterface)
     endif()
     set( EC_HAVE_FORTRAN 1 )
+
+    # see issue ECBUILD-298
+    if( CMAKE_Fortran_COMPILER_ID MATCHES PGI )
+      unset( CMAKE_Fortran_COMPILE_OPTIONS_PIE )
+      unset( CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS )
+    endif()
+
   endif()
 
   if( DEFINED _PAR_MODULE_DIRECTORY )

@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2016 ECMWF.
+# (C) Copyright 1996-2017 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -142,6 +142,28 @@ macro( ecbuild_add_executable )
 
   if( _${_PAR_TARGET}_condition )
 
+    # insert already compiled objects (from OBJECT libraries)
+    unset( _all_objects )
+    foreach( _obj ${_PAR_OBJECTS} )
+      list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
+    endforeach()
+
+    list( APPEND _PAR_SOURCES ${_glob_srcs} )
+
+    if( ECBUILD_LIST_SOURCES )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
+    endif()
+
+    # glob sources
+    unset( _glob_srcs )
+    foreach( pattern ${_PAR_SOURCES_GLOB} )
+      ecbuild_list_add_pattern( LIST _glob_srcs GLOB "${pattern}" )
+    endforeach()
+
+    foreach( pattern ${_PAR_SOURCES_EXCLUDE_REGEX} )
+      ecbuild_list_exclude_pattern( LIST _glob_srcs REGEX "${pattern}" )
+    endforeach()
+
     # add persistent layer files
     if( DEFINED _PAR_PERSISTENT )
       if( DEFINED PERSISTENT_NAMESPACE )
@@ -158,29 +180,26 @@ macro( ecbuild_add_executable )
       add_custom_target( ${_PAR_TARGET}_templates SOURCES ${_PAR_TEMPLATES} )
     endif()
 
-    # glob sources
-    unset( _glob_srcs )
-    foreach( pattern ${_PAR_SOURCES_GLOB} )
-        ecbuild_list_add_pattern( LIST _glob_srcs GLOB "${pattern}" )
-    endforeach()
-
-    foreach( pattern ${_PAR_SOURCES_EXCLUDE_REGEX} )
-        ecbuild_list_exclude_pattern( LIST _glob_srcs REGEX "${pattern}" )
-    endforeach()
-
-    # insert already compiled objects (from OBJECT libraries)
-    unset( _all_objects )
-    foreach( _obj ${_PAR_OBJECTS} )
-      list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
-    endforeach()
-
-    list( APPEND _PAR_SOURCES ${_glob_srcs} )
-
-    if( ECBUILD_LIST_SOURCES )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
+    # Separate sources
+    if( _PAR_SOURCES )
+      ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
     endif()
 
-    add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
+    if( ${_PAR_TARGET}_cuda_srcs )
+      if( NOT CUDA_FOUND )
+        ecbuild_error("ecbuild_add_executable(${_PAR_TARGET}): CUDA source files detected"
+                      "but CUDA was not found.")
+      endif()
+      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): CUDA sources detected."
+                    "Building executable with ecbuild_add_executable() rather than intrinsic"
+                    "add_executable().")
+    endif()
+
+    if( NOT ${_PAR_TARGET}_cuda_srcs )
+      add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
+    else()
+      cuda_add_executable( ${_PAR_TARGET} ${_PAR_SOURCES}  ${_all_objects} )
+    endif()
 
     # ecbuild_echo_target( ${_PAR_TARGET} )
 
@@ -224,15 +243,6 @@ macro( ecbuild_add_executable )
         endif()
       endforeach()
     endif()
-
-    # filter sources
-
-    ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
-
-    #   ecbuild_debug_var( ${_PAR_TARGET}_h_srcs )
-    #   ecbuild_debug_var( ${_PAR_TARGET}_c_srcs )
-    #   ecbuild_debug_var( ${_PAR_TARGET}_cxx_srcs )
-    #   ecbuild_debug_var( ${_PAR_TARGET}_fortran_srcs )
 
     # Override compilation flags on a per source file basis
     ecbuild_target_flags( ${_PAR_TARGET} "${_PAR_CFLAGS}" "${_PAR_CXXFLAGS}" "${_PAR_FFLAGS}" )

@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2016 ECMWF.
+# (C) Copyright 1996-2017 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -70,6 +70,17 @@
 #
 ##############################################################################
 
+function( ecbuild_set_if_not_defined VAR VALUE )
+
+    if(NOT DEFINED ${VAR})
+        set( ${VAR} "${VALUE}" PARENT_SCOPE )
+        # ecbuild_info("Variable not defined, setting ${VAR} => ${VALUE}")
+    # else()
+        # ecbuild_info("${VAR} == ${${VAR}}")
+    endif()
+
+endfunction()
+
 macro( ecbuild_install_project )
 
     set( options )
@@ -112,36 +123,34 @@ macro( ecbuild_install_project )
 
     # name, version, etc ...
 
-    set(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
-    set(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
+    ecbuild_set_if_not_defined(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
+    ecbuild_set_if_not_defined(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
 
-    set(CPACK_PACKAGE_FILE_NAME   "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+    ecbuild_set_if_not_defined(CPACK_PACKAGE_FILE_NAME   "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 
-    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "ECMWF") # required for DEB
-
+    #    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "ECMWF") # required for DEB
     #    set(CPACK_ARCHIVE_COMPONENT_INSTALL "ON")
     #    set(CPACK_RPM_COMPONENT_INSTALL "ON")
 
-    #    set(CPACK_GENERATOR        "TGZ;RPM;DEB")
-    set(CPACK_GENERATOR        "TGZ")
-    set(CPACK_SOURCE_GENERATOR "TGZ")
-    set(CPACK_PACKAGE_VENDOR   "ECMWF")
+    ecbuild_set_if_not_defined(CPACK_SOURCE_GENERATOR "TGZ")
+    ecbuild_set_if_not_defined(CPACK_GENERATOR "TGZ")
+    ecbuild_set_if_not_defined(CPACK_PACKAGE_VENDOR "ECMWF")
 
     # short description
 
     if( _PAR_DESCRIPTION )
-        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${_PAR_DESCRIPTION}" )
+        ecbuild_set_if_not_defined(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${_PAR_DESCRIPTION}" )
     else()
-        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${_PAR_NAME} misses a description" )
+        ecbuild_set_if_not_defined(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${_PAR_NAME} misses a description" )
     endif()
 
     # long description
 
     if( EXISTS ${PROJECT_SOURCE_DIR}/INSTALL )
-        set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/INSTALL")
+        ecbuild_set_if_not_defined(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/INSTALL")
     endif()
     if( EXISTS ${PROJECT_SOURCE_DIR}/LICENSE )
-        set(CPACK_RESOURCE_FILE_LICENSE    "${PROJECT_SOURCE_DIR}/LICENSE")
+        ecbuild_set_if_not_defined(CPACK_RESOURCE_FILE_LICENSE    "${PROJECT_SOURCE_DIR}/LICENSE")
     endif()
 
     # set(CPACK_PACKAGE_EXECUTABLES ${ECBUILD_ALL_EXES})
