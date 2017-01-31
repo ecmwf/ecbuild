@@ -213,27 +213,25 @@ endif()
 
 if( ENABLE_GPROF )
 
-  if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
-
-    set( _flags "-pg --coverage" )
-
-    set( CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} ${_flags}" )
-    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${_flags}" )
-    set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${_flags}" )
-
-    set( _trust_flags ${ECBUILD_TRUST_FLAGS} )
-    set( ECBUILD_TRUST_FLAGS ON )
-    ecbuild_add_c_flags( "${_flags}" )
-    ecbuild_add_cxx_flags( "${_flags}" )
-    ecbuild_add_fortran_flags( "${_flags}" )
-    set( ECBUILD_TRUST_FLAGS ${_trust_flags} )
-    unset( _trust_flags )
-
-    unset( _flags )
-
+  if( ECBUILD_GPROF_FLAG )
+    ecbuild_debug( "Enabling profiling with user defined flag '${ECBUILD_GPROF_FLAG}'" )
+  elseif( CMAKE_C_COMPILER_ID MATCHES "GNU" )
+    set( ECBUILD_GPROF_FLAG "-pg --coverage" )
   else()
     ecbuild_warn( "Profiling enabled but ecbuild doesn't know how to enable for this particular compiler ${CMAKE_C_COMPILER_ID}")
   endif()
+
+  set( CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} ${ECBUILD_GPROF_FLAG}" )
+  set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ECBUILD_GPROF_FLAG}" )
+  set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${ECBUILD_GPROF_FLAG}" )
+
+  set( _trust_flags ${ECBUILD_TRUST_FLAGS} )
+  set( ECBUILD_TRUST_FLAGS ON )
+  ecbuild_add_c_flags( "${ECBUILD_GPROF_FLAG}" )
+  ecbuild_add_cxx_flags( "${ECBUILD_GPROF_FLAG}" )
+  ecbuild_add_fortran_flags( "${ECBUILD_GPROF_FLAG}" )
+  set( ECBUILD_TRUST_FLAGS ${_trust_flags} )
+  unset( _trust_flags )
 
 endif()
 
