@@ -125,9 +125,8 @@ macro( ecbuild_declare_project )
   if( NOT INSTALL_DATA_DIR )
     set( INSTALL_DATA_DIR share/${PROJECT_NAME} )
   endif()
-  if( NOT INSTALL_CMAKE_DIR )
-    set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
-  endif()
+  # share/${PROJECT_NAME}/cmake is a convention - it makes no sense to override it
+  set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
 
   mark_as_advanced( INSTALL_BIN_DIR )
   mark_as_advanced( INSTALL_LIB_DIR )
