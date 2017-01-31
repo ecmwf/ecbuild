@@ -205,9 +205,13 @@ if( ENABLE_OS_ENDINESS_TEST )
 endif()
 
 ############################################################################################
-# enable profiling
+# enable profiling via gprof
 
 if( ENABLE_PROFILING )
+  ecbuild_deprecate( "ENABLE_PROFILING is deprecated and ignored, use ENABLE_GPROF instead" )
+endif()
+
+if( ENABLE_GPROF )
 
   if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
 
