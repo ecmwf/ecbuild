@@ -44,6 +44,7 @@
 #cmakedefine EC_HAVE_FUNOPEN
 #cmakedefine EC_HAVE_FLOCK
 #cmakedefine EC_HAVE_MMAP
+#cmakedefine EC_HAVE_FOPENCOOKIE
 
 #cmakedefine EC_HAVE_POSIX_MEMALIGN
 

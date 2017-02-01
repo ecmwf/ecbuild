@@ -96,6 +96,9 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     # test for struct statvfs64
     ecbuild_cache_check_c_source_compiles( "#define _LARGEFILE64_SOURCE\n#include <sys/statvfs.h>\nint main(){ struct statvfs64 v; }" EC_HAVE_STRUCT_STATVFS64 )
 
+    # test for fopencookie
+    ecbuild_cache_check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }" EC_HAVE_FOPENCOOKIE )
+
     # test for fsync
     ecbuild_cache_check_symbol_exists(fsync "unistd.h" EC_HAVE_FSYNC)
     # test for fdatasync

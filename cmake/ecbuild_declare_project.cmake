@@ -122,12 +122,11 @@ macro( ecbuild_declare_project )
   if( NOT INSTALL_INCLUDE_DIR )
     set( INSTALL_INCLUDE_DIR include )
   endif()
-  if( NOT INSTALL_DATA_DIR )
-    set( INSTALL_DATA_DIR share/${PROJECT_NAME} )
-  endif()
-  if( NOT INSTALL_CMAKE_DIR )
-    set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
-  endif()
+  # INSTALL_DATA_DIR is package specific and needs to be reset for subpackages
+  # in a bundle. Users *cannot* override this directory (ECBUILD-315)
+  set( INSTALL_DATA_DIR share/${PROJECT_NAME} )
+  # share/${PROJECT_NAME}/cmake is a convention - it makes no sense to override it
+  set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
 
   mark_as_advanced( INSTALL_BIN_DIR )
   mark_as_advanced( INSTALL_LIB_DIR )
