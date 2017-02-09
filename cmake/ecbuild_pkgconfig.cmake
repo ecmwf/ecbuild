@@ -415,7 +415,7 @@ function( ecbuild_pkgconfig )
   ecbuild_info( "pkg-config file created: ${_PAR_FILENAME}" )
 
   install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILENAME}
-           DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR}/pkgconfig/
+           DESTINATION ${INSTALL_LIB_DIR}/pkgconfig/
            COMPONENT utilities )
 
 endfunction(ecbuild_pkgconfig)
