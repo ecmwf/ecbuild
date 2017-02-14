@@ -18,18 +18,18 @@
 #
 # The procedure is as follows:
 #
-# 1.  ecBuild does *not* set ``CMAKE_<lang>_FLAGS`` i.e. the user can set these
-#     via -D or the CMake cache and these will be the "base" flags.
+# 1.  ecBuild does **not** set ``CMAKE_<lang>_FLAGS`` i.e. the user can set
+#     these via ``-D`` or the CMake cache and these will be the "base" flags.
 #
-# 2.  ecBuild *overwrites* ``CMAKE_<lang>_FLAGS_<btype>`` in the CMake cache
+# 2.  ecBuild **overwrites** ``CMAKE_<lang>_FLAGS_<btype>`` in the CMake cache
 #     for all build types with compiler specific defaults for the currently
-#     loaded compiler i.e. any value set by the user via -D or the CMake cache
-#     *has no effect*.
+#     loaded compiler i.e. any value set by the user via ``-D`` or the CMake
+#     cache **has no effect**.
 #
 # 3.  Any value the user provides via ``ECBUILD_<lang>_FLAGS`` or
-#     ``ECBUILD_<lang>_FLAGS_<btype>`` *overrides* the corresponding
-#     ``CMAKE_<lang>_FLAGS`` or ``CMAKE_<lang>_FLAGS_<btype>`` *without being
-#     written to the CMake cache*.
+#     ``ECBUILD_<lang>_FLAGS_<btype>`` **overrides** the corresponding
+#     ``CMAKE_<lang>_FLAGS`` or ``CMAKE_<lang>_FLAGS_<btype>`` **without being
+#     written to the CMake cache**.
 #
 ##############################################################################
 
