@@ -134,15 +134,6 @@ macro( ecbuild_declare_project )
   mark_as_advanced( INSTALL_DATA_DIR )
   mark_as_advanced( INSTALL_CMAKE_DIR )
 
-  # overrides of install dirs (deprecated in ecBuild 2.4.0)
-
-  foreach( p LIB BIN INCLUDE DATA CMAKE )
-    if( ${PNAME}_INSTALL_${p}_DIR )
-      ecbuild_deprecate( "Use of ${PNAME}_INSTALL_${p}_DIR is deprecated and will be removed in a future release. Use INSTALL_${p}_DIR instead." )
-      set( INSTALL_${p}_DIR ${${PNAME}_INSTALL_${p}_DIR} )
-    endif()
-  endforeach()
-
   # warnings for non-relocatable projects
 
   foreach( p LIB BIN INCLUDE DATA CMAKE )
