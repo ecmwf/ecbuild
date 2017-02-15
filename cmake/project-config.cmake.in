@@ -75,7 +75,7 @@ if( NOT @PROJECT_NAME@_BINARY_DIR )
   if( @PNAME@_IS_BUILD_DIR_EXPORT )
     include( "@TOP_PROJECT_TARGETS_FILE@" OPTIONAL )
   else()
-    include( "${@PNAME@_CMAKE_DIR}/@PROJECT_NAME@-targets.cmake" )
+    include( "${@PNAME@_CMAKE_DIR}/@PROJECT_NAME@-targets.cmake" OPTIONAL )
   endif()
 
 endif()
