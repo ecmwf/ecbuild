@@ -47,7 +47,7 @@ function( _download_test_data _p_NAME _p_DIRNAME )
     if( WGET_PROGRAM )
 
       # wget takes the total number of tries, curl the number or retries
-      math( EXPR ECBUILD_DOWNLOAD_RETRIES ${ECBUILD_DOWNLOAD_RETRIES} + 1 )
+      math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
 
       add_custom_command( OUTPUT ${_p_NAME}
         COMMENT "(wget) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
