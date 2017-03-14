@@ -38,6 +38,10 @@ if( ENABLE_TESTS AND CMAKE_CXX_COMPILER_LOADED )
 
   endif()
 
+endif()
+
+if( ENABLE_TESTS )
+
   # CTest has built-in support for running with memcheck
   # (https://cmake.org/cmake/help/latest/manual/ctest.1.html#ctest-memcheck-step)
   # via `ctest -T memcheck`, however by default memcheck does not exit with a
@@ -47,18 +51,22 @@ if( ENABLE_TESTS AND CMAKE_CXX_COMPILER_LOADED )
   # Suppressions are read from ${MEMORYCHECK_SUPPRESSIONS_FILE} if given.
 
   find_program( MEMORYCHECK_COMMAND valgrind )
+  ecbuild_debug_var( MEMORYCHECK_COMMAND )
 
   if( NOT MEMORYCHECK_COMMAND_OPTIONS )
-    set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --error-exitcode=1" )
+    set( MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --error-exitcode=1"
+         CACHE STRING "Options passed to memcheck command" )
   endif()
+  ecbuild_debug_var( MEMORYCHECK_COMMAND_OPTIONS )
 
   if( NOT MEMORYCHECK_SUPPRESSIONS_FILE AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/valgrind_suppress.txt" )
-    set( MEMORYCHECK_SUPPRESSIONS_FILE
-      "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.supp" )
+    set( MEMORYCHECK_SUPPRESSIONS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.supp"
+         CACHE FILEPATH "Suppressions file to be used with memcheck command" )
   endif()
+  ecbuild_debug_var( MEMORYCHECK_SUPPRESSIONS_FILE )
 
-endif()
+else()
 
-if( NOT ENABLE_TESTS )
   ecbuild_info("Tests have been disabled")
+
 endif()
