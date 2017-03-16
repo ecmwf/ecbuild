@@ -231,7 +231,7 @@ macro( ecbuild_git )
                          RESULT_VARIABLE nok ERROR_VARIABLE error
                          WORKING_DIRECTORY "${ABS_PAR_DIR}")
         if(nok)
-          ecbuild_warn("git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
+          ecbuild_critical("git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
         endif()
 
       endif() ####################################################################################
