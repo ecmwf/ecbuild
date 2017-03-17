@@ -30,6 +30,7 @@
 #                        [ GENERATED <file1> [<file2> ...] ]
 #                        [ DEPENDS <target1> [<target2> ...] ]
 #                        [ CONDITION <condition> ]
+#                        [ PROPERTIES <prop1> <val1> [<prop2> <val2> ...] ]
 #                        [ NOINSTALL ]
 #                        [ HEADER_DESTINATION <path> ]
 #                        [ INSTALL_HEADERS LISTED|ALL ]
@@ -105,6 +106,9 @@
 #   conditional expression which must evaluate to true for this target to be
 #   built (must be valid in a CMake ``if`` statement)
 #
+# PROPERTIES : optional
+#   custom properties to set on the target
+#
 # NOINSTALL : optional
 #   do not install the library
 #
@@ -155,8 +159,14 @@
 function( ecbuild_add_library_impl )
 
   set( options NOINSTALL AUTO_VERSION AUTO_SOVERSION )
-  set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS INSTALL_HEADERS_REGEX LINKER_LANGUAGE HEADER_DESTINATION VERSION SOVERSION OUTPUT_NAME )
-  set( multi_value_args  SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+  set( single_value_args TARGET TYPE COMPONENT INSTALL_HEADERS
+                         INSTALL_HEADERS_REGEX LINKER_LANGUAGE
+                         HEADER_DESTINATION VERSION SOVERSION OUTPUT_NAME )
+  set( multi_value_args  SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS
+                         TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES
+                         PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS
+                         INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED
+                         CONDITION PROPERTIES )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -262,6 +272,11 @@ function( ecbuild_add_library_impl )
       cuda_add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
     endif()
     # ecbuild_echo_target( ${_PAR_TARGET} )
+
+    # Set custom properties
+    if( ${_PAR_PROPERTIES} )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES ${_PAR_PROPERTIES} )
+    endif()
 
     # set OUTPUT_NAME
 
@@ -394,7 +409,7 @@ function( ecbuild_add_library_impl )
     # set linker language
     if( DEFINED _PAR_LINKER_LANGUAGE )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): using linker language ${_PAR_LINKER_LANGUAGE}")
-      set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
       if( ECBUILD_${_PAR_LINKER_LANGUAGE}_IMPLICIT_LINK_LIBRARIES )
         target_link_libraries( ${_PAR_TARGET} ${ECBUILD_${_PAR_LINKER_LANGUAGE}_IMPLICIT_LINK_LIBRARIES} )
       endif()
@@ -469,8 +484,8 @@ function( ecbuild_add_library_impl )
 
       # set build location
 
-      set_property( TARGET ${_PAR_TARGET} PROPERTY LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
-      set_property( TARGET ${_PAR_TARGET} PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
       # export location of target to other projects -- must be exactly after setting the build location (see previous 2 commands)
 
@@ -483,7 +498,7 @@ function( ecbuild_add_library_impl )
       get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
       list( APPEND _target_defs ${_PAR_DEFINITIONS} )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): using definitions ${_target_defs}")
-      set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES COMPILE_DEFINITIONS "${_target_defs}" )
     endif()
 
     # make sure target is removed before - some problems with AIX
