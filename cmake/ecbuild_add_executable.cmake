@@ -27,6 +27,7 @@
 #                           [ GENERATED <file1> [<file2> ...] ]
 #                           [ DEPENDS <target1> [<target2> ...] ]
 #                           [ CONDITION <condition> ]
+#                           [ PROPERTIES <prop1> <val1> [<prop2> <val2> ...] ]
 #                           [ NOINSTALL ]
 #                           [ VERSION <version> | AUTO_VERSION ]
 #                           [ CFLAGS <flag1> [<flag2> ...] ]
@@ -80,6 +81,9 @@
 #   conditional expression which must evaluate to true for this target to be
 #   built (must be valid in a CMake ``if`` statement)
 #
+# PROPERTIES : optional
+#   custom properties to set on the target
+#
 # NOINSTALL : optional
 #   do not install the executable
 #
@@ -110,7 +114,9 @@ macro( ecbuild_add_executable )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET COMPONENT LINKER_LANGUAGE VERSION OUTPUT_NAME )
-  set( multi_value_args  SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION )
+  set( multi_value_args SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS
+                        TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS
+                        CFLAGS CXXFLAGS FFLAGS GENERATED CONDITION PROPERTIES )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -201,6 +207,11 @@ macro( ecbuild_add_executable )
       cuda_add_executable( ${_PAR_TARGET} ${_PAR_SOURCES}  ${_all_objects} )
     endif()
 
+    # Set custom properties
+    if( ${_PAR_PROPERTIES} )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES ${_PAR_PROPERTIES} )
+    endif()
+
     # ecbuild_echo_target( ${_PAR_TARGET} )
 
     # add include dirs if defined
@@ -279,7 +290,7 @@ macro( ecbuild_add_executable )
 
       # set build location
 
-      set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
       # export location of target to other projects -- must be exactly after setting the build location (see previous command)
 
@@ -288,22 +299,22 @@ macro( ecbuild_add_executable )
     else()
       ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): not installing")
       # NOINSTALL targets are always built the build_rpath, not the install_rpath
-      set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
-      set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES SKIP_BUILD_RPATH         FALSE )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES BUILD_WITH_INSTALL_RPATH FALSE )
     endif()
 
     # add definitions to compilation
     if( DEFINED _PAR_DEFINITIONS )
-      get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
+      get_target_property( _target_defs ${_PAR_TARGET} COMPILE_DEFINITIONS )
       list( APPEND _target_defs ${_PAR_DEFINITIONS} )
       ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): using definitions ${_target_defs}")
-      set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES COMPILE_DEFINITIONS ${_target_defs} )
     endif()
 
     # set linker language
     if( DEFINED _PAR_LINKER_LANGUAGE )
       ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): using linker language ${_PAR_LINKER_LANGUAGE}")
-      set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
       if( ECBUILD_${_PAR_LINKER_LANGUAGE}_IMPLICIT_LINK_LIBRARIES )
         target_link_libraries( ${_PAR_TARGET} ${ECBUILD_${_PAR_LINKER_LANGUAGE}_IMPLICIT_LINK_LIBRARIES} )
       endif()
