@@ -35,6 +35,7 @@
 #                     [ DEPENDS <target1> [<target2> ...] ]
 #                     [ TEST_DEPENDS <target1> [<target2> ...] ]
 #                     [ CONDITION <condition> ]
+#                     [ PROPERTIES <prop1> <val1> [<prop2> <val2> ...] ]
 #                     [ ENVIRONMENT <variable1> [<variable2> ...] ]
 #                     [ WORKING_DIRECTORY <path> ]
 #                     [ CFLAGS <flag1> [<flag2> ...] ]
@@ -131,6 +132,9 @@
 #   conditional expression which must evaluate to true for this target to be
 #   built (must be valid in a CMake ``if`` statement)
 #
+# PROPERTIES : optional
+#   custom properties to set on the target
+#
 # ENVIRONMENT : optional
 #   list of environment variables to set in the test environment
 #
@@ -157,7 +161,7 @@ macro( ecbuild_add_test )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI OMP WORKING_DIRECTORY )
   set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS LABELS ARGS
                          PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS
-                         CXXFLAGS FFLAGS GENERATED CONDITION ENVIRONMENT )
+                         CXXFLAGS FFLAGS GENERATED CONDITION PROPERTIES ENVIRONMENT )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -374,21 +378,21 @@ macro( ecbuild_add_test )
 
       if( _target_defs )
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): using definitions ${_target_defs}")
-        set_property( TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS ${_target_defs} )
+        set_target_properties( ${_PAR_TARGET} PROPERTIES COMPILE_DEFINITIONS "${_target_defs}" )
       endif()
 
       # set build location to local build dir
       # not the project base as defined for libs and execs
-      set_property( TARGET ${_PAR_TARGET} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${_TEST_DIR} )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${_TEST_DIR} )
 
       # whatever project settings are, we always build tests with the build_rpath, not the install_rpath
-      set_property( TARGET ${_PAR_TARGET} PROPERTY BUILD_WITH_INSTALL_RPATH FALSE )
-      set_property( TARGET ${_PAR_TARGET} PROPERTY SKIP_BUILD_RPATH         FALSE )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES BUILD_WITH_INSTALL_RPATH FALSE )
+      set_target_properties( ${_PAR_TARGET} PROPERTIES SKIP_BUILD_RPATH         FALSE )
 
       # set linker language
       if( DEFINED _PAR_LINKER_LANGUAGE )
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): using linker language ${_PAR_LINKER_LANGUAGE}")
-        set_property( TARGET ${_PAR_TARGET} PROPERTY LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+        set_target_properties( ${_PAR_TARGET} PROPERTIES LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
       endif()
 
       # make sure target is removed before - some problems with AIX
@@ -450,6 +454,11 @@ macro( ecbuild_add_test )
         add_test( NAME ${_PAR_TARGET} COMMAND ${_PAR_COMMAND} ${TEST_ARGS} ${_working_dir} ) # run a command as test
       else()
         add_test( NAME ${_PAR_TARGET} COMMAND ${_PAR_TARGET}  ${TEST_ARGS} ${_working_dir} ) # run the test that was generated
+      endif()
+
+      # Set custom properties
+      if( ${_PAR_PROPERTIES} )
+        set_target_properties( ${_PAR_TARGET} PROPERTIES ${_PAR_PROPERTIES} )
       endif()
 
       # get test data
