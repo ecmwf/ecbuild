@@ -187,7 +187,7 @@ macro( ecbuild_declare_project )
 
   # print project header
 
-  message( STATUS "---------------------------------------------------------" )
+  ecbuild_info( "---------------------------------------------------------" )
 
   if( ${PNAME}_GIT_SHA1_SHORT )
     ecbuild_info( "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR}) [${${PNAME}_GIT_SHA1_SHORT}]" )
