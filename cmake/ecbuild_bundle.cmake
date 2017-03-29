@@ -152,7 +152,10 @@ macro( ecbuild_bundle )
       ecbuild_critical("Source directory '${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_PROJECT}' for subproject '${_PAR_PROJECT}' does not exist or does not contain a CMakeLists.txt file.")
     endif()
 
-    ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
+    # Do not descend into ecbuild if included in a bundle (ECBUILD-333)
+    if( NOT _PAR_PROJECT STREQUAL "ecbuild" )
+      ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
+    endif()
   endif()
 
 endmacro()
