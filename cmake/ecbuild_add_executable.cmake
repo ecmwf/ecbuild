@@ -154,12 +154,6 @@ macro( ecbuild_add_executable )
       list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
     endforeach()
 
-    list( APPEND _PAR_SOURCES ${_glob_srcs} )
-
-    if( ECBUILD_LIST_SOURCES )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
-    endif()
-
     # glob sources
     unset( _glob_srcs )
     foreach( pattern ${_PAR_SOURCES_GLOB} )
@@ -169,6 +163,12 @@ macro( ecbuild_add_executable )
     foreach( pattern ${_PAR_SOURCES_EXCLUDE_REGEX} )
       ecbuild_list_exclude_pattern( LIST _glob_srcs REGEX "${pattern}" )
     endforeach()
+
+    list( APPEND _PAR_SOURCES ${_glob_srcs} )
+
+    if( ECBUILD_LIST_SOURCES )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): sources ${_PAR_SOURCES}")
+    endif()
 
     # add persistent layer files
     if( DEFINED _PAR_PERSISTENT )
