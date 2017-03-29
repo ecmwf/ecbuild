@@ -227,11 +227,13 @@ macro( ecbuild_git )
 
       if( DEFINED _PAR_BRANCH AND _PAR_UPDATE ) #############################################################################
 
-        execute_process( COMMAND "${GIT_EXECUTABLE}" pull -q
+        # Use git pull --ff-only, we WANT this to fail on upstream rebase and
+        # we DON'T want merge commits here!
+        execute_process( COMMAND "${GIT_EXECUTABLE}" pull -q --ff-only
                          RESULT_VARIABLE nok ERROR_VARIABLE error
                          WORKING_DIRECTORY "${ABS_PAR_DIR}")
         if(nok)
-          ecbuild_warn("git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
+          ecbuild_critical("git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR} failed:\n ${error}")
         endif()
 
       endif() ####################################################################################

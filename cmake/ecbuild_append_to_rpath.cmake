@@ -67,7 +67,12 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 
 				endif()
 
-				if( EC_OS_NAME STREQUAL "linux" )
+                if( EC_OS_NAME STREQUAL "freebsd" )
+                    _path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
+                    set( _done 1 )
+                endif()
+
+                if( EC_OS_NAME STREQUAL "linux" )
 					_path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
 					set( _done 1 )
 				endif()
@@ -77,10 +82,10 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 					set( _done 1 )
 				endif()
 
-				if( EC_OS_NAME STREQUAL "aix" ) # always relative to exectuable path
-					_path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" ) 
-					set( _done 1 )
-				endif()
+                if( EC_OS_NAME STREQUAL "aix" ) # always relative to exectuable path
+                    _path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
+                    set( _done 1 )
+                endif()
 
 				# fallback
 
