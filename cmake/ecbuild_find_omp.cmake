@@ -19,8 +19,8 @@ macro( lookup_omp_flags )
   set(_OMP_FLAG_XL         "-qsmp=omp")
   set(_OMPSTUBS_FLAG_XL    "-qsmp=noomp")
 
-  set(_OMP_FLAG_Intel      "-openmp")
-  set(_OMPSTUBS_FLAG_Intel "-openmp-stubs")
+  set(_OMP_FLAG_Intel      "-qopenmp")
+  set(_OMPSTUBS_FLAG_Intel "-qopenmp-stubs")
 
   # sample C openmp source code to test
   set(_OMP_C_TEST_SOURCE
