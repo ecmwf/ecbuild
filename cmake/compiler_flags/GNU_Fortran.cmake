@@ -12,6 +12,8 @@ set( CMAKE_Fortran_FLAGS_DEBUG          "-O0 -g -fcheck=bounds -fbacktrace -fini
 set( CMAKE_Fortran_FLAGS_PRODUCTION     "-O2 -g"                                                                   CACHE STRING "Fortran compiler flags for Production builds."      FORCE )
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O2 -g"                                                                   CACHE STRING "Fortran compiler flags for RelWithDebInfo builds."  FORCE )
 
+set( Fortran_FLAG_STACK_ARRAYS "-fstack-arrays" )
+
 ####################################################################
 
 # Meaning of flags
