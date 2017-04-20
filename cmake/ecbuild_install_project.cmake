@@ -125,6 +125,8 @@ macro( ecbuild_install_project )
 
     ecbuild_set_if_not_defined(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
     ecbuild_set_if_not_defined(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
+    # Convert "/" to "-" for the case where the version string contains a "/"
+    string( REPLACE "/" "-" CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION} )
 
     ecbuild_set_if_not_defined(CPACK_PACKAGE_FILE_NAME   "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 
