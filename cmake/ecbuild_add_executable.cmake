@@ -305,7 +305,7 @@ macro( ecbuild_add_executable )
 
     # add definitions to compilation
     if( DEFINED _PAR_DEFINITIONS )
-      get_target_property( _target_defs ${_PAR_TARGET} COMPILE_DEFINITIONS )
+      get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
       list( APPEND _target_defs ${_PAR_DEFINITIONS} )
       ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): using definitions ${_target_defs}")
       set_target_properties( ${_PAR_TARGET} PROPERTIES COMPILE_DEFINITIONS "${_target_defs}" )
