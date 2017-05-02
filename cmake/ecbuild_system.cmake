@@ -102,12 +102,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # would bring FindEigen in, so for the moment keep it out
     # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/GreatCMakeCookOff" )
 
-    include(CTest)                 # add cmake testing support
-    enable_testing()
-
-    # keep this until we modify the meaning to 'check' if installation worked
-    add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
-
     ############################################################################################
     # define valid build types
 
@@ -247,6 +241,15 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_define_uninstall )             # define uninstall target
 
     ecbuild_flush_cache()
+
+    ############################################################################################
+    # Testing
+
+    include(CTest)                 # add cmake testing support
+    enable_testing()
+
+    # keep this until we modify the meaning to 'check' if installation worked
+    add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
 
     ############################################################################################
     # define the build timestamp, unless the user provided one via EC_BUILD_TIMESTAMP

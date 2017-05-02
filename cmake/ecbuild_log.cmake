@@ -121,7 +121,7 @@ endif()
 function( ecbuild_log LEVEL )
   string( REPLACE ";" " " MSG "${ARGN}" )
   string( TIMESTAMP _time )
-  file( APPEND ${ECBUILD_LOG_FILE} "${_time} - ${LEVEL} - ${MSG}\n" )
+  file( APPEND ${ECBUILD_LOG_FILE} "${_time} - ${PROJECT_NAME} - ${LEVEL} - ${MSG}\n" )
 endfunction( ecbuild_log )
 
 ##############################################################################

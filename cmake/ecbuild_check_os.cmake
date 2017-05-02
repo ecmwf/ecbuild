@@ -205,31 +205,160 @@ if( ENABLE_OS_ENDINESS_TEST )
 endif()
 
 ############################################################################################
-# enable profiling
+# enable profiling via gprof
 
 if( ENABLE_PROFILING )
+  ecbuild_deprecate( "ENABLE_PROFILING is deprecated and ignored, use ENABLE_GPROF instead" )
+endif()
 
-  if( CMAKE_C_COMPILER_ID MATCHES "GNU" )
+if( ENABLE_GPROF )
 
-    set( _flags "-pg --coverage" )
+  # User defined profiling flag takes precedence
+  if( ECBUILD_GPROF_FLAG )
 
-    set( CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} ${_flags}" )
-    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${_flags}" )
-    set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${_flags}" )
+    ecbuild_debug( "Enabling profiling with user defined flag '${ECBUILD_GPROF_FLAG}'" )
 
-    set( _trust_flags ${ECBUILD_TRUST_FLAGS} )
-    set( ECBUILD_TRUST_FLAGS ON )
-    ecbuild_add_c_flags( "${_flags}" )
-    ecbuild_add_cxx_flags( "${_flags}" )
-    ecbuild_add_fortran_flags( "${_flags}" )
-    set( ECBUILD_TRUST_FLAGS ${_trust_flags} )
-    unset( _trust_flags )
+  # -p  Generate extra code to write profile information suitable for the analysis program
+  #     prof.  You must use this option when compiling the source files you want data about,
+  #     and you must also use it when linking.
+  #
+  # -pg Generate extra code to write profile information suitable for the analysis program
+  #     gprof.  You must use this option when compiling the source files you want data about,
+  #     and you must also use it when linking.
+  #
+  # --coverage
+  #      This option is used to compile and link code instrumented for coverage analysis.  The
+  #      option is a synonym for -fprofile-arcs -ftest-coverage (when compiling) and -lgcov
+  #      (when linking).  See the documentation for those options for more details.
+  #
+  #      *   Compile the source files with -fprofile-arcs plus optimization and code generation
+  #          options.  For test coverage analysis, use the additional -ftest-coverage option.
+  #          You do not need to profile every source file in a program.
+  #
+  #      *   Link your object files with -lgcov or -fprofile-arcs (the latter implies the
+  #          former).
+  #
+  #      *   Run the program on a representative workload to generate the arc profile
+  #          information.  This may be repeated any number of times.  You can run concurrent
+  #          instances of your program, and provided that the file system supports locking, the
+  #          data files will be correctly updated.  Also "fork" calls are detected and correctly
+  #          handled (double counting will not happen).
+  #
+  #      *   For profile-directed optimizations, compile the source files again with the same
+  #          optimization and code generation options plus -fbranch-probabilities.
+  #
+  #      *   For test coverage analysis, use gcov to produce human readable information from the
+  #          .gcno and .gcda files.  Refer to the gcov documentation for further information.
+  #
+  #      With -fprofile-arcs, for each function of your program GCC creates a program flow
+  #      graph, then finds a spanning tree for the graph.  Only arcs that are not on the
+  #      spanning tree have to be instrumented: the compiler adds code to count the number of
+  #      times that these arcs are executed.  When an arc is the only exit or only entrance to a
+  #      block, the instrumentation code can be added to the block; otherwise, a new basic block
+  #      must be created to hold the instrumentation code.
+  elseif( CMAKE_C_COMPILER_ID MATCHES "GNU" )
 
-    unset( _flags )
+    set( ECBUILD_GPROF_FLAG "-pg --coverage" )
+    ecbuild_debug( "Enabling profiling with GNU flag '${ECBUILD_GPROF_FLAG}'" )
 
+  # -p
+  #
+  #        Compiles and links for function profiling
+  #               with gprof(1).
+  #
+  #        Architecture  Restrictions:  Not  available  on  Intel(R)   64   architecture
+  #        targeting the
+  #               Intel(R)  Xeon  Phi(TM) coprocessor x100 product family (formerly code
+  #               name  Knights  Corner),  on  IA-32  architecture  targeting   Intel(R)
+  #               Graphics Technology, or on Intel(R) 64 architecture targeting Intel(R)
+  #               Graphics Technology
+  #
+  #        Arguments:
+  #
+  #        None
+  #
+  #        Default:
+  #
+  #        OFF               Files are compiled and linked without profiling.
+  #
+  #        Description:
+  #
+  #        This option compiles and links for function profiling with gprof(1).
+  #
+  #        When you specify this option, inlining is disabled. However, you can override
+  #        this  by  specifying  pragma forceinline, declspec forceinline (Windows* OS),
+  #        attribute always_inline (Linux* OS and OS X*), or a compiler option  such  as
+  #        [Q]inline-forceinline.
+  elseif( CMAKE_C_COMPILER_ID MATCHES "Intel" )
+
+    set( ECBUILD_GPROF_FLAG "-p" )
+    ecbuild_debug( "Enabling profiling with Intel flag '${ECBUILD_GPROF_FLAG}'" )
+
+  # -Mprof[=option[,option,...]]
+  #        Set performance profiling options.  Use of these options will cause the resulting
+  #        executable to create a performance profile that can be viewed and analyzed with the
+  #        PGPROF performance profiler.  In the descriptions below, PGI-style profiling implies
+  #        compiler-generated source instrumentation.  MPICH-style profiling implies the use of
+  #        instrumented wrappers for MPI library routines.  The -Mprof options are:
+  #
+  #        ccff
+  #
+  #        dwarf     Generate limited DWARF symbol information sufficient for most performance
+  #                  profilers.
+  #
+  #        func      Perform PGI-style function level profiling.
+  #
+  #        hwcts     Generate a profile using event-based sampling of hardware counters via the
+  #                  PAPI interface (linux86-64 only, PAPI must be installed).
+  #
+  #        lines     Perform PGI-style line level profiling.
+  #
+  #        hpmpi     (PGI CDK only) Perform MPICH-style profiling for the HP Implies
+  #                  -Mmpi=hpmpi.
+  #
+  #        mpich1    (PGI CDK only) Perform MPICH-style profiling for MPICH-1.  Implies
+  #                  -Mmpi=mpich1.  Use MPIDIR to point to the MPICH-1 libraries.  This flag is
+  #                  no longer fully supported.
+  #
+  #        mpich2    (PGI CDK only) Perform MPICH-style profiling for MPICH-2.  Implies
+  #                  -Mmpi=mpich2.  Use MPIDIR to point to the MPICH-1 libraries.  This flag is
+  #                  no longer fully supported.
+  #
+  #        mvapich1  (PGI CDK only) Perform MPICH-style profiling for MVAPICH.  Implies
+  #                  -Mmpi=mvapich1.  Use MPIDIR to point to the MPICH-1 libraries.  This flag
+  #                  is no longer fully supported.
+  #
+  #        time      Generate a profile using time-based instruction-level statistical
+  #                  sampling. This is equivalent to -pg, except that the profile is saved in a
+  #                  file named pgprof.out instead of gmon.out.
+  #
+  #        On Linux systems that have OProfile installed, PGPROF supports collection of
+  #        performance data without recompilation. Use of -Mprof=dwarf is useful for this mode
+  #        of profiling.
+  elseif( CMAKE_C_COMPILER_ID MATCHES "PGI" )
+
+    set( ECBUILD_GPROF_FLAG "-Mprof=dwarf,time" )
+    ecbuild_debug( "Enabling profiling with PGI flag '${ECBUILD_GPROF_FLAG}'" )
+
+  # There is no equivalent to -pg for clang:
+  # http://lists.llvm.org/pipermail/cfe-dev/2010-September/011255.html
   else()
+
     ecbuild_warn( "Profiling enabled but ecbuild doesn't know how to enable for this particular compiler ${CMAKE_C_COMPILER_ID}")
+
   endif()
+
+  set( CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} ${ECBUILD_GPROF_FLAG}" )
+  set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ECBUILD_GPROF_FLAG}" )
+  set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${ECBUILD_GPROF_FLAG}" )
+
+  set( _trust_flags ${ECBUILD_TRUST_FLAGS} )
+  set( ECBUILD_TRUST_FLAGS ON )
+  ecbuild_add_c_flags( "${ECBUILD_GPROF_FLAG}" )
+  ecbuild_add_cxx_flags( "${ECBUILD_GPROF_FLAG}" )
+  ecbuild_add_fortran_flags( "${ECBUILD_GPROF_FLAG}" )
+  set( ECBUILD_TRUST_FLAGS ${_trust_flags} )
+  unset( _trust_flags )
 
 endif()
 

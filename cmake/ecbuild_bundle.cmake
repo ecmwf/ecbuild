@@ -130,9 +130,12 @@ macro( ecbuild_bundle )
 
   string(TOUPPER "${_PAR_PROJECT}" PNAME)
 
+  ecbuild_info( "---------------------------------------------------------" )
+
   if( BUNDLE_SKIP_${PNAME} )
-    ecbuild_info( "Skipping bundle project ${PNAME}" )
+    ecbuild_info( "Skipping bundle project ${_PAR_PROJECT}" )
   else()
+    ecbuild_info( "Adding bundle project ${_PAR_PROJECT}" )
 
     if( _PAR_STASH )
       ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} STASH ${_PAR_STASH} ${_PAR_UNPARSED_ARGUMENTS} )

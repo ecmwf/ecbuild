@@ -23,14 +23,17 @@ set( CMAKE_SKIP_BUILD_RPATH              FALSE  )
 
 # If INSTALL_LIB_DIR is set to anything other than lib, the relative install
 # RPATH is wrong in the build tree
-if( ENABLE_RELATIVE_RPATHS AND (NOT INSTALL_LIB_DIR OR INSTALL_LIB_DIR STREQUAL "lib") )
-  # when building, use the install RPATH immediately (we don't want to relink)
-  set( CMAKE_BUILD_WITH_INSTALL_RPATH      TRUE  )
-  ecbuild_debug( "Building with install RPATH" )
-else()
-  # when building, don't use the install RPATH yet, but later on when installing
-  set( CMAKE_BUILD_WITH_INSTALL_RPATH      FALSE  )
-  ecbuild_debug( "Not building with install RPATH, need to relink when installing" )
+if( ENABLE_RELATIVE_RPATHS )
+  ecbuild_debug( "Relative RPATHS are enabled" )
+  if( INSTALL_LIB_DIR STREQUAL "lib" OR (NOT INSTALL_LIB_DIR) )
+    # when building, use the install RPATH immediately (we don't want to relink)
+    set( CMAKE_BUILD_WITH_INSTALL_RPATH      TRUE  )
+    ecbuild_debug( "Building with install RPATH" )
+  else()
+    # when building, don't use the install RPATH yet, but later on when installing
+    set( CMAKE_BUILD_WITH_INSTALL_RPATH      FALSE  )
+    ecbuild_debug( "Not building with install RPATH, need to relink when installing" )
+  endif()
 endif()
 
 # Always include srcdir and builddir in include path

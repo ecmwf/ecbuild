@@ -37,7 +37,7 @@ ecbuild_generate_fortran_interfaces(
 
     SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}
 
-    DIRECTORIES api/aux api/utility
+    DIRECTORIES api/area api/volume
 
     DESTINATION  api
 
@@ -50,7 +50,7 @@ ecbuild_add_library(
 
     TYPE    OBJECT
 
-    SOURCES_GLOB  "api/utility/*.F90" "api/aux/*.F90"
+    SOURCES_GLOB  "api/area/*.F90" "api/volume/*.F90"
 )
 
 ecbuild_debug( "intf_circ_includes" )

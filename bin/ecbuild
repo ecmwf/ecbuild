@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash --noprofile
 
 set -eua
 
@@ -355,6 +355,14 @@ done
 # If no arguments remain, set srcARG to "."
 if [ $# -eq 0 ]; then
   srcARG="."
+fi
+
+if [ -z ${toolchain_file+x} ]; then
+  if [ -z ${ECBUILD_TOOLCHAIN+x} ]; then :
+  else
+    toolchain ${ECBUILD_TOOLCHAIN}
+    echo "ecbuild toolchain set using environment variable ECBUILD_TOOLCHAIN"
+  fi
 fi
 
 src=${srcARG:=""}
