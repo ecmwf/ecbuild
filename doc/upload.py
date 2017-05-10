@@ -16,7 +16,10 @@ import requests
 from rst2confluence import confluence
 
 API_URL = 'https://software.ecmwf.int/wiki/rest/api/content'
-AUTH = (environ['USER'], environ['CONFLUENCE_PASSWORD'])
+if 'USER' in environ and 'CONFLUENCE_PASSWORD' in environ:
+    AUTH = (environ['USER'], environ['CONFLUENCE_PASSWORD'])
+else:
+    AUTH = None
 
 log = logging.getLogger('upload')
 log.setLevel(logging.DEBUG)
