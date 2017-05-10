@@ -44,7 +44,7 @@ MACRO(cxx11_check_single_feature FEATURE_NAME FEATURE_NUMBER RESULT_VAR)
         try_compile(${RESULT_VAR} "${_bindir}_fail" "${_SRCFILE_FAIL}")
       ENDIF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
     ELSE (CROSS_COMPILING)
-      try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
+      ecbuild_try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
           "${_bindir}" "${_SRCFILE}")
       IF (_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
         SET(${RESULT_VAR} TRUE)
@@ -52,7 +52,7 @@ MACRO(cxx11_check_single_feature FEATURE_NAME FEATURE_NUMBER RESULT_VAR)
         SET(${RESULT_VAR} FALSE)
       ENDIF (_COMPILE_RESULT_VAR AND NOT _RUN_RESULT_VAR)
       IF (${RESULT_VAR} AND EXISTS ${_SRCFILE_FAIL})
-        try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
+        ecbuild_try_run(_RUN_RESULT_VAR _COMPILE_RESULT_VAR
             "${_bindir}_fail" "${_SRCFILE_FAIL}")
         IF (_COMPILE_RESULT_VAR AND _RUN_RESULT_VAR)
           SET(${RESULT_VAR} TRUE)
