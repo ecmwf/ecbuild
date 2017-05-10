@@ -43,8 +43,8 @@
 # -----
 #
 # This will write the given source to a .f file and compile and run it with
-# try_run. If successful, ``${VAR}`` is set to 1 and ``${OUTPUT}`` is set to
-# the output of the successful run in the CMake cache.
+# ecbuild_try_run. If successful, ``${VAR}`` is set to 1 and ``${OUTPUT}`` is
+# set to the output of the successful run in the CMake cache.
 #
 # The check will not run if ``${VAR}`` is defined (e.g. from ecBuild cache).
 #
@@ -98,7 +98,7 @@ macro( ecbuild_check_fortran_source_return SOURCE )
         file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.F90" "${SOURCE}\n" )
 
         ecbuild_debug( "Performing Test ${_PAR_VAR}" )
-        try_run( ${_PAR_VAR}_EXITCODE ${_PAR_VAR}_COMPILED
+        ecbuild_try_run( ${_PAR_VAR}_EXITCODE ${_PAR_VAR}_COMPILED
           ${CMAKE_BINARY_DIR}
           ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.F90
           COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}

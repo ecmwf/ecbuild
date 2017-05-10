@@ -43,8 +43,8 @@
 # -----
 #
 # This will write the given source to a .c file and compile and run it with
-# try_run. If successful, ``${VAR}`` is set to 1 and ``${OUTPUT}`` is set to
-# the output of the successful run in the CMake cache.
+# ecbuild_try_run. If successful, ``${VAR}`` is set to 1 and ``${OUTPUT}`` is
+# set to the output of the successful run in the CMake cache.
 #
 # The check will not run if ``${VAR}`` is defined (e.g. from ecBuild cache).
 #
@@ -95,12 +95,12 @@ macro( ecbuild_check_c_source_return SOURCE )
     
         # write the source file
     
-        file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.c" "${SOURCE}\n" )
+        file( WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CheckCSource/test_${_PAR_VAR}.c" "${SOURCE}\n" )
 
         ecbuild_debug( "Performing Test ${_PAR_VAR}" )
-        try_run( ${_PAR_VAR}_EXITCODE ${_PAR_VAR}_COMPILED
+        ecbuild_try_run( ${_PAR_VAR}_EXITCODE ${_PAR_VAR}_COMPILED
           ${CMAKE_BINARY_DIR}
-          ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/test_${_PAR_VAR}.c
+          ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CheckCSource/test_${_PAR_VAR}.c
           COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
           CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${MACRO_CHECK_FUNCTION_DEFINITIONS}
           -DCMAKE_SKIP_RPATH:BOOL=${CMAKE_SKIP_RPATH}
@@ -114,6 +114,10 @@ macro( ecbuild_check_c_source_return SOURCE )
           set( ${_PAR_VAR}_EXITCODE 1 )
         endif()
     
+        ecbuild_debug_var( ${_PAR_VAR}_EXITCODE )
+        ecbuild_debug_var( ${_PAR_VAR}_COMPILED )
+        ecbuild_debug_var( compile_OUTPUT )
+        ecbuild_debug_var( run_OUTPUT )
         # if the return value was 0 then it worked
         if("${${_PAR_VAR}_EXITCODE}" EQUAL 0)
     
