@@ -58,7 +58,7 @@ function( ecbuild_check_cxx11 )
   cxx11_find_all_features( ALL_FEATURES ) # list all available features to check
 
   # Save CXX flags
-  set( CXX_FLAGS_SNASHOT ${CMAKE_CXX_FLAGS} )
+  set( CXX_FLAGS_SNAPSHOT ${CMAKE_CXX_FLAGS} )
 
   # Add C++11 flags
   include( ${ECBUILD_MACROS_DIR}/ecbuild_get_cxx11_flags.cmake )
