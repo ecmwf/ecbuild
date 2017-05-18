@@ -51,6 +51,13 @@
 #   list of regular expressions to match files and directories to exclude when
 #   packaging
 #
+# Note
+# ----
+#
+# All file and directory names are also *partially matched*. To ensure that
+# only the exact file or directory name is matched at the end of the path add
+# a ``$`` at the end and quote the name.
+#
 ##############################################################################
 
 macro( ecbuild_add_resources )
