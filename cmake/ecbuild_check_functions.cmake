@@ -122,6 +122,8 @@ if( ENABLE_OS_FUNCTIONS_TEST )
     ecbuild_cache_check_c_source_compiles( "#include <sys/types.h>\n#include <pwd.h>\nint main(){ struct passwd p; char line[1024]; int n = getpwnam_r(\"user\",&p,line,sizeof(line),0); }\n" EC_HAVE_GETPWNAM_R )
     # test for readdir_r
     ecbuild_cache_check_c_source_compiles( "#include <dirent.h>\nint main(){ DIR *dirp; struct dirent *entry; struct dirent **result; int i = readdir_r(dirp, entry, result); }\n" EC_HAVE_READDIR_R )
+    # test for d_type in dirent.h
+    ecbuild_cache_check_c_source_compiles( "#include <dirent.h>\nint main(){ DIR *dirp; struct dirent *entry; if(entry->d_type) { dirp = 0; } }\n" EC_HAVE_DIRENT_D_TYPE )
     # test for gethostbyname_r
     ecbuild_cache_check_c_source_compiles( "#include <netdb.h>\nint main(){ const char *name; struct hostent *ret; char *buf; struct hostent **result; size_t buflen; int *h_errnop; int i = gethostbyname_r(name,ret,buf,buflen,result,h_errnop); }\n" EC_HAVE_GETHOSTBYNAME_R )
 
