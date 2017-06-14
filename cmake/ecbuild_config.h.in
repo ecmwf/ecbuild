@@ -147,6 +147,7 @@
 
 #cmakedefine EC_HAVE_CXXABI_H
 #cmakedefine EC_HAVE_CXX_BOOL
+#cmakedefine EC_HAVE_CXX_INT_128
 
 #cmakedefine EC_HAVE_CXX_SSTREAM
 

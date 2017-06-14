@@ -95,6 +95,10 @@ if( CMAKE_CXX_COMPILER_LOADED AND ENABLE_OS_TESTS )
     ecbuild_cache_check_cxx_source_compiles( "#include <sstream>\nint main() { std::stringstream s; }"
 	  EC_HAVE_CXX_SSTREAM )
 
+    # test c++ __int128
+    ecbuild_cache_check_cxx_source_compiles( "int main(){ __int128 i = 0; return 0;}\n"
+      EC_HAVE_CXX_INT_128 )
+
 endif()
 
 ############################################################################################

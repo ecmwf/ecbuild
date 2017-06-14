@@ -44,6 +44,7 @@ if( ENABLE_OS_TYPES_TEST )
 
   set( EC_SIZEOF_PTR ${CMAKE_SIZEOF_VOID_P} )
   ecbuild_cache_var( EC_SIZEOF_PTR )
+
   ecbuild_cache_check_type_size( char           EC_SIZEOF_CHAR        )
   ecbuild_cache_check_type_size( short          EC_SIZEOF_SHORT       )
   ecbuild_cache_check_type_size( int            EC_SIZEOF_INT         )
