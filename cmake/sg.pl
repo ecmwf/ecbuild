@@ -1,5 +1,4 @@
-#!/usr/bin/perl
-#!/usr/local/share/perl56
+#!/usr/bin/env perl
 
 # (C) Copyright 1996-2017 ECMWF.
 # 
@@ -569,5 +568,3 @@ sub template {
 	return $self->{template} ? @{$self->{template}} : ();
 }
 1;
-
-
