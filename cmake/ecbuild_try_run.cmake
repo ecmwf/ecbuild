@@ -105,6 +105,16 @@
 
 # This is an API compatible version of try_run which ignores output on stderr
 
+if( CMAKE_VERSION VERSION_LESS 2.8.12 )
+
+ecbuild_deprecate( "ecbuild_try_run falls back to try_run on CMake < 2.8.12 (ECBUILD-341)" )
+
+function( ecbuild_try_run )
+  try_run( ${ARGV} )
+endfunction()
+
+else()
+
 function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
 
   set( options )
@@ -186,3 +196,5 @@ function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
   endif()
 
 endfunction()
+
+endif()
