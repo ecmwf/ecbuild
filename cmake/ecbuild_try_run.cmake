@@ -109,9 +109,9 @@ if( CMAKE_VERSION VERSION_LESS 2.8.12 )
 
 ecbuild_deprecate( "ecbuild_try_run falls back to try_run on CMake < 2.8.12 (ECBUILD-341)" )
 
-function( ecbuild_try_run )
+macro( ecbuild_try_run )
   try_run( ${ARGV} )
-endfunction()
+endmacro()
 
 else()
 
