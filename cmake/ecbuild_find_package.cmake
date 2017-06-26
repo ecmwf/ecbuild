@@ -193,8 +193,8 @@ macro( ecbuild_find_package )
 
   # search user defined paths first
 
-  if( ${_PAR_NAME}_PATH OR ${pkgUPPER}_PATH OR ${_PAR_NAME}_DIR )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${pkgUPPER}_PATH=${${pkgUPPER}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
+  if( ${_PAR_NAME}_PATH OR ${pkgUPPER}_PATH OR ${_PAR_NAME}_DIR OR ${_PAR_NAME}_BINARY_DIR )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${pkgUPPER}_PATH=${${pkgUPPER}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}, ${_PAR_NAME}_BINARY_DIR=${${_PAR_NAME}_BINARY_DIR}")
 
     # 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
 
@@ -203,7 +203,7 @@ macro( ecbuild_find_package )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${pkgUPPER}_PATH=${${pkgUPPER}_PATH}, ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
       find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} NO_MODULE ${_find_quiet}
         COMPONENTS ${_PAR_COMPONENTS}
-        HINTS ${${pkgUPPER}_PATH} ${${_PAR_NAME}_PATH} ${${_PAR_NAME}_DIR}
+        HINTS ${${pkgUPPER}_PATH} ${${_PAR_NAME}_PATH} ${${_PAR_NAME}_DIR} ${${_PAR_NAME}_BINARY_DIR}
         NO_DEFAULT_PATH )
     endif()
 

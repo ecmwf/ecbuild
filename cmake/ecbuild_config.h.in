@@ -122,6 +122,7 @@
 #cmakedefine EC_HAVE_GETPWUID_R
 #cmakedefine EC_HAVE_GETPWNAM_R
 #cmakedefine EC_HAVE_READDIR_R
+#cmakedefine EC_HAVE_DIRENT_D_TYPE
 #cmakedefine EC_HAVE_GETHOSTBYNAME_R
 
 /* --- compiler __attribute__ support --- */
@@ -146,6 +147,7 @@
 
 #cmakedefine EC_HAVE_CXXABI_H
 #cmakedefine EC_HAVE_CXX_BOOL
+#cmakedefine EC_HAVE_CXX_INT_128
 
 #cmakedefine EC_HAVE_CXX_SSTREAM
 

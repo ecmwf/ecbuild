@@ -163,6 +163,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_list_add_pattern )
     include( ecbuild_list_exclude_pattern )
 
+    include( ecbuild_try_run )
     include( ecbuild_check_c_source_return )
     include( ecbuild_check_cxx_source_return )
     include( ecbuild_check_cxx11 )
