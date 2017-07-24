@@ -3,8 +3,8 @@
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
 # In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
+# granted to it by virtue of its status as an intergovernmental organisation
+# nor does it submit to any jurisdiction.
 
 # - Try to find PangoCairo
 
@@ -40,8 +40,6 @@ else()
 
     # this is to get magics compiling on mac with macbrew
 
-    include(FindPackageHandleStandardArgs)
-
     set(PANGO_VERSION 1.0)
     set(GLIB_VERSION 2.0)
 
@@ -69,7 +67,7 @@ else()
         ${_CAIRO_INCLUDE_DIRS}
         ${_GLIB_INCLUDE_DIRS_1}
         ${_GLIB_INCLUDE_DIRS_2}
-	${X11_INCLUDE_DIR}
+        ${X11_INCLUDE_DIR}
     )
 
     find_library( _PANGOCAIRO_LIBRARIES NAMES pangocairo pangocairo-${PANGO_VERSION})
@@ -82,15 +80,26 @@ else()
         ${_PANGO_LIBRARIES}
         ${_CAIRO_LIBRARIES}
         ${_GLIB_LIBRARIES}
-	${X11_LIBRARIES}
+        ${X11_LIBRARIES}
     )
+
+    include(FindPackageHandleStandardArgs)
 
     # Handle the QUIET and REQUIRED arguments and set PANGOCAIRO_FOUND to TRUE
     # if all listed variables are TRUE
     # Note: capitalisation of the package name must be the same as in file name
     find_package_handle_standard_args( PangoCairo  DEFAULT_MSG
-                                       PANGOCAIRO_LIBRARIES
-                                       PANGOCAIRO_INCLUDE_DIRS  )
+                                       _PANGOCAIRO_INCLUDE_DIRS
+                                       _CAIRO_INCLUDE_DIRS
+                                       _GLIB_INCLUDE_DIRS_1
+                                       _GLIB_INCLUDE_DIRS_2
+                                       X11_INCLUDE_DIR
+                                       _PANGOCAIRO_LIBRARIES
+                                       _PANGO_LIBRARIES
+                                       _CAIRO_LIBRARIES
+                                       _GLIB_LIBRARIES
+                                       X11_LIBRARIES )
 
 endif()
 
+mark_as_advanced( PANGOCAIRO_INCLUDE_DIRS PANGOCAIRO_LIBRARIES )
