@@ -33,6 +33,12 @@ option( CHECK_UNUSED_FILES       "check for unused project files (slow)"  OFF )
 mark_as_advanced( DEVELOPER_MODE  )
 mark_as_advanced( CHECK_UNUSED_FILES  )
 
+option( ECBUILD_INSTALL_LIBRARY_HEADERS "Will install library headers" ON )
+mark_as_advanced( ECBUILD_INSTALL_LIBRARY_HEADERS )
+
+option( ECBUILD_INSTALL_FORTRAN_MODULES "Will install Fortran modules" ON )
+mark_as_advanced( ECBUILD_INSTALL_FORTRAN_MODULES )
+
 include( CMakeDependentOption ) # make options depend on one another
 
 cmake_dependent_option( ENABLE_OS_TYPES_TEST     "Run sizeof tests on C types" ON "ENABLE_OS_TESTS" OFF)

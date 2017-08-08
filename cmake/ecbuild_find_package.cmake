@@ -125,6 +125,10 @@ macro( ecbuild_find_package )
     ecbuild_critical("Call to ecbuild_find_package() requests EXACT but doesn't specify VERSION.")
   endif()
 
+  if( _PAR_QUIET )
+    set( _find_quiet QUIET )
+  endif()
+
   # If the package is required, set TYPE to REQUIRED
   # Due to shortcomings in CMake's argument parser, passing TYPE REQUIRED has no effect
   if( _PAR_REQUIRED )

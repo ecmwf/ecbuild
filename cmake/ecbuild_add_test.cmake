@@ -224,30 +224,6 @@ macro( ecbuild_add_test )
     endif()
   endif()
 
-  if( _PAR_TYPE MATCHES "PYTHON" )
-    if( PYTHONINTERP_FOUND )
-      set( _PAR_COMMAND ${PYTHON_EXECUTABLE} )
-      set( _PAR_LABELS python ${_PAR_LABELS} )
-    else()
-      ecbuild_warn( "Requested a python test but python interpreter not found - disabling test\nPYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
-      set( _PAR_ENABLED 0 )
-    endif()
-  endif()
-
-  ### further checks
-
-  if( _PAR_ENABLED AND NOT _PAR_TARGET AND NOT _PAR_COMMAND )
-    ecbuild_critical("The call to ecbuild_add_test() defines neither a TARGET nor a COMMAND.")
-  endif()
-
-  if( _PAR_ENABLED AND NOT _PAR_COMMAND AND NOT _PAR_SOURCES )
-    ecbuild_critical("The call to ecbuild_add_test() defines neither a COMMAND nor SOURCES, so no test can be defined or built.")
-  endif()
-
-  if( _PAR_TYPE MATCHES "SCRIPT" AND NOT _PAR_COMMAND )
-    ecbuild_critical("The call to ecbuild_add_test() defines a 'script' but doesn't specify the COMMAND.")
-  endif()
-
   ### conditional build
 
   if( DEFINED _PAR_CONDITION )
@@ -284,6 +260,30 @@ macro( ecbuild_add_test )
   ### enable the tests
 
   if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
+
+    if( _PAR_TYPE MATCHES "PYTHON" )
+      if( PYTHONINTERP_FOUND )
+        set( _PAR_COMMAND ${PYTHON_EXECUTABLE} )
+        set( _PAR_LABELS python ${_PAR_LABELS} )
+      else()
+        ecbuild_warn( "Requested a python test but python interpreter not found - disabling test\nPYTHON_EXECUTABLE: [${PYTHON_EXECUTABLE}]" )
+        set( _PAR_ENABLED 0 )
+      endif()
+    endif()
+
+    ### further checks
+
+    if( _PAR_ENABLED AND NOT _PAR_TARGET AND NOT _PAR_COMMAND )
+      ecbuild_critical("The call to ecbuild_add_test() defines neither a TARGET nor a COMMAND.")
+    endif()
+
+    if( _PAR_ENABLED AND NOT _PAR_COMMAND AND NOT _PAR_SOURCES )
+      ecbuild_critical("The call to ecbuild_add_test() defines neither a COMMAND nor SOURCES, so no test can be defined or built.")
+    endif()
+
+    if( _PAR_TYPE MATCHES "SCRIPT" AND NOT _PAR_COMMAND )
+      ecbuild_critical("The call to ecbuild_add_test() defines a 'script' but doesn't specify the COMMAND.")
+    endif()
 
     # add resources
 
