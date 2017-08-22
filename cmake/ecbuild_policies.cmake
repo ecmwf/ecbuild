@@ -18,9 +18,9 @@
 #
 ##############################################################################
 
-# allow for empty spaces around library names 
+# fail if empty spaces are found around linked library names 
 if( POLICY CMP0004 )
-    cmake_policy( SET CMP0004 OLD )
+    cmake_policy( SET CMP0004 NEW )
 endif()
 
 # Allow use of the LOCATION target property.
