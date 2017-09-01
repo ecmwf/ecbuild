@@ -371,6 +371,12 @@ macro( ecbuild_install_project )
                 file( APPEND "${_lname_config}.tpls.in" "    set( ${TPL}_CONFIG \"${__import_file}\" )\n" )
                 file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
 
+            elseif( ${TPL}_FULL_INSTALL_CMAKE_DIR )
+
+              ecbuild_debug( "Adding TPL ${TPL} import file to ${_lname_config}.tpls.in" )
+                set( __import_file "${${TPL}_FULL_INSTALL_CMAKE_DIR}/${_tpl}-config.cmake" )
+                file( APPEND "${_lname_config}.tpls.in" "include( \"${__import_file}\" OPTIONAL )\n" )
+
             endif()
 
         endforeach()
@@ -412,6 +418,8 @@ macro( ecbuild_install_project )
     else()
 
     # export variables for upper projects
+
+        set( ${PNAME}_FULL_INSTALL_CMAKE_DIR ${${PNAME}_FULL_INSTALL_CMAKE_DIR} PARENT_SCOPE )
 
         set( ${PNAME}_FOUND             TRUE                          PARENT_SCOPE )
         set( ${PROJECT_NAME}_FOUND      TRUE                          PARENT_SCOPE )
