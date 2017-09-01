@@ -19,13 +19,13 @@ ecbuild_use_package( PROJECT foo REQUIRED )
 ecbuild_add_library(
     TARGET       baz
     TYPE         OBJECT
-    INCLUDES     ${FOO_INCLUDE_DIRS}
+    PRIVATE_INCLUDES     ${FOO_INCLUDE_DIRS}
     SOURCES      baz.h baz.c
 )
 
 ecbuild_add_library(
     TARGET       bar
-    INCLUDES     ${FOO_INCLUDE_DIRS}
+    PRIVATE_INCLUDES     ${FOO_INCLUDE_DIRS}
     LIBS         foo
     SOURCES      bar.h bar.c
     OBJECTS      baz
@@ -34,7 +34,7 @@ ecbuild_add_library(
 ecbuild_add_library(
     TARGET       zingo
     TYPE         OBJECT
-    INCLUDES     ${FOO_INCLUDE_DIRS}
+    PRIVATE_INCLUDES     ${FOO_INCLUDE_DIRS}
     SOURCES      zingo.h zingo.c
 )
 
