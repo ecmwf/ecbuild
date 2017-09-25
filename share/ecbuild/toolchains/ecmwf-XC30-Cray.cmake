@@ -95,6 +95,8 @@ set( EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV 0 )
 set( EC_HAVE_PROCFS 1 )
 set( EC_HAVE_DLFCN_H 1 )
 set( EC_HAVE_DLADDR 1 )
+set( EC_HAVE_AIOCB 1 )
+set( EC_HAVE_AIOCB64 1 )
 
 # Disable relative rpaths as aprun does not respect it
 set( ENABLE_RELATIVE_RPATHS OFF CACHE STRING "Disable relative rpaths" FORCE )

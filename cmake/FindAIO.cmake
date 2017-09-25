@@ -41,25 +41,29 @@ if( AIO_FOUND )
 			set( CMAKE_REQUIRED_LIBRARIES ${AIO_LIBRARIES} )
 		endif()
 
-		check_c_source_compiles( "#include <aio.h>
-								  #include <fcntl.h>
-								  int main(){
-									  struct aiocb* aiocbp;
-									  int n = aio_write(aiocbp);
-									  n = aio_read(aiocbp);
-									  n = aio_fsync(O_SYNC,aiocbp);
-									  return 0; }"
-								EC_HAVE_AIOCB )
+		if( NOT EC_HAVE_AIOCB )
+			check_c_source_compiles( "#include <aio.h>
+									  #include <fcntl.h>
+									  int main(){
+										  struct aiocb* aiocbp;
+										  int n = aio_write(aiocbp);
+										  n = aio_read(aiocbp);
+										  n = aio_fsync(O_SYNC,aiocbp);
+										  return 0; }"
+									EC_HAVE_AIOCB )
+		endif()
 
-		check_c_source_compiles( "#include <aio.h>
-								  #include <fcntl.h>
-								  int main(){
-									  struct aiocb64* aiocbp;
-									  int n = aio_write64(aiocbp);
-									  n = aio_read64(aiocbp);
-									  n = aio_fsync64(O_SYNC,aiocbp);
-									  return 0; }"
-								EC_HAVE_AIOCB64 )
+		if( NOT EC_HAVE_AIOCB64 )
+			check_c_source_compiles( "#include <aio.h>
+									  #include <fcntl.h>
+									  int main(){
+										  struct aiocb64* aiocbp;
+										  int n = aio_write64(aiocbp);
+										  n = aio_read64(aiocbp);
+										  n = aio_fsync64(O_SYNC,aiocbp);
+										  return 0; }"
+									EC_HAVE_AIOCB64 )
+		endif()
 
     cmake_pop_check_state()
 
