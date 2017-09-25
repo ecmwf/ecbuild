@@ -128,10 +128,16 @@ set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
 # LINK FLAGS
 ####################################################################
 
+if( EXISTS "$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so" )
+  set( LIBCRAY_CXX_RTS "$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so" ) 
+elseif( EXISTS "$ENV{CC_X86_64}/lib/libcray-c++-rts.so" )
+  set( LIBCRAY_CXX_RTS "$ENV{CC_X86_64}/lib/libcray-c++-rts.so" ) 
+endif()
+
 set( ECBUILD_SHARED_LINKER_FLAGS "-Wl,--eh-frame-hdr -Ktrap=fp" )
 set( ECBUILD_MODULE_LINKER_FLAGS "-Wl,--eh-frame-hdr -Ktrap=fp -Wl,-Map,loadmap" )
 set( ECBUILD_EXE_LINKER_FLAGS    "-Wl,--eh-frame-hdr -Ktrap=fp -Wl,-Map,loadmap -Wl,--as-needed" )
-set( ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES "$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so" CACHE STRING "" )
+set( ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES "${LIBCRAY_CXX_RTS}" CACHE STRING "" )
 
 ####################################################################
 # LIBRARIES
