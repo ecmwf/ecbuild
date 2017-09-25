@@ -27,24 +27,36 @@ if(CMAKE_VERSION VERSION_LESS 2.8.9)
   endmacro ()
 endif(CMAKE_VERSION VERSION_LESS 2.8.9)
 
-check_cxx_compiler_flag(-std=c++11 has_std_cpp11)
-check_cxx_compiler_flag(-std=c++0x has_std_cpp0x)
-check_cxx_compiler_flag(-hstd=c++11 has_hstd_cpp11)
-if(MINGW) 
-  check_cxx_compiler_flag(-std=gnu++11 has_std_gnupp11)
-  check_cxx_compiler_flag(-std=gnu++0x has_std_gnupp0x)
-endif(MINGW)
-if(has_std_gnupp11)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-elseif(has_std_gnupp0x)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
-elseif(has_std_cpp11)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(has_std_cpp0x)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-elseif(has_hstd_cpp11)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -hstd=c++11")
-endif(has_std_gnupp11)
+if( CXX11_FLAG )
+
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX11_FLAG}")
+
+else()
+
+  if(MINGW)
+    LIST( APPEND CHECK_CXX11_FLAGS
+      "-std=gnu++11"
+      "-std=gnu++0x"
+    )
+  endif(MINGW)
+
+  LIST( APPEND CHECK_CXX11_FLAGS
+    "-std=c++11"
+    "-hstd=c++11"
+    "-std=c++0x"
+  )
+
+  set( __N 1 )
+  foreach( _cxx11_flag ${CHECK_CXX11_FLAGS} )
+    check_cxx_compiler_flag( ${_cxx11_flag} has_cxx11_flag_${__N} )
+    if( has_cxx11_flag_${__N} )
+      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_cxx11_flag}" )
+      break()
+    endif()
+    math( EXPR __N '${__N}+1' )
+  endforeach()
+
+endif()
 
 if(MSVC) 
   set(MSWINDOBE TRUE)

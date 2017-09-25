@@ -112,6 +112,8 @@ CMAKE_FORCE_Fortran_COMPILER ( ftn Cray )
 set( ECBUILD_FIND_MPI OFF )
 set( ECBUILD_TRUST_FLAGS ON )
 
+set( CXX11_FLAG "-hstd=c++11" )
+
 ####################################################################
 # OpenMP FLAGS
 ####################################################################
