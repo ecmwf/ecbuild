@@ -1,8 +1,8 @@
 # (C) Copyright 1996-2017 ECMWF.
-# 
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -32,17 +32,17 @@ if( AIO_FOUND )
 
 	include( CheckCSourceCompiles )
 	include( CMakePushCheckState )
-    
+
     cmake_push_check_state()
-    
+
 		set( CMAKE_REQUIRED_INCLUDES ${AIO_INCLUDE_DIRS} )
 
 		if( AIO_LIBRARIES )
 			set( CMAKE_REQUIRED_LIBRARIES ${AIO_LIBRARIES} )
 		endif()
 
-		if( NOT EC_HAVE_AIOCB )
-			check_c_source_compiles( "#include <aio.h>
+		if( NOT DEFINED EC_HAVE_AIOCB )
+			ecbuild_cache_check_c_source_compiles( "#include <aio.h>
 									  #include <fcntl.h>
 									  int main(){
 										  struct aiocb* aiocbp;
@@ -53,7 +53,7 @@ if( AIO_FOUND )
 									EC_HAVE_AIOCB )
 		endif()
 
-		if( NOT EC_HAVE_AIOCB64 )
+		if( NOT DEFINED EC_HAVE_AIOCB64 )
 			check_c_source_compiles( "#include <aio.h>
 									  #include <fcntl.h>
 									  int main(){
