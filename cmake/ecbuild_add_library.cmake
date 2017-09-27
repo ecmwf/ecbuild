@@ -298,7 +298,11 @@ function( ecbuild_add_library_impl )
       list(REMOVE_ITEM _PAR_LIBS optimized)
       foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
         if( lib )
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with ${lib}")
+
+          string(REGEX REPLACE "[ ]+$" "" ${lib} "${${lib}}") # strips leading whitespaces
+          string(REGEX REPLACE "^[ ]+" "" ${lib} "${${lib}}") # strips trailing whitespaces
+
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with [${lib}]")
           target_link_libraries( ${_PAR_TARGET} ${lib} )
         else()
           ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${lib} not found - not linking")

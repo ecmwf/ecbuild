@@ -18,9 +18,9 @@
 #
 ##############################################################################
 
-# allow for empty spaces around library names 
+# fail if empty spaces are found around linked library names
 if( POLICY CMP0004 )
-    cmake_policy( SET CMP0004 OLD )
+    cmake_policy( SET CMP0004 NEW )
 endif()
 
 # Allow use of the LOCATION target property.
@@ -64,4 +64,10 @@ endif()
 #      "${VAR}" is dereference only once
 if( POLICY CMP0054 )
     cmake_policy( SET CMP0054 NEW )
+endif()
+
+# RPATH settings on macOS do not affect "install_name"
+# FTM, keep old behavior -- need to test if new behavior impacts binaries in build directory
+if( POLICY CMP0068 )
+    cmake_policy( SET CMP0068 OLD )
 endif()
