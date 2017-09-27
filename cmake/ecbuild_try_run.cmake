@@ -137,7 +137,7 @@ function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
   ecbuild_debug( "ecbuild_try_run: Compiling ${SRCFILE} in ${BINDIR}" )
   try_compile( _compile_res ${BINDIR} ${SRCFILE}
                OUTPUT_VARIABLE _compile_out
-               COPY_FILE ${SRCFILE}.bin COPY_FILE_ERROR _compile_err
+               COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/${SRCFILE}.bin COPY_FILE_ERROR _compile_err
                ${_opts} )
 
   if( _compile_out )
@@ -157,8 +157,8 @@ function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
 
   if( _compile_res )
 
-    ecbuild_debug( "ecbuild_try_run: Running ${SRCFILE}.bin in ${BINDIR}" )
-    execute_process( COMMAND ${SRCFILE}.bin WORKING_DIRECTORY ${BINDIR}
+    ecbuild_debug( "ecbuild_try_run: Running ${CMAKE_CURRENT_BINARY_DIR}/${SRCFILE}.bin in ${BINDIR}" )
+    execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${SRCFILE}.bin WORKING_DIRECTORY ${BINDIR}
                      RESULT_VARIABLE _run_res
                      OUTPUT_VARIABLE _run_out ERROR_VARIABLE _run_err )
 
