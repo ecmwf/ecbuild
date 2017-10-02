@@ -9,11 +9,7 @@ import json
 import logging
 from os import environ, path
 
-from docutils.core import publish_string
-
 import requests
-
-from rst2confluence import confluence
 
 API_URL = 'https://software.ecmwf.int/wiki/rest/api/content'
 if 'USER' in environ and 'CONFLUENCE_PASSWORD' in environ:
@@ -23,29 +19,6 @@ else:
 
 log = logging.getLogger('upload')
 log.setLevel(logging.DEBUG)
-
-
-def extract(fname):
-    "Extract rST documentation from CMake module ``fname``."
-    with open(fname) as f:
-        rst = False
-        lines = []
-        for line in f:
-            line = line.strip()
-            # Only consider comments
-            if not line.startswith('#'):
-                rst = False
-                continue
-            # Lines with the magic cooke '.rst:' start an rST block
-            if line.endswith('.rst:'):
-                rst = True
-                continue
-            # Only add lines in an rST block
-            if rst:
-                line = line.lstrip('#')
-                # Blank lines are syntactically relevant
-                lines.append(line[1:] if line else line)
-        return lines
 
 
 def pp(res):
@@ -58,24 +31,17 @@ def upload(fname, space, parent_id):
     """Upload documentation for CMake module ``fname`` as child of page with
     id ``parent_id``."""
     pagename = path.splitext(path.basename(fname))[0]
-    rst = '\n'.join(extract(fname))
-    if not rst:
-        return
+    with open(fname) as f:
+        data = f.read()
     log.debug('=' * 79)
     log.info('Uploading %s', pagename)
     log.debug('=' * 79)
-    log.debug('rST')
+    log.debug(data)
     log.debug('-' * 79)
-    log.debug(rst)
-    log.debug('-' * 79)
-    log.debug('Confluence')
-    log.debug('-' * 79)
-    cwiki = publish_string(rst, writer=confluence.Writer())
-    log.debug(cwiki)
     page = {'type': 'page',
             'title': pagename,
             'space': {'key': space},
-            'body': {'storage': {'value': cwiki, 'representation': 'wiki'}},
+            'body': {'storage': {'value': data, 'representation': 'storage'}},
             'ancestors': [{'type': 'page', 'id': parent_id}]}
     create_or_update(page, space)
 
@@ -110,14 +76,14 @@ def create_or_update(page, space):
 def main():
     parser = ArgumentParser(description=__doc__,
                             formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--space', default='ECBUILD',
+    parser.add_argument('--space', default='ATLAS',
                         help='Confluence space to upload to')
-    parser.add_argument('--page', default='ecBuild Macros',
+    parser.add_argument('--page', default='Documentation',
                         help='Page to attach documentation to')
     parser.add_argument('--logfile', default='upload.log',
                         help='Path to log file')
-    parser.add_argument('macro', nargs='+',
-                        help='list of paths to ecBuild macros')
+    parser.add_argument('file', nargs='+',
+                        help='list of paths to html files to upload')
     args = parser.parse_args()
 
     # Log to file with level DEBUG
@@ -143,7 +109,7 @@ def main():
     log.info('====== Start uploading documentation to "%s" in space %s ======',
              args.page, args.space)
     log.info('Logging to file %s', args.logfile)
-    for f in args.macro:
+    for f in args.file:
         upload(f, args.space, parent_id)
     log.info('====== Finished uploading documentation ======')
 
