@@ -190,7 +190,7 @@ macro( ecbuild_declare_project )
   ecbuild_info( "---------------------------------------------------------" )
 
   if( ${PNAME}_GIT_SHA1_SHORT )
-    ecbuild_info( "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR}) [${${PNAME}_GIT_SHA1_SHORT}]" )
+    ecbuild_info( "${Green}[${PROJECT_NAME}] (${${PNAME}_VERSION_STR}) [${${PNAME}_GIT_SHA1_SHORT}]${ColourReset}" )
   else()
     ecbuild_info( "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR})" )
   endif()
