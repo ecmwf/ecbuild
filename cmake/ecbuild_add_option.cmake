@@ -263,7 +263,7 @@ macro( ecbuild_add_option )
               ecbuild_find_lexyacc( ${_find_args} )
             else()
               ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for package ${pkgname} - find_package( ${pkglist} )")
-              ecbuild_find_package( NAME ${pkglist} )
+              find_package( ${pkglist} )
             endif()
 
           endif()
