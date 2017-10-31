@@ -37,7 +37,12 @@ function( ecbuild_library_dependencies dependencies libraries )
       else()
 
         list( APPEND _location ${_lib} )
-        get_property( _deps TARGET ${_lib} PROPERTY LINK_LIBRARIES )
+        get_property( _type TARGET ${_lib} PROPERTY TYPE )
+        if( "${_type}" STREQUAL "INTERFACE_LIBRARY" )
+          get_property( _deps TARGET ${_lib} PROPERTY INTERFACE_LINK_LIBRARIES )
+        else()
+          get_property( _deps TARGET ${_lib} PROPERTY LINK_LIBRARIES )
+        endif()
 
       endif()
 
@@ -100,6 +105,14 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
   foreach( _lib ${_libraries} )
 
+    if( TARGET ${_lib} )
+      get_property( _type TARGET ${_lib} PROPERTY TYPE )
+      if( "${_type}" STREQUAL "INTERFACE_LIBRARY" )
+        continue()
+      endif()
+    endif()
+
+
     unset( _name )
     unset( _dir  )
 
@@ -115,7 +128,6 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
         string( REGEX REPLACE "^-l" "" _name ${_lib} )
 
       else()
-
 
         get_filename_component( _name ${_lib} NAME_WE )
         get_filename_component( _dir  ${_lib} PATH )
