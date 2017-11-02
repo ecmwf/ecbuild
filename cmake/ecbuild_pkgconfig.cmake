@@ -27,12 +27,15 @@ function( ecbuild_library_dependencies dependencies libraries )
 
       if( _imported )
 
-        get_property( _location TARGET ${_lib} PROPERTY LOCATION )
-        get_property( _configs   TARGET ${_lib} PROPERTY IMPORTED_CONFIGURATIONS )
-        list( REVERSE _configs )
-        list( GET _configs 0 _config)
-        get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config} )
-        get_property( _locimp   TARGET ${_lib} PROPERTY IMPORTED_LOCATION_${_config} )
+        get_property( _type TARGET ${_lib} PROPERTY TYPE )
+        if( NOT( "${_type}" STREQUAL "INTERFACE_LIBRARY" ) )
+          get_property( _location TARGET ${_lib} PROPERTY LOCATION )
+          get_property( _configs   TARGET ${_lib} PROPERTY IMPORTED_CONFIGURATIONS )
+          list( REVERSE _configs )
+          list( GET _configs 0 _config)
+          get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config} )
+          get_property( _locimp   TARGET ${_lib} PROPERTY IMPORTED_LOCATION_${_config} )
+        endif()
 
       else()
 
