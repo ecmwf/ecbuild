@@ -117,9 +117,9 @@ set( ECBUILD_TRUST_FLAGS ON )
 # OpenMP FLAGS
 ####################################################################
 
-set( OMP_C_FLAGS             "-openmp -openmp-threadprivate=compat" )
-set( OMP_CXX_FLAGS           "-openmp -openmp-threadprivate=compat" )
-set( OMP_Fortran_FLAGS       "-openmp -openmp-threadprivate=compat" )
+set( OMP_C_FLAGS             "-qopenmp -qopenmp-threadprivate=compat" )
+set( OMP_CXX_FLAGS           "-qopenmp -qopenmp-threadprivate=compat" )
+set( OMP_Fortran_FLAGS       "-qopenmp -qopenmp-threadprivate=compat" )
 
 ####################################################################
 # COMMON FLAGS
@@ -136,9 +136,12 @@ set( ECBUILD_Fortran_FLAGS "-fp-speculation=strict -fp-model source  -convert bi
 # BIT REPRODUCIBLE FLAGS
 ####################################################################
 
-set( ECBUILD_C_FLAGS_BIT        "-O2 -xAVX -finline-function -finline-limit=500" )
-set( ECBUILD_CXX_FLAGS_BIT      "-O2 -xAVX -finline-function -finline-limit=500" )
-set( ECBUILD_Fortran_FLAGS_BIT  "-O2 -xAVX -finline-function -finline-limit=500 -align array64byte" )
+set( ECBUILD_C_FLAGS_BIT        "-O2 -xAVX -finline-functions -finline-limit=500 -diag-disable=10121" )
+set( ECBUILD_CXX_FLAGS_BIT      "-O2 -xAVX -finline-functions -finline-limit=500 -diag-disable=10121" )
+set( ECBUILD_Fortran_FLAGS_BIT  "-O2 -xAVX -finline-functions -finline-limit=500 -diag-disable=10121 -align array64byte" )
+
+# Note: -diag-disable=10121 disables warning:
+#    ifort: command line warning #10121: overriding '-xCORE-AVX2' with '-xAVX'
 
 ####################################################################
 # DEBUG FLAGS
