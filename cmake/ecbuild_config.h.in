@@ -111,11 +111,6 @@
 
 #cmakedefine EC_HAVE_EXECINFO_BACKTRACE
 
-/* --- asynchronous IO support --- */
-
-#cmakedefine EC_HAVE_AIOCB
-#cmakedefine EC_HAVE_AIO64CB
-
 /* --- reentrant funtions support --- */
 
 #cmakedefine EC_HAVE_GMTIME_R
