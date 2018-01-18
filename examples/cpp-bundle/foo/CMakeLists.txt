@@ -16,9 +16,9 @@ ecbuild_declare_project()
 
 set( FOO_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} )
 
-ecbuild_add_library(TARGET       foo
-                    SOURCES      foo.h foo.c
-                    INCLUDES     ${FOO_INCLUDE_DIRS} )
+ecbuild_add_library(TARGET           foo
+                    SOURCES          foo.h foo.c
+                    PRIVATE_INCLUDES ${FOO_INCLUDE_DIRS} )
 
 ecbuild_add_executable(
     TARGET      master_foo
