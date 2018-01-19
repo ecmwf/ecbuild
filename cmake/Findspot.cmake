@@ -1,4 +1,4 @@
-# (C) Copyright 1996 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -33,7 +33,7 @@ if( NOT spot_FOUND )
                       NO_DEFAULT_PATH )
 
     endif()
-    
+
         find_path( SPOT_INCLUDE_DIR
                    NAMES spot_database.h
                    PATHS
@@ -54,12 +54,12 @@ if( NOT spot_FOUND )
 
     find_package_handle_standard_args( spot DEFAULT_MSG
                                        SPOT_LIBRARY SPOT_INCLUDE_DIR )
-    
+
     set( SPOT_LIBRARIES    ${SPOT_LIBRARY} )
     set( SPOT_INCLUDE_DIRS ${SPOT_INCLUDE_DIR} )
 
     mark_as_advanced( SPOT_INCLUDE_DIR SPOT_LIBRARY )
-    
+
     set( spot_FOUND ${SPOT_FOUND} )
 
 endif()

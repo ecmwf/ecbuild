@@ -1,8 +1,8 @@
-# (C) Copyright 1996 ECMWF.
-# 
+# (C) Copyright 2011- ECMWF.
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -27,7 +27,7 @@ if( DEFINED NETCDF_PATH )
     list( APPEND _netcdf_incs ${NETCDF_PATH} ${NETCDF_PATH}/include )
     list( APPEND _netcdf_libs ${NETCDF_PATH} ${NETCDF_PATH}/lib )
 endif()
-	
+
 if( DEFINED NETCDF_DIR )
     list( APPEND _netcdf_incs ${NETCDF_DIR} ${NETCDF_DIR}/include )
     list( APPEND _netcdf_libs ${NETCDF_DIR} ${NETCDF_DIR}/lib )

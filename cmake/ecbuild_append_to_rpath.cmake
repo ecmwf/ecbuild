@@ -1,4 +1,4 @@
-# (C) Copyright 1996 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -37,13 +37,13 @@ function( _path_append var path )
 endfunction()
 
 macro( ecbuild_append_to_rpath RPATH_DIRS )
-   
+
    if( NOT ${ARGC} EQUAL 1 )
      ecbuild_error( "ecbuild_append_to_rpath takes 1 argument")
    endif()
 
    foreach( RPATH_DIR ${RPATH_DIRS} )
-     
+
 		if( NOT ${RPATH_DIR} STREQUAL "" )
 
 			file( TO_CMAKE_PATH ${RPATH_DIR} RPATH_DIR ) # sanitize the path

@@ -1,4 +1,4 @@
-# (C) Copyright 1996 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -39,7 +39,7 @@
 #
 #   MPI_FOUND
 #   MPI_LIBRARY
-#   MPI_EXTRA_LIBRARY 
+#   MPI_EXTRA_LIBRARY
 #
 # The following CMake variables are set if C bindings were found: ::
 #
@@ -101,8 +101,8 @@ macro( ecbuild_find_mpi )
                 int main(int argc, char* argv[])
                 {
                 int rank;
-                MPI_Init(&argc, &argv); 
-                MPI_Comm_rank(MPI_COMM_WORLD, &rank); 
+                MPI_Init(&argc, &argv);
+                MPI_Comm_rank(MPI_COMM_WORLD, &rank);
                 MPI_Finalize();
                 return 0;
                 }

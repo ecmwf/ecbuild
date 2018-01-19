@@ -1,8 +1,8 @@
-# (C) Copyright 1996 ECMWF.
-# 
+# (C) Copyright 2011- ECMWF.
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -106,31 +106,31 @@ macro( ecbuild_check_fortran_source_return SOURCE )
           -DCMAKE_SKIP_RPATH:BOOL=${CMAKE_SKIP_RPATH}
           "${CHECK_Fortran_SOURCE_COMPILES_ADD_LIBRARIES}"
           "${CHECK_Fortran_SOURCE_COMPILES_ADD_INCLUDES}"
-          COMPILE_OUTPUT_VARIABLE compile_OUTPUT 
+          COMPILE_OUTPUT_VARIABLE compile_OUTPUT
           RUN_OUTPUT_VARIABLE     run_OUTPUT )
-    
+
         # if it did not compile make the return value fail code of 1
         if( NOT ${_PAR_VAR}_COMPILED )
           set( ${_PAR_VAR}_EXITCODE 1 )
         endif()
-    
+
         # if the return value was 0 then it worked
         if("${${_PAR_VAR}_EXITCODE}" EQUAL 0)
-    
+
           ecbuild_debug("Performing Test ${_PAR_VAR} - Success")
-          file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log 
+          file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
             "Performing Fortran SOURCE FILE Test ${_PAR_VAR} succeded with the following compile output:\n"
-            "${compile_OUTPUT}\n" 
+            "${compile_OUTPUT}\n"
             "Performing Fortran SOURCE FILE Run ${_PAR_VAR} succeded with the following run output:\n"
-            "${run_OUTPUT}\n" 
+            "${run_OUTPUT}\n"
             "Return value: ${${_PAR_VAR}}\n"
             "Source file was:\n${SOURCE}\n")
 
           set( ${_PAR_VAR}     1              CACHE INTERNAL "Test ${_PAR_VAR}")
           set( ${_PAR_OUTPUT} "${run_OUTPUT}" CACHE INTERNAL "Test ${_PAR_VAR} output")
-    
+
         else()
-    
+
           if(CMAKE_CROSSCOMPILING AND "${${_PAR_VAR}_EXITCODE}" MATCHES  "FAILED_TO_RUN")
             set(${_PAR_VAR} "${${_PAR_VAR}_EXITCODE}")
             set(${OUTPUT} "")
@@ -138,17 +138,17 @@ macro( ecbuild_check_fortran_source_return SOURCE )
             set(${_PAR_VAR} "" CACHE INTERNAL "Test ${_PAR_VAR}")
             set(${_PAR_OUTPUT} "" CACHE INTERNAL "Test ${_PAR_VAR} output")
           endif()
-    
+
           ecbuild_debug("Performing Test ${_PAR_VAR} - Failed")
-          file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log 
+          file(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
             "Performing Fortran SOURCE FILE Test ${_PAR_VAR} failed with the following compile output:\n"
-            "${compile_OUTPUT}\n" 
+            "${compile_OUTPUT}\n"
             "Performing Fortran SOURCE FILE Run ${_PAR_VAR} failed with the following run output:\n"
-            "${run_OUTPUT}\n" 
+            "${run_OUTPUT}\n"
             "Return value: ${${_PAR_VAR}_EXITCODE}\n"
             "Source file was:\n${SOURCE}\n")
         endif()
-    
+
     endif()
 
 endmacro()

@@ -1,4 +1,4 @@
-# (C) Copyright 1996 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -44,7 +44,7 @@ ecbuild_add_library( TARGET       mypython
 configure_file( mypython.py       ${CMAKE_BINARY_DIR}/lib COPYONLY )
 
 ############################################################################################
-# Installation 
+# Installation
 
 ecbuild_install_project( NAME python_project )
 

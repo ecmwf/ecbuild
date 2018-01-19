@@ -1,8 +1,8 @@
-# (C) Copyright 1996 ECMWF.
-# 
+# (C) Copyright 2011- ECMWF.
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -37,7 +37,7 @@ macro( ecbuild_prepare_cache )
     include( CheckCXXSourceCompiles )
     include( CheckTypeSize )
     set( ecbuild_cache_file ${CMAKE_BINARY_DIR}/ecbuild-cache.cmake )
-    file(WRITE ${ecbuild_cache_file} "# ecbuild cache file\n\n")    
+    file(WRITE ${ecbuild_cache_file} "# ecbuild cache file\n\n")
 endmacro()
 
 # Buffer the CMake variable var to be written to the ecBuild cache
