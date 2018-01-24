@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -39,7 +39,7 @@ if( NOT odb_api_FOUND )
                       PATH_SUFFIXES odb_api
                       NO_DEFAULT_PATH )
     endif()
-    
+
         find_path( ODB_API_INCLUDE_DIR
                    NAMES odb_api_config.h
                    PATHS
@@ -86,12 +86,12 @@ if( NOT odb_api_FOUND )
 
     find_package_handle_standard_args( odb_api DEFAULT_MSG
                                        ODB_API_LIBRARY ODB_API_ECLIB_LIBRARY ODB_API_INCLUDE_DIR )
-    
+
     set( ODB_API_LIBRARIES    ${ODB_API_LIBRARY} ${ODB_API_ECLIB_LIBRARY} )
     set( ODB_API_INCLUDE_DIRS ${ODB_API_INCLUDE_DIR} )
 
     mark_as_advanced( ODB_API_INCLUDE_DIR ODB_API_LIBRARY ODB_API_ECLIB_LIBRARY )
-    
+
     set( odb_api_FOUND ${ODB_API_FOUND} )
 
 endif()

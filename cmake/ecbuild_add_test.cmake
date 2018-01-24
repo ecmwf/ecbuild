@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -259,7 +259,7 @@ macro( ecbuild_add_test )
 
   ### enable the tests
 
-  if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
+  if( ENABLE_TESTS AND _${_PAR_TARGET}_condition AND _PAR_ENABLED )
 
     if( _PAR_TYPE MATCHES "PYTHON" )
       if( PYTHONINTERP_FOUND )

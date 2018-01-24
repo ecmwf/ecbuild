@@ -1,3 +1,11 @@
+# (C) Copyright 2011- ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation
+# nor does it submit to any jurisdiction.
+
 cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
 
 project( bar C CXX )
@@ -19,13 +27,13 @@ ecbuild_use_package( PROJECT foo REQUIRED )
 ecbuild_add_library(
     TARGET       baz
     TYPE         OBJECT
-    INCLUDES     ${FOO_INCLUDE_DIRS}
+    PRIVATE_INCLUDES     ${FOO_INCLUDE_DIRS}
     SOURCES      baz.h baz.c
 )
 
 ecbuild_add_library(
     TARGET       bar
-    INCLUDES     ${FOO_INCLUDE_DIRS}
+    PRIVATE_INCLUDES     ${FOO_INCLUDE_DIRS}
     LIBS         foo
     SOURCES      bar.h bar.c
     OBJECTS      baz
@@ -34,7 +42,7 @@ ecbuild_add_library(
 ecbuild_add_library(
     TARGET       zingo
     TYPE         OBJECT
-    INCLUDES     ${FOO_INCLUDE_DIRS}
+    PRIVATE_INCLUDES     ${FOO_INCLUDE_DIRS}
     SOURCES      zingo.h zingo.c
 )
 

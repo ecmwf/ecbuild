@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -27,17 +27,28 @@ function( ecbuild_library_dependencies dependencies libraries )
 
       if( _imported )
 
-        get_property( _location TARGET ${_lib} PROPERTY LOCATION )
-        get_property( _configs   TARGET ${_lib} PROPERTY IMPORTED_CONFIGURATIONS )
-        list( REVERSE _configs )
-        list( GET _configs 0 _config)
-        get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config} )
-        get_property( _locimp   TARGET ${_lib} PROPERTY IMPORTED_LOCATION_${_config} )
+        get_property( _type TARGET ${_lib} PROPERTY TYPE )
+        if( NOT( "${_type}" STREQUAL "INTERFACE_LIBRARY" ) )
+          get_property( _location TARGET ${_lib} PROPERTY LOCATION )
+          get_property( _configs   TARGET ${_lib} PROPERTY IMPORTED_CONFIGURATIONS )
+          if( _configs )
+            list( REVERSE _configs )
+            list( GET _configs 0 _config)
+            get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config} )
+          else()
+            get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES )
+          endif()
+        endif()
 
       else()
 
         list( APPEND _location ${_lib} )
-        get_property( _deps TARGET ${_lib} PROPERTY LINK_LIBRARIES )
+        get_property( _type TARGET ${_lib} PROPERTY TYPE )
+        if( "${_type}" STREQUAL "INTERFACE_LIBRARY" )
+          get_property( _deps TARGET ${_lib} PROPERTY INTERFACE_LINK_LIBRARIES )
+        else()
+          get_property( _deps TARGET ${_lib} PROPERTY LINK_LIBRARIES )
+        endif()
 
       endif()
 
@@ -100,62 +111,71 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
   foreach( _lib ${_libraries} )
 
-    unset( _name )
-    unset( _dir  )
-
-    if( ${_lib} MATCHES ".+/Frameworks/.+" )
-
-      get_filename_component( _name ${_lib} NAME_WE )
-      list( APPEND _pkgconfig_libs "-framework ${_name}" )
-
-    else()
-
-      if( ${_lib} MATCHES "-l.+" )
-
-        string( REGEX REPLACE "^-l" "" _name ${_lib} )
-
-      else()
-
-
-        get_filename_component( _name ${_lib} NAME_WE )
-        get_filename_component( _dir  ${_lib} PATH )
-
-        if( TARGET ${_lib} )
-          get_target_property( _name ${_lib} OUTPUT_NAME )
-        endif()
-        if( NOT _name )
-          set( _name ${_lib} )
-        endif()
-
-        string( REGEX REPLACE "^lib" "" _name ${_name} )
-
-        if( "${_dir}" STREQUAL "/usr/lib" )
-          unset( _dir )
-        endif()
-        if( "${_dir}" STREQUAL "/usr/lib64" )
-          unset( _dir )
-        endif()
-
+    set( _skip FALSE )
+    if( TARGET ${_lib} )
+      get_property( _type TARGET ${_lib} PROPERTY TYPE )
+      if( "${_type}" STREQUAL "INTERFACE_LIBRARY" )
+        set( _skip TRUE )
       endif()
+    endif()
 
-      set( _set_append TRUE )
-        foreach( _ignore ${_ignore_libs} )
-          if( "${_name}" STREQUAL "${_ignore}" )
-            set( _set_append FALSE )
-          endif()
-      endforeach()
+    if( NOT _skip )
+        unset( _name )
+        unset( _dir  )
 
-      if( _set_append )
+        if( ${_lib} MATCHES ".+/Frameworks/.+" )
 
-        if( _dir )
-          list( APPEND _pkgconfig_libs "-L${_dir}" "-l${_name}" )
+          get_filename_component( _name ${_lib} NAME_WE )
+          list( APPEND _pkgconfig_libs "-framework ${_name}" )
+
         else()
-          list( APPEND _pkgconfig_libs "-l${_name}" )
-        endif()
 
-      endif()
+          if( ${_lib} MATCHES "-l.+" )
 
-    endif( ${_lib} MATCHES ".+/Frameworks/.+" )
+            string( REGEX REPLACE "^-l" "" _name ${_lib} )
+
+          else()
+
+            get_filename_component( _name ${_lib} NAME_WE )
+            get_filename_component( _dir  ${_lib} PATH )
+
+            if( TARGET ${_lib} )
+              get_target_property( _name ${_lib} OUTPUT_NAME )
+            endif()
+            if( NOT _name )
+              set( _name ${_lib} )
+            endif()
+
+            string( REGEX REPLACE "^lib" "" _name ${_name} )
+
+            if( "${_dir}" STREQUAL "/usr/lib" )
+              unset( _dir )
+            endif()
+            if( "${_dir}" STREQUAL "/usr/lib64" )
+              unset( _dir )
+            endif()
+
+          endif()
+
+          set( _set_append TRUE )
+            foreach( _ignore ${_ignore_libs} )
+              if( "${_name}" STREQUAL "${_ignore}" )
+                set( _set_append FALSE )
+              endif()
+          endforeach()
+
+          if( _set_append )
+
+            if( _dir )
+              list( APPEND _pkgconfig_libs "-L${_dir}" "-l${_name}" )
+            else()
+              list( APPEND _pkgconfig_libs "-l${_name}" )
+            endif()
+
+          endif()
+
+        endif( ${_lib} MATCHES ".+/Frameworks/.+" )
+    endif()
 
   endforeach( _lib ${_libraries} )
 

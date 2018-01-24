@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -27,44 +27,44 @@ include(FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args( AIO  DEFAULT_MSG  AIO_INCLUDE_DIRS  )
 
-# checks for AIO64 vs AIO
-if( AIO_FOUND )
-
-	include( CheckCSourceCompiles )
-	include( CMakePushCheckState )
-
-    cmake_push_check_state()
-
-		set( CMAKE_REQUIRED_INCLUDES ${AIO_INCLUDE_DIRS} )
-
-		if( AIO_LIBRARIES )
-			set( CMAKE_REQUIRED_LIBRARIES ${AIO_LIBRARIES} )
-		endif()
-
-		if( NOT DEFINED EC_HAVE_AIOCB )
-			ecbuild_cache_check_c_source_compiles( "#include <aio.h>
-									  #include <fcntl.h>
-									  int main(){
-										  struct aiocb* aiocbp;
-										  int n = aio_write(aiocbp);
-										  n = aio_read(aiocbp);
-										  n = aio_fsync(O_SYNC,aiocbp);
-										  return 0; }"
-									EC_HAVE_AIOCB )
-		endif()
-
-		if( NOT DEFINED EC_HAVE_AIOCB64 )
-			check_c_source_compiles( "#include <aio.h>
-									  #include <fcntl.h>
-									  int main(){
-										  struct aiocb64* aiocbp;
-										  int n = aio_write64(aiocbp);
-										  n = aio_read64(aiocbp);
-										  n = aio_fsync64(O_SYNC,aiocbp);
-										  return 0; }"
-									EC_HAVE_AIOCB64 )
-		endif()
-
-    cmake_pop_check_state()
-
-endif()
+# # checks for AIO64 vs AIO
+# if( AIO_FOUND )
+#
+# 	include( CheckCSourceCompiles )
+# 	include( CMakePushCheckState )
+#
+#     cmake_push_check_state()
+#
+# 		set( CMAKE_REQUIRED_INCLUDES ${AIO_INCLUDE_DIRS} )
+#
+# 		if( AIO_LIBRARIES )
+# 			set( CMAKE_REQUIRED_LIBRARIES ${AIO_LIBRARIES} )
+# 		endif()
+#
+# 		if( NOT DEFINED EC_HAVE_AIOCB )
+# 			ecbuild_cache_check_c_source_compiles( "#include <aio.h>
+# 									  #include <fcntl.h>
+# 									  int main(){
+# 										  struct aiocb* aiocbp;
+# 										  int n = aio_write(aiocbp);
+# 										  n = aio_read(aiocbp);
+# 										  n = aio_fsync(O_SYNC,aiocbp);
+# 										  return 0; }"
+# 									EC_HAVE_AIOCB )
+# 		endif()
+#
+# 		if( NOT DEFINED EC_HAVE_AIOCB64 )
+# 			check_c_source_compiles( "#include <aio.h>
+# 									  #include <fcntl.h>
+# 									  int main(){
+# 										  struct aiocb64* aiocbp;
+# 										  int n = aio_write64(aiocbp);
+# 										  n = aio_read64(aiocbp);
+# 										  n = aio_fsync64(O_SYNC,aiocbp);
+# 										  return 0; }"
+# 									EC_HAVE_AIOCB64 )
+# 		endif()
+#
+#     cmake_pop_check_state()
+#
+# endif()
