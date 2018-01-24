@@ -1,10 +1,10 @@
 #!/usr/bin/env perl
 
-# (C) Copyright 1996-2017 ECMWF.
-# 
+# (C) Copyright 2011- ECMWF.
+#
 # This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0. 
-# In applying this licence, ECMWF does not waive the privileges and immunities 
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
@@ -27,7 +27,7 @@ use File::Basename;
 my $file = $ARGV[0];
 # (2) [optional] directory to place the generated .b file
 my $base = $ARGV[1];
-# (3) [optional] c++ namespace 
+# (3) [optional] c++ namespace
 my $namespace = $ARGV[2];
 
 # no argv[1] passed, take basedir from file
@@ -137,7 +137,7 @@ EOF
 
 print <<"EOF";
 
-void _export(${namespace}::Exporter& h) const { 
+void _export(${namespace}::Exporter& h) const {
 	$D;
 }
 
@@ -264,7 +264,7 @@ sub parse_class {
 			}
 			else
 			{
-				unshift @TOKENS, "/";	
+				unshift @TOKENS, "/";
 			}
 
 		}
@@ -352,10 +352,10 @@ sub parse_class {
 						@z = ();
 						next;
 					}
-					$n++ if($a eq '<');	
-					$n++ if($a eq '(');	
-					$n-- if($a eq ')');	
-					$n-- if($a eq '>');	
+					$n++ if($a eq '<');
+					$n++ if($a eq '(');
+					$n-- if($a eq ')');
+					$n-- if($a eq '>');
 					push @z,$a;
 				}
 				push @a, make_type(@z) if(@z);
