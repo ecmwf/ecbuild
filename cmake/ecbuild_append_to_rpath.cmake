@@ -26,14 +26,14 @@
 ##############################################################################
 
 function( _path_append var path )
-	if( "${${var}}" STREQUAL "" )
-		set( ${var} "${path}" PARENT_SCOPE )
-	else()
-		list( FIND ${var} ${path} _found )
-		if( _found EQUAL "-1" )
-			set( ${var} "${${var}}:${path}" PARENT_SCOPE )
-		endif()
-	endif()
+    if( "${${var}}" STREQUAL "" )
+        set( ${var} "${path}" PARENT_SCOPE )
+    else()
+        list( FIND ${var} ${path} _found )
+        if( _found EQUAL "-1" )
+            set( ${var} "${${var}}:${path}" PARENT_SCOPE )
+        endif()
+    endif()
 endfunction()
 
 macro( ecbuild_append_to_rpath RPATH_DIRS )
@@ -44,28 +44,28 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 
    foreach( RPATH_DIR ${RPATH_DIRS} )
 
-		if( NOT ${RPATH_DIR} STREQUAL "" )
+        if( NOT ${RPATH_DIR} STREQUAL "" )
 
-			file( TO_CMAKE_PATH ${RPATH_DIR} RPATH_DIR ) # sanitize the path
+            file( TO_CMAKE_PATH ${RPATH_DIR} RPATH_DIR ) # sanitize the path
 
-			if( IS_ABSOLUTE ${RPATH_DIR} )
+            if( IS_ABSOLUTE ${RPATH_DIR} )
 
-				_path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
+                _path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
 
-			else()
+            else()
 
-				set( _done 0 )
+                set( _done 0 )
 
-				if( EC_OS_NAME STREQUAL "macosx" )
+                if( EC_OS_NAME STREQUAL "macosx" )
 
-					if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" VERSION_LESS 3.0) # cmake < 3.0
-						set( CMAKE_INSTALL_NAME_DIR "@loader_path/${RPATH_DIR}" )
-					endif()
-					_path_append( CMAKE_INSTALL_RPATH "@loader_path/${RPATH_DIR}" )
+                    if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" VERSION_LESS 3.0) # cmake < 3.0
+                        set( CMAKE_INSTALL_NAME_DIR "@loader_path/${RPATH_DIR}" )
+                    endif()
+                    _path_append( CMAKE_INSTALL_RPATH "@loader_path/${RPATH_DIR}" )
 
-					set( _done 1 )
+                    set( _done 1 )
 
-				endif()
+                endif()
 
                 if( EC_OS_NAME STREQUAL "freebsd" )
                     _path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
@@ -73,27 +73,27 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
                 endif()
 
                 if( EC_OS_NAME STREQUAL "linux" )
-					_path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
-					set( _done 1 )
-				endif()
+                    _path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
+                    set( _done 1 )
+                endif()
 
-				if( EC_OS_NAME STREQUAL "solaris" )
-					_path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
-					set( _done 1 )
-				endif()
+                if( EC_OS_NAME STREQUAL "solaris" )
+                    _path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
+                    set( _done 1 )
+                endif()
 
                 if( EC_OS_NAME STREQUAL "aix" ) # always relative to exectuable path
                     _path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
                     set( _done 1 )
                 endif()
 
-				# fallback
+                # fallback
 
-				if( NOT _done )
-					_path_append( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RPATH_DIR}" )
-				endif()
+                if( NOT _done )
+                    _path_append( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RPATH_DIR}" )
+                endif()
 
-			endif()
+            endif()
 
      endif()
 

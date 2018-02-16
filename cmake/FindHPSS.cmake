@@ -14,8 +14,8 @@
 #  HPSS_DEFINITIONS - Compiler switches required for using HPSS
 
 if( DEFINED HPSS_PATH )
-	find_path(HPSS_INCLUDE_DIR hpss_api.h PATHS ${HPSS_PATH}/include PATH_SUFFIXES hpss NO_DEFAULT_PATH)
-	find_library(HPSS_LIBRARY  hpss       PATHS ${HPSS_PATH}/lib     PATH_SUFFIXES hpss NO_DEFAULT_PATH)
+    find_path(HPSS_INCLUDE_DIR hpss_api.h PATHS ${HPSS_PATH}/include PATH_SUFFIXES hpss NO_DEFAULT_PATH)
+    find_library(HPSS_LIBRARY  hpss       PATHS ${HPSS_PATH}/lib     PATH_SUFFIXES hpss NO_DEFAULT_PATH)
 endif()
 
 find_path(HPSS_INCLUDE_DIR hpss_api.h PATH_SUFFIXES hpss )

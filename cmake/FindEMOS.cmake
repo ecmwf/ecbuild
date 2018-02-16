@@ -13,7 +13,7 @@
 #  EMOS_LIBRARIES - The libraries needed to use EMOS
 
 if( NOT DEFINED EMOS_PATH AND DEFINED $ENV{EMOS_PATH} )
-	set( EMOS_PATH $ENV{EMOS_PATH} )
+    set( EMOS_PATH $ENV{EMOS_PATH} )
 endif()
 
 if( DEFINED EMOS_PATH )

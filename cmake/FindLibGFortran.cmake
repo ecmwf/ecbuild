@@ -17,22 +17,22 @@ find_program( GFORTRAN_EXECUTABLE gfortran )
 
 if( GFORTRAN_EXECUTABLE )
 
-	execute_process(COMMAND ${GFORTRAN_EXECUTABLE} "-print-search-dirs"
-		RESULT_VARIABLE _GFORTRAN_SEARCH_SUCCESS
-		OUTPUT_VARIABLE _GFORTRAN_VALUES_OUTPUT
-		ERROR_VARIABLE _GFORTRAN_ERROR_VALUE
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND ${GFORTRAN_EXECUTABLE} "-print-search-dirs"
+        RESULT_VARIABLE _GFORTRAN_SEARCH_SUCCESS
+        OUTPUT_VARIABLE _GFORTRAN_VALUES_OUTPUT
+        ERROR_VARIABLE _GFORTRAN_ERROR_VALUE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 #	ecbuild_debug_var(_GFORTRAN_SEARCH_SUCCESS)
 #	ecbuild_debug_var(_GFORTRAN_VALUES_OUTPUT)
 #	ecbuild_debug_var(_GFORTRAN_ERROR_VALUE)
 
-	if(_GFORTRAN_SEARCH_SUCCESS MATCHES 0)
-		string(REGEX REPLACE ".*libraries: =(.*)" "\\1" _result  ${_GFORTRAN_VALUES_OUTPUT})
-		string(REGEX REPLACE ":" ";" _gfortran_hints ${_result} )
-	endif()
+    if(_GFORTRAN_SEARCH_SUCCESS MATCHES 0)
+        string(REGEX REPLACE ".*libraries: =(.*)" "\\1" _result  ${_GFORTRAN_VALUES_OUTPUT})
+        string(REGEX REPLACE ":" ";" _gfortran_hints ${_result} )
+    endif()
 
-	ecbuild_debug_var( _gfortran_hints )
+    ecbuild_debug_var( _gfortran_hints )
 
 endif()
 
@@ -42,7 +42,7 @@ find_library( GFORTRAN_LIB NAMES ${__libgfortran_names}  HINTS ${_gfortran_hints
 mark_as_advanced( GFORTRAN_LIB )
 
 if( GFORTRAN_LIB )
-	set( GFORTRAN_LIBRARIES ${GFORTRAN_LIB} )
+    set( GFORTRAN_LIBRARIES ${GFORTRAN_LIB} )
 endif()
 
 include(FindPackageHandleStandardArgs)

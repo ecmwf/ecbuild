@@ -14,16 +14,16 @@
 # set( PGIFORTRAN_SEARCH_LIBS pgftnrtl nspgc pgc rt pgsse1 pgsse2 )                                                    # mars client linux.3
 
 if( NOT DEFINED PGIFORTRAN_SEARCH_LIBS )
-	set( PGIFORTRAN_SEARCH_LIBS pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 pgf902 pghpf_rpm1 pghpf2 pgsse1 pgsse2 ) # better ?                                                    #
+    set( PGIFORTRAN_SEARCH_LIBS pgmp pgbind numa pgf90 pgf90_rpm1 pgf902 pgf90rtl pgftnrtl pghpf nspgc pgc pgf90 pgf902 pghpf_rpm1 pghpf2 pgsse1 pgsse2 ) # better ?                                                    #
 endif()
 
 set( pgi_fortran_all_libs_found 1 )
 
 foreach( pglib ${PGIFORTRAN_SEARCH_LIBS} )
 
-	find_library( ${pglib}_lib  ${pglib} PATHS ${PGI_PATH} PATH_SUFFIXES lib libso NO_DEFAULT_PATH )
+    find_library( ${pglib}_lib  ${pglib} PATHS ${PGI_PATH} PATH_SUFFIXES lib libso NO_DEFAULT_PATH )
 
-	find_library( ${pglib}_lib  ${pglib} HINTS /usr/local/apps/pgi/pgi-10.8/linux86-64/10.8 PATH PATH_SUFFIXES lib libso )
+    find_library( ${pglib}_lib  ${pglib} HINTS /usr/local/apps/pgi/pgi-10.8/linux86-64/10.8 PATH PATH_SUFFIXES lib libso )
 
     if( ${pglib}_lib )
         list( APPEND PGIFORTRAN_LIBRARIES ${${pglib}_lib} )
@@ -41,9 +41,9 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args( PGIFortran DEFAULT_MSG pgi_fortran_all_libs_found PGIFORTRAN_LIBRARIES  )
 
 if( PGIFORTRAN_FOUND )
-	find_package( Realtime )
+    find_package( Realtime )
 endif()
 
 if( REALTIME_FOUND )
-	set( PGIFORTRAN_LIBRARIES ${PGIFORTRAN_LIBRARIES} ${RT_LIB} )
+    set( PGIFORTRAN_LIBRARIES ${PGIFORTRAN_LIBRARIES} ${RT_LIB} )
 endif()

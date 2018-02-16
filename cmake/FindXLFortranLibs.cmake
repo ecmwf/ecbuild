@@ -14,14 +14,14 @@ set( xlf_all_libs_found 1 )
 
 foreach( lib ${xl_libs} )
 
-	find_library( ${lib}_lib  ${lib} PATHS ${XLF_PATH} PATH_SUFFIXES lib lib64 NO_DEFAULT_PATH )
+    find_library( ${lib}_lib  ${lib} PATHS ${XLF_PATH} PATH_SUFFIXES lib lib64 NO_DEFAULT_PATH )
 
-	find_library( ${lib}_lib  ${lib} )
+    find_library( ${lib}_lib  ${lib} )
 
-	if( ${lib}_lib )
+    if( ${lib}_lib )
         list( APPEND XLFORTRAN_LIBRARIES ${${lib}_lib} )
-	else()
-		set( xlf_all_libs_found 0 )
+    else()
+        set( xlf_all_libs_found 0 )
     endif()
 
 endforeach()
@@ -35,17 +35,17 @@ find_package_handle_standard_args( XLFortranLibs DEFAULT_MSG xlf_all_libs_found 
 # HACK for support libraries
 
 if(  LIBXLFORTRAN_FOUND )
-	list( APPEND xl_extra_libs pthreads m essl )
-	foreach( lib ${xl_extra_libs} )
+    list( APPEND xl_extra_libs pthreads m essl )
+    foreach( lib ${xl_extra_libs} )
 
-		find_library( ${lib}_lib  ${lib} PATHS ${XLF_PATH} PATH_SUFFIXES lib lib64 NO_DEFAULT_PATH )
+        find_library( ${lib}_lib  ${lib} PATHS ${XLF_PATH} PATH_SUFFIXES lib lib64 NO_DEFAULT_PATH )
 
-		find_library( ${lib}_lib  ${lib} )
+        find_library( ${lib}_lib  ${lib} )
 
-		if( ${lib}_lib )
-			list( APPEND XLFORTRAN_LIBRARIES ${${lib}_lib} )
-		endif()
+        if( ${lib}_lib )
+            list( APPEND XLFORTRAN_LIBRARIES ${${lib}_lib} )
+        endif()
 
-	endforeach()
+    endforeach()
 endif()
 

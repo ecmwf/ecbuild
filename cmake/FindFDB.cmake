@@ -15,21 +15,21 @@
 
 if( NOT FDB_FOUND )
 
-	if( DEFINED FDB_PATH )
-		find_library( FDB_LIBRARY NAMES fdb PATHS ${FDB_PATH} ${FDB_PATH}/lib NO_DEFAULT_PATH)
-	endif()
+    if( DEFINED FDB_PATH )
+        find_library( FDB_LIBRARY NAMES fdb PATHS ${FDB_PATH} ${FDB_PATH}/lib NO_DEFAULT_PATH)
+    endif()
 
-	find_library( FDB_LIBRARY NAMES fdb )
+    find_library( FDB_LIBRARY NAMES fdb )
 
-	set( FDB_LIBRARIES  ${FDB_LIBRARY} )
+    set( FDB_LIBRARIES  ${FDB_LIBRARY} )
 
-	include(FindPackageHandleStandardArgs)
+    include(FindPackageHandleStandardArgs)
 
-	# handle the QUIETLY and REQUIRED arguments and set FDB_FOUND to TRUE
-	# if all listed variables are TRUE
-	find_package_handle_standard_args(FDB  DEFAULT_MSG
-									  FDB_LIBRARY )
+    # handle the QUIETLY and REQUIRED arguments and set FDB_FOUND to TRUE
+    # if all listed variables are TRUE
+    find_package_handle_standard_args(FDB  DEFAULT_MSG
+                                      FDB_LIBRARY )
 
-	mark_as_advanced(FDB_LIBRARY)
+    mark_as_advanced(FDB_LIBRARY)
 
 endif()

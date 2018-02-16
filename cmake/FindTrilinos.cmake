@@ -44,6 +44,6 @@ if( Trilinos_FOUND )
         list( APPEND TRILINOS_LIBRARIES ${Trilinos_TPL_LIBRARIES} )
 
     set( TRILINOS_FOUND TRUE )
-	set( TRILINOS_VERSION ${Trilinos_VERSION} )
+    set( TRILINOS_VERSION ${Trilinos_VERSION} )
 
 endif()
