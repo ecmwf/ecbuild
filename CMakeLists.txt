@@ -11,7 +11,7 @@
 #
 #       -DCMAKE_INSTALL_PREFIX=/path/to/install
 
-cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.6.0 FATAL_ERROR )
 
 project( ecbuild C )
 
