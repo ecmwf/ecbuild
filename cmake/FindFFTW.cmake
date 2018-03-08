@@ -136,6 +136,20 @@ else()
   set( _include_paths ${PKG_FFTW_INCLUDE_DIRS} ${INCLUDE_INSTALL_DIR} )
 endif()
 
+#find includes
+
+find_path(
+  FFTW_INCLUDES
+  NAMES "fftw3.h"
+  PATHS ${_include_paths}
+  PATH_SUFFIXES "include"
+  ${_default_paths}
+)
+
+if( NOT FFTW_INCLUDES )
+  ecbuild_warn("FindFFTW: fftw include headers not found")
+endif()
+
 #find libs
 
 if( _require_dp )
@@ -190,17 +204,23 @@ if( _require_qp )
   endif()
 endif()
 
-#find includes
-
-find_path(
-  FFTW_INCLUDES
-  NAMES "fftw3.h"
-  PATHS ${_include_paths}
-  PATH_SUFFIXES "include"
-  ${_default_paths}
-)
-
 set(FFTW_LIBRARIES ${FFTW_LIB} ${FFTWF_LIB} ${FFTWL_LIB} ${FFTWQ_LIB})
+
+
+ecbuild_info("FFTW summary:")
+ecbuild_info("FFTW includes: ${FFTW_INCLUDES}")
+if( _require_dp )
+  ecbuild_info("FFTW double precision: ${FFTW_LIB}")
+endif()
+if( _require_sp )
+  ecbuild_info("FFTW single precision: ${FFTWF_LIB}")
+endif()
+if( _require_lp )
+  ecbuild_info("FFTW long double precision: ${FFTWL_LIB}")
+endif()
+if( _require_qp )
+  ecbuild_info("FFTW quad precision: ${FFTWQ_LIB}")
+endif()
 
 set( CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_SAV} )
 
