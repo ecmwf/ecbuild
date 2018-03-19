@@ -110,7 +110,7 @@
 #
 ##############################################################################
 
-macro( ecbuild_add_executable )
+function( ecbuild_add_executable )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET COMPONENT LINKER_LANGUAGE VERSION OUTPUT_NAME )
@@ -343,4 +343,4 @@ macro( ecbuild_add_executable )
     ecbuild_declare_project_files( ${_PAR_TEMPLATES} )
   endif()
 
-endmacro( ecbuild_add_executable  )
+endfunction( ecbuild_add_executable  )
