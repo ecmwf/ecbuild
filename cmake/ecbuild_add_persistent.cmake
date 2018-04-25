@@ -61,6 +61,8 @@ function( ecbuild_add_persistent )
 
   ecbuild_debug( "ecbuild_add_persistent: adding persistent layer for ${_PAR_FILES}" )
 
+  set(_SOURCES ${${_PAR_SRC_LIST}})
+
   foreach( file ${_PAR_FILES} )
 
     get_filename_component( _file_dir    ${file} PATH )
@@ -79,10 +81,10 @@ function( ecbuild_add_persistent )
                                 ${CMAKE_CURRENT_BINARY_DIR}/${_file_dir} ${_PAR_NAMESPACE}
                         DEPENDS ${sg_perl} ${file}.h )
     set_source_files_properties( ${file}.h PROPERTIES OBJECT_DEPENDS "${file}.b" )
-    list( APPEND ${_PAR_SRC_LIST} ${CMAKE_CURRENT_BINARY_DIR}/${file}.b )
+    list( APPEND _SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${file}.b )
 
   endforeach()
-
-  set(${_PAR_SRC_LIST} ${${_PAR_SRC_LIST}} PARENT_SCOPE)
+  list(REMOVE_DUPLICATES _SOURCES)
+  set(${_PAR_SRC_LIST} ${_SOURCES} PARENT_SCOPE)
 
 endfunction( ecbuild_add_persistent  )
