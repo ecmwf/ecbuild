@@ -414,12 +414,11 @@ function( ecbuild_add_library_impl )
       # install headers
       if( _PAR_HEADER_DESTINATION )
         set( _h_destination "${_PAR_HEADER_DESTINATION}" )
+        target_include_directories(${_PAR_TARGET} PUBLIC $<INSTALL_INTERFACE:${_h_destination}> $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
       else()
         set( _h_destination "${INSTALL_INCLUDE_DIR}" )
+        target_include_directories(${_PAR_TARGET} PUBLIC $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
       endif()
-
-
-      target_include_directories(${_PAR_TARGET} PUBLIC $<INSTALL_INTERFACE:${_h_destination}>)
 
       if(ECBUILD_INSTALL_LIBRARY_HEADERS)
 
