@@ -327,7 +327,9 @@ mark_as_advanced(
     NETCDF_LIBRARY_DIRS
 )
 
-set( NETCDF_FOUND ${NETCDF4_FOUND} )
+set( NETCDF_FOUND  ${NETCDF4_FOUND} )
+set( NetCDF_FOUND  ${NETCDF4_FOUND} )
+set( NetCDF4_FOUND ${NETCDF4_FOUND} )
 
 # For backwards compatibility we set NETCDF_INCLUDE_DIR to the value of
 # NETCDF_INCLUDE_DIRS
