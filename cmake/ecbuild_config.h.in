@@ -25,10 +25,6 @@
 #cmakedefine EC_BIG_ENDIAN       @EC_BIG_ENDIAN@
 #cmakedefine EC_LITTLE_ENDIAN    @EC_LITTLE_ENDIAN@
 
-/* --- c compiler support --- */
-
-#cmakedefine EC_HAVE_C_INLINE
-
 /* config info */
 
 #define @PNAME@_OS_NAME          "@CMAKE_SYSTEM@"
