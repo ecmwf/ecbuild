@@ -61,20 +61,6 @@ if( NOT CMAKE_C_COMPILER_VERSION )
 endif()
 
 ############################################################################################
-# c compiler tests
-
-if( CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
-
-	ecbuild_cache_check_c_source_compiles(
-		  " typedef int foo_t;
-			static inline foo_t static_foo(){return 0;}
-			foo_t foo(){return 0;}
-			int main(int argc, char *argv[]){return 0;}
-		  " EC_HAVE_C_INLINE )
-
-endif()
-
-############################################################################################
 # c++ compiler tests
 
 if( CMAKE_CXX_COMPILER_LOADED AND ENABLE_OS_TESTS )
