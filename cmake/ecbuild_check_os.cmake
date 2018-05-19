@@ -47,33 +47,12 @@ endif()
 ############################################################################################
 # check for large file support
 
-# ensure we use 64bit access to files even on 32bit os -- aka Large File Support
-# by making off_t 64bit and stat behave as stat64
+### this will be deprecated in ecbuild 3.x
+
+include(ecbuild_add_large_file_support)
 
 if( ENABLE_LARGE_FILE_SUPPORT )
-
-  ecbuild_cache_check_type_size( off_t EC_SIZEOF_OFF_T )
-
-  if( EC_SIZEOF_OFF_T LESS "8" )
-
-    if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-      add_definitions( -D_FILE_OFFSET_BITS=64 )
-    endif()
-
-    if( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
-      add_definitions( -D_LARGE_FILES=64 )
-    endif()
-
-    get_directory_property( __compile_defs COMPILE_DEFINITIONS )
-
-    if( __compile_defs )
-      foreach( def ${__compile_defs} )
-        list( APPEND CMAKE_REQUIRED_DEFINITIONS -D${def} )
-      endforeach()
-    endif()
-
-  endif()
-
+  ecbuild_add_large_file_support()
 endif()
 
 ############################################################################################
