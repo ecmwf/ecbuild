@@ -20,10 +20,6 @@ option( ENABLE_PROFILING        "build with profiling support" OFF )
 
 mark_as_advanced( ENABLE_LARGE_FILE_SUPPORT )
 
-option( ENABLE_OS_TESTS          "Run all OS tests" ON )
-
-mark_as_advanced( ENABLE_OS_TESTS )
-
 option( ENABLE_FORTRAN_C_INTERFACE "Enable Fortran/C Interface" OFF )
 mark_as_advanced( ENABLE_FORTRAN_C_INTERFACE )
 
@@ -40,10 +36,6 @@ option( ECBUILD_INSTALL_FORTRAN_MODULES "Will install Fortran modules" ON )
 mark_as_advanced( ECBUILD_INSTALL_FORTRAN_MODULES )
 
 include( CMakeDependentOption ) # make options depend on one another
-
-cmake_dependent_option( ENABLE_OS_ENDINESS_TEST  "Run OS endiness tests"       ON "ENABLE_OS_TESTS" OFF)
-
-mark_as_advanced( ENABLE_OS_ENDINESS_TEST )
 
 option( ECBUILD_USE_INCLUDE_DIRECTORIES "Forces to use global include_directories() instead of target specific. Adverse effect on PkgConfig generation." OFF )
 

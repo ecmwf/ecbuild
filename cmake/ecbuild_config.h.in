@@ -20,11 +20,6 @@
 #define ECBUILD_MACROS_DIR  "@ECBUILD_MACROS_DIR@"
 #endif
 
-/* cpu arch info */
-
-#cmakedefine EC_BIG_ENDIAN       @EC_BIG_ENDIAN@
-#cmakedefine EC_LITTLE_ENDIAN    @EC_LITTLE_ENDIAN@
-
 /* config info */
 
 #define @PNAME@_OS_NAME          "@CMAKE_SYSTEM@"
