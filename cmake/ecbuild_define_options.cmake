@@ -41,11 +41,9 @@ mark_as_advanced( ECBUILD_INSTALL_FORTRAN_MODULES )
 
 include( CMakeDependentOption ) # make options depend on one another
 
-cmake_dependent_option( ENABLE_OS_TYPES_TEST     "Run sizeof tests on C types" ON "ENABLE_OS_TESTS" OFF)
 cmake_dependent_option( ENABLE_OS_ENDINESS_TEST  "Run OS endiness tests"       ON "ENABLE_OS_TESTS" OFF)
-cmake_dependent_option( ENABLE_OS_FUNCTIONS_TEST "Run OS functions tests"      ON "ENABLE_OS_TESTS" OFF)
 
-mark_as_advanced( ENABLE_OS_TYPES_TEST ENABLE_OS_ENDINESS_TEST ENABLE_OS_FUNCTIONS_TEST  )
+mark_as_advanced( ENABLE_OS_ENDINESS_TEST )
 
 option( ECBUILD_USE_INCLUDE_DIRECTORIES "Forces to use global include_directories() instead of target specific. Adverse effect on PkgConfig generation." OFF )
 

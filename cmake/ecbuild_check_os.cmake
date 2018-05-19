@@ -10,7 +10,7 @@
 # check size of pointer
 
 # Re-check size of void pointer since for some compiler combinations this is not properly set
-ecbuild_cache_check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
+check_type_size( "void*" CMAKE_SIZEOF_VOID_P  )
 
 if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
 
@@ -34,42 +34,6 @@ if( DEFINED ECBUILD_POSITION_INDEPENDENT_CODE )
   set( CMAKE_POSITION_INDEPENDENT_CODE ${ECBUILD_POSITION_INDEPENDENT_CODE} )
 elseif( ${EC_OS_BITS} EQUAL 64 )
   set( CMAKE_POSITION_INDEPENDENT_CODE ON )
-endif()
-
-
-############################################################################################
-# check architecture
-
-if( ENABLE_OS_TYPES_TEST )
-
-  set( EC_SIZEOF_PTR ${CMAKE_SIZEOF_VOID_P} )
-  ecbuild_cache_var( EC_SIZEOF_PTR )
-
-  ecbuild_cache_check_type_size( char           EC_SIZEOF_CHAR        )
-  ecbuild_cache_check_type_size( short          EC_SIZEOF_SHORT       )
-  ecbuild_cache_check_type_size( int            EC_SIZEOF_INT         )
-  ecbuild_cache_check_type_size( long           EC_SIZEOF_LONG        )
-  ecbuild_cache_check_type_size( "long long"    EC_SIZEOF_LONG_LONG   )
-  ecbuild_cache_check_type_size( float          EC_SIZEOF_FLOAT       )
-  ecbuild_cache_check_type_size( double         EC_SIZEOF_DOUBLE      )
-  ecbuild_cache_check_type_size( "long double"  EC_SIZEOF_LONG_DOUBLE )
-  ecbuild_cache_check_type_size( size_t         EC_SIZEOF_SIZE_T      )
-  ecbuild_cache_check_type_size( ssize_t        EC_SIZEOF_SSIZE_T     )
-  ecbuild_cache_check_type_size( off_t          EC_SIZEOF_OFF_T       )
-
-  ecbuild_debug( "sizeof void*       [${EC_SIZEOF_PTR}]" )
-  ecbuild_debug( "sizeof char        [${EC_SIZEOF_CHAR}]" )
-  ecbuild_debug( "sizeof short       [${EC_SIZEOF_SHORT}]" )
-  ecbuild_debug( "sizeof int         [${EC_SIZEOF_INT}]" )
-  ecbuild_debug( "sizeof long        [${EC_SIZEOF_LONG}]" )
-  ecbuild_debug( "sizeof long long   [${EC_SIZEOF_LONG_LONG}]" )
-  ecbuild_debug( "sizeof float       [${EC_SIZEOF_FLOAT}]" )
-  ecbuild_debug( "sizeof double      [${EC_SIZEOF_DOUBLE}]" )
-  ecbuild_debug( "sizeof long double [${EC_SIZEOF_LONG_DOUBLE}]" )
-  ecbuild_debug( "sizeof size_t      [${EC_SIZEOF_SIZE_T}]" )
-  ecbuild_debug( "sizeof ssize_t     [${EC_SIZEOF_SSIZE_T}]" )
-  ecbuild_debug( "sizeof off_t       [${EC_SIZEOF_OFF_T}]" )
-
 endif()
 
 ############################################################################################
