@@ -76,6 +76,7 @@ macro( ecbuild_dont_pack )
 
     # save cache if we added any files not to pack
     if( LOCAL_FILES_NOT_TO_PACK )
+        list(REMOVE_DUPLICATES ECBUILD_DONT_PACK_FILES)
         set( ECBUILD_DONT_PACK_FILES ${ECBUILD_DONT_PACK_FILES} CACHE INTERNAL "" )
     endif()
 

@@ -9,7 +9,7 @@
 ###################################################################################################
 # enable C to use in system introspection
 
-if( NOT CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
+if( NOT CMAKE_C_COMPILER_LOADED )
   enable_language( C )
   ecbuild_compiler_flags( C )
 endif()
@@ -57,47 +57,6 @@ if( NOT CMAKE_C_COMPILER_VERSION )
     if( NOT EC_COMPILER_VERSION STREQUAL "?.?" )
         set(CMAKE_C_COMPILER_VERSION "${EC_COMPILER_VERSION}" )
     endif()
-
-endif()
-
-############################################################################################
-# c compiler tests
-
-if( CMAKE_C_COMPILER_LOADED AND ENABLE_OS_TESTS )
-
-	ecbuild_cache_check_c_source_compiles(
-		  " typedef int foo_t;
-			static inline foo_t static_foo(){return 0;}
-			foo_t foo(){return 0;}
-			int main(int argc, char *argv[]){return 0;}
-		  " EC_HAVE_C_INLINE )
-
-endif()
-
-############################################################################################
-# c++ compiler tests
-
-if( CMAKE_CXX_COMPILER_LOADED AND ENABLE_OS_TESTS )
-
-    # check for __FUNCTION__
-    ecbuild_cache_check_cxx_source_compiles( "#include <iostream>\nint main(int argc, char* argv[]) { std::cout << __FUNCTION__ << std::endl; }"
-      EC_HAVE_FUNCTION_DEF )
-
-    # check for c++ abi, usually present in GNU compilers
-    ecbuild_cache_check_cxx_source_compiles( "#include <cxxabi.h>\n int main() { char * type; int status; char * r = abi::__cxa_demangle(type, 0, 0, &status); }"
-    EC_HAVE_CXXABI_H )
-
-    # check for bool
-    ecbuild_cache_check_cxx_source_compiles( "int main() { bool aflag = true; }"
-	  EC_HAVE_CXX_BOOL )
-
-    # check for sstream
-    ecbuild_cache_check_cxx_source_compiles( "#include <sstream>\nint main() { std::stringstream s; }"
-	  EC_HAVE_CXX_SSTREAM )
-
-    # test c++ __int128
-    ecbuild_cache_check_cxx_source_compiles( "int main(){ __int128 i = 0; return 0;}\n"
-      EC_HAVE_CXX_INT_128 )
 
 endif()
 

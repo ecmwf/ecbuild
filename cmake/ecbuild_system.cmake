@@ -234,7 +234,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_compiler_flags )               # compiler flags
     include( ecbuild_check_compiler )               # check for compiler characteristics
     include( ecbuild_check_os )                     # check for os characteristics
-    include( ecbuild_check_functions )              # check for available functions
     include( ecbuild_define_paths )                 # defines installation paths
     include( ecbuild_define_libs_and_execs_target ) # defines the top level execs and libs
     include( ecbuild_define_links_target )          # defines the links target
