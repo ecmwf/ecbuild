@@ -38,6 +38,7 @@ function( ecbuild_library_dependencies dependencies libraries )
           else()
             get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES )
           endif()
+          _ecbuild_resolve_target_location(IN ${_deps} OUT _deps)
         endif()
 
       else()
@@ -49,6 +50,7 @@ function( ecbuild_library_dependencies dependencies libraries )
         else()
           get_property( _deps TARGET ${_lib} PROPERTY LINK_LIBRARIES )
         endif()
+        _ecbuild_resolve_target_location(IN ${_deps} OUT _deps)
 
       endif()
 
@@ -92,6 +94,8 @@ function( ecbuild_include_dependencies dependencies libraries )
       else()
         get_property( _include_dirs TARGET ${_lib} PROPERTY INCLUDE_DIRECTORIES )
       endif()
+
+      string(REGEX REPLACE "\\$<INSTALL_INTERFACE:([^>]+)>" "\\1" _include_dirs ${_include_dirs})
       list( APPEND _dependencies ${_include_dirs} )
 
     endif()
@@ -436,7 +440,7 @@ function( ecbuild_pkgconfig )
     endforeach()
   endif()
 
-  configure_file( ${_PAR_TEMPLATE} "${CMAKE_BINARY_DIR}/${_PAR_FILENAME}" @ONLY )
+  ecbuild_configure_file(${_PAR_TEMPLATE} ${CMAKE_BINARY_DIR}/${_PAR_FILENAME} @ONLY)
   ecbuild_info( "pkg-config file created: ${_PAR_FILENAME}" )
 
   install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILENAME}

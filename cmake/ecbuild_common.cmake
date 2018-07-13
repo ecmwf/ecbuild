@@ -103,3 +103,23 @@ function(ecbuild_filter_list)
         set(${_PAR_LIST_EXCLUDE} ${__listOutSkip} PARENT_SCOPE)
     endif()
 endfunction()
+
+
+# resolve cmake target locations in a list of libraries
+function(_ecbuild_resolve_target_location)
+  set( options           )
+  set( single_value_args OUT)
+  set( multi_value_args  IN)
+
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN} )
+
+  foreach(lib ${_PAR_IN})
+    if(TARGET ${lib})
+      list(APPEND out "$<TARGET_FILE:${lib}>")
+    else()
+      list(APPEND out ${lib})
+    endif()
+  endforeach()
+  set(${_PAR_OUT} ${out} PARENT_SCOPE)
+
+endfunction()
