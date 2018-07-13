@@ -238,6 +238,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_pkgconfig )
     include( ecbuild_cache )
     include( ecbuild_remove_fortran_flags )
+    include( ecbuild_configure_file )
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
