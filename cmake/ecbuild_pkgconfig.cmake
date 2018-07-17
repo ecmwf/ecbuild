@@ -10,7 +10,7 @@
 
 # Write transitive list of library dependencies of each library in ${libraries}
 # to CMake variable ${dependencies}
-function( ecbuild_library_dependencies dependencies libraries )
+function( _ecbuild_library_dependencies_impl dependencies libraries )
 
   set( _libraries ${${libraries}} )
 
@@ -38,7 +38,6 @@ function( ecbuild_library_dependencies dependencies libraries )
           else()
             get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES )
           endif()
-          _ecbuild_resolve_target_location(IN ${_deps} OUT _deps)
         endif()
 
       else()
@@ -50,7 +49,6 @@ function( ecbuild_library_dependencies dependencies libraries )
         else()
           get_property( _deps TARGET ${_lib} PROPERTY LINK_LIBRARIES )
         endif()
-        _ecbuild_resolve_target_location(IN ${_deps} OUT _deps)
 
       endif()
 
@@ -74,7 +72,15 @@ function( ecbuild_library_dependencies dependencies libraries )
     set( ${dependencies} ${_dependencies} PARENT_SCOPE )
   endif()
 
-endfunction(ecbuild_library_dependencies)
+endfunction()
+
+function(ecbuild_library_dependencies dependencies libraries)
+  _ecbuild_library_dependencies_impl(_dependencies ${libraries} )
+  _ecbuild_resolve_target_location(IN ${_dependencies} OUT _dependencies)
+  if( _dependencies )
+    set( ${dependencies} ${_dependencies} PARENT_SCOPE )
+  endif()
+endfunction()
 
 ##############################################################################
 
@@ -95,8 +101,19 @@ function( ecbuild_include_dependencies dependencies libraries )
         get_property( _include_dirs TARGET ${_lib} PROPERTY INCLUDE_DIRECTORIES )
       endif()
 
-      string(REGEX REPLACE "\\$<INSTALL_INTERFACE:([^>]+)>" "\\1" _include_dirs ${_include_dirs})
-      list( APPEND _dependencies ${_include_dirs} )
+      # drop build interface
+      string(REGEX REPLACE "\\$<BUILD_INTERFACE:([^>]+)>;?" "" _include_dirs "${_include_dirs}")
+      # resolve install interface
+      string(REGEX REPLACE "\\$<INSTALL_INTERFACE:([^>]+)>" "\\1" _include_dirs "${_include_dirs}")
+
+      # resolve relative includes
+      foreach(_include ${_include_dirs})
+        if(IS_ABSOLUTE ${_include})
+          list(APPEND _dependencies "${_include}")
+        else()
+          list(APPEND _dependencies "${CMAKE_INSTALL_PREFIX}/${_include}")
+        endif()
+      endforeach()
 
     endif()
 
