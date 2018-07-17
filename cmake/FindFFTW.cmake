@@ -51,8 +51,8 @@
 # :FFTW_ROOT:             if set, this path is exclusively searched
 # :FFTW_DIR:              equivalent to FFTW_ROOT
 # :FFTW_PATH:             equivalent to FFTW_ROOT
-# :FFTW_LIBRARY:          FFTW library to use
-# :FFTW_INCLUDE_DIR:      FFTW include directory
+# :FFTW_LIBRARIES:        User overriden FFTW libraries
+# :FFTW_INCLUDES:         User overriden FFTW includes directories
 #
 ##############################################################################
 
@@ -136,79 +136,87 @@ else()
   set( _include_paths ${PKG_FFTW_INCLUDE_DIRS} ${INCLUDE_INSTALL_DIR} )
 endif()
 
-#find includes
+# find includes
 
-find_path(
-  FFTW_INCLUDES
-  NAMES "fftw3.h"
-  PATHS ${_include_paths}
-  PATH_SUFFIXES "include"
-  ${_default_paths}
-)
+if( NOT FFTW_INCLUDES ) # allow user to override with FFTW_INCLUDES
 
-if( NOT FFTW_INCLUDES )
-  ecbuild_warn("FindFFTW: fftw include headers not found")
+    find_path(
+      FFTW_INCLUDES
+      NAMES "fftw3.h"
+      PATHS ${_include_paths}
+      PATH_SUFFIXES "include"
+      ${_default_paths}
+    )
+
+    if( NOT FFTW_INCLUDES )
+      ecbuild_warn("FindFFTW: fftw include headers not found")
+    endif()
+
 endif()
 
-#find libs
+# find libs
 
-if( _require_dp )
-  find_library(
-    FFTW_LIB
-    NAMES "fftw3"
-    PATHS ${_lib_paths}
-    PATH_SUFFIXES "lib" "lib64"
-    ${_default_paths}
-  )
-  if( NOT FFTW_LIB )
-    ecbuild_warn("FindFFTW: double precision required, but fftw3 was not found")
-  endif()
+if( NOT FFTW_LIBRARIES ) # allow user to override with FFTW_LIBRARIES (e.g. for MKL implementation)
+
+    if( _require_dp )
+      find_library(
+        FFTW_LIB
+        NAMES "fftw3"
+        PATHS ${_lib_paths}
+        PATH_SUFFIXES "lib" "lib64"
+        ${_default_paths}
+      )
+      if( NOT FFTW_LIB )
+        ecbuild_warn("FindFFTW: double precision required, but fftw3 was not found")
+      endif()
+    endif()
+
+    if( _require_sp )
+      find_library(
+        FFTWF_LIB
+        NAMES "fftw3f"
+        PATHS ${_lib_paths}
+        PATH_SUFFIXES "lib" "lib64"
+        ${_default_paths}
+      )
+      if( NOT FFTWF_LIB )
+        ecbuild_warn("FindFFTW: single precision required, but fftw3f was not found")
+      endif()
+    endif()
+
+    if( _require_lp )
+      find_library(
+        FFTWL_LIB
+        NAMES "fftw3l"
+        PATHS ${_lib_paths}
+        PATH_SUFFIXES "lib" "lib64"
+        ${_default_paths}
+      )
+      if( NOT FFTWL_LIB )
+        ecbuild_warn("FindFFTW: long double precision required, but fftw3l was not found")
+      endif()
+    endif()
+
+    if( _require_qp )
+      find_library(
+        FFTWQ_LIB
+        NAMES "fftw3q"
+        PATHS ${_lib_paths}
+        PATH_SUFFIXES "lib" "lib64"
+        ${_default_paths}
+      )
+      if( NOT FFTWQ_LIB )
+        ecbuild_warn("FindFFTW: quad precision required, but fftw3q was not found")
+      endif()
+    endif()
+
+    set(FFTW_LIBRARIES ${FFTW_LIB} ${FFTWF_LIB} ${FFTWL_LIB} ${FFTWQ_LIB})
+
 endif()
-
-if( _require_sp )
-  find_library(
-    FFTWF_LIB
-    NAMES "fftw3f"
-    PATHS ${_lib_paths}
-    PATH_SUFFIXES "lib" "lib64"
-    ${_default_paths}
-  )
-  if( NOT FFTWF_LIB )
-    ecbuild_warn("FindFFTW: single precision required, but fftw3f was not found")
-  endif()
-endif()
-
-if( _require_lp )
-  find_library(
-    FFTWL_LIB
-    NAMES "fftw3l"
-    PATHS ${_lib_paths}
-    PATH_SUFFIXES "lib" "lib64"
-    ${_default_paths}
-  )
-  if( NOT FFTWL_LIB )
-    ecbuild_warn("FindFFTW: long double precision required, but fftw3l was not found")
-  endif()
-endif()
-
-if( _require_qp )
-  find_library(
-    FFTWQ_LIB
-    NAMES "fftw3q"
-    PATHS ${_lib_paths}
-    PATH_SUFFIXES "lib" "lib64"
-    ${_default_paths}
-  )
-  if( NOT FFTWQ_LIB )
-    ecbuild_warn("FindFFTW: quad precision required, but fftw3q was not found")
-  endif()
-endif()
-
-set(FFTW_LIBRARIES ${FFTW_LIB} ${FFTWF_LIB} ${FFTWL_LIB} ${FFTWQ_LIB})
-
 
 ecbuild_info("FFTW summary:")
-ecbuild_info("FFTW includes: ${FFTW_INCLUDES}")
+ecbuild_info("FFTW includes  : ${FFTW_INCLUDES}")
+ecbuild_info("FFTW libraries : ${FFTW_LIBRARIES}")
 if( _require_dp )
   ecbuild_info("FFTW double precision: ${FFTW_LIB}")
 endif()
@@ -228,4 +236,4 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(FFTW DEFAULT_MSG
                                   FFTW_INCLUDES FFTW_LIBRARIES)
 
-mark_as_advanced(FFTW_INCLUDES FFTW_LIBRARIES FFTW_LIB FFTWF_LIB FFTWL_LIB)
+mark_as_advanced(FFTW_INCLUDES FFTW_LIBRARIES FFTW_LIB FFTWF_LIB FFTWL_LIB FFTWQ_LIB)
