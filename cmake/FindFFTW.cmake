@@ -104,6 +104,7 @@ else()
   set( CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_LIBRARY_SUFFIX} )
 endif()
 
+
 if( FFTW_FIND_COMPONENTS )
   ecbuild_debug( "FindFFTW: looking for components: ${FFTW_FIND_COMPONENTS}" )
   foreach( _component ${FFTW_FIND_COMPONENTS} )
@@ -168,6 +169,8 @@ if( NOT FFTW_LIBRARIES ) # allow user to override with FFTW_LIBRARIES (e.g. for 
       )
       if( NOT FFTW_LIB )
         ecbuild_warn("FindFFTW: double precision required, but fftw3 was not found")
+      else()
+        ecbuild_info("FFTW double precision: ${FFTW_LIB}")
       endif()
     endif()
 
@@ -181,6 +184,8 @@ if( NOT FFTW_LIBRARIES ) # allow user to override with FFTW_LIBRARIES (e.g. for 
       )
       if( NOT FFTWF_LIB )
         ecbuild_warn("FindFFTW: single precision required, but fftw3f was not found")
+      else()
+        ecbuild_info("FFTW single precision: ${FFTWF_LIB}")
       endif()
     endif()
 
@@ -194,6 +199,8 @@ if( NOT FFTW_LIBRARIES ) # allow user to override with FFTW_LIBRARIES (e.g. for 
       )
       if( NOT FFTWL_LIB )
         ecbuild_warn("FindFFTW: long double precision required, but fftw3l was not found")
+      else()
+        ecbuild_info("FFTW long double precision: ${FFTWL_LIB}")
       endif()
     endif()
 
@@ -207,6 +214,8 @@ if( NOT FFTW_LIBRARIES ) # allow user to override with FFTW_LIBRARIES (e.g. for 
       )
       if( NOT FFTWQ_LIB )
         ecbuild_warn("FindFFTW: quad precision required, but fftw3q was not found")
+      else()
+        ecbuild_info("FFTW quad precision: ${FFTWQ_LIB}")
       endif()
     endif()
 
@@ -214,21 +223,8 @@ if( NOT FFTW_LIBRARIES ) # allow user to override with FFTW_LIBRARIES (e.g. for 
 
 endif()
 
-ecbuild_info("FFTW summary:")
-ecbuild_info("FFTW includes  : ${FFTW_INCLUDES}")
-ecbuild_info("FFTW libraries : ${FFTW_LIBRARIES}")
-if( _require_dp )
-  ecbuild_info("FFTW double precision: ${FFTW_LIB}")
-endif()
-if( _require_sp )
-  ecbuild_info("FFTW single precision: ${FFTWF_LIB}")
-endif()
-if( _require_lp )
-  ecbuild_info("FFTW long double precision: ${FFTWL_LIB}")
-endif()
-if( _require_qp )
-  ecbuild_info("FFTW quad precision: ${FFTWQ_LIB}")
-endif()
+ecbuild_info("FFTW includes : ${FFTW_INCLUDES}")
+ecbuild_info("FFTW libraries: ${FFTW_LIBRARIES}")
 
 set( CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_SAV} )
 
