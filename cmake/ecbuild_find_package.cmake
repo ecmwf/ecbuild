@@ -352,7 +352,7 @@ macro( ecbuild_find_package )
     endif()
     set( _failed_message
       "  ${PROJECT_NAME} FAILED to find package ${_PAR_NAME}\n"
-      "    Provide location with \"-D${pkgUPPER}_PATH=/...\" or \"-D${_PAR_NAME}_DIR=/...\" \n"
+      "    Provide location by defining \"-DCMAKE_PREFIX_PATH= /...\" or with \"-D${pkgUPPER}_PATH=/...\" or \"-D${_PAR_NAME}_DIR=/...\" \n"
       "    You may also export environment variables ${pkgUPPER}_PATH or ${_PAR_NAME}_DIR\n"
       "  Values (note CAPITALISATION):\n"
       "    ${pkgUPPER}_PATH should contain the path to the install prefix (as in <install>/bin <install>/lib <install>/include)\n"
