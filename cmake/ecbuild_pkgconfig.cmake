@@ -52,7 +52,7 @@ function( _ecbuild_library_dependencies_impl dependencies libraries )
 
       endif()
 
-      ecbuild_library_dependencies( _deps_location _deps )
+      _ecbuild_library_dependencies_impl( _deps_location _deps )
       list( APPEND _location ${_deps_location} )
 
     else()
@@ -457,7 +457,16 @@ function( ecbuild_pkgconfig )
     endforeach()
   endif()
 
-  ecbuild_configure_file(${_PAR_TEMPLATE} ${CMAKE_BINARY_DIR}/${_PAR_FILENAME} @ONLY)
+  ecbuild_configure_file(${_PAR_TEMPLATE} ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}.tmp @ONLY)
+
+  configure_file(${ECBUILD_MACROS_DIR}/pkg-config.cmake.in  ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config.cmake @ONLY)
+  add_custom_target(${_PAR_FILENAME}-pkg-config ALL DEPENDS ${CMAKE_BINARY_DIR}/${_PAR_FILENAME})
+
+  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${_PAR_FILENAME}
+                    COMMAND  ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config.cmake)
+  set_source_files_properties(${CMAKE_BINARY_DIR}/${_PAR_FILENAME} PROPERTIES GENERATED TRUE)
+
+
   ecbuild_info( "pkg-config file created: ${_PAR_FILENAME}" )
 
   install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILENAME}

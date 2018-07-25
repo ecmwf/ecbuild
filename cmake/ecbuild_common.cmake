@@ -115,7 +115,7 @@ function(_ecbuild_resolve_target_location)
 
   foreach(lib ${_PAR_IN})
     if(TARGET ${lib})
-      list(APPEND out "$<TARGET_FILE:${lib}>")
+      list(APPEND out "$<TARGET_LINKER_FILE_NAME:${lib}>")
     else()
       list(APPEND out ${lib})
     endif()
