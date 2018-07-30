@@ -313,7 +313,6 @@ endfunction(ecbuild_pkgconfig_include)
 # The following CMake variables are used as default values for some of the
 # options listed above, where ``PNAME`` is the project name in upper case:
 #
-# :<PNAME>_LIBRARIES:    list of libraries to export
 # :<PNAME>_DESCRIPTION:  package description
 # :<PNAME>_URL:          package URL
 # :<PNAME>_VERSION:      package version
