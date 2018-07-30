@@ -255,7 +255,7 @@ function( ecbuild_add_test )
 
   ### enable the tests
 
-  if( ENABLE_TESTS AND _${_PAR_TARGET}_condition AND _PAR_ENABLED )
+  if( HAVE_TESTS AND _${_PAR_TARGET}_condition AND _PAR_ENABLED )
 
     if( _PAR_TYPE MATCHES "PYTHON" )
       if( PYTHONINTERP_FOUND )

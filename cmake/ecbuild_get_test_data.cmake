@@ -417,7 +417,7 @@ endfunction()\n\n" )
 
     endforeach()
 
-    if( ENABLE_TESTS )
+    if( HAVE_TESTS )
       add_test(  NAME ${_p_TARGET} COMMAND ${CMAKE_COMMAND} -P ${_script} )
       set( _p_LABELS ${PROJECT_NAME_LOWCASE} download_data ${_p_LABELS} )
       list( REMOVE_DUPLICATES _p_LABELS )
