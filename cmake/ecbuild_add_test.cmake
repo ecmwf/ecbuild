@@ -177,8 +177,11 @@ macro( ecbuild_add_test )
     set( _PAR_ENABLED 0 )
   elseif( _PAR_MPI )
     # Check for MPIEXEC if it not set
-    find_program( MPIEXEC NAMES mpiexec mpirun lamexec srun
-                  DOC "Executable for running MPI programs." )
+    if( NOT MPIEXEC )
+      find_program( MPIEXEC NAMES mpiexec mpirun lamexec srun
+                    DOC "Executable for running MPI programs." )
+    endif()
+
     if( MPIEXEC )
       set(MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING "Flag used by MPI to specify the number of processes for MPIEXEC")
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): Running using ${MPIEXEC} on ${_PAR_MPI} MPI rank(s)")
