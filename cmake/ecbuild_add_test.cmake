@@ -177,6 +177,9 @@ macro( ecbuild_add_test )
     set( _PAR_ENABLED 0 )
   elseif( _PAR_MPI )
     # Check for MPIEXEC if it not set
+    if( MPIEXEC_EXECUTABLE )
+      set( MPIEXEC ${MPIEXEC_EXECUTABLE} )
+    endif()
     if( NOT MPIEXEC )
       find_program( MPIEXEC NAMES mpiexec mpirun lamexec srun
                     DOC "Executable for running MPI programs." )
