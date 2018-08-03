@@ -24,14 +24,15 @@
 function(ecbuild_evaluateCondition _conditions _outVar)
   if( DEFINED ${_conditions})
     if(${${_conditions}})
-      set( ${_outVar} TRUE PARENT_SCOPE )
+      set( ${_outVar} TRUE )
     else()
-      set( ${_outVar} FALSE PARENT_SCOPE )
+      set( ${_outVar} FALSE )
     endif()
   else()
-    set( ${_outVar} TRUE PARENT_SCOPE )
+    set( ${_outVar} TRUE )
   endif()
   ecbuild_debug("ecbuild_evaluateCondition(${_outVar}): checking condition '${${_conditions}}' -> ${${_outVar}}")
+  set( ${_outVar} ${${_outVar}} PARENT_SCOPE )
 endfunction()
 
 
