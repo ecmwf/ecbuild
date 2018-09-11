@@ -34,7 +34,7 @@ function(ecbuild_target_link_libraries _PAR_TARGET)
   set( multi_value_args  PUBLIC PRIVATE )
   cmake_parse_arguments(_PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN})
 
-  if (NOT TARGET _PAR_TARGET)
+  if (NOT TARGET ${_PAR_TARGET})
     return()
   endif()
 
