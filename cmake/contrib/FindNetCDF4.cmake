@@ -302,9 +302,12 @@ else()
     # Construct the complete list of NETCDF libraries with debug and optimized
     # variants when the generator supports them.
     if( CMAKE_CONFIGURATION_TYPES OR CMAKE_BUILD_TYPE )
-        set( NETCDF_LIBRARIES
-            debug ${NETCDF_LIBRARIES_DEBUG}
-            optimized ${NETCDF_LIBRARIES_RELEASE} )
+        if( NETCDF_LIBRARIES_DEBUG )
+          list( APPEND NETCDF_LIBRARIES debug ${NETCDF_LIBRARIES_DEBUG} )
+        endif()
+        if( NETCDF_LIBRARIES_RELEASE )
+          list( APPEND NETCDF_LIBRARIES optmized ${NETCDF_LIBRARIES_RELEASE} )
+        endif()
     else()
         set( NETCDF_LIBRARIES ${NETCDF_LIBRARIES_RELEASE} )
     endif()
