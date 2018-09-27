@@ -127,6 +127,10 @@ function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
     ecbuild_critical("Unknown keywords given to ecbuild_try_run(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
+  if( CMAKE_EXE_LINKER_FLAGS )
+    set( _p_LINK_LIBRARIES "${_p_LINK_LIBRARIES} ${CMAKE_EXE_LINKER_FLAGS}" )
+  endif()
+
   # Build argument list for try_compile
   foreach( _opt CMAKE_FLAGS COMPILE_DEFINITIONS LINK_LIBRARIES  )
     if( _p_${_opt} )
