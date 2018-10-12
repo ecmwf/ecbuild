@@ -71,6 +71,9 @@ endfunction()
 
 function(ecbuild_library_dependencies dependencies libraries)
   _ecbuild_library_dependencies_impl(_dependencies ${libraries} )
+  foreach( _lib ${${libraries}} )
+    list( REMOVE_ITEM _dependencies ${_lib} )
+  endforeach()
   _ecbuild_resolve_target_location(IN ${_dependencies} OUT _dependencies)
   if( _dependencies )
     set( ${dependencies} ${_dependencies} PARENT_SCOPE )
@@ -407,9 +410,6 @@ function( ecbuild_pkgconfig )
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS LIBRARIES _PAR_IGNORE_LIBRARIES )
 
   ecbuild_library_dependencies( _libraries LIBRARIES )
-  foreach( _lib ${LIBRARIES} )
-    list( REMOVE_ITEM _libraries ${_lib} )
-  endforeach()
 
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS_PRIVATE _libraries _PAR_IGNORE_LIBRARIES )
 
