@@ -17,7 +17,7 @@ if( ECBUILD_GIT )
   set( ECMWF_USER $ENV{USER} CACHE STRING "ECMWF git user" )
   set( ECMWF_GIT  SSH        CACHE STRING "ECMWF git protocol" )
 
-  set( ECMWF_GIT_SSH   "ssh://git@git.ecmwf.int:7999"            CACHE INTERNAL "ECMWF ssh address" )
+  set( ECMWF_GIT_SSH   "ssh://git@git.ecmwf.int"            CACHE INTERNAL "ECMWF ssh address" )
   set( ECMWF_GIT_HTTPS "https://${ECMWF_USER}@git.ecmwf.int/scm" CACHE INTERNAL "ECMWF https address" )
 
   if( ECMWF_GIT MATCHES "[Ss][Ss][Hh]" )
