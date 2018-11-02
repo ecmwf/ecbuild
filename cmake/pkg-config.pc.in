@@ -3,7 +3,7 @@
 
 git_tag=@PKGCONFIG_GIT_TAG@
 
-prefix=@CMAKE_INSTALL_PREFIX@
+prefix=${pcfiledir}/../..
 exec_prefix=${prefix}
 libdir=${prefix}/@INSTALL_LIB_DIR@
 includedir=${prefix}/@INSTALL_INCLUDE_DIR@
