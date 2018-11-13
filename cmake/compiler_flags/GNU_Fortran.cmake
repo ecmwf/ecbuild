@@ -6,11 +6,11 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-set( CMAKE_Fortran_FLAGS_RELEASE        "-O3 -funroll-all-loops -finline-functions"                                CACHE STRING "Fortran compiler flags for Release builds"          FORCE )
-set( CMAKE_Fortran_FLAGS_BIT            "-g -O2 -m64 -march=native -DNDEBUG -fno-range-check -fconvert=big-endian" CACHE STRING "Fortran compiler flags for Bit-reproducible builds" FORCE )
-set( CMAKE_Fortran_FLAGS_DEBUG          "-O0 -g -fcheck=bounds -fbacktrace -finit-real=snan"                       CACHE STRING "Fortran compiler flags for Debug builds"            FORCE )
-set( CMAKE_Fortran_FLAGS_PRODUCTION     "-O2 -g"                                                                   CACHE STRING "Fortran compiler flags for Production builds."      FORCE )
-set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O2 -g"                                                                   CACHE STRING "Fortran compiler flags for RelWithDebInfo builds."  FORCE )
+set( CMAKE_Fortran_FLAGS_RELEASE        "-O3 -DNDEBUG -funroll-all-loops -finline-functions" CACHE STRING "Fortran compiler flags for Release builds"          FORCE )
+set( CMAKE_Fortran_FLAGS_BIT            "-O2 -DNDEBUG -fno-range-check -fconvert=big-endian" CACHE STRING "Fortran compiler flags for Bit-reproducible builds" FORCE )
+set( CMAKE_Fortran_FLAGS_DEBUG          "-O0 -g -fcheck=bounds -fbacktrace -finit-real=snan" CACHE STRING "Fortran compiler flags for Debug builds"            FORCE )
+set( CMAKE_Fortran_FLAGS_PRODUCTION     "-O2 -g"                                             CACHE STRING "Fortran compiler flags for Production builds."      FORCE )
+set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"                                    CACHE STRING "Fortran compiler flags for RelWithDebInfo builds."  FORCE )
 
 set( Fortran_FLAG_STACK_ARRAYS "-fstack-arrays" )
 
