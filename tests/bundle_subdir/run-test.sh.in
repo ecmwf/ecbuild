@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+
+ECBUILD_PATH=@CMAKE_SOURCE_DIR@/bin
+
+# Add ecbuild to path
+export PATH=$ECBUILD_PATH:$PATH
+
+# --------------------- cleanup ------------------------
+rm -rf $HERE/build
+rm -rf $HERE/mylib/build
+rm -rf $HERE/mylib/install
+
+# ------------- build the "system" package -------------
+cd $HERE/mylib
+
+mkdir build
+cd build
+ecbuild --prefix=../install -- ..
+make install
+
+export mylib_DIR=$HERE/mylib/install/share/mylib/cmake
+
+# ---------------- build the bundle --------------------
+cd $HERE
+
+mkdir build
+cd build
+ecbuild -- ../mybundle

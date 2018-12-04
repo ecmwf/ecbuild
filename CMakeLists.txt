@@ -55,6 +55,7 @@ add_subdirectory( cmake )
 add_subdirectory( doc )
 
 add_subdirectory( regressions )
+add_subdirectory( tests )
 
 install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
 
