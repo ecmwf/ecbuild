@@ -11,8 +11,6 @@ find_package( projectA REQUIRED )
 
 ecbuild_add_library( TARGET projectB SOURCES libraryB.cc libraryB.h INSTALL_HEADERS LISTED )
 
-# BUG: Cannot use PUBLIC here because projectB does not export projectA
-set( EXPORT PRIVATE CACHE STRING "" )
-target_link_libraries( projectB ${EXPORT} projectA )
+target_link_libraries( projectB PUBLIC projectA )
 
 ecbuild_install_project( NAME ${PROJECT_NAME} )

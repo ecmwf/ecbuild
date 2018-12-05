@@ -16,10 +16,6 @@ unset CMAKE_FLAGS
 #    Change to OFF to make it work on LXC and LXG
 CMAKE_FLAGS="$CMAKE_FLAGS -DENABLE_RELATIVE_RPATHS=ON"
 
-# ECBUILD-400 : projectB wants to export projectA PUBLIC but cannot
-#    Change this value to PRIVATE to make it work
-CMAKE_FLAGS="$CMAKE_FLAGS -DEXPORT=PUBLIC"
-
 # ----------------- build projectA ---------------------
 cd $HERE/projectA
 
@@ -33,7 +29,9 @@ cd $HERE/projectB
 
 mkdir build
 cd build
-ecbuild --prefix=../install -- -DprojectA_DIR=$HERE/projectA/install/share/projectA/cmake $CMAKE_FLAGS ../
+ecbuild --prefix=../install -- \
+    -DprojectA_DIR=$HERE/projectA/install/share/projectA/cmake \
+    $CMAKE_FLAGS ../
 make install
 
 # ----------------- build projectC ---------------------
@@ -41,7 +39,10 @@ cd $HERE/projectC
 
 mkdir build
 cd build
-ecbuild --prefix=../install -- -DprojectB_DIR=$HERE/projectB/install/share/projectB/cmake  $CMAKE_FLAGS ../
+ecbuild --prefix=../install -- \
+    -DprojectA_DIR=$HERE/projectA/install/share/projectA/cmake \
+    -DprojectB_DIR=$HERE/projectB/install/share/projectB/cmake \
+    $CMAKE_FLAGS ../
 make install
 
 # ----------------- Run ---------------------
