@@ -387,6 +387,20 @@ if( WIN32 )
   # Suppress C4267: warns about possible loss of data when converting 'size_t' to 'int'.
   ecbuild_add_c_flags("/wd4267")
 
+  ecbuild_warn( "CMake doesn't support symlinks on Windows. "
+                "Replacing all symlinks with copies." )
+  execute_process( COMMAND bash -c "${ECBUILD_MACROS_DIR}/ecbuild_windows_replace_symlinks.sh"
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/cmake
+                   RESULT_VARIABLE CMD_RESULT
+                   OUTPUT_VARIABLE CMD_OUTPUT
+                   ERROR_VARIABLE  CMD_ERROR )
+  ecbuild_debug( "Windows Replace Symlinks res=[${CMD_RESULT}] "
+                 "output=[${CMD_OUTPUT}] error=[${CMD_ERROR}]" )
+  if( CMD_RESULT )
+    ecbuild_critical( "Failed to replace windows symlinks. "
+                      "output=[${CMD_OUTPUT}] error=[${CMD_ERROR}]" )
+  endif()
+
 endif()
 
 ### final warning / error
