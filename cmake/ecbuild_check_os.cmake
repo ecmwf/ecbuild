@@ -372,6 +372,14 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "CYGWIN" )
 
 endif()
 
+### Windows
+
+if( WIN32 )
+
+  set( EC_OS_NAME "windows" )
+
+endif()
+
 ### final warning / error
 
 if( ${EC_OS_NAME} MATCHES "UNKNOWN" )
