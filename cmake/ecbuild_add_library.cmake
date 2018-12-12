@@ -497,8 +497,11 @@ function( ecbuild_add_library_impl )
 
       set_target_properties( ${_PAR_TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
       set_target_properties( ${_PAR_TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+      if( EC_OS_NAME MATCHES "windows" )
+        set_target_properties( ${_PAR_TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+      endif()
 
-      # export location of target to other projects -- must be exactly after setting the build location (see previous 2 commands)
+      # export location of target to other projects -- must be exactly after setting the build location (see previous 3 commands)
 
       export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
 
