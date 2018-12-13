@@ -23,10 +23,15 @@ echo ""
 
 for link in `find .. -type l -not -path '../build/*'`
 do
-    echo "removing link $link"
-    target=$(readlink -f $link)
-    # Remove the symlink before copying (rather than passing --remove-destination to cp)
-    # to prevent cp complaining about overwriting a symlink with a directory.
-    rm -r $link
-    cp -rTL $target $link
+    if [ -e $link ]
+    then
+        echo "removing link $link"
+        target=$(readlink -f $link)
+        # Remove the symlink before copying (rather than passing --remove-destination to cp)
+        # to prevent cp complaining about overwriting a symlink with a directory.
+        rm -r $link
+        cp -rTL $target $link
+    else
+        echo "ignoring broken link $link"
+    fi
 done
