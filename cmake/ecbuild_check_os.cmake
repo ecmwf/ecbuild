@@ -392,6 +392,9 @@ if( WIN32 )
   # Suppress C4800: forcing value to bool 'true' or 'false'
   ecbuild_add_cxx_flags("/wd4800")
 
+  # Prevent fatal error C1128
+  ecbuild_add_cxx_flags("/bigobj")
+
   ecbuild_warn( "CMake doesn't support symlinks on Windows. "
                 "Replacing all symlinks with copies." )
   execute_process( COMMAND bash -c "${ECBUILD_MACROS_DIR}/ecbuild_windows_replace_symlinks.sh"
