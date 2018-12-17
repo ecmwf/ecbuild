@@ -57,7 +57,7 @@ macro( ecbuild_add_cxx_flags m_cxx_flags )
         set( N_CXXFLAG 0 )
       endif()
 
-      math( EXPR N_CXXFLAG '${N_CXXFLAG}+1' )
+      math( EXPR N_CXXFLAG ${N_CXXFLAG}+1 )
 
       if( NOT ECBUILD_TRUST_FLAGS )
         if( DEFINED _PAR_NAME )
