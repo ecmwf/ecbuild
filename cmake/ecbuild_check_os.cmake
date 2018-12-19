@@ -256,16 +256,31 @@ if( UNIX )
       set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--disable-new-dtags")
     endif()
 
-    # The following option allows disabling dynamic symbol check at link time.
-    # It circumvents GNU ld bug 20535
-    # https://sourceware.org/bugzilla/show_bug.cgi?id=20535
-    option( ECBUILD_DISABLE_DYNCHECK "Set the linker flag --allow-shlib-undefined" OFF )
-    mark_as_advanced( ECBUILD_DISABLE_DYNCHECK )
+    # The following option enables a linker check to set ECBUILD_DISABLE_DYNCHECK if needed.
+    option( ECBUILD_DISABLE_RPATH_FIX "Disable the linker fix for relative RPATH" OFF )
+    mark_as_advanced( ECBUILD_DISABLE_RPATH_FIX )
 
-    if( ECBUILD_DISABLE_DYNCHECK )
-      set(CMAKE_EXE_LINKER_FLAGS     "${CMAKE_EXE_LINKER_FLAGS}    -Wl,--allow-shlib-undefined")
-      set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
-      set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
+    if( NOT ECBUILD_DISABLE_RPATH_FIX )
+      # GNU ld versions before 2.28 do not expand $ORIGIN at link time.
+      # If this is the case for the current linker, disable checking for dynamic symbols
+      # See https://sourceware.org/bugzilla/show_bug.cgi?id=20535
+
+      set( _linker_check_srcdir "${ECBUILD_MACROS_DIR}/../check_linker" )
+      if( NOT EXISTS ${_linker_check_srcdir} ) # ecbuild source dir
+        set( _linker_check_srcdir "${ECBUILD_MACROS_DIR}/../share/ecbuild/check_linker" )
+      endif()
+
+      set( _linker_check_bindir "${CMAKE_BINARY_DIR}/ecbuild_tmp/check_linker" )
+      try_compile( _linker_understands_origin
+        ${_linker_check_bindir} ${_linker_check_srcdir} test_ld_origin )
+      if( NOT ${_linker_understands_origin} )
+        ecbuild_warn( "The linker does not support $ORIGIN at link-time, \
+          disabling dynamic symbol check when linking against shared libraries" )
+
+        set(CMAKE_EXE_LINKER_FLAGS     "${CMAKE_EXE_LINKER_FLAGS}    -Wl,--allow-shlib-undefined")
+        set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
+        set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
+      endif()
     endif()
 
   endif()
