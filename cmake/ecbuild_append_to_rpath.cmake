@@ -36,6 +36,28 @@ function( _path_append var path )
     endif()
 endfunction()
 
+function( _make_relative_rpath_entry entry var )
+    if( EC_OS_NAME STREQUAL "macosx" )
+        set( ${var} "@loader_path/${entry}" PARENT_SCOPE )
+
+    elseif( EC_OS_NAME STREQUAL "freebsd" )
+        set( ${var} "$ORIGIN/${entry}" PARENT_SCOPE )
+
+    elseif( EC_OS_NAME STREQUAL "linux" )
+        set( ${var} "$ORIGIN/${entry}" PARENT_SCOPE )
+
+    elseif( EC_OS_NAME STREQUAL "solaris" )
+        set( ${var} "$ORIGIN/${entry}" PARENT_SCOPE )
+
+    elseif( EC_OS_NAME STREQUAL "aix" ) # always relative to executable path
+        set( ${var} "${entry}" PARENT_SCOPE )
+
+    else()
+        set( ${var} "${CMAKE_INSTALL_PREFIX}/${entry}" PARENT_SCOPE )
+
+    endif()
+endfunction()
+
 macro( ecbuild_append_to_rpath RPATH_DIRS )
 
    if( NOT ${ARGC} EQUAL 1 )
@@ -54,38 +76,8 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 
             else()
 
-                set( _done 0 )
-
-                if( EC_OS_NAME STREQUAL "macosx" )
-                    _path_append( CMAKE_INSTALL_RPATH "@loader_path/${RPATH_DIR}" )
-                    set( _done 1 )
-                endif()
-
-                if( EC_OS_NAME STREQUAL "freebsd" )
-                    _path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
-                    set( _done 1 )
-                endif()
-
-                if( EC_OS_NAME STREQUAL "linux" )
-                    _path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
-                    set( _done 1 )
-                endif()
-
-                if( EC_OS_NAME STREQUAL "solaris" )
-                    _path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
-                    set( _done 1 )
-                endif()
-
-                if( EC_OS_NAME STREQUAL "aix" ) # always relative to exectuable path
-                    _path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
-                    set( _done 1 )
-                endif()
-
-                # fallback
-
-                if( NOT _done )
-                    _path_append( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RPATH_DIR}" )
-                endif()
+                _make_relative_rpath_entry( "${RPATH_DIR}" rpath_dir_rel )
+                _path_append( CMAKE_INSTALL_RPATH ${rpath_dir_rel} )
 
             endif()
 
@@ -94,3 +86,33 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
    endforeach()
 
 endmacro( ecbuild_append_to_rpath )
+
+macro( ecbuild_target_rpath target mode )
+
+    if( "${mode}" STREQUAL REPLACE )
+        set( _target_rpath "" )
+    elseif( "${mode}" STREQUAL APPEND )
+        get_target_property( _target_rpath ${target} INSTALL_RPATH )
+    else()
+        ecbuild_critical( "ecbuild_target_rpath arg 2 should be either APPEND \
+            or REPLACE" )
+    endif()
+
+    foreach( rpath_dir ${ARGN} )
+        if( NOT ${rpath_dir} STREQUAL "" )
+            file( TO_CMAKE_PATH ${rpath_dir} rpath_dir ) # sanitise the path
+
+            if( IS_ABSOLUTE ${rpath_dir} )
+                _path_append( _target_rpath "${rpath_dir}" )
+
+            else()
+                _make_relative_rpath_entry( "${rpath_dir}" rpath_dir_rel )
+                _path_append( _target_rpath ${rpath_dir_rel} )
+
+            endif()
+        endif()
+    endforeach()
+
+    set_target_properties( ${target} PROPERTIES INSTALL_RPATH "${_target_rpath}" )
+
+endmacro()
