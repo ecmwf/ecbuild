@@ -441,7 +441,8 @@ macro( ecbuild_add_test )
         set( MPIEXEC_THREADS ${MPIEXEC_NUMTHREAD_FLAG} ${_PAR_OMP} )
       endif()
 
-      set( _LAUNCH ${MPIEXEC} ${MPIEXEC_TASKS} ${MPIEXEC_THREADS} )
+      # MPI_ARGS is left for users to define @ configure time e.g. -DMPI_ARGS="--oversubscribe"
+      set( _LAUNCH ${MPIEXEC} ${MPI_ARGS} ${MPIEXEC_TASKS} ${MPIEXEC_THREADS} )
 
       if( DEFINED _PAR_COMMAND )
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): running as ${_LAUNCH} ${_PAR_COMMAND}")
