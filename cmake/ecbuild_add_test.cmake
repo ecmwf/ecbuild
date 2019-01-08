@@ -460,6 +460,8 @@ macro( ecbuild_add_test )
       if( EC_OS_NAME MATCHES "windows" AND ${_PAR_TYPE} MATCHES "SCRIPT" )
         # Windows has to be explicitly told to use bash for the tests.
         set( _WIN_CMD "bash" "--rcfile" "${CMAKE_CURRENT_SOURCE_DIR}/windows_testing.bashrc" "-ci" )
+      else()
+        set( _WIN_CMD "" )
       endif()
 
       if( DEFINED _PAR_COMMAND )
