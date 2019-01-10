@@ -372,6 +372,28 @@ if( ${CMAKE_SYSTEM_NAME} MATCHES "CYGWIN" )
 
 endif()
 
+### Windows
+
+if( WIN32 )
+
+  set( EC_OS_NAME "windows" )
+
+  ecbuild_warn( "CMake doesn't support symlinks on Windows. "
+                "Replacing all symlinks with copies." )
+  execute_process( COMMAND bash -c "${ECBUILD_MACROS_DIR}/ecbuild_windows_replace_symlinks.sh"
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/cmake
+                   RESULT_VARIABLE CMD_RESULT
+                   OUTPUT_VARIABLE CMD_OUTPUT
+                   ERROR_VARIABLE  CMD_ERROR )
+  ecbuild_debug( "Windows Replace Symlinks res=[${CMD_RESULT}] "
+                 "output=[${CMD_OUTPUT}] error=[${CMD_ERROR}]" )
+  if( CMD_RESULT )
+    ecbuild_critical( "Failed to replace windows symlinks. "
+                      "output=[${CMD_OUTPUT}] error=[${CMD_ERROR}]" )
+  endif()
+
+endif()
+
 ### final warning / error
 
 if( ${EC_OS_NAME} MATCHES "UNKNOWN" )

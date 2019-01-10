@@ -410,11 +410,7 @@ endfunction()\n\n" )
         else()
           # The option /fast disables dependency checking on a target, see
           # https://cmake.org/Wiki/CMake_FAQ#Is_there_a_way_to_skip_checking_of_dependent_libraries_when_compiling.3F
-          if( WIN32 )
-            set( _fast "\fast" )
-          else()
-            set( _fast "/fast" )
-          endif()
+          set( _fast "/fast" )
         endif()
         file( APPEND ${_script}
               "exec_check( \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target __get_data_${_p_TARGET}_${_name}${_fast} )\n" )
