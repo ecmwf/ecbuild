@@ -271,6 +271,23 @@ if( UNIX )
       endif()
 
       set( _linker_check_bindir "${CMAKE_BINARY_DIR}/ecbuild_tmp/check_linker" )
+
+      # Make sure the build directory does not point to another version
+      if( EXISTS ${_linker_check_bindir}/CMakeCache.txt )
+        file( STRINGS ${_linker_check_bindir}/CMakeCache.txt
+          _linker_check_prev_src
+          REGEX "^CMAKE_HOME_DIRECTORY"
+          LIMIT_COUNT 1 )
+        string( REGEX REPLACE "^.*=(.+)$" "\\1" _linker_check_prev_src "${_linker_check_prev_src}" )
+        string( STRIP _linker_check_prev_src "${_linker_check_prev_src}" )
+        get_filename_component( _linker_check_prev_src "${_linker_check_prev_src}" REALPATH )
+        get_filename_component( _linker_check_curr_src "${_linker_check_srcdir}" REALPATH )
+
+        if( NOT _linker_check_prev_src STREQUAL _linker_check_curr_src )
+          file( REMOVE ${_linker_check_bindir}/CMakeCache.txt )
+        endif()
+      endif()
+
       try_compile( _linker_understands_origin
         ${_linker_check_bindir} ${_linker_check_srcdir} test_ld_origin )
       if( NOT ${_linker_understands_origin} )
