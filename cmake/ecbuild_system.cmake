@@ -7,8 +7,19 @@
 # does it submit to any jurisdiction.
 
 ########################################################################################################
-# disallow in-source build
+# compatibility with ecbuild 2
+if ( NOT DEFINED ECBUILD_2_COMPAT_VALUE )
+    set( ECBUILD_2_COMPAT_VALUE ON )
+endif()
+if ( NOT DEFINED ECBUILD_2_COMPAT_DEPRECATE_VALUE )
+    set( ECBUILD_2_COMPAT_DEPRECATE_VALUE OFF )
+endif()
 
+option( ECBUILD_2_COMPAT "Keep compatibility with ecbuild 2" ${ECBUILD_2_COMPAT_VALUE} )
+option( ECBUILD_2_COMPAT_DEPRECATE "Emit deprecation warnings in the compatibility layer" ${ECBUILD_2_COMPAT_DEPRECATE_VALUE} )
+
+########################################################################################################
+# disallow in-source build
 if( EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt ) # check for failed attempts to build within the source tree
     message( FATAL_ERROR "Project ${PROJECT_NAME} contains a CMakeCache.txt inside source tree [${CMAKE_SOURCE_DIR}/CMakeCache.txt].\n Please remove it and
     make sure that source tree is prestine and clean of unintended files, before retrying." )
