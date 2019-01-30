@@ -73,6 +73,12 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # Include log macros since these are used right away
     include( ecbuild_log )
 
+    # Enable the compatibility layer
+    if(ECBUILD_2_COMPAT)
+      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/compat" )
+      include(ecbuild_compat)
+    endif()
+
     execute_process( COMMAND env OUTPUT_VARIABLE __env )
     ecbuild_debug( "---------------------------------------------------------" )
     ecbuild_debug( "Environment:" )
