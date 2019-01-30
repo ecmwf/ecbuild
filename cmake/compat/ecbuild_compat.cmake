@@ -14,5 +14,5 @@ if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
       "Please upgrade the build system and unset `ECBUILD_2_COMPAT`.")
   endif()
 
-  # include macros here
+  include(ecbuild_compat_require)
 endif()
