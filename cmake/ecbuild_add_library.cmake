@@ -521,7 +521,7 @@ function( ecbuild_add_library_impl )
     endif()
 
     # for the links target
-    if( NOT _PAR_NOINSTALL )
+    if( NOT _PAR_NOINSTALL AND ECBUILD_2_COMPAT )
       ecbuild_link_lib( ${_PAR_TARGET} $<TARGET_FILE_NAME:${_PAR_TARGET}> $<TARGET_FILE:${_PAR_TARGET}>  )
     endif()
 

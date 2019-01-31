@@ -251,7 +251,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_check_os )                     # check for os characteristics
     include( ecbuild_define_paths )                 # defines installation paths
     include( ecbuild_define_libs_and_execs_target ) # defines the top level execs and libs
-    include( ecbuild_define_links_target )          # defines the links target
     include( ecbuild_setup_test_framework )         # setup test framework
     include( ecbuild_define_uninstall )             # define uninstall target
 

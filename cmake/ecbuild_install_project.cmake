@@ -104,7 +104,10 @@ macro( ecbuild_install_project )
     if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
         ecbuild_define_libs_and_execs_targets()
-        ecbuild_define_links_target()
+
+        if (ECBUILD_2_COMPAT)
+          ecbuild_define_links_target()
+        endif()
 
     endif()
 

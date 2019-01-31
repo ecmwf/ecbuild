@@ -13,6 +13,9 @@ set( EC_ALL_EXES "" CACHE INTERNAL "" )
 set( EC_ALL_LIBS "" CACHE INTERNAL "" )
 
 macro( ecbuild_link_exe TARGET  FILENAME FILEPATH )
+    if(ECBUILD_2_COMPAT_DEPRECATE)
+      ecbuild_deprecate("ecbuild_link_exe is deprecated and will be removed")
+    endif()
 
     if( DEFINED EC_LINK_DIR )
        add_custom_target(${TARGET}_link
@@ -32,6 +35,9 @@ endmacro( ecbuild_link_exe  )
 # macro for adding a link to library on a development system
 
 macro( ecbuild_link_lib  TARGET FILENAME FILEPATH )
+    if(ECBUILD_2_COMPAT_DEPRECATE)
+      ecbuild_deprecate("ecbuild_link_lib is deprecated and will be removed")
+    endif()
 
     if( DEFINED EC_LINK_DIR )
        add_custom_target(${TARGET}_link
@@ -51,6 +57,9 @@ endmacro( ecbuild_link_lib  )
 # define make links target
 
 macro( ecbuild_define_links_target )
+    if(ECBUILD_2_COMPAT_DEPRECATE)
+      ecbuild_deprecate("ecbuild_define_links_target is deprecated and will be removed")
+    endif()
 
   if( DEFINED EC_LINK_DIR )
 

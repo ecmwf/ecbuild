@@ -328,7 +328,7 @@ macro( ecbuild_add_executable )
     add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
 
     # for the links target
-    if( NOT _PAR_NOINSTALL )
+    if( NOT _PAR_NOINSTALL AND ECBUILD_2_COMPAT )
       ecbuild_link_exe( ${_PAR_TARGET} $<TARGET_FILE_NAME:${_PAR_TARGET}> $<TARGET_FILE:${_PAR_TARGET}>  )
     endif()
 
