@@ -14,5 +14,27 @@ if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
       "Please upgrade the build system and unset `ECBUILD_2_COMPAT`.")
   endif()
 
+  function(__ecbuild_deprecated_watcher VAR ACCESS)
+    if(ACCESS STREQUAL "READ_ACCESS")
+      message(DEPRECATION "The Variable '${VAR}' is deprecated! Please use '${ECBUILD_${VAR}_REPLACEMENT}' instead.")
+    endif()
+  endfunction()
+
+  function(ecbuild_mark_compat OLD_VAR NEW_VAR)
+    if(ECBUILD_2_COMPAT_DEPRECATE)
+      set(ECBUILD_${OLD_VAR}_REPLACEMENT "${NEW_VAR}" CACHE INTERNAL "${OLD_VAR} is deprecated and was replaced by ${NEW_VAR}" FORCE)
+      variable_watch(${OLD_VAR} __ecbuild_deprecated_watcher)
+    endif()
+  endfunction()
+
+  # use macro to acces value of NEW_VAR
+  macro(ecbuild_declare_compat OLD_VAR NEW_VAR)
+    if(ECBUILD_2_COMPAT_DEPRECATE)
+      ecbuild_mark_compat(${OLD_VAR} ${NEW_VAR})
+    endif()
+    set(${OLD_VAR} ${${NEW_VAR}})
+  endmacro()
+
+
   include(ecbuild_compat_require)
 endif()
