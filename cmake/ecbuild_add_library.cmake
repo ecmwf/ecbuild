@@ -542,7 +542,7 @@ endfunction( ecbuild_add_library_impl  )
 # auxiliary macro for adding a library
 ##############################################################################
 
-macro( ecbuild_add_library )
+function( ecbuild_add_library )
 
   set( options  )
   set( single_value_args TARGET TYPE )
@@ -589,4 +589,4 @@ macro( ecbuild_add_library )
 
   endif()
 
-endmacro( ecbuild_add_library )
+endfunction()
