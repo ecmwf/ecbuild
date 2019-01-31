@@ -48,8 +48,6 @@ set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuil
 
 include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
-set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
-
 # Set policies
 include( ecbuild_policies NO_POLICY_SCOPE )
 
@@ -85,7 +83,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     ecbuild_debug( "---------------------------------------------------------\n${__env}" )
     ecbuild_debug( "---------------------------------------------------------" )
 
-    ecbuild_info( "ecbuild   ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
+    ecbuild_info( "ecbuild   ${ecbuild_VERSION}\t${ECBUILD_MACROS_DIR}" )
     ecbuild_info( "cmake     ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
 
     if( CMAKE_TOOLCHAIN_FILE )

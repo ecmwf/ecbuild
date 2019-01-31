@@ -124,7 +124,7 @@ macro( ecbuild_install_project )
     # name, version, etc ...
 
     ecbuild_set_if_not_defined(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
-    ecbuild_set_if_not_defined(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
+    ecbuild_set_if_not_defined(CPACK_PACKAGE_VERSION   "${${PROJECT_NAME}_VERSION}")
     # Convert "/" to "-" for the case where the version string contains a "/"
     string( REPLACE "/" "-" CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION} )
 
@@ -272,7 +272,7 @@ macro( ecbuild_install_project )
 
         # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)
 
-        set( PACKAGE_VERSION        "${${PNAME}_VERSION}" )
+        set( PACKAGE_VERSION        "${${PROJECT_NAME}_VERSION}" )
         set( PACKAGE_GIT_SHA1       "${${PNAME}_GIT_SHA1}" )
         set( PACKAGE_GIT_SHA1_SHORT "${${PNAME}_GIT_SHA1_SHORT}" )
 

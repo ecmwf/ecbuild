@@ -79,30 +79,47 @@ macro( ecbuild_declare_project )
     endif()
   endif()
 
-  # read and parse project version file
-  if( EXISTS ${PROJECT_SOURCE_DIR}/VERSION.cmake )
-    include( ${PROJECT_SOURCE_DIR}/VERSION.cmake )
-  else()
-    set( ${PROJECT_NAME}_VERSION_STR "0.0.0" )
+  if(ECBUILD_2_COMPAT)
+    if(NOT (DEFINED ${PROJECT_NAME}_VERSION
+        AND DEFINED ${PROJECT_NAME}_VERSION_MAJOR
+        AND DEFINED ${PROJECT_NAME}_VERSION_MINOR
+        AND DEFINED ${PROJECT_NAME}_VERSION_PATCH)
+      )
+      if(ECBUILD_2_COMPAT_DEPRECATE)
+        ecbuild_deprecate("Please set a project version in the project() rather than using VERSION.cmake")
+      endif()
+
+      # read and parse project version file
+      if( EXISTS ${PROJECT_SOURCE_DIR}/VERSION.cmake )
+        include( ${PROJECT_SOURCE_DIR}/VERSION.cmake )
+        set( __version ${${PROJECT_NAME}_VERSION_STR} )
+      else()
+        set( __version "0.0.0" )
+      endif()
+
+      string( REPLACE "." " " _version_list "${__version}" ) # dots to spaces
+
+      separate_arguments( _version_list )
+
+      list( GET _version_list 0 ${PROJECT_NAME}_VERSION_MAJOR )
+      list( GET _version_list 1 ${PROJECT_NAME}_VERSION_MINOR )
+      list( GET _version_list 2 ${PROJECT_NAME}_VERSION_PATCH )
+
+      # cleanup patch version of any extra qualifiers ( -dev -rc1 ... )
+
+      string( REGEX REPLACE "^([0-9]+).*" "\\1" ${PROJECT_NAME}_VERSION_PATCH "${${PROJECT_NAME}_VERSION_PATCH}" )
+
+      set( ${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
+      set( ${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION}" CACHE INTERNAL "package ${PROJECT_NAME} version" )
+      set( ${PROJECT_NAME}_VERSION_STR "${${PROJECT_NAME}_VERSION}" CACHE INTERNAL "package ${PROJECT_NAME} version" )
+    endif()
+
+    ecbuild_declare_compat( ${PNAME}_MAJOR_VERSION ${PROJECT_NAME}_VERSION_MAJOR )
+    ecbuild_declare_compat( ${PNAME}_MINOR_VERSION ${PROJECT_NAME}_VERSION_MINOR )
+    ecbuild_declare_compat( ${PNAME}_PATCH_VERSION ${PROJECT_NAME}_VERSION_PATCH )
+    ecbuild_declare_compat( ${PNAME}_VERSION_STR ${PROJECT_NAME}_VERSION )
+    ecbuild_declare_compat( ${PNAME}_VERSION ${PROJECT_NAME}_VERSION )
   endif()
-
-  string( REPLACE "." " " _version_list ${${PROJECT_NAME}_VERSION_STR} ) # dots to spaces
-
-  separate_arguments( _version_list )
-
-  list( GET _version_list 0 ${PNAME}_MAJOR_VERSION )
-  list( GET _version_list 1 ${PNAME}_MINOR_VERSION )
-  list( GET _version_list 2 ${PNAME}_PATCH_VERSION )
-
-  # cleanup patch version of any extra qualifiers ( -dev -rc1 ... )
-
-  string( REGEX REPLACE "^([0-9]+).*" "\\1" ${PNAME}_PATCH_VERSION "${${PNAME}_PATCH_VERSION}" )
-
-  set( ${PNAME}_VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}.${${PNAME}_PATCH_VERSION}"
-       CACHE INTERNAL "package ${PNAME} version" )
-
-  set( ${PNAME}_VERSION_STR "${${PROJECT_NAME}_VERSION_STR}"
-       CACHE INTERNAL "package ${PNAME} version string" ) # ignore caps
 
   #    ecbuild_debug_var( ${PNAME}_VERSION )
   #    ecbuild_debug_var( ${PNAME}_VERSION_STR )
@@ -190,9 +207,9 @@ macro( ecbuild_declare_project )
   ecbuild_info( "---------------------------------------------------------" )
 
   if( ${PNAME}_GIT_SHA1_SHORT )
-    ecbuild_info( "${Green}[${PROJECT_NAME}] (${${PNAME}_VERSION_STR}) [${${PNAME}_GIT_SHA1_SHORT}]${ColourReset}" )
+    ecbuild_info( "${Green}[${PROJECT_NAME}] (${${PROJECT_NAME}_VERSION}) [${${PNAME}_GIT_SHA1_SHORT}]${ColourReset}" )
   else()
-    ecbuild_info( "[${PROJECT_NAME}] (${${PNAME}_VERSION_STR})" )
+    ecbuild_info( "[${PROJECT_NAME}] (${${PROJECT_NAME}_VERSION})" )
   endif()
 
 endmacro( ecbuild_declare_project )

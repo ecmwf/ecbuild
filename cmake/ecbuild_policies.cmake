@@ -46,9 +46,14 @@ if( POLICY CMP0046 )
     cmake_policy( SET CMP0046 NEW )
 endif()
 
-# Do not manage VERSION variables in project command
-if( POLICY CMP0048 )
-  cmake_policy( SET CMP0048 OLD )
+if( ECBUILD_2_COMPAT )
+  # Do not manage VERSION variables in project command
+  if( POLICY CMP0048 )
+    cmake_policy( SET CMP0048 OLD )
+  endif()
+else()
+  # Manage VERSION variables in project command
+  cmake_policy( SET CMP0048 NEW )
 endif()
 
 # Disallow add_custom_command SOURCE signatures
