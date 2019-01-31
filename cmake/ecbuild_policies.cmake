@@ -23,9 +23,11 @@ if( POLICY CMP0004 )
     cmake_policy( SET CMP0004 NEW )
 endif()
 
-# Allow use of the LOCATION target property.
-if( POLICY CMP0026 )
-    cmake_policy( SET CMP0026 OLD )
+if( ECBUILD_2_COMPAT )
+  # Allow use of the LOCATION target property.
+  if( POLICY CMP0026 )
+      cmake_policy( SET CMP0026 OLD )
+  endif()
 endif()
 
 # for macosx use @rpath in a target’s install name
