@@ -12,18 +12,20 @@ ecbuild_requires_macro_version( 2.9 )
 
 ecbuild_declare_project()
 
-message( "${CMAKE_INSTALL_RPATH}" )
+message( "${SOME_PATH}" )
 
-ecbuild_path_append( CMAKE_INSTALL_RPATH "/usr/local/foo" )
+ecbuild_path_append( SOME_PATH "/usr/local/foo" )
 
-message( "${CMAKE_INSTALL_RPATH}" )
+message( "${SOME_PATH}" )
 
-ecbuild_path_append( CMAKE_INSTALL_RPATH "/usr/bar" )
+ecbuild_path_append( SOME_PATH "/usr/bar" )
 
-message( "${CMAKE_INSTALL_RPATH}" )
+message( "${SOME_PATH}" )
 
-ecbuild_path_append( CMAKE_INSTALL_RPATH "/system/baz" )
+ecbuild_path_append( SOME_PATH "/system/baz" )
 
-message( "${CMAKE_INSTALL_RPATH}" )
+message( "${SOME_PATH}" )
 
-ecbuild_print_summary()
+if( NOT "${SOME_PATH}" STREQUAL "/usr/local/foo;/usr/bar;/system/baz" )
+  message( FATAL_ERROR "ecbuild_path_append() not working as expected" )
+endif()
