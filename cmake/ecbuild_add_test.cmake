@@ -155,7 +155,7 @@
 #
 ##############################################################################
 
-macro( ecbuild_add_test )
+function( ecbuild_add_test )
 
   set( options           BOOST )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI OMP WORKING_DIRECTORY )
@@ -517,4 +517,4 @@ macro( ecbuild_add_test )
   # finally mark project files
   ecbuild_declare_project_files( ${_PAR_SOURCES} )
 
-endmacro( ecbuild_add_test )
+endfunction( ecbuild_add_test )
