@@ -174,6 +174,8 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     ############################################################################################
     # add our macros
 
+    include( ecbuild_common )
+
     include( ecbuild_list_macros )
     include( ecbuild_list_add_pattern )
     include( ecbuild_list_exclude_pattern )

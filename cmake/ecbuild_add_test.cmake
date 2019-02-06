@@ -323,19 +323,14 @@ function( ecbuild_add_test )
 
       # add include dirs if defined
       if( DEFINED _PAR_INCLUDES )
-        list(REMOVE_DUPLICATES _PAR_INCLUDES )
-        foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
-          if( path )
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): add ${path} to ${_PAR_TARGET} include directories")
-            if( ECBUILD_2_COMPAT )
-              include_directories( ${path} )
-            else()
-              target_include_directories(${_PAR_TARGET} PRIVATE ${path} )
-            endif()
-          else()
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${path} not found - not adding to ${_PAR_TARGET} include directories")
-          endif()
-        endforeach()
+        ecbuild_filter_list(INCLUDES LIST ${_PAR_INCLUDES} LIST_INCLUDE path LIST_EXCLUDE skipped_path)
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): add [${path}] to include_directories")
+        if( ECBUILD_2_COMPAT )
+          include_directories( ${path} )
+        else()
+          target_include_directories(${_PAR_TARGET} PRIVATE ${path} )
+        endif()
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): [${skipped_path}] not found - not adding to include_directories")
       endif()
 
       # add extra dependencies
@@ -346,17 +341,12 @@ function( ecbuild_add_test )
 
       # add the link libraries
       if( DEFINED _PAR_LIBS )
-        list(REMOVE_DUPLICATES _PAR_LIBS )
         list(REMOVE_ITEM _PAR_LIBS debug)
         list(REMOVE_ITEM _PAR_LIBS optimized)
-        foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
-          if( lib )
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): linking with ${lib}")
-            target_link_libraries( ${_PAR_TARGET} ${lib} )
-          else()
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${lib} not found - not linking")
-          endif()
-        endforeach()
+        ecbuild_filter_list(LIBS LIST ${_PAR_LIBS} LIST_INCLUDE lib LIST_EXCLUDE skipped_lib)
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): linking with [${lib}]")
+        target_link_libraries( ${_PAR_TARGET} ${lib} )
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): [${skipped_lib}] not found - not linking")
       endif()
 
       # add test libraries

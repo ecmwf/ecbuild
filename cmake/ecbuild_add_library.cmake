@@ -291,70 +291,52 @@ function( ecbuild_add_library_impl )
 
     # add the link libraries
     if( DEFINED _PAR_LIBS )
-      list(REMOVE_DUPLICATES _PAR_LIBS )
       list(REMOVE_ITEM _PAR_LIBS debug)
       list(REMOVE_ITEM _PAR_LIBS optimized)
-      foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
-        if( lib )
-
-          string(REGEX REPLACE "[ ]+$" "" ${lib} "${${lib}}") # strips leading whitespaces
-          string(REGEX REPLACE "^[ ]+" "" ${lib} "${${lib}}") # strips trailing whitespaces
-
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with [${lib}]")
-          target_link_libraries( ${_PAR_TARGET} ${lib} )
-        else()
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${lib} not found - not linking")
-        endif()
-      endforeach()
+      ecbuild_filter_list(LIBS LIST ${_PAR_LIBS} LIST_INCLUDE lib LIST_EXCLUDE skipped_libs)
+      target_link_libraries( ${_PAR_TARGET} ${lib} )
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with [${lib}]")
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_libs}] not found - not linking")
     endif()
+
+    # takes a list of possible includes LIST and an INTERFACE parameter
+    macro(__addIncludes)
+      set( options )
+      set( single_value_args INTERFACE )
+      set( multi_value_args  LIST )
+
+      cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN} )
+
+      ecbuild_filter_list(INCLUDES LIST ${_PAR_LIST} LIST_INCLUDE path LIST_EXCLUDE skipped_path)
+      if( "${_PAR_INTERFACE}" STREQUAL "LEGACY" )
+        if( ECBUILD_2_COMPAT AND ECBUILD_USE_INCLUDE_DIRECTORIES )
+          if( ECBUILD_2_COMPAT_DEPRECATE)
+            ecbuild_deprecate("The usage of ECBUILD_USE_INCLUDE_DIRECTORIES is deprecated.")
+          endif()
+          include_directories( ${path} )
+        else()
+          target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
+        endif()
+      else()
+        target_include_directories( ${_PAR_TARGET} ${_PAR_INTERFACE} ${path} )
+      endif()
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add [${path}] to include_directories ${_PAR_INTERFACE}")
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_path}] not found - not adding to include_directories ${_PAR_INTERFACE}")
+    endmacro()
 
     # add include dirs if defined
     if( DEFINED _PAR_INCLUDES )
-      list( REMOVE_DUPLICATES _PAR_INCLUDES )
-      foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
-        if( path )
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add ${path} to include_directories")
-          if( ECBUILD_2_COMPAT AND ECBUILD_USE_INCLUDE_DIRECTORIES )
-            if( ECBUILD_2_COMPAT_DEPRECATE)
-              ecbuild_deprecate("The usage of ECBUILD_USE_INCLUDE_DIRECTORIES is deprecated.")
-            endif()
-            include_directories( ${path} )
-          else()
-            target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
-          endif()
-        else()
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
-        endif()
-      endforeach()
+      __addIncludes(LIST ${_PAR_INCLUDES} INTERFACE LEGACY)
     endif()
 
     # add private include dirs if defined
     if( DEFINED _PAR_PRIVATE_INCLUDES )
-      list( REMOVE_DUPLICATES _PAR_PRIVATE_INCLUDES )
-      foreach( path ${_PAR_PRIVATE_INCLUDES} ) # skip NOTFOUND
-        if( path )
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add ${path} to include_directories")
-          target_include_directories( ${_PAR_TARGET} PRIVATE ${path} )
-        else()
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
-        endif()
-      endforeach()
+      __addIncludes(LIST ${_PAR_PRIVATE_INCLUDES} INTERFACE PRIVATE)
     endif()
 
     # add public include dirs if defined
     if( DEFINED _PAR_PUBLIC_INCLUDES )
-      if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" )
-        ecbuild_critical("ecbuild_add_library(${_PAR_TARGET}): cannot use PUBLIC_INCLUDES with CMake < 2.8.11" )
-      endif()
-      list( REMOVE_DUPLICATES _PAR_PUBLIC_INCLUDES )
-      foreach( path ${_PAR_PUBLIC_INCLUDES} ) # skip NOTFOUND
-        if( path )
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add ${path} to include_directories")
-          target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
-        else()
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
-        endif()
-      endforeach()
+      __addIncludes(LIST ${_PAR_PUBLIC_INCLUDES} INTERFACE PUBLIC)
     endif()
 
     # FIX: Cray compiler PIC option is not detected by CMake
