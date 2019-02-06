@@ -77,6 +77,10 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
       include(ecbuild_compat)
     endif()
 
+    # Deprecate capitalised project name
+    ecbuild_mark_compat(${PROJECT_NAME_CAPS} ${PROJECT_NAME})
+    ecbuild_mark_compat(${PROJECT_NAME_LOWCASE} ${PROJECT_NAME})
+
     execute_process( COMMAND env OUTPUT_VARIABLE __env )
     ecbuild_debug( "---------------------------------------------------------" )
     ecbuild_debug( "Environment:" )

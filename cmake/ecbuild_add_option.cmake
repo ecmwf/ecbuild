@@ -257,6 +257,9 @@ macro( ecbuild_add_option )
     mark_as_advanced( ENABLE_${_p_FEATURE} )
   endif()
 
-  set( ${PROJECT_NAME_CAPS}_HAVE_${_p_FEATURE} ${HAVE_${_p_FEATURE}} )
+  set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} ${HAVE_${_p_FEATURE}} )
+  if (NOT "${PROJECT_NAME_CAPS}" STREQUAL "${PROJECT_NAME}")
+    ecbuild_declare_compat( ${PROJECT_NAME_CAPS}_HAVE_${_p_FEATURE} ${PROJECT_NAME}_HAVE_${_p_FEATURE})
+  endif()
 
 endmacro( ecbuild_add_option  )
