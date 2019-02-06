@@ -76,20 +76,25 @@
 #   list of files specified as SOURCES which are not to be compiled separately
 #   (these are commonly template implementation files included in a header)
 #
-# LIBS : optional
+# LIBS : (DEPRECATED) optional
 #   list of libraries to link against (CMake targets or external libraries)
+#   Please use target_link_libraries instead
 #
 # INCLUDES : (DEPRECATED) optional
 #   list of paths to add to include directories, behaves as PUBLIC_INCLUDES
+#   Please use target_include_directories instead
 #
-# PUBLIC_INCLUDES : optional
+# PUBLIC_INCLUDES : (DEPRECATED) optional
 #   list of paths to add to include directories which will be publicly exported to other projects
+#   Please use target_include_directories instead
 #
-# PRIVATE_INCLUDES : optional
+# PRIVATE_INCLUDES : (DEPRECATED) optional
 #   list of paths to add to include directories which won't be exported to other projects
+#   Please use target_include_directories instead
 #
-# DEFINITIONS : optional
+# DEFINITIONS : (DEPRECATED) optional
 #   list of definitions to add to preprocessor defines
+#   Please use target_compile_definitions instead
 #
 # PERSISTENT : optional
 #   list of persistent layer object files
@@ -284,7 +289,7 @@ function( ecbuild_add_library_impl )
       list(REMOVE_ITEM _PAR_LIBS debug)
       list(REMOVE_ITEM _PAR_LIBS optimized)
       ecbuild_filter_list(LIBS LIST ${_PAR_LIBS} LIST_INCLUDE lib LIST_EXCLUDE skipped_libs)
-      target_link_libraries( ${_PAR_TARGET} ${lib} )
+      target_link_libraries( ${_PAR_TARGET} PUBLIC ${lib} )
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with [${lib}]")
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_libs}] not found - not linking")
     endif()
