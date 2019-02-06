@@ -306,7 +306,7 @@ endfunction(ecbuild_pkgconfig_include)
 # :<PNAME>_DESCRIPTION:  package description
 # :<PNAME>_URL:          package URL
 # :<PNAME>_VERSION:      package version
-# :<PNAME>_GIT_SHA1:     Git revision
+# :<PROJECT_NAME>_GIT_SHA1:     Git revision
 #
 # Usage
 # -----
@@ -427,7 +427,7 @@ function( ecbuild_pkgconfig )
   endif()
 
   set( PKGCONFIG_VERSION ${${PNAME}_VERSION} )
-  set( PKGCONFIG_GIT_TAG ${${PNAME}_GIT_SHA1} )  # For now set it to a commit id
+  set( PKGCONFIG_GIT_TAG ${${PROJECT_NAME}_GIT_SHA1} )  # For now set it to a commit id
 
   if( _PAR_VARIABLES )
     set( PKGCONFIG_VARIABLES "\n### Features:\n\n")

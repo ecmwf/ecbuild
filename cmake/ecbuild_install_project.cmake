@@ -276,8 +276,8 @@ macro( ecbuild_install_project )
         # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)
 
         set( PACKAGE_VERSION        "${${PROJECT_NAME}_VERSION}" )
-        set( PACKAGE_GIT_SHA1       "${${PNAME}_GIT_SHA1}" )
-        set( PACKAGE_GIT_SHA1_SHORT "${${PNAME}_GIT_SHA1_SHORT}" )
+        set( PACKAGE_GIT_SHA1       "${${PROJECT_NAME}_GIT_SHA1}" )
+        set( PACKAGE_GIT_SHA1_SHORT "${${PROJECT_NAME}_GIT_SHA1_SHORT}" )
 
         configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
 
@@ -393,7 +393,7 @@ macro( ecbuild_install_project )
 
         # Compute path to the include dir relative to the project's CMake dir
         # where <project>-config.cmake is installed to
-        file( RELATIVE_PATH REL_INCLUDE_DIR "${${PNAME}_FULL_INSTALL_CMAKE_DIR}" "${${PNAME}_FULL_INSTALL_INCLUDE_DIR}" )
+        file( RELATIVE_PATH REL_INCLUDE_DIR "${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR}" "${${PROJECT_NAME}_FULL_INSTALL_INCLUDE_DIR}" )
         set( CONF_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
 
         set( _is_build_dir_export OFF )
@@ -427,8 +427,8 @@ macro( ecbuild_install_project )
         set( ${PNAME}_FOUND             TRUE                          PARENT_SCOPE )
         set( ${PROJECT_NAME}_FOUND      TRUE                          PARENT_SCOPE )
         set( ${PNAME}_VERSION           ${${PNAME}_VERSION}           PARENT_SCOPE )
-        set( ${PNAME}_GIT_SHA1          ${${PNAME}_GIT_SHA1}          PARENT_SCOPE )
-        set( ${PNAME}_GIT_SHA1_SHORT    ${${PNAME}_GIT_SHA1_SHORT}    PARENT_SCOPE )
+        set( ${PROJECT_NAME}_GIT_SHA1          ${${PROJECT_NAME}_GIT_SHA1}          PARENT_SCOPE )
+        set( ${PROJECT_NAME}_GIT_SHA1_SHORT    ${${PROJECT_NAME}_GIT_SHA1_SHORT}    PARENT_SCOPE )
         set( ${PROJECT_NAME}_VERSION    ${${PNAME}_VERSION}           PARENT_SCOPE )
         set( ${PNAME}_INCLUDE_DIRS      ${${PNAME}_INCLUDE_DIRS}      PARENT_SCOPE )
         set( ${PNAME}_LIBRARIES         ${${PNAME}_LIBRARIES}         PARENT_SCOPE )

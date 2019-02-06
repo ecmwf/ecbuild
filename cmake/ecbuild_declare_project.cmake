@@ -18,15 +18,14 @@
 #   ecbuild_declare_project()
 #
 # Sets the following CMake variables
-# (where ``PNAME`` is the capitalised project name):
 #
-# :<PNAME>_GIT_SHA1:       Git revision (if project is a Git repo)
-# :<PNAME>_GIT_SHA1_SHORT: short Git revision (if project is a Git repo)
-# :<PNAME>_VERSION:        version in format ``MAJOR.MINOR.PATCH``
-# :<PNAME>_VERSION_STR:    version as given in ``VERSION.cmake`` or 0.0.0
-# :<PNAME>_MAJOR_VERSION:  major version number
-# :<PNAME>_MINOR_VERSION:  minor version number
-# :<PNAME>_PATCH_VERSION:  patch version number
+# :<PROJECT_NAME>_GIT_SHA1:       Git revision (if project is a Git repo)
+# :<PROJECT_NAME>_GIT_SHA1_SHORT: short Git revision (if project is a Git repo)
+# :<PROJECT_NAME>_VERSION:        version in format ``MAJOR.MINOR.PATCH``
+# :<PROJECT_NAME>_VERSION_STR:    version as given in ``VERSION.cmake`` or 0.0.0
+# :<PROJECT_NAME>_MAJOR_VERSION:  major version number
+# :<PROJECT_NAME>_MINOR_VERSION:  minor version number
+# :<PROJECT_NAME>_PATCH_VERSION:  patch version number
 # :INSTALL_BIN_DIR:        relative install directory for executables
 # :INSTALL_LIB_DIR:        relative install directory for libraries
 # :INSTALL_INCLUDE_DIR:    relative install directory for include files
@@ -66,17 +65,20 @@ macro( ecbuild_declare_project )
   set( ${PROJECT_NAME}_ALL_LIBS "" CACHE INTERNAL "" )
 
   # if git project get its HEAD SHA1
-  # leave it here so we may use ${PNAME}_GIT_SHA1 on the version file
+  # leave it here so we may use ${PROJECT_NAME}_GIT_SHA1 on the version file
 
   if( EXISTS ${PROJECT_SOURCE_DIR}/.git )
-    get_git_head_revision( GIT_REFSPEC ${PNAME}_GIT_SHA1 )
-    if( ${PNAME}_GIT_SHA1 )
-      string( SUBSTRING "${${PNAME}_GIT_SHA1}" 0 7 ${PNAME}_GIT_SHA1_SHORT )
-      #     ecbuild_debug_var( ${PNAME}_GIT_SHA1 )
-      #     ecbuild_debug_var( ${PNAME}_GIT_SHA1_SHORT )
+    get_git_head_revision( GIT_REFSPEC ${PROJECT_NAME}_GIT_SHA1 )
+    if( ${PROJECT_NAME}_GIT_SHA1 )
+      string( SUBSTRING "${${PROJECT_NAME}_GIT_SHA1}" 0 7 ${PROJECT_NAME}_GIT_SHA1_SHORT )
+      #     ecbuild_debug_var( ${PROJECT_NAME}_GIT_SHA1 )
+      #     ecbuild_debug_var( ${PROJECT_NAME}_GIT_SHA1_SHORT )
     else()
-      ecbuild_debug( "Could not get git-sha1 for project ${PNAME}")
+      ecbuild_debug( "Could not get git-sha1 for project ${PROJECT_NAME}")
     endif()
+
+    ecbuild_declare_compat( ${PNAME}_GIT_SHA1 ${PROJECT_NAME}_GIT_SHA1 )
+    ecbuild_declare_compat( ${PNAME}_GIT_SHA1_SHORT ${PROJECT_NAME}_GIT_SHA1_SHORT)
   endif()
 
   if(ECBUILD_2_COMPAT)
@@ -121,11 +123,11 @@ macro( ecbuild_declare_project )
     ecbuild_declare_compat( ${PNAME}_VERSION ${PROJECT_NAME}_VERSION )
   endif()
 
-  #    ecbuild_debug_var( ${PNAME}_VERSION )
-  #    ecbuild_debug_var( ${PNAME}_VERSION_STR )
-  #    ecbuild_debug_var( ${PNAME}_MAJOR_VERSION )
-  #    ecbuild_debug_var( ${PNAME}_MINOR_VERSION )
-  #    ecbuild_debug_var( ${PNAME}_PATCH_VERSION )
+  #    ecbuild_debug_var( ${PROJECT_NAME}_VERSION )
+  #    ecbuild_debug_var( ${PROJECT_NAME}_VERSION_STR )
+  #    ecbuild_debug_var( ${PROJECT_NAME}_MAJOR_VERSION )
+  #    ecbuild_debug_var( ${PROJECT_NAME}_MINOR_VERSION )
+  #    ecbuild_debug_var( ${PROJECT_NAME}_PATCH_VERSION )
 
   # install dirs for this project
 
@@ -165,15 +167,16 @@ macro( ecbuild_declare_project )
     set( var INSTALL_${p}_DIR )
 
     if( NOT IS_ABSOLUTE "${${var}}" )
-      set( ${PNAME}_FULL_INSTALL_${p}_DIR "${CMAKE_INSTALL_PREFIX}/${${var}}"
-           CACHE INTERNAL "${PNAME} ${p} full install path" )
+      set( ${PROJECT_NAME}_FULL_INSTALL_${p}_DIR "${CMAKE_INSTALL_PREFIX}/${${var}}"
+           CACHE INTERNAL "${PROJECT_NAME} ${p} full install path" )
     else()
       ecbuild_warn( "Setting an absolute path for ${VAR} in project ${PNAME}, breakes generation of relocatable binary packages (rpm,deb,...)" )
-      set( ${PNAME}_FULL_INSTALL_${p}_DIR "${${var}}"
-           CACHE INTERNAL "${PNAME} ${p} full install path" )
+      set( ${PROJECT_NAME}_FULL_INSTALL_${p}_DIR "${${var}}"
+           CACHE INTERNAL "${PROJECT_NAME} ${p} full install path" )
     endif()
+    ecbuild_declare_compat( ${PNAME}_FULL_INSTALL_${p}_DIR ${PROJECT_NAME}_FULL_INSTALL_${p}_DIR )
 
-    #        ecbuild_debug_var( ${PNAME}_FULL_INSTALL_${p}_DIR )
+    #        ecbuild_debug_var( ${PROJECT_NAME}_FULL_INSTALL_${p}_DIR )
 
   endforeach()
 
@@ -183,7 +186,7 @@ macro( ecbuild_declare_project )
 
     if( ENABLE_RELATIVE_RPATHS )
 
-      file( RELATIVE_PATH relative_rpath ${${PNAME}_FULL_INSTALL_BIN_DIR} ${${PNAME}_FULL_INSTALL_LIB_DIR} )
+      file( RELATIVE_PATH relative_rpath ${${PROJECT_NAME}_FULL_INSTALL_BIN_DIR} ${${PROJECT_NAME}_FULL_INSTALL_LIB_DIR} )
       # ecbuild_debug_var( relative_rpath )
 
       ecbuild_append_to_rpath( ${relative_rpath} )
@@ -206,8 +209,8 @@ macro( ecbuild_declare_project )
 
   ecbuild_info( "---------------------------------------------------------" )
 
-  if( ${PNAME}_GIT_SHA1_SHORT )
-    ecbuild_info( "${Green}[${PROJECT_NAME}] (${${PROJECT_NAME}_VERSION}) [${${PNAME}_GIT_SHA1_SHORT}]${ColourReset}" )
+  if( ${PROJECT_NAME}_GIT_SHA1_SHORT )
+    ecbuild_info( "${Green}[${PROJECT_NAME}] (${${PROJECT_NAME}_VERSION}) [${${PROJECT_NAME}_GIT_SHA1_SHORT}]${ColourReset}" )
   else()
     ecbuild_info( "[${PROJECT_NAME}] (${${PROJECT_NAME}_VERSION})" )
   endif()
