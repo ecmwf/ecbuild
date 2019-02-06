@@ -37,5 +37,8 @@ function(ecbuild_target_link_libraries _PAR_TARGET)
   ecbuild_filter_list(LIBS LIST ${_PAR_PUBLIC} LIST_INCLUDE _PAR_PUBLIC LIST_EXCLUDE _public_removed)
   ecbuild_filter_list(LIBS LIST ${_PAR_PRIVATE} LIST_INCLUDE _PAR_PRIVATE LIST_EXCLUDE _private_removed)
 
+  ecbuild_debug("ecbuild_target_link_libraries(${_PAR_TARGET}): PUBLIC [${_PAR_PUBLIC}] PRIVATE [${_PAR_PRIVATE}] found - linking")
+  ecbuild_debug("ecbuild_target_link_libraries(${_PAR_TARGET}): PUBLIC [${_public_removed}] PRIVATE [${_private_removed}] not found - not linking")
+
   target_link_libraries(${_PAR_TARGET} PUBLIC ${_PAR_PUBLIC} PRIVATE ${_PAR_PRIVATE})
 endfunction()
