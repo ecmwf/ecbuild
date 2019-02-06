@@ -15,7 +15,7 @@
 # Link a target with another, similar to target_link_libraries.
 # In difference to target_link_libraries targets are not required to exist.::
 #
-#   ecbuild_target_link_libraries( <name>
+#   ecbuild_target_link_libraries( <target>
 #                                  [ PUBLIC <target1> <target2> <target3> ... ]
 #                                  [ PRIVATE <target1> <target2> <target3> ... ])
 #
@@ -33,6 +33,10 @@ function(ecbuild_target_link_libraries _PAR_TARGET)
   set( single_value_args )
   set( multi_value_args  PUBLIC PRIVATE )
   cmake_parse_arguments(_PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN})
+
+  if (NOT TARGET _PAR_TARGET)
+    return()
+  endif()
 
   ecbuild_filter_list(LIBS LIST ${_PAR_PUBLIC} LIST_INCLUDE _PAR_PUBLIC LIST_EXCLUDE _public_removed)
   ecbuild_filter_list(LIBS LIST ${_PAR_PRIVATE} LIST_INCLUDE _PAR_PRIVATE LIST_EXCLUDE _private_removed)
