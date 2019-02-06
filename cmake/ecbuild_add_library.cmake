@@ -80,15 +80,13 @@
 #   list of libraries to link against (CMake targets or external libraries)
 #
 # INCLUDES : (DEPRECATED) optional
-#   list of paths to add to include directories, behaves as PUBLIC_INCLUDES if CMake >= 2.8.11
-#   and reverts to include_directories() for CMake < 2.8.11
+#   list of paths to add to include directories, behaves as PUBLIC_INCLUDES
 #
 # PUBLIC_INCLUDES : optional
 #   list of paths to add to include directories which will be publicly exported to other projects
 #
 # PRIVATE_INCLUDES : optional
-#   list of paths to add to include directories which won't be exported to other projects,
-#   equivalent to using a include_directories() before calling this macro
+#   list of paths to add to include directories which won't be exported to other projects
 #
 # DEFINITIONS : optional
 #   list of definitions to add to preprocessor defines
@@ -316,7 +314,10 @@ function( ecbuild_add_library_impl )
       foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
         if( path )
           ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add ${path} to include_directories")
-          if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" OR ECBUILD_USE_INCLUDE_DIRECTORIES )
+          if( ECBUILD_2_COMPAT AND ECBUILD_USE_INCLUDE_DIRECTORIES )
+            if( ECBUILD_2_COMPAT_DEPRECATE)
+              ecbuild_deprecate("The usage of ECBUILD_USE_INCLUDE_DIRECTORIES is deprecated.")
+            endif()
             include_directories( ${path} )
           else()
             target_include_directories( ${_PAR_TARGET} PUBLIC ${path} )
@@ -329,9 +330,6 @@ function( ecbuild_add_library_impl )
 
     # add private include dirs if defined
     if( DEFINED _PAR_PRIVATE_INCLUDES )
-      if( "${CMAKE_VERSION}" VERSION_LESS "2.8.11" )
-        ecbuild_critical("ecbuild_add_library(${_PAR_TARGET}): cannot use PRIVATE_INCLUDES with CMake < 2.8.11" )
-      endif()
       list( REMOVE_DUPLICATES _PAR_PRIVATE_INCLUDES )
       foreach( path ${_PAR_PRIVATE_INCLUDES} ) # skip NOTFOUND
         if( path )
