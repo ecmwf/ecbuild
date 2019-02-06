@@ -80,12 +80,12 @@ macro( ecbuild_declare_project )
     ecbuild_declare_compat( ${PNAME}_GIT_SHA1_SHORT ${PROJECT_NAME}_GIT_SHA1_SHORT)
   endif()
 
-  if(ECBUILD_2_COMPAT)
-    if(NOT (DEFINED ${PROJECT_NAME}_VERSION
-        AND DEFINED ${PROJECT_NAME}_VERSION_MAJOR
-        AND DEFINED ${PROJECT_NAME}_VERSION_MINOR
-        AND DEFINED ${PROJECT_NAME}_VERSION_PATCH)
-      )
+  if(NOT (DEFINED ${PROJECT_NAME}_VERSION
+      AND DEFINED ${PROJECT_NAME}_VERSION_MAJOR
+      AND DEFINED ${PROJECT_NAME}_VERSION_MINOR
+      AND DEFINED ${PROJECT_NAME}_VERSION_PATCH)
+    )
+    if(ECBUILD_2_COMPAT)
       if(ECBUILD_2_COMPAT_DEPRECATE)
         ecbuild_deprecate("Please set a project version in the project() rather than using VERSION.cmake")
       endif()
@@ -113,8 +113,15 @@ macro( ecbuild_declare_project )
       set( ${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
       set( ${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION}" CACHE INTERNAL "package ${PROJECT_NAME} version" )
       set( ${PROJECT_NAME}_VERSION_STR "${${PROJECT_NAME}_VERSION}" CACHE INTERNAL "package ${PROJECT_NAME} version" )
-    endif()
 
+    else()
+
+      ecbuild_critical("Please define a version for ${PROJECT_NAME}\n\tproject( ${PROJECT_NAME} VERSION 1.1.0 LANGUAGES C CXX )")
+
+    endif()
+  endif()
+
+  if(ECBUILD_2_COMPAT)
     ecbuild_declare_compat( ${PNAME}_MAJOR_VERSION ${PROJECT_NAME}_VERSION_MAJOR )
     ecbuild_declare_compat( ${PNAME}_MINOR_VERSION ${PROJECT_NAME}_VERSION_MINOR )
     ecbuild_declare_compat( ${PNAME}_PATCH_VERSION ${PROJECT_NAME}_VERSION_PATCH )
