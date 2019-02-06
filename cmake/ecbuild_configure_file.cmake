@@ -6,8 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# use a macro as we need the full context for configure_file
-macro(ecbuild_configure_file _PAR_TEMPLATE _PAR_FILENAME)
+function(ecbuild_configure_file _PAR_TEMPLATE _PAR_FILENAME)
   get_filename_component(config_file ${_PAR_FILENAME} NAME)
   set(tmp_file "${CMAKE_CURRENT_BINARY_DIR}/${config_file}.ecbuild")
 
@@ -20,4 +19,4 @@ macro(ecbuild_configure_file _PAR_TEMPLATE _PAR_FILENAME)
   endif()
 
   file(GENERATE OUTPUT "${_PAR_FILENAME}" INPUT ${tmp_file})
-endmacro()
+endfunction()
