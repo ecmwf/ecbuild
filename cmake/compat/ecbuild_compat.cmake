@@ -29,10 +29,20 @@ if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
 
   # use macro to acces value of NEW_VAR
   macro(ecbuild_declare_compat OLD_VAR NEW_VAR)
+    cmake_parse_arguments(_p "PARENT_SCOPE" "" "" ${ARGN})
+
+    if(_p_UNPARSED_ARGUMENTS)
+      ecbuild_critical("Unknown keywords given to ecbuild_declare_compat(): \"${_p_UNPARSED_ARGUMENTS}\"")
+    endif()
+
     if(ECBUILD_2_COMPAT_DEPRECATE)
       ecbuild_mark_compat(${OLD_VAR} ${NEW_VAR})
     endif()
-    set(${OLD_VAR} ${${NEW_VAR}})
+    if(_p_PARENT_SCOPE)
+      set(${OLD_VAR} ${${NEW_VAR}} PARENT_SCOPE)
+    else()
+      set(${OLD_VAR} ${${NEW_VAR}})
+    endif()
   endmacro()
 
 
