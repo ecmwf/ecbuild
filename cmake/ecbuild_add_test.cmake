@@ -304,19 +304,6 @@ function( ecbuild_add_test )
 
     if( DEFINED _PAR_SOURCES )
 
-      # add include dirs if defined
-      if( DEFINED _PAR_INCLUDES )
-        list(REMOVE_DUPLICATES _PAR_INCLUDES )
-        foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
-          if( path )
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): add ${path} to include_directories")
-            include_directories( ${path} )
-          else()
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
-          endif()
-        endforeach()
-      endif()
-
       # add persistent layer files
       if( DEFINED _PAR_PERSISTENT )
         if( DEFINED PERSISTENT_NAMESPACE )
@@ -333,6 +320,23 @@ function( ecbuild_add_test )
       endforeach()
 
       add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
+
+      # add include dirs if defined
+      if( DEFINED _PAR_INCLUDES )
+        list(REMOVE_DUPLICATES _PAR_INCLUDES )
+        foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
+          if( path )
+            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): add ${path} to ${_PAR_TARGET} include directories")
+            if( ECBUILD_2_COMPAT )
+              include_directories( ${path} )
+            else()
+              target_include_directories(${_PAR_TARGET} PRIVATE ${path} )
+            endif()
+          else()
+            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${path} not found - not adding to ${_PAR_TARGET} include directories")
+          endif()
+        endforeach()
+      endif()
 
       # add extra dependencies
       if( DEFINED _PAR_DEPENDS)
