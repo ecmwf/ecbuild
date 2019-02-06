@@ -286,7 +286,7 @@ endfunction(ecbuild_pkgconfig_include)
 # DESCRIPTION : optional, defaults to ``${UPPERCASE_PROJECT_NAME}_DESCRIPTION``
 #   description of the package
 #
-# LIBRARIES : optional, defaults to ``${UPPERCASE_PROJECT_NAME}_LIBRARIES``
+# LIBRARIES : required
 #   list of package libraries
 #
 # IGNORE_INCLUDE_DIRS : optional
@@ -351,6 +351,17 @@ function( ecbuild_pkgconfig )
     ecbuild_critical("Unknown keywords given to ecbuild_add_executable(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
+  if( NOT _PAR_LIBRARIES)
+    if(ECBUILD_2_COMPAT)
+      if(ECBUILD_2_COMPAT_DEPRECATE)
+        ecbuild_deprecate("Please specify the LIBRARIES argument of ecbuild_pkgconfig.")
+      endif()
+      set( LIBRARIES ${${PNAME}_LIBRARIES} )
+    else()
+      ecbuild_critical("The call to ecbuild_pkgconfig() doesn't specify the LIBRARIES.")
+    endif()
+  endif()
+
   unset( PKGCONFIG_LANGUAGES )
   if( NOT _PAR_LANGUAGES )
     if( CMAKE_C_COMPILER_LOADED )
@@ -374,7 +385,6 @@ function( ecbuild_pkgconfig )
     set( PKGCONFIG_HAVE_${_lang} 1 )
   endforeach()
 
-  set( LIBRARIES ${${PNAME}_LIBRARIES} )
   if( _PAR_LIBRARIES )
     set( LIBRARIES ${_PAR_LIBRARIES} )
   endif()
