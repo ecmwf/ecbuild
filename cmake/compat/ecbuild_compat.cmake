@@ -39,4 +39,6 @@ if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
   include(ecbuild_compat_require)
 
   include(ecbuild_define_links_target) # defines the links target
+  include(ecbuild_add_extra_search_paths)
+  include(ecbuild_list_extra_search_paths)
 endif()
