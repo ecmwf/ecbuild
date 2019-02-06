@@ -15,10 +15,8 @@ if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
   endif()
 
   function( __ecbuild_deprecated_watcher VAR ACCESS)
-    if( NOT "${VAR}" STREQUAL "${ECBUILD_${VAR}_REPLACEMENT}" )
-      if( ACCESS STREQUAL "READ_ACCESS" )
-        message(DEPRECATION "The Variable '${VAR}' is deprecated! Please use '${ECBUILD_${VAR}_REPLACEMENT}' instead.")
-      endif()
+    if( ACCESS STREQUAL "READ_ACCESS" )
+      message(DEPRECATION "The Variable '${VAR}' is deprecated! Please use '${ECBUILD_${VAR}_REPLACEMENT}' instead.")
     endif()
   endfunction()
 
