@@ -137,18 +137,7 @@ macro( ecbuild_add_option )
   endif()
 
   # check CONDITION parameter
-  if( DEFINED _p_CONDITION )
-    set(_feature_condition_file "${CMAKE_CURRENT_BINARY_DIR}/set_${_p_FEATURE}_condition.cmake")
-    file( WRITE  ${_feature_condition_file} "  if( ")
-    foreach( term ${_p_CONDITION} )
-      file( APPEND ${_feature_condition_file} " ${term}")
-    endforeach()
-    file( APPEND ${_feature_condition_file} " )\n    set(_${_p_FEATURE}_condition TRUE)\n  else()\n    set(_${_p_FEATURE}_condition FALSE)\n  endif()\n")
-    include( ${_feature_condition_file} )
-    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): checking condition ${_p_CONDITION} -> ${_${_p_FEATURE}_condition}")
-  else()
-    set( _${_p_FEATURE}_condition TRUE )
-  endif()
+  ecbuild_evaluateCondition( _p_CONDITION _${_p_FEATURE}_condition  )
 
   # Check if user explicitly enabled/disabled the feature in cache
   get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE SET )

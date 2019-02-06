@@ -232,17 +232,7 @@ function( ecbuild_add_test )
 
   ### conditional build
 
-  if( DEFINED _PAR_CONDITION )
-    set(_target_condition_file "${_TEST_DIR}/set_${_PAR_TARGET}_condition.cmake")
-    file( WRITE  ${_target_condition_file} "  if( ")
-    foreach( term ${_PAR_CONDITION} )
-      file( APPEND ${_target_condition_file} " ${term}")
-    endforeach()
-    file( APPEND ${_target_condition_file} " )\n    set(_${_PAR_TARGET}_condition TRUE)\n  else()\n    set(_${_PAR_TARGET}_condition FALSE)\n  endif()\n")
-    include( ${_target_condition_file} )
-  else()
-    set( _${_PAR_TARGET}_condition TRUE )
-  endif()
+  ecbuild_evaluateCondition( _PAR_CONDITION _${_PAR_TARGET}_condition )
 
   # boost unit test linking to unit_test lib ?
 

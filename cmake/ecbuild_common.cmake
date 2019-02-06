@@ -10,6 +10,34 @@
 ##############################################################################
 #.rst:
 #
+# ecbuild_evaluateCondition
+# ==================
+#
+# Add a CMake configuration option, which may depend on a list of packages. ::
+#
+#   ecbuild_evaluateCondition( condition outVariable )
+#
+# Options
+# -------
+# condition A list of boolean statements like OPENSSL_FOUND AND ENABLE_OPENSSL
+#
+function(ecbuild_evaluateCondition _conditions _outVar)
+  if( DEFINED ${_conditions})
+    if(${${_conditions}})
+      set( ${_outVar} TRUE PARENT_SCOPE )
+    else()
+      set( ${_outVar} FALSE PARENT_SCOPE )
+    endif()
+  else()
+    set( ${_outVar} TRUE PARENT_SCOPE )
+  endif()
+  ecbuild_debug("ecbuild_evaluateCondition(${_outVar}): checking condition '${${_conditions}}' -> ${${_outVar}}")
+endfunction()
+
+
+##############################################################################
+#.rst:
+#
 # ecbuild_filter_list
 # ===================
 #
