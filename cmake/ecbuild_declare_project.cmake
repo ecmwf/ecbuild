@@ -21,11 +21,10 @@
 #
 # :<PROJECT_NAME>_GIT_SHA1:       Git revision (if project is a Git repo)
 # :<PROJECT_NAME>_GIT_SHA1_SHORT: short Git revision (if project is a Git repo)
-# :<PROJECT_NAME>_VERSION:        version in format ``MAJOR.MINOR.PATCH``
-# :<PROJECT_NAME>_VERSION_STR:    version as given in ``VERSION.cmake`` or 0.0.0
-# :<PROJECT_NAME>_MAJOR_VERSION:  major version number
-# :<PROJECT_NAME>_MINOR_VERSION:  minor version number
-# :<PROJECT_NAME>_PATCH_VERSION:  patch version number
+# :<PROJECT_NAME>_VERSION:        version as given in project( VERSION )
+# :<PROJECT_NAME>_VERSION_MAJOR:  major version number
+# :<PROJECT_NAME>_VERSION_MINOR:  minor version number
+# :<PROJECT_NAME>_VERSION_PATCH:  patch version number
 # :INSTALL_BIN_DIR:        relative install directory for executables
 # :INSTALL_LIB_DIR:        relative install directory for libraries
 # :INSTALL_INCLUDE_DIR:    relative install directory for include files
