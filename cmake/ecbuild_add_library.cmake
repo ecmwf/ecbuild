@@ -112,6 +112,7 @@
 #
 # HEADER_DESTINATION
 #   directory to install headers (if not specified, INSTALL_INCLUDE_DIR is used)
+#   Note: this directory will automatically be added to target_include_directories
 #
 # INSTALL_HEADERS : optional
 #   specify which header files to install:
