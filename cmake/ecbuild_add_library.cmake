@@ -418,6 +418,9 @@ function( ecbuild_add_library_impl )
         set( _h_destination "${INSTALL_INCLUDE_DIR}" )
       endif()
 
+
+      target_include_directories(${_PAR_TARGET} PUBLIC $<INSTALL_INTERFACE:${_h_destination}>)
+
       if(ECBUILD_INSTALL_LIBRARY_HEADERS)
 
         if( _PAR_INSTALL_HEADERS )
