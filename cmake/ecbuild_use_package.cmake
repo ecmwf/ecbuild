@@ -217,7 +217,9 @@ macro( ecbuild_use_package )
       set( ${pkgUPPER}_FOUND 1 )
       set( ${_p_PROJECT}_VERSION ${${pkgUPPER}_VERSION} )
 
-      list( APPEND ${pkgUPPER}_INCLUDE_DIRS ${${pkgUPPER}_TPL_INCLUDE_DIRS} )
+      if(ECBUILD_2_COMPAT)
+        list( APPEND ${pkgUPPER}_INCLUDE_DIRS ${${pkgUPPER}_TPL_INCLUDE_DIRS} )
+      endif()
 
     endif()
 
@@ -312,7 +314,7 @@ macro( ecbuild_use_package )
 
   endif()
 
-  if( ${pkgUPPER}_FOUND )
+  if( ECBUILD_2_COMPAT AND ${_p_PROJECT}_FOUND )
     list( APPEND ${PROJECT_NAME_CAPS}_TPLS ${_p_PROJECT} )
     list( REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS )
   endif()
