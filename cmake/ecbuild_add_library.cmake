@@ -489,10 +489,8 @@ function( ecbuild_add_library_impl )
 
     # add definitions to compilation
     if( DEFINED _PAR_DEFINITIONS )
-      get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
-      list( APPEND _target_defs ${_PAR_DEFINITIONS} )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): using definitions ${_target_defs}")
-      set_target_properties( ${_PAR_TARGET} PROPERTIES COMPILE_DEFINITIONS "${_target_defs}" )
+      target_compile_definitions(${_PAR_TARGET} PRIVATE ${_PAR_DEFINITIONS})
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): adding definitions ${_PAR_DEFINITIONS}")
     endif()
 
     # make sure target is removed before - some problems with AIX

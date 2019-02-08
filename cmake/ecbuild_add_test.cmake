@@ -356,19 +356,14 @@ function( ecbuild_add_test )
       endif()
 
       # modify definitions to compilation ( -D... )
-      get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
+      if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+        target_compile_definitions(${_PAR_TARGET} PRIVATE BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY)
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): adding -DBOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY")
+      endif()
 
       if( DEFINED _PAR_DEFINITIONS )
-        list( APPEND _target_defs ${_PAR_DEFINITIONS} )
-      endif()
-
-      if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-        list( APPEND _target_defs BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-      endif()
-
-      if( _target_defs )
-        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): using definitions ${_target_defs}")
-        set_target_properties( ${_PAR_TARGET} PROPERTIES COMPILE_DEFINITIONS "${_target_defs}" )
+        target_compile_definitions(${_PAR_TARGET} PRIVATE ${_PAR_DEFINITIONS})
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): adding definitions ${_PAR_DEFINITIONS}")
       endif()
 
       # set build location to local build dir
