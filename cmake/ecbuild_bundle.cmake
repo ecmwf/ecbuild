@@ -48,6 +48,8 @@ macro( ecbuild_bundle_initialize )
     add_custom_target( ${PROJECT_NAME}_readme SOURCES "${PROJECT_SOURCE_DIR}/README.md" )
   endif()
 
+  set( CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH} )
+
 endmacro()
 
 ##############################################################################
