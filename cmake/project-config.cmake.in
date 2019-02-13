@@ -100,7 +100,7 @@ endif()
 
 # set @PROJECT_NAME@_BASE_DIR for final installations or build directories
 
-if( NOT @PROJECT_NAME@ )
+if( NOT @PROJECT_NAME@_BASE_DIR )
   if( @PROJECT_NAME@_IS_BUILD_DIR_EXPORT )
     set( @PROJECT_NAME@_BASE_DIR @CMAKE_BINARY_DIR@ )
   else()

@@ -220,14 +220,6 @@ macro( ecbuild_use_package )
       ecbuild_debug("ecbuild_use_package(${_p_PROJECT}):    ${_p_PROJECT} found in subdirectory ${${_p_PROJECT}_subproj_dir_}")
       add_subdirectory( ${${_p_PROJECT}_subproj_dir_} ${_p_PROJECT} )
 
-      set( ${_p_PROJECT}_BASE_DIR ${CMAKE_BINARY_DIR} )
-
-      set( ${_p_PROJECT}_FOUND 1 )
-
-      if(ECBUILD_2_COMPAT)
-        list( APPEND ${pkgUPPER}_INCLUDE_DIRS ${${pkgUPPER}_TPL_INCLUDE_DIRS} )
-      endif()
-
     endif()
 
   endif()

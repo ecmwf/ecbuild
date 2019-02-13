@@ -424,21 +424,21 @@ macro( ecbuild_install_project )
 
     else()
 
-        # export variables for upper projects
-
-        set( ${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR ${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR} PARENT_SCOPE )
-
-        set( ${PROJECT_NAME}_FOUND             TRUE                                 PARENT_SCOPE )
-        set( ${PROJECT_NAME}_VERSION           ${${PROJECT_NAME}_VERSION}           PARENT_SCOPE )
-        set( ${PROJECT_NAME}_GIT_SHA1          ${${PROJECT_NAME}_GIT_SHA1}          PARENT_SCOPE )
-        set( ${PROJECT_NAME}_GIT_SHA1_SHORT    ${${PROJECT_NAME}_GIT_SHA1_SHORT}    PARENT_SCOPE )
-        set( ${PROJECT_NAME}_VERSION           ${${PROJECT_NAME}_VERSION}           PARENT_SCOPE )
-        set( ${PROJECT_NAME}_FEATURES          ${${PROJECT_NAME}_FEATURES}          PARENT_SCOPE )
-        foreach( _f ${${PROJECT_NAME}_FEATURES} )
-            set( ${PROJECT_NAME}_HAVE_${_f} ${${PROJECT_NAME}_HAVE_${_f}} PARENT_SCOPE )
-        endforeach()
-
         if(ECBUILD_2_COMPAT)
+            # export variables for upper projects
+
+            set( ${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR ${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR} PARENT_SCOPE )
+
+            set( ${PROJECT_NAME}_FOUND             TRUE                                 PARENT_SCOPE )
+            set( ${PROJECT_NAME}_VERSION           ${${PROJECT_NAME}_VERSION}           PARENT_SCOPE )
+            set( ${PROJECT_NAME}_GIT_SHA1          ${${PROJECT_NAME}_GIT_SHA1}          PARENT_SCOPE )
+            set( ${PROJECT_NAME}_GIT_SHA1_SHORT    ${${PROJECT_NAME}_GIT_SHA1_SHORT}    PARENT_SCOPE )
+            set( ${PROJECT_NAME}_VERSION           ${${PROJECT_NAME}_VERSION}           PARENT_SCOPE )
+            set( ${PROJECT_NAME}_FEATURES          ${${PROJECT_NAME}_FEATURES}          PARENT_SCOPE )
+            foreach( _f ${${PROJECT_NAME}_FEATURES} )
+                set( ${PROJECT_NAME}_HAVE_${_f} ${${PROJECT_NAME}_HAVE_${_f}} PARENT_SCOPE )
+            endforeach()
+
             ecbuild_declare_compat( ${PNAME}_FOUND ${PROJECT_NAME}_FOUND PARENT_SCOPE )
             ecbuild_declare_compat( ${PNAME}_VERSION ${PROJECT_NAME}_VERSION PARENT_SCOPE )
             ecbuild_declare_compat( ${PNAME}_GIT_SHA1 ${PROJECT_NAME}_GIT_SHA1 PARENT_SCOPE )
