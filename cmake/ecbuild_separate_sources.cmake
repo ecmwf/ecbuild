@@ -32,7 +32,7 @@
 # If any file of the following group of extensions is present in the list of
 # sources, the corresponding CMake variable is set:
 #
-# :<target>_h_srcs:       source files with extension .h, .hxx, .hh, .hpp, .H
+# :<target>_h_srcs:       source files with extension .h, .hxx, .hh, .hpp, .H .tcc .txx .tpp
 # :<target>_c_srcs:       source files with extension .c
 # :<target>_cxx_srcs:     source files with extension .cc, .cxx, .cpp, .C
 # :<target>_fortran_srcs: source files with extension .f, .F, .for, f77, .f90,
@@ -62,7 +62,7 @@ function( ecbuild_separate_sources )
 	endif()
 
 	foreach( src ${_PAR_SOURCES} )
-		if(${src} MATCHES "(\\.h$|\\.hxx$|\\.hh$|\\.hpp$|\\.H$)")
+		if(${src} MATCHES "(\\.h$|\\.hxx$|\\.hh$|\\.hpp$|\\.H$|\\.tcc$|\\.txx$|\\.tpp$)")
 			list( APPEND ${_PAR_TARGET}_h_srcs ${src} )
 		endif()
 	endforeach()

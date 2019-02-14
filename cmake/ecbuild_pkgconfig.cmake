@@ -86,7 +86,12 @@ function( ecbuild_include_dependencies dependencies libraries )
 
     if( TARGET ${_lib} ) # check if this is an existing target
 
-      get_property( _include_dirs TARGET ${_lib} PROPERTY INCLUDE_DIRECTORIES )
+      get_property( _type TARGET ${_lib} PROPERTY TYPE )
+      if( "${_type}" STREQUAL "INTERFACE_LIBRARY" )
+        get_property( _include_dirs TARGET ${_lib} PROPERTY INTERFACE_INCLUDE_DIRECTORIES )
+      else()
+        get_property( _include_dirs TARGET ${_lib} PROPERTY INCLUDE_DIRECTORIES )
+      endif()
       list( APPEND _dependencies ${_include_dirs} )
 
     endif()

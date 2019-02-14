@@ -441,7 +441,8 @@ macro( ecbuild_add_test )
         set( MPIEXEC_THREADS ${MPIEXEC_NUMTHREAD_FLAG} ${_PAR_OMP} )
       endif()
 
-      set( _LAUNCH ${MPIEXEC} ${MPIEXEC_TASKS} ${MPIEXEC_THREADS} )
+      # MPI_ARGS is left for users to define @ configure time e.g. -DMPI_ARGS="--oversubscribe"
+      set( _LAUNCH ${MPIEXEC} ${MPI_ARGS} ${MPIEXEC_TASKS} ${MPIEXEC_THREADS} )
 
       if( DEFINED _PAR_COMMAND )
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): running as ${_LAUNCH} ${_PAR_COMMAND}")
@@ -456,10 +457,17 @@ macro( ecbuild_add_test )
 
     if( _PAR_ENABLED ) # we can disable and still build it but not run it with 'make tests'
 
-      if( DEFINED _PAR_COMMAND )
-        add_test( NAME ${_PAR_TARGET} COMMAND ${_PAR_COMMAND} ${TEST_ARGS} ${_working_dir} ) # run a command as test
+      if( EC_OS_NAME MATCHES "windows" AND ${_PAR_TYPE} MATCHES "SCRIPT" )
+        # Windows has to be explicitly told to use bash for the tests.
+        set( _WIN_CMD "bash" "--rcfile" "${CMAKE_CURRENT_SOURCE_DIR}/windows_testing.bashrc" "-ci" )
       else()
-        add_test( NAME ${_PAR_TARGET} COMMAND ${_PAR_TARGET}  ${TEST_ARGS} ${_working_dir} ) # run the test that was generated
+        set( _WIN_CMD "" )
+      endif()
+
+      if( DEFINED _PAR_COMMAND )
+        add_test( NAME ${_PAR_TARGET} COMMAND ${_WIN_CMD} ${_PAR_COMMAND} ${TEST_ARGS} ${_working_dir} ) # run a command as test
+      else()
+        add_test( NAME ${_PAR_TARGET} COMMAND ${_WIN_CMD} ${_PAR_TARGET}  ${TEST_ARGS} ${_working_dir} ) # run the test that was generated
       endif()
 
       # Set custom properties

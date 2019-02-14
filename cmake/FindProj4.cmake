@@ -27,12 +27,6 @@ if( NOT PROJ4_PATH )
 
     include(FindPkgConfig)
 
-#    if(Proj4_FIND_REQUIRED)
-#        set(_pkgconfig_REQUIRED "REQUIRED")
-#    else()
-#        set(_pkgconfig_REQUIRED "")
-#    endif()
-
     if(PROJ4_MIN_VERSION)
         pkg_check_modules(PKPROJ4 ${_pkgconfig_REQUIRED} QUIET proj4>=${PROJ4_MIN_VERSION})
     else()
@@ -46,10 +40,6 @@ if( NOT PROJ4_PATH )
 
     endif()
 
-#    ecbuild_debug_var( PKG_CONFIG_FOUND )
-#    ecbuild_debug_var( PKPROJ4_FOUND )
-#    ecbuild_debug_var( PROJ4_MIN_VERSION )
-
 endif()
 
 if( PROJ4_PATH )
@@ -62,9 +52,6 @@ endif()
 find_path(PROJ4_INCLUDE_DIR NAMES proj_api.h PATHS PATH_SUFFIXES proj4 )
 find_library( PROJ4_LIBRARY NAMES proj       PATHS PATH_SUFFIXES proj4 )
 
-
-# ecbuild_debug_var( PROJ4_INCLUDE_DIR )
-# ecbuild_debug_var( PROJ4_LIBRARY )
 
 # handle the QUIETLY and REQUIRED arguments and set GRIBAPI_FOUND
 include(FindPackageHandleStandardArgs)
