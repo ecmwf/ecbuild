@@ -156,7 +156,7 @@ macro( ecbuild_bundle )
 
     # Do not descend into ecbuild if included in a bundle (ECBUILD-333)
     if( NOT _PAR_PROJECT STREQUAL "ecbuild" )
-      ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
+      add_subdirectory(${PROJECT_SOURCE_DIR}/${_PAR_PROJECT})
     endif()
   endif()
 
