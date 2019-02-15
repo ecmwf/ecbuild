@@ -306,21 +306,22 @@ macro( ecbuild_find_package )
 
   if( ${_PAR_NAME}_FOUND )
 
-    if( _version_acceptable )
-      set( ${pkgUPPER}_FOUND ${${_PAR_NAME}_FOUND} )
-    else()
+    if( NOT _version_acceptable )
       if( NOT _PAR_QUIET )
         ecbuild_warn( "${PROJECT_NAME} found ${_PAR_NAME} but with unsuitable version" )
       endif()
-      set( ${pkgUPPER}_FOUND 0 )
       set( ${_PAR_NAME}_FOUND 0 )
     endif()
 
   endif()
 
+  if(ECBUILD_2_COMPAT)
+    ecbuild_declare_compat(${pkgUPPER}_FOUND ${_PAR_NAME}_FOUND)
+  endif()
+
   ### final messages
 
-  if( ${_PAR_NAME}_FOUND OR ${pkgUPPER}_FOUND )
+  if( ${_PAR_NAME}_FOUND )
 
     if( NOT _PAR_QUIET )
       ecbuild_info( "[${_PAR_NAME}] (${${_PAR_NAME}_VERSION})" )
