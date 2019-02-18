@@ -175,19 +175,16 @@ macro( ecbuild_find_package )
   # Read environment variables but ONLY if the corresponding CMake variables are unset
 
   if( NOT DEFINED ${pkgUPPER}_PATH AND NOT "$ENV{${pkgUPPER}_PATH}" STREQUAL "" )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${pkgUPPER}_PATH=${${pkgUPPER}_PATH} from environment")
     set( ${pkgUPPER}_PATH "$ENV{${pkgUPPER}_PATH}" )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${pkgUPPER}_PATH=${${pkgUPPER}_PATH} from environment")
   endif()
 
   if( NOT DEFINED ${_PAR_NAME}_PATH AND NOT "$ENV{${_PAR_NAME}_PATH}" STREQUAL "" )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH} from environment")
     set( ${_PAR_NAME}_PATH "$ENV{${_PAR_NAME}_PATH}" )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH} from environment")
   endif()
 
-  if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${_PAR_NAME}_DIR}" STREQUAL "" )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR} from environment")
-    set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
-  endif()
+  # XXX: the <package>_DIR variable is handled later, see explanation below
 
   # Find packages quietly unless in DEVELOPER_MODE or LOG_LEVEL is DEBUG
 
@@ -195,26 +192,52 @@ macro( ecbuild_find_package )
     set( _find_quiet QUIET )
   endif()
 
-  # search user defined paths first
+  # if a project with the same name has been defined, try to use it
 
-  if( ${_PAR_NAME}_PATH OR ${pkgUPPER}_PATH OR ${_PAR_NAME}_DIR OR ${_PAR_NAME}_BINARY_DIR )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${pkgUPPER}_PATH=${${pkgUPPER}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}, ${_PAR_NAME}_BINARY_DIR=${${_PAR_NAME}_BINARY_DIR}")
+  if( ${_PAR_NAME}_BINARY_DIR )
 
     # 1) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
+    #    <package>_BINARY_DIR is defined by CMake when using project()
 
     if( NOT ${_PAR_NAME}_FOUND )
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 1) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${pkgUPPER}_PATH=${${pkgUPPER}_PATH}, ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${_PAR_NAME}_BINARY_DIR=${${_PAR_NAME}_BINARY_DIR}")
       find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} NO_MODULE ${_find_quiet}
         COMPONENTS ${_PAR_COMPONENTS}
-        HINTS ${${pkgUPPER}_PATH} ${${_PAR_NAME}_PATH} ${${_PAR_NAME}_DIR} ${${_PAR_NAME}_BINARY_DIR}
+        HINTS ${${_PAR_NAME}_BINARY_DIR}
         NO_DEFAULT_PATH )
     endif()
 
-    # 2) search using a file Find<package>.cmake if it exists ( macro should itself take *_PATH into account )
+  endif()
+
+  if( NOT ${_PAR_NAME}_FOUND )
+    # XXX: if set, <package>_DIR short-circuits most of the options one can give
+    # to find_package, do NOT move above the previous find_package
+    if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${_PAR_NAME}_DIR}" STREQUAL "" )
+      set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR} from environment")
+    endif()
+  endif()
+
+  # search user defined paths
+
+  if( ${_PAR_NAME}_PATH OR ${pkgUPPER}_PATH OR ${_PAR_NAME}_DIR )
+
+    # 2) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
 
     if( NOT ${_PAR_NAME}_FOUND )
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 2) search using a file Find${_PAR_NAME}.cmake if it exists")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 2) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${pkgUPPER}_PATH=${${pkgUPPER}_PATH}, ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
+      find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} NO_MODULE ${_find_quiet}
+        COMPONENTS ${_PAR_COMPONENTS}
+        HINTS ${${pkgUPPER}_PATH} ${${_PAR_NAME}_PATH} ${${_PAR_NAME}_DIR}
+        NO_DEFAULT_PATH )
+    endif()
+
+    # 3) search using a file Find<package>.cmake if it exists ( macro should itself take *_PATH into account )
+
+    if( NOT ${_PAR_NAME}_FOUND )
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search using a file Find${_PAR_NAME}.cmake if it exists")
       find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} MODULE ${_find_quiet}
                     COMPONENTS ${_PAR_COMPONENTS} )
     endif()
@@ -232,31 +255,15 @@ macro( ecbuild_find_package )
 
   endif()
 
-  # 3) search developer cache and recently configured packages in the CMake GUI if in DEVELOPER_MODE
-  #    otherwise only search CMAKE_PREFIX_PATH and <package>_PATH
+  # 4) search developer cache and recently configured packages in the CMake GUI if in DEVELOPER_MODE
+  #    otherwise only search CMAKE_PREFIX_PATH and system paths, for <package>-config.cmake
 
   if( NOT ${_PAR_NAME}_FOUND )
     if (NO_DEV_BUILD_DIRS)
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search CMAKE_PREFIX_PATH and \$${pkgUPPER}_PATH")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 4) search CMAKE_PREFIX_PATH and system paths")
     else()
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search CMAKE_PREFIX_PATH and \$${pkgUPPER}_PATH and package registry")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 4) search CMAKE_PREFIX_PATH, system paths, and package registry")
     endif()
-
-    find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} ${_find_quiet} NO_MODULE
-      COMPONENTS ${_PAR_COMPONENTS}
-      HINTS ENV ${pkgUPPER}_PATH
-      ${NO_DEV_BUILD_DIRS}
-      NO_CMAKE_ENVIRONMENT_PATH
-      NO_SYSTEM_ENVIRONMENT_PATH
-      NO_CMAKE_SYSTEM_PATH
-      NO_CMAKE_SYSTEM_PACKAGE_REGISTRY )
-
-  endif()
-
-  # 4) search system paths, for <package>-config.cmake
-
-  if( NOT ${_PAR_NAME}_FOUND )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 5) search system paths, for ${_PAR_NAME}-config.cmake")
 
     find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} ${_find_quiet} NO_MODULE
       COMPONENTS ${_PAR_COMPONENTS}
@@ -267,7 +274,7 @@ macro( ecbuild_find_package )
   # 5) search system paths, using Find<package>.cmake if it exists
 
   if( NOT ${_PAR_NAME}_FOUND )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 6) search system paths, using Find${_PAR_NAME}.cmake if it exists")
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 5) search system paths, using Find${_PAR_NAME}.cmake if it exists")
 
     find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} ${_find_quiet} MODULE
                   COMPONENTS ${_PAR_COMPONENTS} )
@@ -325,7 +332,7 @@ macro( ecbuild_find_package )
 
     if( NOT _PAR_QUIET )
       ecbuild_info( "[${_PAR_NAME}] (${${_PAR_NAME}_VERSION})" )
-      foreach( var in ITEMS INCLUDE_DIR INCLUDE_DIRS DEFINITIONS LIBRARY LIBRARIES )
+      foreach( var IN ITEMS INCLUDE_DIR INCLUDE_DIRS DEFINITIONS LIBRARY LIBRARIES )
         if( ${pkgUPPER}_${var} )
           ecbuild_info( "   ${pkgUPPER}_${var} : [${${pkgUPPER}_${var}}]" )
         elseif( ${_PAR_NAME}_${var} )
