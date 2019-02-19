@@ -24,6 +24,16 @@ if( POLICY CMP0004 )
 endif()
 
 if( ECBUILD_2_COMPAT )
+    # Allow mixed use of plain and keyword target_link_libraries
+    if( POLICY CMP0023 )
+        cmake_policy( SET CMP0023 OLD )
+    endif()
+else()
+    # Prevent mixed use of plain and keyword target_link_libraries
+    cmake_policy( SET CMP0023 NEW )
+endif()
+
+if( ECBUILD_2_COMPAT )
   # Allow use of the LOCATION target property.
   if( POLICY CMP0026 )
       cmake_policy( SET CMP0026 OLD )
