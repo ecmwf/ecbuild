@@ -132,6 +132,20 @@ macro(ecbuild_compat_require out_name pkg)
 
       else()
         ecbuild_debug("ecbuild_compat_require(${pkgname}): searching for package ${pkgname} - find_package(${pkglist})")
+
+        list(FIND pkglist "VERSION" _ver_found)
+        if(NOT _ver_found EQUAL -1)
+          # XXX: This is an invalid syntax used in IFS (that gets short-circuited with ecbuild 2.x
+          # because the packages are already found)
+          set(_pkglist_old ${pkglist})
+          list(REMOVE_ITEM pkglist "VERSION")
+
+          string(REPLACE ";" " " _pkglist_old "${_pkglist_old}")
+          string(REPLACE ";" " " _pkglist_new "${pkglist}")
+          ecbuild_warn("Removing unexpected VERSION keyword from REQUIRED_PACKAGES: \
+                        either use 'PROJECT ${_pkglist_old}' or '${_pkglist_new}'")
+        endif()
+
         find_package(${pkglist})
 
       endif()
