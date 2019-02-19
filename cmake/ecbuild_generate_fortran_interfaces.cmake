@@ -125,13 +125,14 @@ function( ecbuild_generate_fortran_interfaces )
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
 
   add_custom_command(
-    OUTPUT  "${P_DESTINATION}/${P_TARGET}.timestamp"
+    OUTPUT  ${interface_files}
     COMMAND ${FCM_EXECUTABLE} make -j ${P_PARALLEL} --config-file=${FCM_CONFIG_FILE} interfaces.ns-incl=${_srcdirs} interfaces.source=${P_SOURCE_DIR}
-    COMMAND touch "${P_TARGET}.timestamp"
     DEPENDS ${fortran_files}
     COMMENT "Generating ${_cnt} interface files for target ${P_TARGET}"
     WORKING_DIRECTORY ${P_DESTINATION} VERBATIM )
 
-  add_custom_target( ${P_TARGET} DEPENDS ${P_DESTINATION}/${P_TARGET}.timestamp )
+  add_library(${P_TARGET} INTERFACE)
+  add_dependencies(${P_TARGET} ${interface_files})
+  target_include_directories(${P_TARGET} INTERFACE $<BUILD_INTERFACE:${include_dir}>)
 
 endfunction( ecbuild_generate_fortran_interfaces )
