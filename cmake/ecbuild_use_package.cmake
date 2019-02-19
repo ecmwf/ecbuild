@@ -130,9 +130,9 @@ macro( ecbuild_use_package )
 
   # user defined dir with subprojects
 
-  if(ECBUILD_2_COMPAT AND DEFINED ${pgkUPPER}_SOURCE AND NOT pgkUPPER STREQUAL _p_PROJECT )
+  if(ECBUILD_2_COMPAT AND DEFINED ${pkgUPPER}_SOURCE AND NOT pkgUPPER STREQUAL _p_PROJECT )
     if(ECBUILD_2_COMPAT_DEPRECATE)
-      ecbuild_deprecate("${pgkUPPER}_SOURCE is deprecated, please use ${_p_PROJECT}_SOURCE instead")
+      ecbuild_deprecate("${pkgUPPER}_SOURCE is deprecated, please use ${_p_PROJECT}_SOURCE instead")
     endif()
     set(${_p_PROJECT}_SOURCE ${${pkgUPPER}_SOURCE})
   endif()
