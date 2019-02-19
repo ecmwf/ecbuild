@@ -101,24 +101,17 @@ function( ecbuild_generate_fortran_interfaces )
   string( REPLACE ";" " " _srcdirs "${P_DIRECTORIES}" )
 
   set( _cnt 0 )
-  foreach( file ${_fortran_files} )
-    if( ${${SRC}/file} IS_NEWER_THAN ${${SRC}/file} )
-      set( run_fcm 1 )
-    endif()
-  endforeach()
-
   set( interface_files "" )
   foreach( fortran_file ${fortran_files} )
     #list( APPEND fullpath_fortran_files ${CMAKE_CURRENT_SOURCE_DIR}/${fortran_file} )
-      get_filename_component(base ${fortran_file} NAME_WE)
-      set( interface_file "${CMAKE_CURRENT_BINARY_DIR}/interfaces/include/${base}${P_SUFFIX}" )
-      list( APPEND interface_files ${interface_file} )
-      set_source_files_properties( ${interface_file} PROPERTIES GENERATED TRUE )
-      math(EXPR _cnt "${_cnt}+1")
+    get_filename_component(base ${fortran_file} NAME_WE)
+    set( interface_file "${CMAKE_CURRENT_BINARY_DIR}/interfaces/include/${base}${P_SUFFIX}" )
+    list( APPEND interface_files ${interface_file} )
+    set_source_files_properties( ${interface_file} PROPERTIES GENERATED TRUE )
+    math(EXPR _cnt "${_cnt}+1")
   endforeach()
 
   ecbuild_info("Target ${P_TARGET} will generate ${_cnt} interface files using FCM")
-
 
 
   if( DEFINED P_GENERATED )
@@ -131,15 +124,14 @@ function( ecbuild_generate_fortran_interfaces )
   execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${include_dir}
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
 
-    add_custom_command(
-      OUTPUT  "${P_DESTINATION}/${P_TARGET}.timestamp"
-      COMMAND ${FCM_EXECUTABLE} make -j ${P_PARALLEL} --config-file=${FCM_CONFIG_FILE} interfaces.ns-incl=${_srcdirs} interfaces.source=${P_SOURCE_DIR}
-      COMMAND touch "${P_TARGET}.timestamp"
-      DEPENDS ${fortran_files}
-      COMMENT "Generating ${_cnt} interface files for target ${P_TARGET}"
-      WORKING_DIRECTORY ${P_DESTINATION} VERBATIM )
+  add_custom_command(
+    OUTPUT  "${P_DESTINATION}/${P_TARGET}.timestamp"
+    COMMAND ${FCM_EXECUTABLE} make -j ${P_PARALLEL} --config-file=${FCM_CONFIG_FILE} interfaces.ns-incl=${_srcdirs} interfaces.source=${P_SOURCE_DIR}
+    COMMAND touch "${P_TARGET}.timestamp"
+    DEPENDS ${fortran_files}
+    COMMENT "Generating ${_cnt} interface files for target ${P_TARGET}"
+    WORKING_DIRECTORY ${P_DESTINATION} VERBATIM )
 
-    add_custom_target( ${P_TARGET} DEPENDS ${P_DESTINATION}/${P_TARGET}.timestamp )
-
+  add_custom_target( ${P_TARGET} DEPENDS ${P_DESTINATION}/${P_TARGET}.timestamp )
 
 endfunction( ecbuild_generate_fortran_interfaces )
