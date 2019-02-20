@@ -426,10 +426,11 @@ macro( ecbuild_install_project )
 
         if(ECBUILD_2_COMPAT)
             # export variables for upper projects
+            set( ${PROJECT_NAME}_FOUND TRUE )
 
             set( ${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR ${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR} PARENT_SCOPE )
 
-            set( ${PROJECT_NAME}_FOUND             TRUE                                 PARENT_SCOPE )
+            set( ${PROJECT_NAME}_FOUND             ${${PROJECT_NAME}_FOUND}             PARENT_SCOPE )
             set( ${PROJECT_NAME}_VERSION           ${${PROJECT_NAME}_VERSION}           PARENT_SCOPE )
             set( ${PROJECT_NAME}_GIT_SHA1          ${${PROJECT_NAME}_GIT_SHA1}          PARENT_SCOPE )
             set( ${PROJECT_NAME}_GIT_SHA1_SHORT    ${${PROJECT_NAME}_GIT_SHA1_SHORT}    PARENT_SCOPE )
