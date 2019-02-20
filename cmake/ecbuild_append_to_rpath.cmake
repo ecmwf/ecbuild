@@ -25,15 +25,12 @@
 #
 ##############################################################################
 
-function( _path_append var path )
-    if( "${${var}}" STREQUAL "" )
-        set( ${var} "${path}" PARENT_SCOPE )
-    else()
-        list( FIND ${var} ${path} _found )
-        if( _found EQUAL "-1" )
-            set( ${var} "${${var}}:${path}" PARENT_SCOPE )
-        endif()
-    endif()
+function( ecbuild_path_append var path )
+  list( FIND ${var} ${path} _found )
+  if( _found EQUAL "-1" )
+    list( APPEND ${var} ${path})
+  endif()
+  set( ${var} "${${var}}" PARENT_SCOPE ) #
 endfunction()
 
 function( _make_relative_rpath_entry entry var )
@@ -72,12 +69,12 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 
             if( IS_ABSOLUTE ${RPATH_DIR} )
 
-                _path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
+                ecbuild_path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
 
             else()
 
                 _make_relative_rpath_entry( "${RPATH_DIR}" rpath_dir_rel )
-                _path_append( CMAKE_INSTALL_RPATH ${rpath_dir_rel} )
+                ecbuild_path_append( CMAKE_INSTALL_RPATH ${rpath_dir_rel} )
 
             endif()
 
@@ -103,11 +100,11 @@ macro( ecbuild_target_rpath target mode )
             file( TO_CMAKE_PATH ${rpath_dir} rpath_dir ) # sanitise the path
 
             if( IS_ABSOLUTE ${rpath_dir} )
-                _path_append( _target_rpath "${rpath_dir}" )
+                ecbuild_path_append( _target_rpath "${rpath_dir}" )
 
             else()
                 _make_relative_rpath_entry( "${rpath_dir}" rpath_dir_rel )
-                _path_append( _target_rpath ${rpath_dir_rel} )
+                ecbuild_path_append( _target_rpath ${rpath_dir_rel} )
 
             endif()
         endif()
