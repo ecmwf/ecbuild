@@ -22,6 +22,8 @@
 #                        [ OBJECTS <obj1> [<obj2> ...] ]
 #                        [ TEMPLATES <template1> [<template2> ...] ]
 #                        [ LIBS <library1> [<library2> ...] ]
+#                        [ PRIVATE_LIBS <library1> [<library2> ...] ]
+#                        [ PUBLIC_LIBS <library1> [<library2> ...] ]
 #                        [ INCLUDES <path1> [<path2> ...] ]
 #                        [ PRIVATE_INCLUDES <path1> [<path2> ...] ]
 #                        [ PUBLIC_INCLUDES <path1> [<path2> ...] ]
@@ -77,8 +79,17 @@
 #   (these are commonly template implementation files included in a header)
 #
 # LIBS : (DEPRECATED) optional
-#   list of libraries to link against (CMake targets or external libraries)
+#   list of libraries to link against (CMake targets or external libraries),
+#   behaves as PUBLIC_LIBS
 #   Please use target_link_libraries instead
+#
+# PRIVATE_LIBS : optional
+#   list of libraries to link against (CMake targets or external libraries),
+#   they will not be exported
+#
+# PUBLIC_LIBS : optional
+#   list of libraries to link against (CMake targets or external libraries),
+#   they will be exported
 #
 # INCLUDES : (DEPRECATED) optional
 #   list of paths to add to include directories, behaves as PUBLIC_INCLUDES
@@ -167,10 +178,10 @@ function( ecbuild_add_library_impl )
                          INSTALL_HEADERS_REGEX LINKER_LANGUAGE
                          HEADER_DESTINATION VERSION SOVERSION OUTPUT_NAME )
   set( multi_value_args  SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS
-                         TEMPLATES LIBS INCLUDES PRIVATE_INCLUDES
-                         PUBLIC_INCLUDES DEPENDS PERSISTENT DEFINITIONS
-                         INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS GENERATED
-                         CONDITION PROPERTIES )
+                         TEMPLATES LIBS PRIVATE_LIBS PUBLIC_LIBS INCLUDES
+                         PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT
+                         DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS
+                         FFLAGS GENERATED CONDITION PROPERTIES )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -287,46 +298,65 @@ function( ecbuild_add_library_impl )
       add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
     endif()
 
-    # add the link libraries
-    if( DEFINED _PAR_LIBS )
-      list(REMOVE_ITEM _PAR_LIBS debug)
-      list(REMOVE_ITEM _PAR_LIBS optimized)
-      ecbuild_filter_list(LIBS LIST ${_PAR_LIBS} LIST_INCLUDE lib LIST_EXCLUDE skipped_libs)
-      target_link_libraries( ${_PAR_TARGET} PUBLIC ${lib} )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with [${lib}]")
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_libs}] not found - not linking")
-    endif()
-
     # takes a list of possible includes LIST and an INTERFACE parameter
-    macro(__addIncludes)
+    macro(__addDeps)
       set( options )
-      set( single_value_args INTERFACE )
+      set( single_value_args TYPE INTERFACE )
       set( multi_value_args  LIST )
 
       cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN} )
 
-      ecbuild_filter_list(INCLUDES LIST ${_PAR_LIST} LIST_INCLUDE path LIST_EXCLUDE skipped_path)
+      if( "${_PAR_TYPE}" STREQUAL LIBS )
+        list(REMOVE_ITEM _PAR_LIST debug)
+        list(REMOVE_ITEM _PAR_LIST optimized)
+      endif()
+      ecbuild_filter_list(${_PAR_TYPE} LIST ${_PAR_LIST} LIST_INCLUDE deps LIST_EXCLUDE skipped_deps)
       if( "${_PAR_INTERFACE}" STREQUAL "LEGACY" )
+        if(ECBUILD_2_COMPAT_DEPRECATE)
+          ecbuild_deprecate("ecbuild_add_library(${_PAR_TARGET}): the usage of ${_PAR_TYPE} is deprecated. Use PUBLIC_${_PAR_TYPE} or PRIVATE_${_PAR_TYPE}.")
+        endif()
         set(_PAR_INTERFACE PUBLIC)
       endif()
-      target_include_directories( ${_PAR_TARGET} ${_PAR_INTERFACE} ${path} )
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add [${path}] to include_directories ${_PAR_INTERFACE}")
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_path}] not found - not adding to include_directories ${_PAR_INTERFACE}")
+
+      if( "${_PAR_TYPE}" STREQUAL LIBS )
+        target_link_libraries( ${_PAR_TARGET} ${_PAR_INTERFACE} ${deps} )
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with [${deps}] ${_PAR_INTERFACE}")
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_deps}] not found - not linking ${_PAR_INTERFACE}")
+      else()
+        target_include_directories( ${_PAR_TARGET} ${_PAR_INTERFACE} ${deps} )
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add [${deps}] to include_directories ${_PAR_INTERFACE}")
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_deps}] not found - not adding to include_directories ${_PAR_INTERFACE}")
+      endif()
     endmacro()
+
+    # add the link libraries
+    if( DEFINED _PAR_LIBS )
+      __addDeps(TYPE LIBS LIST ${_PAR_LIBS} INTERFACE LEGACY)
+    endif()
+
+    # add the private link libraries
+    if( DEFINED _PAR_PRIVATE_LIBS )
+      __addDeps(TYPE LIBS LIST ${_PAR_PRIVATE_LIBS} INTERFACE PRIVATE)
+    endif()
+
+    # add the public link libraries
+    if( DEFINED _PAR_PUBLIC_LIBS )
+      __addDeps(TYPE LIBS LIST ${_PAR_PUBLIC_LIBS} INTERFACE PUBLIC)
+    endif()
 
     # add include dirs if defined
     if( DEFINED _PAR_INCLUDES )
-      __addIncludes(LIST ${_PAR_INCLUDES} INTERFACE LEGACY)
+      __addDeps(TYPE INCLUDES LIST ${_PAR_INCLUDES} INTERFACE LEGACY)
     endif()
 
     # add private include dirs if defined
     if( DEFINED _PAR_PRIVATE_INCLUDES )
-      __addIncludes(LIST ${_PAR_PRIVATE_INCLUDES} INTERFACE PRIVATE)
+      __addDeps(TYPE INCLUDES LIST ${_PAR_PRIVATE_INCLUDES} INTERFACE PRIVATE)
     endif()
 
     # add public include dirs if defined
     if( DEFINED _PAR_PUBLIC_INCLUDES )
-      __addIncludes(LIST ${_PAR_PUBLIC_INCLUDES} INTERFACE PUBLIC)
+      __addDeps(TYPE INCLUDES LIST ${_PAR_PUBLIC_INCLUDES} INTERFACE PUBLIC)
     endif()
 
     # FIX: Cray compiler PIC option is not detected by CMake
