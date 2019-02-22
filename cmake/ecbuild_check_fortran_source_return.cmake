@@ -91,7 +91,7 @@ macro( ecbuild_check_fortran_source_return SOURCE )
         if( _PAR_INCLUDES )
             list( APPEND __add_incs ${_PAR_INCLUDES} )
         endif()
-        if( __add_libs )
+        if( __add_incs )
             set(CHECK_Fortran_SOURCE_COMPILES_ADD_INCLUDES "-DINCLUDE_DIRECTORIES:STRING=${__add_incs}")
         endif()
 
