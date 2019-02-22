@@ -19,7 +19,7 @@ cd $HERE/mylib
 
 mkdir build
 cd build
-ecbuild --prefix=../install -- ..
+ecbuild --prefix=../install -- -DECBUILD_2_COMPAT=OFF ..
 make install
 
 export mylib_DIR=$HERE/mylib/install/share/mylib/cmake
@@ -29,4 +29,4 @@ cd $HERE
 
 mkdir build
 cd build
-ecbuild -- ../mybundle
+ecbuild -- -DECBUILD_2_COMPAT=OFF ../mybundle
