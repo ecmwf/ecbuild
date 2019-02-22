@@ -76,8 +76,10 @@ macro( ecbuild_declare_project )
       ecbuild_debug( "Could not get git-sha1 for project ${PROJECT_NAME}")
     endif()
 
-    ecbuild_declare_compat( ${PNAME}_GIT_SHA1 ${PROJECT_NAME}_GIT_SHA1 )
-    ecbuild_declare_compat( ${PNAME}_GIT_SHA1_SHORT ${PROJECT_NAME}_GIT_SHA1_SHORT)
+    if( ECBUILD_2_COMPAT )
+      ecbuild_declare_compat( ${PNAME}_GIT_SHA1 ${PROJECT_NAME}_GIT_SHA1 )
+      ecbuild_declare_compat( ${PNAME}_GIT_SHA1_SHORT ${PROJECT_NAME}_GIT_SHA1_SHORT)
+    endif()
   endif()
 
   if(NOT (DEFINED ${PROJECT_NAME}_VERSION
@@ -158,7 +160,9 @@ macro( ecbuild_declare_project )
       set( ${PROJECT_NAME}_FULL_INSTALL_${p}_DIR "${${var}}"
            CACHE INTERNAL "${PROJECT_NAME} ${p} full install path" )
     endif()
-    ecbuild_declare_compat( ${PNAME}_FULL_INSTALL_${p}_DIR ${PROJECT_NAME}_FULL_INSTALL_${p}_DIR )
+    if( ECBUILD_2_COMPAT )
+      ecbuild_declare_compat( ${PNAME}_FULL_INSTALL_${p}_DIR ${PROJECT_NAME}_FULL_INSTALL_${p}_DIR )
+    endif()
 
     #        ecbuild_debug_var( ${PROJECT_NAME}_FULL_INSTALL_${p}_DIR )
 

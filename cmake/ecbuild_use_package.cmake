@@ -188,7 +188,9 @@ macro( ecbuild_use_package )
   if( ${pkgUPPER}_FOUND AND NOT ${_p_PROJECT}_FOUND )
     set( ${_p_PROJECT}_FOUND 1 )
   endif()
-  ecbuild_mark_compat(${pkgUPPER}_FOUND ${_p_PROJECT}_FOUND)
+  if( ECBUILD_2_COMPAT )
+    ecbuild_mark_compat(${pkgUPPER}_FOUND ${_p_PROJECT}_FOUND)
+  endif()
 
   # Case 1) project exists as subproject
 

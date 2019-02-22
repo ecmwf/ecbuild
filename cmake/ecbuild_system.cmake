@@ -73,13 +73,13 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     # Enable the compatibility layer
     if(ECBUILD_2_COMPAT)
-      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/compat" )
-      include(ecbuild_compat)
-    endif()
+        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/compat" )
+        include(ecbuild_compat)
 
-    # Deprecate capitalised project name
-    ecbuild_mark_compat(${PROJECT_NAME_CAPS} ${PROJECT_NAME})
-    ecbuild_mark_compat(${PROJECT_NAME_LOWCASE} ${PROJECT_NAME})
+        # Deprecate capitalised project name
+        ecbuild_mark_compat(${PROJECT_NAME_CAPS} ${PROJECT_NAME})
+        ecbuild_mark_compat(${PROJECT_NAME_LOWCASE} ${PROJECT_NAME})
+    endif()
 
     execute_process( COMMAND env OUTPUT_VARIABLE __env )
     ecbuild_debug( "---------------------------------------------------------" )

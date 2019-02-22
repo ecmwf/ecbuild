@@ -262,10 +262,10 @@ macro( ecbuild_add_option )
   if(ECBUILD_2_COMPAT)
     set(ENABLE_${_p_FEATURE} ${ENABLE_${_p_FEATURE}})
     ecbuild_mark_compat(ENABLE_${_p_FEATURE} "HAVE_${_p_FEATURE} or ${PROJECT_NAME}_HAVE_${_p_FEATURE}")
-  endif()
 
-  if (NOT "${PROJECT_NAME_CAPS}" STREQUAL "${PROJECT_NAME}")
-    ecbuild_declare_compat( ${PROJECT_NAME_CAPS}_HAVE_${_p_FEATURE} ${PROJECT_NAME}_HAVE_${_p_FEATURE})
+    if (NOT "${PROJECT_NAME_CAPS}" STREQUAL "${PROJECT_NAME}")
+      ecbuild_declare_compat( ${PROJECT_NAME_CAPS}_HAVE_${_p_FEATURE} ${PROJECT_NAME}_HAVE_${_p_FEATURE})
+    endif()
   endif()
 
 endmacro( ecbuild_add_option  )
