@@ -107,6 +107,7 @@ function( ecbuild_generate_fortran_interfaces )
     endif()
   endforeach()
 
+  set( interface_files "" )
   foreach( fortran_file ${fortran_files} )
     #list( APPEND fullpath_fortran_files ${CMAKE_CURRENT_SOURCE_DIR}/${fortran_file} )
       get_filename_component(base ${fortran_file} NAME_WE)

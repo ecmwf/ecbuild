@@ -114,6 +114,7 @@ function(_ecbuild_resolve_target_location)
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN} )
 
+  set(out "")
   foreach(lib ${_PAR_IN})
     if(TARGET ${lib})
       list(APPEND out "$<TARGET_LINKER_FILE_NAME:${lib}>")

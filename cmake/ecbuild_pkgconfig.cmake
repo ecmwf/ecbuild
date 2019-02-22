@@ -12,6 +12,7 @@
 # to CMake variable ${dependencies}
 function( _ecbuild_library_dependencies_impl dependencies libraries )
 
+  set( _dependencies "" )
   set( _libraries ${${libraries}} )
 
   foreach( _lib ${_libraries})
@@ -86,6 +87,7 @@ endfunction()
 # to CMake variable ${dependencies}
 function( ecbuild_include_dependencies dependencies libraries )
 
+  set( _dependencies "" )
   set( _libraries ${${libraries}} )
 
   foreach( _lib ${_libraries})
@@ -127,6 +129,7 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
   set( _libraries ${${libraries}} )
   set( _ignore_libs ${${ignore_libs}} )
+  set( _pkgconfig_libs "" )
 
   foreach( _lib ${_libraries} )
 
