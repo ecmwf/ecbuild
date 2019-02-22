@@ -90,29 +90,7 @@ macro( ecbuild_declare_project )
         ecbuild_deprecate("Please set a project version in the project() rather than using VERSION.cmake")
       endif()
 
-      # read and parse project version file
-      if( EXISTS ${PROJECT_SOURCE_DIR}/VERSION.cmake )
-        include( ${PROJECT_SOURCE_DIR}/VERSION.cmake )
-        set( __version ${${PROJECT_NAME}_VERSION_STR} )
-      else()
-        set( __version "0.0.0" )
-      endif()
-
-      string( REPLACE "." " " _version_list "${__version}" ) # dots to spaces
-
-      separate_arguments( _version_list )
-
-      list( GET _version_list 0 ${PROJECT_NAME}_VERSION_MAJOR )
-      list( GET _version_list 1 ${PROJECT_NAME}_VERSION_MINOR )
-      list( GET _version_list 2 ${PROJECT_NAME}_VERSION_PATCH )
-
-      # cleanup patch version of any extra qualifiers ( -dev -rc1 ... )
-
-      string( REGEX REPLACE "^([0-9]+).*" "\\1" ${PROJECT_NAME}_VERSION_PATCH "${${PROJECT_NAME}_VERSION_PATCH}" )
-
-      set( ${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
-      set( ${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION}" CACHE INTERNAL "package ${PROJECT_NAME} version" )
-      set( ${PROJECT_NAME}_VERSION_STR "${${PROJECT_NAME}_VERSION}" CACHE INTERNAL "package ${PROJECT_NAME} version" )
+      ecbuild_compat_setversion()
 
     else()
 

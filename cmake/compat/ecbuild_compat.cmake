@@ -47,6 +47,7 @@ if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
 
 
   include(ecbuild_compat_require)
+  include(ecbuild_compat_setversion)
 
   include(ecbuild_define_libs_and_execs_target) # defines the top level execs and libs
   include(ecbuild_define_links_target) # defines the links target
