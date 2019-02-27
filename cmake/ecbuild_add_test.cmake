@@ -295,13 +295,7 @@ function( ecbuild_add_test )
     if( DEFINED _PAR_SOURCES )
 
       # add persistent layer files
-      if( DEFINED _PAR_PERSISTENT )
-        if( DEFINED PERSISTENT_NAMESPACE )
-          ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE ${PERSISTENT_NAMESPACE} )
-        else()
-          ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
-        endif()
-      endif()
+      ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE "${PERSISTENT_NAMESPACE}" )
 
       # insert already compiled objects (from OBJECT libraries)
       unset( _all_objects )

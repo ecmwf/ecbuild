@@ -160,13 +160,7 @@ function( ecbuild_add_executable )
     endif()
 
     # add persistent layer files
-    if( DEFINED _PAR_PERSISTENT )
-      if( DEFINED PERSISTENT_NAMESPACE )
-        ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE ${PERSISTENT_NAMESPACE} )
-      else()
-        ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
-      endif()
-    endif()
+    ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE "${PERSISTENT_NAMESPACE}" )
 
     # remove templates from compilation sources
     if( DEFINED _PAR_TEMPLATES )
