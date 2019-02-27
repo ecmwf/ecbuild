@@ -80,7 +80,9 @@ function( ecbuild_add_persistent )
     list( APPEND _SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${file}.b )
 
   endforeach()
-  list(REMOVE_DUPLICATES _SOURCES)
+  if( _SOURCES )
+    list(REMOVE_DUPLICATES _SOURCES)
+  endif()
   set(${_PAR_SRC_LIST} ${_SOURCES} PARENT_SCOPE)
 
 endfunction( ecbuild_add_persistent  )
