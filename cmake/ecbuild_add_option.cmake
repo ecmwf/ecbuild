@@ -137,7 +137,7 @@ macro( ecbuild_add_option )
   endif()
 
   # check CONDITION parameter
-  ecbuild_evaluateCondition( _p_CONDITION _${_p_FEATURE}_condition  )
+  ecbuild_evaluate_dynamic_condition( _p_CONDITION _${_p_FEATURE}_condition  )
 
   # Check if user explicitly enabled/disabled the feature in cache
   get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE SET )

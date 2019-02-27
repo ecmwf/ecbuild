@@ -198,7 +198,7 @@ function( ecbuild_add_library_impl )
   endif()
 
   ### conditional build
-  ecbuild_evaluateCondition( _PAR_CONDITION _${_PAR_TARGET}_condition )
+  ecbuild_evaluate_dynamic_condition( _PAR_CONDITION _${_PAR_TARGET}_condition )
 
   if( _${_PAR_TARGET}_condition )
 
