@@ -48,6 +48,7 @@ macro( ecbuild_bundle_initialize )
     add_custom_target( ${PROJECT_NAME}_readme SOURCES "${PROJECT_SOURCE_DIR}/README.md" )
   endif()
 
+  # Point CMake to the packages in the bundle when using find_package
   set( CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH} )
 
 endmacro()
