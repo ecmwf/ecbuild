@@ -304,11 +304,6 @@ function( ecbuild_add_executable )
     # make sure target is removed before - some problems with AIX
     add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
 
-    # for the links target
-    if( NOT _PAR_NOINSTALL AND ECBUILD_2_COMPAT )
-      ecbuild_link_exe( ${_PAR_TARGET} $<TARGET_FILE_NAME:${_PAR_TARGET}> $<TARGET_FILE:${_PAR_TARGET}>  )
-    endif()
-
     # append to the list of this project targets
     set( ${PROJECT_NAME}_ALL_EXES ${${PROJECT_NAME}_ALL_EXES} ${_PAR_TARGET} CACHE INTERNAL "" )
 

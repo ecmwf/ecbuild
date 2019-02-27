@@ -87,18 +87,6 @@ macro( ecbuild_install_project )
       ecbuild_critical("The call to ecbuild_install_project() doesn't specify the NAME.")
     endif()
 
-    ### EXTRA TARGETS #####################################################
-
-    # added here to avoid adding another macro call at the end of each project,
-
-    if( ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
-
-      ecbuild_define_libs_and_execs_targets()
-
-      ecbuild_define_links_target()
-
-    endif()
-
     ### PACKAGING ########################################################
 
     set( PNAME ${PROJECT_NAME_CAPS} )

@@ -520,11 +520,6 @@ function( ecbuild_add_library_impl )
       add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
     endif()
 
-    # for the links target
-    if( NOT _PAR_NOINSTALL AND ECBUILD_2_COMPAT )
-      ecbuild_link_lib( ${_PAR_TARGET} $<TARGET_FILE_NAME:${_PAR_TARGET}> $<TARGET_FILE:${_PAR_TARGET}>  )
-    endif()
-
     # append to the list of this project targets
     set( ${PROJECT_NAME}_ALL_LIBS ${${PROJECT_NAME}_ALL_LIBS} ${_PAR_TARGET} CACHE INTERNAL "" )
 
