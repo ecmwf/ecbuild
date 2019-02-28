@@ -4,7 +4,7 @@ project(test_ld_origin VERSION 1.0 LANGUAGES C)
 
 include(ecbuild_system NO_POLICY_SCOPE)
 
-ecbuild_requires_macro_version( 2.9.5 )
+ecbuild_requires_macro_version( 2.9 )
 ecbuild_declare_project()
 
 # Allow RPATH to be overridden at build time

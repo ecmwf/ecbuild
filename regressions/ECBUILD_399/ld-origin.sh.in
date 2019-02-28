@@ -11,12 +11,12 @@ SRC_DIR=@CMAKE_CURRENT_SOURCE_DIR@
 export PATH=$ECBUILD_PATH:$PATH
 
 # --------------------- cleanup ------------------------
-rm -rf $HERE/dummy
+rm -rf $HERE/ld-origin
 
 # ------------------ build project ---------------------
-mkdir -p $HERE/dummy
-cd $HERE/dummy
+mkdir -p $HERE/ld-origin
+cd $HERE/ld-origin
 
-ecbuild -- $SRC_DIR/dummy
+ecbuild -- $SRC_DIR/ld-origin
 make
 
