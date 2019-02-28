@@ -224,8 +224,10 @@ function( ecbuild_pkgconfig_include INCLUDE INCLUDE_DIRS ignore_includes )
   list( APPEND ignore_include_dirs
     "/usr/include"
      ${${PNAME}_INCLUDE_DIRS} # These are build-directory includes
-     ${CMAKE_SOURCE_DIR}  # Ignore private includes referencing source tree
-     ${CMAKE_BINARY_DIR}  # Ignore private includes referencing build tree
+     ${CMAKE_SOURCE_DIR}      # Ignore private includes referencing source tree
+     ${CMAKE_BINARY_DIR}      # Ignore private includes referencing build tree
+     "\\$<BUILD_INTERFACE"    # Ignore generator expressions
+     "\\$<INSTALL_INTERFACE"  # Ignore generator expressions
      ${_ignore_includes}
   )
 
