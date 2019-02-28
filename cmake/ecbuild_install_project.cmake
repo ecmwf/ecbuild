@@ -261,13 +261,13 @@ macro( ecbuild_install_project )
     if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
 
         set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
-        if( EXISTS ${LNAME}-config.cmake.in )
-            set( _template_config "${LNAME}-config.cmake.in" )
+        if( EXISTS ${PROJECT_SOURCE_DIR}/${LNAME}-config.cmake.in )
+            set( _template_config "${PROJECT_SOURCE_DIR}/${LNAME}-config.cmake.in" )
         endif()
 
         set( _template_config_version "${ECBUILD_MACROS_DIR}/project-config-version.cmake.in" )
-        if( EXISTS ${LNAME}-config-version.cmake.in )
-            set( _template_config_version "${LNAME}-config-version.cmake.in" )
+        if( EXISTS ${PROJECT_SOURCE_DIR}/${LNAME}-config-version.cmake.in )
+            set( _template_config_version "${PROJECT_SOURCE_DIR}/${LNAME}-config-version.cmake.in" )
         endif()
 
         # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)

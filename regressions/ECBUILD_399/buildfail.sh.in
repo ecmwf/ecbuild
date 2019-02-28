@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+
+ECBUILD_PATH=@CMAKE_SOURCE_DIR@/bin
+
+# Add ecbuild to path
+export PATH=$ECBUILD_PATH:$PATH
+
+cd buildfail
+
+# ---------------------- cleanup -----------------------
+rm -rf build
+
+# ----------------------- build ------------------------
+mkdir build
+cd build
+ecbuild -- ..
+
+# -------------------- contaminate ---------------------
+# In practice, this may be caused by using two different
+# installations of ecbuild
+echo "CMAKE_HOME_DIRECTORY:INTERNAL=/non/existent" \
+    >ecbuild_tmp/check_linker/CMakeCache.txt
+
+# ---------------------- rebuild -----------------------
+ecbuild -- ..
