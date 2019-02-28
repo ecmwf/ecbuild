@@ -256,6 +256,18 @@ if( UNIX )
       set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--disable-new-dtags")
     endif()
 
+    # The following option allows disabling dynamic symbol check at link time.
+    # It circumvents GNU ld bug 20535
+    # https://sourceware.org/bugzilla/show_bug.cgi?id=20535
+    option( ECBUILD_DISABLE_DYNCHECK "Set the linker flag --allow-shlib-undefined" OFF )
+    mark_as_advanced( ECBUILD_DISABLE_DYNCHECK )
+
+    if( ECBUILD_DISABLE_DYNCHECK )
+      set(CMAKE_EXE_LINKER_FLAGS     "${CMAKE_EXE_LINKER_FLAGS}    -Wl,--allow-shlib-undefined")
+      set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
+      set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
+    endif()
+
   endif()
 
   ### FreeBSD ###
