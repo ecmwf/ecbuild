@@ -11,3 +11,4 @@
 #	DONT_PACK_DIRS ecbuild )
 
 install( DIRECTORY ecbuild/toolchains USE_SOURCE_PERMISSIONS DESTINATION ${INSTALL_DATA_DIR} )
+install( DIRECTORY ecbuild/check_linker DESTINATION ${INSTALL_DATA_DIR} )
