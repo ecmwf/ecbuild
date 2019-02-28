@@ -194,52 +194,6 @@ macro( ecbuild_install_project )
         endif()
     endforeach()
 
-    if(ECBUILD_2_COMPAT)
-        ecbuild_info( "${PROJECT_NAME_CAPS}_TPLS: ${${PROJECT_NAME_CAPS}_TPLS}" )
-
-        foreach( _tpl ${${PNAME}_TPLS} )
-            string( TOUPPER ${_tpl} _TPL )
-
-            if( ${_tpl}_INCLUDE_DIRS )
-                list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIRS} )
-            elseif( ${_tpl}_INCLUDE_DIR )
-                list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIR} )
-            elseif( ${_TPL}_INCLUDE_DIRS )
-                list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_TPL}_INCLUDE_DIRS} )
-            elseif( ${_TPL}_INCLUDE_DIR )
-                list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_TPL}_INCLUDE_DIR} )
-            endif()
-
-            if( ${_tpl}_LIBRARIES )
-                list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_tpl}_LIBRARIES} )
-            elseif( ${_tpl}_LIBRARY )
-                list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_tpl}_LIBRARY} )
-            elseif( ${_TPL}_LIBRARIES )
-                list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_TPL}_LIBRARIES} )
-            elseif( ${_TPL}_LIBRARY )
-                list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_TPL}_LIBRARY} )
-            endif()
-
-            if( ${_tpl}_DEFINITIONS )
-                list( APPEND ${PNAME}_TPL_DEFINITIONS ${${_tpl}_DEFINITIONS} )
-            elseif( ${_TPL}_DEFINITIONS )
-                list( APPEND ${PNAME}_TPL_DEFINITIONS ${${_TPL}_DEFINITIONS} )
-            endif()
-        endforeach()
-
-        # Deduplicate TPL includes, libs and definitions
-        # The same TPL may indirectly be pulled in multiple times!
-        if( ${PNAME}_TPL_INCLUDE_DIRS )
-          list( REMOVE_DUPLICATES ${PNAME}_TPL_INCLUDE_DIRS )
-        endif()
-        if( ${PNAME}_TPL_LIBRARIES )
-          list( REMOVE_DUPLICATES ${PNAME}_TPL_LIBRARIES )
-        endif()
-        if( ${PNAME}_TPL_DEFINITIONS )
-          list( REMOVE_DUPLICATES ${PNAME}_TPL_DEFINITIONS )
-        endif()
-    endif()
-
     # Generate the project .cmake config files
     # All variables here must be (sub)project specific in order to work within bundles
     if ( ECBUILD_2_COMPAT AND DEFINED ECBUILD_SKIP_${PNAME}_EXPORT )
@@ -282,27 +236,9 @@ macro( ecbuild_install_project )
                 set( CONF_LIBRARIES ${${PNAME}_LIBRARIES} )
             endif()
 
-            set( CONF_DEFINITIONS "" )
-            if( ${PNAME}_DEFINITIONS )
-               set( CONF_DEFINITIONS ${${PNAME}_DEFINITIONS} )
-            endif()
-
-            set( CONF_TPL_LIBRARIES   "" )
-            if( ${PNAME}_TPL_LIBRARIES )
-               set( CONF_TPL_LIBRARIES ${${PNAME}_TPL_LIBRARIES} )
-            endif()
-
             set( CONF_TPLS ${${PNAME}_TPLS} )
 
             set( CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}" )
-            if( ${PNAME}_INCLUDE_DIRS )
-                set( CONF_INCLUDE_DIRS ${${PNAME}_INCLUDE_DIRS} )
-            endif()
-
-            set( CONF_TPL_INCLUDE_DIRS "" )
-            if( ${PNAME}_TPL_INCLUDE_DIRS )
-                set( CONF_TPL_INCLUDE_DIRS ${${PNAME}_TPL_INCLUDE_DIRS} )
-            endif()
         endif()
 
         # Generate <project>-import.cmake (if it exists)
@@ -439,14 +375,9 @@ macro( ecbuild_install_project )
                 ecbuild_declare_compat( ${PNAME}_HAVE_${_f} ${PROJECT_NAME}_HAVE_${_f} PARENT_SCOPE )
             endforeach()
 
-            set( ${PNAME}_INCLUDE_DIRS      ${${PNAME}_INCLUDE_DIRS}      PARENT_SCOPE )
             set( ${PNAME}_LIBRARIES         ${${PNAME}_LIBRARIES}         PARENT_SCOPE )
-            set( ${PNAME}_DEFINITIONS       ${${PNAME}_DEFINITIONS}       PARENT_SCOPE )
             set( ${PNAME}_PACKAGES          ${${PNAME}_PACKAGES}          PARENT_SCOPE )
             set( ${PNAME}_TPLS              ${${PNAME}_TPLS}              PARENT_SCOPE )
-            set( ${PNAME}_TPL_LIBRARIES     ${${PNAME}_TPL_LIBRARIES}     PARENT_SCOPE )
-            set( ${PNAME}_TPL_DEFINITIONS   ${${PNAME}_TPL_DEFINITIONS}   PARENT_SCOPE )
-            set( ${PNAME}_TPL_INCLUDE_DIRS  ${${PNAME}_TPL_INCLUDE_DIRS}  PARENT_SCOPE )
         endif()
 
     endif()
