@@ -381,7 +381,7 @@ if( WIN32 )
   ecbuild_warn( "CMake doesn't support symlinks on Windows. "
                 "Replacing all symlinks with copies." )
   execute_process( COMMAND bash -c "${ECBUILD_MACROS_DIR}/ecbuild_windows_replace_symlinks.sh"
-                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/cmake
+                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    RESULT_VARIABLE CMD_RESULT
                    OUTPUT_VARIABLE CMD_OUTPUT
                    ERROR_VARIABLE  CMD_ERROR )
