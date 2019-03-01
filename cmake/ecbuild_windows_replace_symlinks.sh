@@ -21,7 +21,7 @@ echo " REMOVING ALL SYMLINKS "
 echo "======================="
 echo ""
 
-for link in `find . -type l -not -path '../build/*'`
+for link in `find . -type l -not -path './build/*'`
 do
     if [ -e $link ]
     then
