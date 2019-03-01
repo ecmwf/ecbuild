@@ -199,6 +199,17 @@ macro( ecbuild_install_project )
       list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES "${ECBUILD_BIN_DIR}" "bin/" )
     endif()
 
+    # Find the ecbuild linker check files and include in the source package if found
+    find_path( ECBUILD_LINKCHECK_DIR dso1.c
+               PATHS ${ECBUILD_MACROS_DIR}/../check_linker
+                     ${ECBUILD_MACROS_DIR}/../share/ecbuild/check_linker )
+
+    mark_as_advanced( ECBUILD_LINKCHECK_DIR )
+
+    if( ECBUILD_LINKCHECK_DIR )
+      list( APPEND CPACK_SOURCE_INSTALLED_DIRECTORIES "${ECBUILD_LINKCHECK_DIR}" "share/ecbuild/check_linker/" )
+    endif()
+
     # cpack config file
 
     # set(CPACK_INSTALL_CMAKE_PROJECTS "${${PROJECT_NAME}_BINARY_DIR}" "${PROJECT_NAME}" "${CPACK_COMPONENTS_ALL}" "*" )
