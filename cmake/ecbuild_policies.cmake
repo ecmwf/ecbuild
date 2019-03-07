@@ -33,6 +33,16 @@ else()
     cmake_policy( SET CMP0023 NEW )
 endif()
 
+if( POLICY CMP0022 )
+    #The OLD behavior for this policy is to ignore the
+    #INTERFACE_LINK_LIBRARIES property for in-build targets.  The NEW
+    #behavior for this policy is to use the INTERFACE_LINK_LIBRARIES
+    #property for in-build targets, and ignore the old properties matching
+    #``(IMPORTED_)?LINK_INTERFACE_LIBRARIES(_<CONFIG>)?``.
+    cmake_policy( SET CMP0022 NEW )
+endif()
+
+
 if( ECBUILD_2_COMPAT )
   # Allow use of the LOCATION target property.
   if( POLICY CMP0026 )
