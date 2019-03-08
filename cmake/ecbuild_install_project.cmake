@@ -289,8 +289,10 @@ macro( ecbuild_install_project )
 
                   ecbuild_debug( "Adding find_dependency call for TPL ${TPL} to ${_config}.tpls.in" )
                     get_filename_component( __import_dir "${${TPL}_IMPORT_FILE}" DIRECTORY )
+                    file( RELATIVE_PATH __import_dir_rel "${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR}" "${__import_dir}" )
+                    set( __import_dir_rel "\${CMAKE_CURRENT_LIST_DIR}/${__import_dir_rel}" )
                     file( APPEND "${_config}.tpls.in" "if( NOT ${TPL}_IMPORT_FILE )\n" )
-                    file( APPEND "${_config}.tpls.in" "    find_dependency( ${_tpl} REQUIRED HINTS \"${__import_dir}\" )\n" )
+                    file( APPEND "${_config}.tpls.in" "    find_dependency( ${_tpl} REQUIRED HINTS \"${__import_dir_rel}\" \"${__import_dir}\" )\n" )
                     file( APPEND "${_config}.tpls.in" "endif()\n" )
 
                 elseif( ${TPL}_CONFIG ) # cmake built packages (e.g. CGAL) may have exported their targets
@@ -304,9 +306,12 @@ macro( ecbuild_install_project )
                     file( APPEND "${_config}.tpls.in" "endif()\n" )
 
                 elseif( ${TPL}_FULL_INSTALL_CMAKE_DIR )
+                  # This variable is only available for a ecbuild exported TPL in a bundle. It is therefore safe to use
+                  # relative install paths between this project and the TPL
 
                   ecbuild_debug( "Adding find_dependency call for TPL ${TPL} to ${_config}.tpls.in" )
-                    set( __import_dir "${${TPL}_FULL_INSTALL_CMAKE_DIR}" )
+                    file( RELATIVE_PATH __import_dir "${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR}" "${${TPL}_FULL_INSTALL_CMAKE_DIR}" )
+                    set( __import_dir "\${CMAKE_CURRENT_LIST_DIR}/${__import_dir}" )
                     file( APPEND "${_config}.tpls.in" "find_dependency( ${_tpl} REQUIRED HINTS \"${__import_dir}\" )\n" )
 
                 endif()
@@ -366,6 +371,7 @@ macro( ecbuild_install_project )
                 set( ${PROJECT_NAME}_HAVE_${_f} ${${PROJECT_NAME}_HAVE_${_f}} PARENT_SCOPE )
             endforeach()
 
+            ecbuild_declare_compat( ${PNAME}_FULL_INSTALL_CMAKE_DIR  ${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR PARENT_SCOPE )
             ecbuild_declare_compat( ${PNAME}_FOUND ${PROJECT_NAME}_FOUND PARENT_SCOPE )
             ecbuild_declare_compat( ${PNAME}_VERSION ${PROJECT_NAME}_VERSION PARENT_SCOPE )
             ecbuild_declare_compat( ${PNAME}_GIT_SHA1 ${PROJECT_NAME}_GIT_SHA1 PARENT_SCOPE )
