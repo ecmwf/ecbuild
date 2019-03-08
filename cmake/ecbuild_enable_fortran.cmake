@@ -29,7 +29,7 @@
 
 macro( ecbuild_enable_fortran )
 
-  set( options REQUIRED  )
+  set( options REQUIRED )
   set( single_value_args MODULE_DIRECTORY )
   set( multi_value_args  )
 
@@ -48,7 +48,7 @@ macro( ecbuild_enable_fortran )
     endif()
   endif()
 
-  if( DEFINED _PAR_REQUIRED )
+  if( _PAR_REQUIRED )
     if( CMAKE_Fortran_COMPILER_FORCED )
       set( CMAKE_Fortran_COMPILER_WORKS 1 )
     endif()
@@ -73,17 +73,18 @@ macro( ecbuild_enable_fortran )
 
   endif()
 
-  if( DEFINED _PAR_MODULE_DIRECTORY )
+  if( _PAR_MODULE_DIRECTORY )
     set( CMAKE_Fortran_MODULE_DIRECTORY  ${_PAR_MODULE_DIRECTORY} )
   else()
-    set( CMAKE_Fortran_MODULE_DIRECTORY  ${CMAKE_BINARY_DIR}/module
-         CACHE PATH "directory for all fortran modules." )
+    set( CMAKE_Fortran_MODULE_DIRECTORY  ${PROJECT_BINARY_DIR}/module )
   endif()
 
   file( MAKE_DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY} )
 
-  include_directories( ${CMAKE_Fortran_MODULE_DIRECTORY} )
+# We should not need this... CMake automatically adds include directories this
+#    include_directories( ${CMAKE_Fortran_MODULE_DIRECTORY} )
 
-  install( CODE "EXECUTE_PROCESS (COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${CMAKE_Fortran_MODULE_DIRECTORY}/\${BUILD_TYPE}\" \"${INSTALL_INCLUDE_DIR}\")" )
+# We should also not auto-install. Every project is already doing this anyway
+#    install( CODE "EXECUTE_PROCESS (COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${CMAKE_Fortran_MODULE_DIRECTORY}/\${BUILD_TYPE}\" \"${INSTALL_INCLUDE_DIR}\")" )
 
 endmacro( ecbuild_enable_fortran )
