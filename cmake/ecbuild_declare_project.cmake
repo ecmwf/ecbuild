@@ -133,8 +133,8 @@ macro( ecbuild_declare_project )
   # INSTALL_DATA_DIR is package specific and needs to be reset for subpackages
   # in a bundle. Users *cannot* override this directory (ECBUILD-315)
   set( INSTALL_DATA_DIR share/${PROJECT_NAME} )
-  # share/${PROJECT_NAME}/cmake is a convention - it makes no sense to override it
-  set( INSTALL_CMAKE_DIR share/${PROJECT_NAME}/cmake )
+  # The Modern CMake convention is to have the cmake directory in lib/cmake/${PROJECT_NAME}
+  set( INSTALL_CMAKE_DIR ${INSTALL_LIB_DIR}/cmake/${PROJECT_NAME} )
 
   mark_as_advanced( INSTALL_BIN_DIR )
   mark_as_advanced( INSTALL_LIB_DIR )
