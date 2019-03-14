@@ -81,8 +81,7 @@ macro( ecbuild_enable_fortran )
 
   file( MAKE_DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY} )
 
-# We should not need this... CMake automatically adds include directories this
-#    include_directories( ${CMAKE_Fortran_MODULE_DIRECTORY} )
+  include_directories( ${CMAKE_Fortran_MODULE_DIRECTORY} )
 
 # We should also not auto-install. Every project is already doing this anyway
 #    install( CODE "EXECUTE_PROCESS (COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${CMAKE_Fortran_MODULE_DIRECTORY}/\${BUILD_TYPE}\" \"${INSTALL_INCLUDE_DIR}\")" )
