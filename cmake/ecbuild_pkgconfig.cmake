@@ -63,6 +63,29 @@ function( _ecbuild_library_dependencies_impl dependencies libraries )
 
 endfunction()
 
+# resolve cmake target locations in a list of libraries
+function(_ecbuild_resolve_target_location)
+  set( options           )
+  set( single_value_args OUT)
+  set( multi_value_args  IN)
+
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN} )
+
+  set(out "")
+  foreach(lib ${_PAR_IN})
+    if(TARGET ${lib})
+      get_property( _type TARGET ${lib} PROPERTY TYPE )
+      if( NOT( "${_type}" STREQUAL "INTERFACE_LIBRARY" ) )
+        list(APPEND out "$<TARGET_LINKER_FILE_NAME:${lib}>")
+      endif()
+    else()
+      list(APPEND out ${lib})
+    endif()
+  endforeach()
+  set(${_PAR_OUT} ${out} PARENT_SCOPE)
+
+endfunction()
+
 function(ecbuild_library_dependencies dependencies libraries)
   _ecbuild_library_dependencies_impl(_dependencies ${libraries} )
   foreach( _lib ${${libraries}} )

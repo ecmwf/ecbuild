@@ -179,7 +179,8 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     ############################################################################################
     # add our macros
 
-    include( ecbuild_common )
+    include( ecbuild_evaluate_dynamic_condition )
+    include( ecbuild_filter_list )
     include( ecbuild_parse_version )
 
     include( ecbuild_list_macros )
