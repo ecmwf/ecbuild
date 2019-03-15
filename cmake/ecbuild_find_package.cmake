@@ -232,6 +232,7 @@ macro( ecbuild_find_package )
         COMPONENTS ${_PAR_COMPONENTS}
         HINTS ${${pkgUPPER}_PATH} ${${_PAR_NAME}_PATH} ${${_PAR_NAME}_DIR}
         NO_DEFAULT_PATH )
+      set( _cfg_considered_versions ${${_PAR_NAME}_CONSIDERED_VERSIONS} )
     endif()
 
     # 3) search using a file Find<package>.cmake if it exists ( macro should itself take *_PATH into account )
@@ -245,11 +246,20 @@ macro( ecbuild_find_package )
     # is <package>_PATH was given and we don't find anything then we FAIL
 
     if( NOT ${_PAR_NAME}_FOUND )
-      if( ${_PAR_NAME}_PATH )
-        ecbuild_critical( "${_PAR_NAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found at '${${_PAR_NAME}_PATH}'" )
-      endif()
-      if( ${pkgUPPER}_PATH )
-        ecbuild_critical( "${pkgUPPER}_PATH was provided by user but package ${_PAR_NAME} wasn't found at '${${pkgUPPER}_PATH}'" )
+      if( _cfg_considered_versions OR ${_PAR_NAME}_CONSIDERED_VERSIONS )
+        if( ${_PAR_NAME}_PATH )
+          ecbuild_critical( "${_PAR_NAME}_PATH was provided by user but no suitable version of ${_PAR_NAME} was found at '${${_PAR_NAME}_PATH}'" )
+        endif()
+        if( ${pkgUPPER}_PATH )
+          ecbuild_critical( "${pkgUPPER}_PATH was provided by user but no suitable version of ${_PAR_NAME} was found at '${${pkgUPPER}_PATH}'" )
+        endif()
+      else()
+        if( ${_PAR_NAME}_PATH )
+          ecbuild_critical( "${_PAR_NAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found at '${${_PAR_NAME}_PATH}'" )
+        endif()
+        if( ${pkgUPPER}_PATH )
+          ecbuild_critical( "${pkgUPPER}_PATH was provided by user but package ${_PAR_NAME} wasn't found at '${${pkgUPPER}_PATH}'" )
+        endif()
       endif()
     endif()
 
