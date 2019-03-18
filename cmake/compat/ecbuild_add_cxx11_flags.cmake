@@ -16,20 +16,22 @@
 #
 #   ecbuild_add_cxx11_flags()
 #
-# This macro uses macros from http://github.com/UCL/GreatCMakeCookOff.
+# DEPRECATED. Please set CMAKE_CXX_STANDARD or use target_compile_features
+# instead.
 #
 ##############################################################################
 
 macro( ecbuild_add_cxx11_flags )
 
-    # if( CMAKE_COMPILER_IS_GNUCXX )
-    # 	if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
-    # 		ecbuild_add_cxx_flags("-std=c++0x")
-    # 	else()
-    # 		ecbuild_add_cxx_flags("-std=c++11")
-    # 	endif()
-    # endif()
+    if( ECBUILD_2_COMPAT_DEPRECATE )
+        ecbuild_deprecate("ecbuild_add_cxx11_flags is deprecated and will be "
+            "removed in a future version. Please set CMAKE_CXX_STANDARD or use "
+            "target_compile_features instead.")
+    endif()
 
-    include( ${ECBUILD_MACROS_DIR}/contrib/GreatCMakeCookOff/AddCPP11Flags.cmake )
+    if( NOT CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD LESS 11 )
+        set( CMAKE_CXX_STANDARD 11 )
+        set( CMAKE_CXX_STANDARD_REQUIRED ON )
+    endif()
 
 endmacro( ecbuild_add_cxx11_flags )

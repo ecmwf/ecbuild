@@ -119,9 +119,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # add extra macros from external contributions
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
 
-    # would bring FindEigen in, so for the moment keep it out
-    # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/GreatCMakeCookOff" )
-
     ############################################################################################
     # define valid build types
 
@@ -211,7 +208,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_get_test_data )
     include( ecbuild_add_c_flags )
     include( ecbuild_add_cxx_flags )
-    include( ecbuild_add_cxx11_flags )
     include( ecbuild_get_cxx11_flags )
     include( ecbuild_check_fortran )
     include( ecbuild_add_fortran_flags )
