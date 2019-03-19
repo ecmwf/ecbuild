@@ -51,8 +51,8 @@ macro( ecbuild_remove_fortran_flags m_flags )
     elseif( NOT _PAR_BUILD )
 
       foreach( _flag ${_flags} )
-        string(REGEX REPLACE " *${_flag} *" " " CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS} "${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
-        string(REGEX REPLACE " *${_flag} *" " " CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" )
+        string(REGEX REPLACE " *${_flag} *" " " CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS}} )
+        string(REGEX REPLACE " *${_flag} *" " " CMAKE_Fortran_FLAGS ${CMAKE_Fortran_FLAGS} )
         ecbuild_debug( "Fortran FLAG [${_flag}] removed" )
       endforeach()
 
