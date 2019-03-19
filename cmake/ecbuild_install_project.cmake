@@ -220,18 +220,15 @@ macro( ecbuild_install_project )
             set( _template_config "${PROJECT_SOURCE_DIR}/${LNAME}-config.cmake.in" )
         endif()
 
-        set( _template_config_version "${ECBUILD_MACROS_DIR}/project-config-version.cmake.in" )
-        if( EXISTS ${PROJECT_SOURCE_DIR}/${LNAME}-config-version.cmake.in )
-            set( _template_config_version "${PROJECT_SOURCE_DIR}/${LNAME}-config-version.cmake.in" )
-        endif()
-
         # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)
 
         set( PACKAGE_VERSION        "${${PROJECT_NAME}_VERSION}" )
         set( PACKAGE_GIT_SHA1       "${${PROJECT_NAME}_GIT_SHA1}" )
         set( PACKAGE_GIT_SHA1_SHORT "${${PROJECT_NAME}_GIT_SHA1_SHORT}" )
 
-        configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
+        include(CMakePackageConfigHelpers)
+        write_basic_package_version_file("${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake"
+            VERSION ${PACKAGE_VERSION} COMPATIBILITY AnyNewerVersion)
 
         install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
 
