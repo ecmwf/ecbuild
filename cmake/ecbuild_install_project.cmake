@@ -283,53 +283,8 @@ macro( ecbuild_install_project )
         configure_file( "${_template_config}" "${_config}" @ONLY )
 
         if(ECBUILD_2_COMPAT)
-
             # Generate <project>-config.cmake.tpls (if there are any TPLs)
-
-            file( REMOVE ${_config}.tpls.in )
-            file( APPEND "${_config}.tpls.in" "include( CMakeFindDependencyMacro )\n" )
-
-            foreach( _tpl ${${PNAME}_TPLS} )
-
-                string( TOUPPER ${_tpl} TPL )
-
-                if( ${TPL}_IMPORT_FILE ) # ecBuild packages should trigger this if they export themselves
-
-                  ecbuild_debug( "Adding find_dependency call for TPL ${TPL} to ${_config}.tpls.in" )
-                    get_filename_component( __import_dir "${${TPL}_IMPORT_FILE}" DIRECTORY )
-                    file( RELATIVE_PATH __import_dir_rel "${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR}" "${__import_dir}" )
-                    set( __import_dir_rel "\${CMAKE_CURRENT_LIST_DIR}/${__import_dir_rel}" )
-                    file( APPEND "${_config}.tpls.in" "if( NOT ${TPL}_IMPORT_FILE )\n" )
-                    file( APPEND "${_config}.tpls.in" "    find_dependency( ${_tpl} REQUIRED HINTS \"${__import_dir_rel}\" \"${__import_dir}\" )\n" )
-                    file( APPEND "${_config}.tpls.in" "endif()\n" )
-
-                elseif( ${TPL}_CONFIG ) # cmake built packages (e.g. CGAL) may have exported their targets
-
-                  ecbuild_debug( "Adding TPL ${TPL} import file to ${_config}.tpls.in" )
-                    set( __import_file "${${TPL}_CONFIG}" )
-                    get_filename_component( __import_dir "${__import_file}" DIRECTORY )
-                    file( APPEND "${_config}.tpls.in" "if( NOT ${TPL}_CONFIG )\n" )
-                    file( APPEND "${_config}.tpls.in" "    find_dependency( ${_tpl} REQUIRED HINTS \"${__import_dir}\" )\n" )
-                    file( APPEND "${_config}.tpls.in" "    set( ${TPL}_CONFIG \"${__import_file}\" )\n" )
-                    file( APPEND "${_config}.tpls.in" "endif()\n" )
-
-                elseif( ${TPL}_FULL_INSTALL_CMAKE_DIR )
-                  # This variable is only available for a ecbuild exported TPL in a bundle. It is therefore safe to use
-                  # relative install paths between this project and the TPL
-
-                  ecbuild_debug( "Adding find_dependency call for TPL ${TPL} to ${_config}.tpls.in" )
-                    file( RELATIVE_PATH __import_dir "${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR}" "${${TPL}_FULL_INSTALL_CMAKE_DIR}" )
-                    set( __import_dir "\${CMAKE_CURRENT_LIST_DIR}/${__import_dir}" )
-                    file( APPEND "${_config}.tpls.in" "find_dependency( ${_tpl} REQUIRED HINTS \"${__import_dir}\" )\n" )
-
-                endif()
-
-            endforeach()
-
-            if( EXISTS "${_config}.tpls.in" )
-                configure_file( "${_config}.tpls.in" "${_config}.tpls" @ONLY )
-                install( FILES "${_config}.tpls" DESTINATION "${INSTALL_CMAKE_DIR}" )
-            endif()
+            ecbuild_compat_tplconfig("${_config}.tpls" TPLS ${${PNAME}_TPLS})
         endif()
 
         # Generate <project>-config.cmake for use in the install tree
