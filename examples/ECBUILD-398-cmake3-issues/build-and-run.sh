@@ -24,7 +24,7 @@ cd $HERE/projectB
 mkdir build
 cd build
 ecbuild --prefix=../install -- \
-    -DprojectA_DIR=$HERE/projectA/install/share/projectA/cmake \
+    -DprojectA_DIR=$HERE/projectA/install/lib/cmake/projectA \
     ../
 make install
 
@@ -34,8 +34,8 @@ cd $HERE/projectC
 mkdir build
 cd build
 ecbuild --prefix=../install -- \
-    -DprojectA_DIR=$HERE/projectA/install/share/projectA/cmake \
-    -DprojectB_DIR=$HERE/projectB/install/share/projectB/cmake \
+    -DprojectA_DIR=$HERE/projectA/install/lib/cmake/projectA \
+    -DprojectB_DIR=$HERE/projectB/install/lib/cmake/projectB \
     ../
 make install
 

@@ -73,7 +73,7 @@
 # :<name>_PATH:    install prefix path of the package
 # :<NAME>_PATH:    install prefix path of the package
 # :<name>_DIR:     directory containing the ``<name>-config.cmake`` file
-#                  (usually ``<install-prefix>/share/<name>/cmake``)
+#                  (usually ``<install-prefix>/lib/cmake/<name>``)
 #
 # The environment variables ``<name>_PATH``, ``<NAME>_PATH``, ``<name>_DIR``
 # are taken into account only if the corresponding CMake variables are unset.
@@ -333,7 +333,7 @@ macro( ecbuild_find_package )
       "    You may also export environment variables ${pkgUPPER}_PATH or ${_PAR_NAME}_DIR\n"
       "  Values (note CAPITALISATION):\n"
       "    ${pkgUPPER}_PATH should contain the path to the install prefix (as in <install>/bin <install>/lib <install>/include)\n"
-      "    ${_PAR_NAME}_DIR should be a directory containing a <package>-config.cmake file (usually <install>/share/<package>/cmake)\n"
+      "    ${_PAR_NAME}_DIR should be a directory containing a <package>-config.cmake file (usually <install>/lib/cmake/<package>)\n"
       )
 
     if( _PAR_REQUIRED )

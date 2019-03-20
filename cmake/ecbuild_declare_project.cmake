@@ -46,7 +46,7 @@
 # :INSTALL_DATA_DIR:       directory for installing data
 #                          (default: ``share/<project_name>``)
 # :INSTALL_CMAKE_DIR:      directory for installing CMake files
-#                          (default: ``share/<project_name>/cmake``)
+#                          (default: ``lib/cmake/<project_name>``)
 #
 # Using *relative* paths is recommended, which are interpreted relative to the
 # ``CMAKE_INSTALL_PREFIX``. Using absolute paths makes the build

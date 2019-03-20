@@ -22,7 +22,7 @@ cd build
 ecbuild --prefix=../install -- -DECBUILD_2_COMPAT=OFF ..
 make install
 
-export mylib_DIR=$HERE/mylib/install/share/mylib/cmake
+export mylib_DIR=$HERE/mylib/install/lib/cmake/mylib
 
 # ---------------- build the bundle --------------------
 cd $HERE
