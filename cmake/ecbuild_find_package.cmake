@@ -192,6 +192,13 @@ macro( ecbuild_find_package )
     set( _find_quiet QUIET )
   endif()
 
+  # cancel the effect of ecbuild_install_project setting <package>_FOUND in
+  # compat mode (otherwise this means the <package>-config.cmake file may not
+  # always be loaded, see ECBUILD-401)
+  if( ECBUILD_2_COMPAT )
+    unset( ${_PAR_NAME}_FOUND )
+  endif()
+
   # if a project with the same name has been defined, try to use it
 
   if( ${_PAR_NAME}_BINARY_DIR )
