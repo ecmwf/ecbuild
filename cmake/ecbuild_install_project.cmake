@@ -273,33 +273,15 @@ macro( ecbuild_install_project )
           ecbuild_debug( "No ${CONF_IMPORT_FILE} found in ${PROJECT_SOURCE_DIR}" )
         endif()
 
-        # Generate <project>-config.cmake for use from the build tree
-
-        set( _config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
-
-        # Include directories (may) reference source and build tree and the
-        # config file is marked as coming from a build tree
-        set( _is_build_dir_export ON )
-        configure_file( "${_template_config}" "${_config}" @ONLY )
+        # Generate the <project>-config.cmake
+        ecbuild_generate_project_config("${_template_config}")
 
         if(ECBUILD_2_COMPAT)
             # Generate <project>-config.cmake.tpls (if there are any TPLs)
-            ecbuild_compat_tplconfig("${_config}.tpls" TPLS ${${PNAME}_TPLS})
+            ecbuild_compat_tplconfig("${PROJECT_BINARY_DIR}/${LNAME}-config.cmake.tpls" TPLS ${${PNAME}_TPLS})
         endif()
 
-        # Generate <project>-config.cmake for use in the install tree
-
-        # Compute path to the include dir relative to the project's CMake dir
-        # where <project>-config.cmake is installed to
-        file( RELATIVE_PATH REL_INCLUDE_DIR "${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR}" "${${PROJECT_NAME}_FULL_INSTALL_INCLUDE_DIR}" )
-        set( CONF_INCLUDE_DIRS "\${${PROJECT_NAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
-
-        set( _is_build_dir_export OFF )
-        configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
-        install( FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
-
         # install the export
-
         if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
             install( EXPORT ${PROJECT_NAME}-targets
                      DESTINATION "${INSTALL_CMAKE_DIR}" )
