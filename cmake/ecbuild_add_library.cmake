@@ -517,7 +517,7 @@ function( ecbuild_add_library_impl )
 
       # export location of target to other projects -- must be exactly after setting the build location (see previous 3 commands)
 
-      export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
+      export( TARGETS ${_PAR_TARGET} APPEND FILE "${PROJECT_TARGETS_FILE}" )
 
     endif()
 

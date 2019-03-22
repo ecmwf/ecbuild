@@ -49,7 +49,11 @@ endif()
 
 ### insert definitions for IMPORTED targets
 if(NOT @PROJECT_NAME@_BINARY_DIR)
-  include("@PACKAGE_TARGETS_FILE@" OPTIONAL)
+  if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)
+    include(${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake)
+  elseif(EXISTS "@PACKAGE_TARGETS_FILE@")
+    include("@PACKAGE_TARGETS_FILE@")
+  endif()
 endif()
 
 ### publish this file as imported

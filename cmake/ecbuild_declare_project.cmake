@@ -196,6 +196,9 @@ macro( ecbuild_declare_project )
 
   # ecbuild_debug_var( CMAKE_INSTALL_RPATH )
 
+  set( PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-targets.cmake" )
+  file( REMOVE ${PROJECT_TARGETS_FILE} )
+
   # print project header
 
   ecbuild_info( "---------------------------------------------------------" )

@@ -267,7 +267,7 @@ function( ecbuild_add_executable )
 
       # export location of target to other projects -- must be exactly after setting the build location (see previous command)
 
-      export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
+      export( TARGETS ${_PAR_TARGET} APPEND FILE "${PROJECT_TARGETS_FILE}" )
 
     else()
       ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): not installing")

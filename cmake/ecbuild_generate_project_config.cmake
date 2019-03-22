@@ -60,7 +60,7 @@ function(ecbuild_generate_project_config template)
   file(RELATIVE_PATH BASE_DIR ${PROJECT_BINARY_DIR} ${CMAKE_BINARY_DIR})
   string(REGEX REPLACE "/$" "" BASE_DIR "${BASE_DIR}")
   set(CMAKE_DIR .)
-  set(PACKAGE_TARGETS_FILE ${TOP_PROJECT_TARGETS_FILE})
+  set(PACKAGE_TARGETS_FILE ${PROJECT_TARGETS_FILE})
   set(_is_build_dir_export ON)
 
   configure_package_config_file(${template} ${PROJECT_BINARY_DIR}/${_PAR_FILENAME}

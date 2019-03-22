@@ -106,11 +106,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     ecbuild_info( "---------------------------------------------------------" )
 
-    # clear the build dir exported targets file (only on the top project)
-
-    set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" )
-    file( REMOVE ${TOP_PROJECT_TARGETS_FILE} )
-
     # add backport support for versions up too 2.8.4
     if( ${CMAKE_VERSION} VERSION_LESS "2.8" )
     set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/2.8" ${CMAKE_MODULE_PATH} )
