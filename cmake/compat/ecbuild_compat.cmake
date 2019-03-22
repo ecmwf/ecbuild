@@ -53,4 +53,6 @@ if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
   include(ecbuild_add_cxx11_flags)
   include(ecbuild_add_extra_search_paths)
   include(ecbuild_list_extra_search_paths)
+
+  include(ecbuild_check_cxx11)
 endif()

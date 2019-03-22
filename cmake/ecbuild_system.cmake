@@ -187,7 +187,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_try_run )
     include( ecbuild_check_c_source_return )
     include( ecbuild_check_cxx_source_return )
-    include( ecbuild_check_cxx11 )
     include( ecbuild_check_fortran_source_return )
 
     include( ecbuild_requires_macro_version )
