@@ -57,10 +57,12 @@ function(ecbuild_generate_project_config template)
     set(_PAR_FILENAME "${LNAME}-config.cmake")
   endif()
 
+  set(PACKAGE_TARGETS_DIR_REL "\${${PROJECT_NAME}_CMAKE_DIR}")
+
   file(RELATIVE_PATH BASE_DIR ${PROJECT_BINARY_DIR} ${CMAKE_BINARY_DIR})
   string(REGEX REPLACE "/$" "" BASE_DIR "${BASE_DIR}")
   set(CMAKE_DIR .)
-  set(PACKAGE_TARGETS_FILE ${PROJECT_TARGETS_FILE})
+  set(PACKAGE_TARGETS_DIRS ${PACKAGE_TARGETS_DIR_REL} ${PROJECT_BINARY_DIR})
   set(_is_build_dir_export ON)
 
   configure_package_config_file(${template} ${PROJECT_BINARY_DIR}/${_PAR_FILENAME}
@@ -71,7 +73,7 @@ function(ecbuild_generate_project_config template)
 
   set(BASE_DIR .)
   set(CMAKE_DIR ${INSTALL_CMAKE_DIR})
-  set(PACKAGE_TARGETS_FILE "\${${PROJECT_NAME}_CMAKE_DIR}/${PROJECT_NAME}-targets.cmake")
+  set(PACKAGE_TARGETS_DIRS ${PACKAGE_TARGETS_DIR_REL})
   set(_is_build_dir_export OFF)
 
   configure_package_config_file(${template}
