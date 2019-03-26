@@ -236,7 +236,7 @@ function( ecbuild_add_test )
 
   # boost unit test linking to unit_test lib ?
 
-  if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
+  if( _PAR_BOOST AND HAVE_TESTS AND _${_PAR_TARGET}_condition )
 
     if( HAVE_BOOST_UNIT_TEST )
       set( _PAR_LABELS boost ${_PAR_LABELS} )
