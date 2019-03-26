@@ -22,8 +22,10 @@ if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
 
   function(ecbuild_mark_compat OLD_VAR NEW_VAR)
     if(ECBUILD_2_COMPAT_DEPRECATE)
-      set(ECBUILD_${OLD_VAR}_REPLACEMENT "${NEW_VAR}" CACHE INTERNAL "${OLD_VAR} is deprecated and was replaced by ${NEW_VAR}" FORCE)
-      variable_watch(${OLD_VAR} __ecbuild_deprecated_watcher)
+      if(NOT OLD_VAR STREQUAL NEW_VAR)
+        set(ECBUILD_${OLD_VAR}_REPLACEMENT "${NEW_VAR}" CACHE INTERNAL "${OLD_VAR} is deprecated and was replaced by ${NEW_VAR}" FORCE)
+        variable_watch(${OLD_VAR} __ecbuild_deprecated_watcher)
+      endif()
     endif()
   endfunction()
 
