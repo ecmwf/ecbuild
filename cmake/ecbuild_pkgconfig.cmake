@@ -467,7 +467,7 @@ function( ecbuild_pkgconfig )
     set( PKGCONFIG_URL ${_PAR_URL} )
   endif()
 
-  set( PKGCONFIG_VERSION ${${PNAME}_VERSION} )
+  set( PKGCONFIG_VERSION ${${PROJECT_NAME}_VERSION} )
   set( PKGCONFIG_GIT_TAG ${${PROJECT_NAME}_GIT_SHA1} )  # For now set it to a commit id
 
   if( _PAR_VARIABLES )
