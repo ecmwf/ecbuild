@@ -182,7 +182,7 @@ macro( ecbuild_add_option )
 
       set( _failed_to_find_packages )  # clear variable
       if( ECBUILD_2_COMPAT )
-        if( ECBUILD_2_COMPAT_DEPRECATE AND "${_p_REQUIRED_PACKAGES}" )
+        if( ECBUILD_2_COMPAT_DEPRECATE AND _p_REQUIRED_PACKAGES )
           ecbuild_deprecate("Keyword REQUIRED_PACKAGES of ecbuild_add_option is deprecated, "
             "please include the package and use CONDITION \${package}_FOUND instead")
         endif()
