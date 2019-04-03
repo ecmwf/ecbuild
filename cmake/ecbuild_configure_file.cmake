@@ -18,5 +18,8 @@ function(ecbuild_configure_file _PAR_TEMPLATE _PAR_FILENAME)
      ecbuild_critical("INSTALL_INTERFACE can't be used in a configure file")
   endif()
 
+  if(NOT IS_ABSOLUTE "${_PAR_FILENAME}")
+    set(_PAR_FILENAME "${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}")
+  endif()
   file(GENERATE OUTPUT "${_PAR_FILENAME}" INPUT ${tmp_file})
 endfunction()
