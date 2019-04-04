@@ -1,7 +1,7 @@
+
 file(READ @CMAKE_CURRENT_BINARY_DIR@/@_PAR_FILENAME@.tmp _content)
 
-# convert to gcc linker command
-# replace -llibfoo.so with -lfoo
-string(REGEX REPLACE "\\-l(lib)?([^\\. \n]*)\\.(so|dylib|a|dll\\.a|lib)" "-l\\2" _content "${_content}")
+string(REGEX REPLACE "@CMAKE_BINARY_DIR@/lib" "\${libdir}" _content "${_content}")
+string(REGEX REPLACE "@CMAKE_INSTALL_PREFIX@/lib" "\${libdir}" _content "${_content}")
 
-file(WRITE @CMAKE_BINARY_DIR@/@_PAR_FILENAME@ "${_content}")
+file(WRITE @PKGCONFIG_DIR@/@_PAR_FILENAME@ "${_content}")
