@@ -42,15 +42,17 @@ if( NOT PROJ4_PATH )
 
 endif()
 
+set( _proj4_lib_names proj proj_6_0 )
+
 if( PROJ4_PATH )
 
-    find_path(PROJ4_INCLUDE_DIR NAMES proj_api.h    PATHS ${PROJ4_PATH} ${PROJ4_PATH}/include PATH_SUFFIXES proj4 NO_DEFAULT_PATH )
-    find_library(PROJ4_LIBRARY  NAMES proj proj_6_0 PATHS ${PROJ4_PATH} ${PROJ4_PATH}/lib     PATH_SUFFIXES proj4 NO_DEFAULT_PATH )
+    find_path(PROJ4_INCLUDE_DIR NAMES proj_api.h          PATHS ${PROJ4_PATH} ${PROJ4_PATH}/include PATH_SUFFIXES proj4 NO_DEFAULT_PATH )
+    find_library(PROJ4_LIBRARY  NAMES ${_proj4_lib_names} PATHS ${PROJ4_PATH} ${PROJ4_PATH}/lib     PATH_SUFFIXES proj4 NO_DEFAULT_PATH )
 
 endif()
 
-find_path(PROJ4_INCLUDE_DIR NAMES proj_api.h    PATHS PATH_SUFFIXES proj4 )
-find_library( PROJ4_LIBRARY NAMES proj proj_6_0 PATHS PATH_SUFFIXES proj4 )
+find_path(PROJ4_INCLUDE_DIR NAMES proj_api.h          PATHS PATH_SUFFIXES proj4 )
+find_library( PROJ4_LIBRARY NAMES ${_proj4_lib_names} PATHS PATH_SUFFIXES proj4 )
 
 
 # handle the QUIETLY and REQUIRED arguments and set GRIBAPI_FOUND
