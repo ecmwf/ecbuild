@@ -16,6 +16,7 @@
 #
 #   ecbuild_use_package( PROJECT <name>
 #                        [ VERSION <version> [ EXACT ] ]
+#                        [ COMPONENTS <component1> [ <component2> ... ] ]
 #                        [ URL <url> ]
 #                        [ DESCRIPTION <description> ]
 #                        [ TYPE <type> ]
@@ -32,6 +33,9 @@
 #
 # VERSION : optional
 #   minimum required package version
+#
+# COMPONENTS : optional
+#   list of package components to find (behaviour depends on the package)
 #
 # EXACT : optional, requires VERSION
 #   require the exact version rather than a minimum version
@@ -102,7 +106,7 @@ macro( ecbuild_use_package )
 
   set( options            REQUIRED QUIET EXACT )
   set( single_value_args  PROJECT VERSION URL DESCRIPTION TYPE PURPOSE FAILURE_MSG )
-  set( multi_value_args )
+  set( multi_value_args   COMPONENTS )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -169,7 +173,7 @@ macro( ecbuild_use_package )
 
   # check if was already added as subproject ...
 
-  set( _do_version_check 0 )
+  set( _do_compat_check 0 )
   set( _source_description "" )
 
   list( FIND ECBUILD_PROJECTS ${_p_PROJECT} _ecbuild_project_${_p_PROJECT} )
@@ -196,8 +200,8 @@ macro( ecbuild_use_package )
 
   if( DEFINED ${_p_PROJECT}_subproj_dir_ )
 
-    # check version is acceptable
-    set( _do_version_check 1 )
+    # check version and components are acceptable
+    set( _do_compat_check 1 )
 
     # Case 1a) project was already found
 
@@ -233,8 +237,8 @@ macro( ecbuild_use_package )
 
     ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 2) project does NOT exist as subproject, but is FOUND")
 
-    # check version is acceptable
-    set( _do_version_check 1 )
+    # check version and components are acceptable
+    set( _do_compat_check 1 )
     set( _source_description "previously found package ${_p_PROJECT} (binaries)" )
 
   endif()
@@ -245,12 +249,12 @@ macro( ecbuild_use_package )
   # ecbuild_debug_var( _p_VERSION )
   # ecbuild_debug_var( ${_p_PROJECT}_VERSION )
   # ecbuild_debug_var( ${_p_PROJECT}_VERSION )
-  # ecbuild_debug_var( _do_version_check )
+  # ecbuild_debug_var( _do_compat_check )
   # ecbuild_debug_var( _source_description )
   # ecbuild_debug_var( ${_p_PROJECT}_FOUND )
   # ecbuild_debug_var( ${_p_PROJECT}_previous_subproj_ )
 
-  if( _p_VERSION AND _do_version_check )
+  if( _p_VERSION AND _do_compat_check )
     if( _p_EXACT )
       if( NOT ${_p_PROJECT}_VERSION VERSION_EQUAL _p_VERSION )
         ecbuild_critical( "${PROJECT_NAME} requires (exactly) ${_p_PROJECT} = ${_p_VERSION} -- detected as ${_source_description} ${${_p_PROJECT}_VERSION}" )
@@ -262,6 +266,14 @@ macro( ecbuild_use_package )
         ecbuild_critical( "${PROJECT_NAME} requires ${_p_PROJECT} >= ${_p_VERSION} -- detected only ${_source_description} ${${_p_PROJECT}_VERSION}" )
       endif()
     endif()
+  endif()
+
+  if( _p_COMPONENTS AND _do_compat_check )
+    foreach( comp ${_p_COMPONENTS} )
+      if( NOT ${_p_PROJECT}_${comp}_FOUND )
+        ecbuild_critical( "${PROJECT_NAME} requires component ${comp} of ${_p_PROJECT} -- not found" )
+      endif()
+    endforeach()
   endif()
 
   # Case 3) is NOT FOUND so far, NOT as sub-project (now or before), and NOT as binary neither
@@ -283,6 +295,9 @@ macro( ecbuild_use_package )
     set( _opts )
     if( _p_VERSION )
       list( APPEND _opts VERSION ${_p_VERSION} )
+    endif()
+    if( _p_COMPONENTS )
+      list( APPEND _opts COMPONENTS ${_p_COMPONENTS} )
     endif()
     if( _p_EXACT )
       list( APPEND _opts EXACT )
