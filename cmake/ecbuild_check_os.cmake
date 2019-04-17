@@ -424,10 +424,15 @@ if( WIN32 )
 
   set( EC_OS_NAME "windows" )
 
+  find_program( BASH NAMES bash )
+
+  if( NOT BASH )
+      ecbuild_critical("Bash not found")
+  endif()
+
   ecbuild_warn( "CMake doesn't support symlinks on Windows. "
                 "Replacing all symlinks with copies." )
-  set( BASH_EXE "$ENV{CONDA_PREFIX}/Library/usr/bin/bash.exe" )
-  execute_process( COMMAND ${BASH_EXE} -c "${ECBUILD_MACROS_DIR}/ecbuild_windows_replace_symlinks.sh"
+  execute_process( COMMAND ${BASH} -c "${ECBUILD_MACROS_DIR}/ecbuild_windows_replace_symlinks.sh"
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    RESULT_VARIABLE CMD_RESULT
                    OUTPUT_VARIABLE CMD_OUTPUT
