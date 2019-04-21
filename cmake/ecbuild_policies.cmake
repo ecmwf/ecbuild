@@ -71,3 +71,8 @@ endif()
 if( POLICY CMP0068 )
     cmake_policy( SET CMP0068 OLD )
 endif()
+
+# find packages use <package>_ROOT by default
+if( POLICY CMP0074 )
+    cmake_policy( SET CMP0074 NEW )
+endif()
