@@ -424,7 +424,8 @@ if( WIN32 )
 
   set( EC_OS_NAME "windows" )
 
-  find_program( BASH_EXE NAMES bash )
+  find_program( BASH_EXE NAMES bash
+                         DOC "Used under Windows for fixing symlinks and running unit tests" )
 
   if( NOT BASH_EXE )
       ecbuild_critical("Could not find program 'bash'. Specify the location with -DBASH_EXE=C:/...")
