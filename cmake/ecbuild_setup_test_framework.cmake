@@ -10,7 +10,7 @@ ecbuild_add_option( FEATURE TESTS
                     DEFAULT ON
                     DESCRIPTION "Enable the unit tests" )
 
-if( ENABLE_TESTS AND CMAKE_CXX_COMPILER_LOADED )
+if( HAVE_TESTS AND CMAKE_CXX_COMPILER_LOADED )
 
   # Try to find compiled boost
 
@@ -48,7 +48,7 @@ if( ENABLE_TESTS AND CMAKE_CXX_COMPILER_LOADED )
 
 endif()
 
-if( ENABLE_TESTS )
+if( HAVE_TESTS )
 
   # CTest has built-in support for running with memcheck
   # (https://cmake.org/cmake/help/latest/manual/ctest.1.html#ctest-memcheck-step)

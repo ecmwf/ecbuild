@@ -11,11 +11,11 @@
 
 if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
 
-	find_package( Realtime )
+    find_package( Realtime )
 
-	if( REALTIME_FOUND ) # check that aio needs realtime
-		set( AIO_LIBRARIES ${RT_LIB} )
-	endif()
+    if( REALTIME_FOUND ) # check that aio needs realtime
+        set( AIO_LIBRARIES ${RT_LIB} )
+    endif()
 
 endif()
 

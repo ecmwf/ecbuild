@@ -155,7 +155,7 @@
 #
 ##############################################################################
 
-macro( ecbuild_add_test )
+function( ecbuild_add_test )
 
   set( options           BOOST )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI OMP WORKING_DIRECTORY )
@@ -232,21 +232,11 @@ macro( ecbuild_add_test )
 
   ### conditional build
 
-  if( DEFINED _PAR_CONDITION )
-    set(_target_condition_file "${_TEST_DIR}/set_${_PAR_TARGET}_condition.cmake")
-    file( WRITE  ${_target_condition_file} "  if( ")
-    foreach( term ${_PAR_CONDITION} )
-      file( APPEND ${_target_condition_file} " ${term}")
-    endforeach()
-    file( APPEND ${_target_condition_file} " )\n    set(_${_PAR_TARGET}_condition TRUE)\n  else()\n    set(_${_PAR_TARGET}_condition FALSE)\n  endif()\n")
-    include( ${_target_condition_file} )
-  else()
-    set( _${_PAR_TARGET}_condition TRUE )
-  endif()
+  ecbuild_evaluate_dynamic_condition( _PAR_CONDITION _${_PAR_TARGET}_condition )
 
   # boost unit test linking to unit_test lib ?
 
-  if( _PAR_BOOST AND ENABLE_TESTS AND _${_PAR_TARGET}_condition )
+  if( _PAR_BOOST AND HAVE_TESTS AND _${_PAR_TARGET}_condition )
 
     if( HAVE_BOOST_UNIT_TEST )
       set( _PAR_LABELS boost ${_PAR_LABELS} )
@@ -265,7 +255,7 @@ macro( ecbuild_add_test )
 
   ### enable the tests
 
-  if( ENABLE_TESTS AND _${_PAR_TARGET}_condition AND _PAR_ENABLED )
+  if( HAVE_TESTS AND _${_PAR_TARGET}_condition AND _PAR_ENABLED )
 
     if( _PAR_TYPE MATCHES "PYTHON" )
       if( PYTHONINTERP_FOUND )
@@ -304,27 +294,8 @@ macro( ecbuild_add_test )
 
     if( DEFINED _PAR_SOURCES )
 
-      # add include dirs if defined
-      if( DEFINED _PAR_INCLUDES )
-        list(REMOVE_DUPLICATES _PAR_INCLUDES )
-        foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
-          if( path )
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): add ${path} to include_directories")
-            include_directories( ${path} )
-          else()
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
-          endif()
-        endforeach()
-      endif()
-
       # add persistent layer files
-      if( DEFINED _PAR_PERSISTENT )
-        if( DEFINED PERSISTENT_NAMESPACE )
-          ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE ${PERSISTENT_NAMESPACE} )
-        else()
-          ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
-        endif()
-      endif()
+      ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE "${PERSISTENT_NAMESPACE}" )
 
       # insert already compiled objects (from OBJECT libraries)
       unset( _all_objects )
@@ -334,6 +305,18 @@ macro( ecbuild_add_test )
 
       add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
 
+      # add include dirs if defined
+      if( DEFINED _PAR_INCLUDES )
+        ecbuild_filter_list(INCLUDES LIST ${_PAR_INCLUDES} LIST_INCLUDE path LIST_EXCLUDE skipped_path)
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): add [${path}] to include_directories")
+        if( ECBUILD_2_COMPAT )
+          include_directories( ${path} )
+        else()
+          target_include_directories(${_PAR_TARGET} PRIVATE ${path} )
+        endif()
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): [${skipped_path}] not found - not adding to include_directories")
+      endif()
+
       # add extra dependencies
       if( DEFINED _PAR_DEPENDS)
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): add dependency on ${_PAR_DEPENDS}")
@@ -342,17 +325,12 @@ macro( ecbuild_add_test )
 
       # add the link libraries
       if( DEFINED _PAR_LIBS )
-        list(REMOVE_DUPLICATES _PAR_LIBS )
         list(REMOVE_ITEM _PAR_LIBS debug)
         list(REMOVE_ITEM _PAR_LIBS optimized)
-        foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
-          if( lib )
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): linking with ${lib}")
-            target_link_libraries( ${_PAR_TARGET} ${lib} )
-          else()
-            ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): ${lib} not found - not linking")
-          endif()
-        endforeach()
+        ecbuild_filter_list(LIBS LIST ${_PAR_LIBS} LIST_INCLUDE lib LIST_EXCLUDE skipped_lib)
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): linking with [${lib}]")
+        target_link_libraries( ${_PAR_TARGET} ${lib} )
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): [${skipped_lib}] not found - not linking")
       endif()
 
       # add test libraries
@@ -372,19 +350,14 @@ macro( ecbuild_add_test )
       endif()
 
       # modify definitions to compilation ( -D... )
-      get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
+      if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
+        target_compile_definitions(${_PAR_TARGET} PRIVATE BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY)
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): adding -DBOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY")
+      endif()
 
       if( DEFINED _PAR_DEFINITIONS )
-        list( APPEND _target_defs ${_PAR_DEFINITIONS} )
-      endif()
-
-      if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-        list( APPEND _target_defs BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-      endif()
-
-      if( _target_defs )
-        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): using definitions ${_target_defs}")
-        set_target_properties( ${_PAR_TARGET} PROPERTIES COMPILE_DEFINITIONS "${_target_defs}" )
+        target_compile_definitions(${_PAR_TARGET} PRIVATE ${_PAR_DEFINITIONS})
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): adding definitions ${_PAR_DEFINITIONS}")
       endif()
 
       # set build location to local build dir
@@ -520,4 +493,4 @@ macro( ecbuild_add_test )
   # finally mark project files
   ecbuild_declare_project_files( ${_PAR_SOURCES} )
 
-endmacro( ecbuild_add_test )
+endfunction( ecbuild_add_test )

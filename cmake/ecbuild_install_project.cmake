@@ -33,12 +33,11 @@
 # the project with cpack and exports the configuration and targets for other
 # projects to use.
 #
-# Unless ECBUILD_SKIP_<PNAME>_EXPORT is set, the following files are generated:
+# Unless ECBUILD_SKIP_<PROJECT_NAME>_EXPORT is set, the following files are generated:
 #
 # :<project>-config.cmake:         default project configuration
 # :<project>-config-version.cmake: project version number
 # :<project>-import.cmake:         extra project configuration (optional)
-# :<project>-config.cmake.tpls:    3rd party project configurations
 # :<project>-targets.cmake:        exported targets
 #
 # For ``<project>-import.cmake`` to be exported to build and install tree,
@@ -54,19 +53,10 @@
 # If the project is added as a subdirectory, the following CMake variables
 # are set in the parent scope:
 #
-# :<PROJECT>_FOUND:            set to ``TRUE``
-# :<project>_FOUND:            set to ``TRUE``
-# :<PROJECT>_VERSION:          version string
-# :<project>_VERSION:          version string
-# :<PROJECT>_INCLUDE_DIRS:     list of include directories
-# :<PROJECT>_LIBRARIES:        list of libraries
-# :<PROJECT>_DEFINITIONS:      list of compiler definitions
-# :<PROJECT>_TPLS:             list of 3rd party dependencies
-# :<PROJECT>_TPL_LIBRARIES:    libraries of 3rd party dependencies
-# :<PROJECT>_TPL_DEFINITIONS:  compiler definitions of 3rd party dependencies
-# :<PROJECT>_TPL_INCLUDE_DIRS: include directories of 3rd party dependencies
-# :<PROJECT>_FEATURES:         list of enabled features
-# :<PROJECT>_HAVE_<FEATURE>:   set to 1 for each enabled features
+# :<PROJECT_NAME>_FOUND:            set to ``TRUE``
+# :<PROJECT_NAME>_VERSION:          version string
+# :<PROJECT_NAME>_FEATURES:         list of enabled features
+# :<PROJECT_NAME>_HAVE_<FEATURE>:   set to 1 for each enabled features
 #
 ##############################################################################
 
@@ -97,17 +87,6 @@ macro( ecbuild_install_project )
       ecbuild_critical("The call to ecbuild_install_project() doesn't specify the NAME.")
     endif()
 
-    ### EXTRA TARGETS #####################################################
-
-    # added here to avoid adding another macro call at the end of each project,
-
-    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
-
-        ecbuild_define_libs_and_execs_targets()
-        ecbuild_define_links_target()
-
-    endif()
-
     ### PACKAGING ########################################################
 
     set( PNAME ${PROJECT_NAME_CAPS} )
@@ -124,7 +103,7 @@ macro( ecbuild_install_project )
     # name, version, etc ...
 
     ecbuild_set_if_not_defined(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
-    ecbuild_set_if_not_defined(CPACK_PACKAGE_VERSION   "${${PNAME}_VERSION_STR}")
+    ecbuild_set_if_not_defined(CPACK_PACKAGE_VERSION   "${${PROJECT_NAME}_VERSION}")
     # Convert "/" to "-" for the case where the version string contains a "/"
     string( REPLACE "/" "-" CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION} )
 
@@ -218,110 +197,56 @@ macro( ecbuild_install_project )
 
     ### EXPORTS ########################################################
 
-    ecbuild_enabled_features( ${PROJECT_NAME_CAPS}_FEATURES )
-    foreach( _f ${${PNAME}_FEATURES} )
-        set( ${PNAME}_HAVE_${_f} 1 )
-    endforeach()
-
-    ecbuild_info( "${PROJECT_NAME_CAPS}_TPLS: ${${PROJECT_NAME_CAPS}_TPLS}" )
-
-    foreach( _tpl ${${PNAME}_TPLS} )
-        string( TOUPPER ${_tpl} _TPL )
-
-        if( ${_tpl}_INCLUDE_DIRS )
-            list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIRS} )
-        elseif( ${_tpl}_INCLUDE_DIR )
-            list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_tpl}_INCLUDE_DIR} )
-        elseif( ${_TPL}_INCLUDE_DIRS )
-            list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_TPL}_INCLUDE_DIRS} )
-        elseif( ${_TPL}_INCLUDE_DIR )
-            list( APPEND ${PNAME}_TPL_INCLUDE_DIRS ${${_TPL}_INCLUDE_DIR} )
-        endif()
-
-        if( ${_tpl}_LIBRARIES )
-            list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_tpl}_LIBRARIES} )
-        elseif( ${_tpl}_LIBRARY )
-            list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_tpl}_LIBRARY} )
-        elseif( ${_TPL}_LIBRARIES )
-            list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_TPL}_LIBRARIES} )
-        elseif( ${_TPL}_LIBRARY )
-            list( APPEND ${PNAME}_TPL_LIBRARIES   ${${_TPL}_LIBRARY} )
-        endif()
-
-        if( ${_tpl}_DEFINITIONS )
-            list( APPEND ${PNAME}_TPL_DEFINITIONS ${${_tpl}_DEFINITIONS} )
-        elseif( ${_TPL}_DEFINITIONS )
-            list( APPEND ${PNAME}_TPL_DEFINITIONS ${${_TPL}_DEFINITIONS} )
+    ecbuild_enabled_features( ${PROJECT_NAME}_FEATURES )
+    foreach( _f ${${PROJECT_NAME}_FEATURES} )
+        set( ${PROJECT_NAME}_HAVE_${_f} True )
+        if(ECBUILD_2_COMPAT AND NOT PROJECT_NAME_CAPS STREQUAL PROJECT_NAME)
+            ecbuild_declare_compat( ${PROJECT_NAME_CAPS}_HAVE_${_f} ${PROJECT_NAME}_HAVE_${_f} )
         endif()
     endforeach()
-
-    # Deduplicate TPL includes, libs and definitions
-    # The same TPL may indirectly be pulled in multiple times!
-    if( ${PNAME}_TPL_INCLUDE_DIRS )
-      list( REMOVE_DUPLICATES ${PNAME}_TPL_INCLUDE_DIRS )
-    endif()
-    if( ${PNAME}_TPL_LIBRARIES )
-      list( REMOVE_DUPLICATES ${PNAME}_TPL_LIBRARIES )
-    endif()
-    if( ${PNAME}_TPL_DEFINITIONS )
-      list( REMOVE_DUPLICATES ${PNAME}_TPL_DEFINITIONS )
-    endif()
 
     # Generate the project .cmake config files
     # All variables here must be (sub)project specific in order to work within bundles
-    if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
+    if ( ECBUILD_2_COMPAT AND DEFINED ECBUILD_SKIP_${PNAME}_EXPORT )
+        if(ECBUILD_2_COMPAT_DEPRECATE)
+            ecbuild_deprecate("ECBUILD_SKIP_${PNAME}_EXPORT is deprecated, please use ECBUILD_SKIP_${PROJECT_NAME}_EXPORT instead")
+        endif()
+        set(ECBUILD_SKIP_${PROJECT_NAME}_EXPORT ${ECBUILD_SKIP_${PNAME}_EXPORT})
+    endif()
+    if ( NOT ECBUILD_SKIP_${PROJECT_NAME}_EXPORT )
 
         set( _template_config "${ECBUILD_MACROS_DIR}/project-config.cmake.in" )
         if( EXISTS ${PROJECT_SOURCE_DIR}/${LNAME}-config.cmake.in )
             set( _template_config "${PROJECT_SOURCE_DIR}/${LNAME}-config.cmake.in" )
         endif()
 
-        set( _template_config_version "${ECBUILD_MACROS_DIR}/project-config-version.cmake.in" )
-        if( EXISTS ${PROJECT_SOURCE_DIR}/${LNAME}-config-version.cmake.in )
-            set( _template_config_version "${PROJECT_SOURCE_DIR}/${LNAME}-config-version.cmake.in" )
-        endif()
-
         # project-config-version.cmake -- format ([0-9]+).([0-9]+).([0-9]+)
 
-        set( PACKAGE_VERSION        "${${PNAME}_VERSION}" )
-        set( PACKAGE_GIT_SHA1       "${${PNAME}_GIT_SHA1}" )
-        set( PACKAGE_GIT_SHA1_SHORT "${${PNAME}_GIT_SHA1_SHORT}" )
+        set( PACKAGE_VERSION        "${${PROJECT_NAME}_VERSION}" )
+        set( PACKAGE_GIT_SHA1       "${${PROJECT_NAME}_GIT_SHA1}" )
+        set( PACKAGE_GIT_SHA1_SHORT "${${PROJECT_NAME}_GIT_SHA1_SHORT}" )
 
-        configure_file( "${_template_config_version}" "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" @ONLY )
+        include(CMakePackageConfigHelpers)
+        write_basic_package_version_file("${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake"
+            VERSION ${PACKAGE_VERSION} COMPATIBILITY AnyNewerVersion)
 
         install( FILES "${PROJECT_BINARY_DIR}/${LNAME}-config-version.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
 
         # prepare imutable variables (don't depend on install path)
 
-        if( ${PNAME}_FEATURES )
-          set( CONF_FEATURES ${${PNAME}_FEATURES} )
+        if( ${PROJECT_NAME}_FEATURES )
+          set( CONF_FEATURES ${${PROJECT_NAME}_FEATURES} )
         endif()
 
-        set( CONF_LIBRARIES ${${PROJECT_NAME}_ALL_LIBS} )
-        if( ${PNAME}_LIBRARIES )
-            set( CONF_LIBRARIES ${${PNAME}_LIBRARIES} )
-        endif()
+        if(ECBUILD_2_COMPAT)
+            set( CONF_LIBRARIES ${${PROJECT_NAME}_ALL_LIBS} )
+            if( ${PNAME}_LIBRARIES )
+                set( CONF_LIBRARIES ${${PNAME}_LIBRARIES} )
+            endif()
 
-        set( CONF_DEFINITIONS "" )
-        if( ${PNAME}_DEFINITIONS )
-           set( CONF_DEFINITIONS ${${PNAME}_DEFINITIONS} )
-        endif()
+            set( CONF_TPLS ${${PNAME}_TPLS} )
 
-        set( CONF_TPL_LIBRARIES   "" )
-        if( ${PNAME}_TPL_LIBRARIES )
-           set( CONF_TPL_LIBRARIES ${${PNAME}_TPL_LIBRARIES} )
-        endif()
-
-        set( CONF_TPLS ${${PNAME}_TPLS} )
-
-        set( CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}" )
-        if( ${PNAME}_INCLUDE_DIRS )
-            set( CONF_INCLUDE_DIRS ${${PNAME}_INCLUDE_DIRS} )
-        endif()
-
-        set( CONF_TPL_INCLUDE_DIRS "" )
-        if( ${PNAME}_TPL_INCLUDE_DIRS )
-            set( CONF_TPL_INCLUDE_DIRS ${${PNAME}_TPL_INCLUDE_DIRS} )
+            set( CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}" )
         endif()
 
         # Generate <project>-import.cmake (if it exists)
@@ -348,74 +273,21 @@ macro( ecbuild_install_project )
           ecbuild_debug( "No ${CONF_IMPORT_FILE} found in ${PROJECT_SOURCE_DIR}" )
         endif()
 
-        # Generate <project>-config.cmake for use from the build tree
+        # Generate the <project>-config.cmake
+        ecbuild_generate_project_config("${_template_config}")
 
-        set( _lname_config "${PROJECT_BINARY_DIR}/${LNAME}-config.cmake")
-
-        # Include directories (may) reference source and build tree and the
-        # config file is marked as coming from a build tree
-        set( _is_build_dir_export ON )
-        configure_file( "${_template_config}" "${_lname_config}" @ONLY )
-
-        # Generate <project>-config.cmake.tpls (if there are any TPLs)
-
-        file( REMOVE ${_lname_config}.tpls.in )
-
-        foreach( _tpl ${${PNAME}_TPLS} )
-
-            string( TOUPPER ${_tpl} TPL )
-
-            if( ${TPL}_IMPORT_FILE ) # ecBuild packages should trigger this if they export themselves
-
-              ecbuild_debug( "Adding TPL ${TPL} import file to ${_lname_config}.tpls.in" )
-                set( __import_file "${${TPL}_IMPORT_FILE}" )
-                file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_IMPORT_FILE )\n" )
-                file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
-                file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
-
-            elseif( ${TPL}_CONFIG ) # cmake built packages (e.g. CGAL) may have exported their targets
-
-              ecbuild_debug( "Adding TPL ${TPL} import file to ${_lname_config}.tpls.in" )
-                set( __import_file "${${TPL}_CONFIG}" )
-                file( APPEND "${_lname_config}.tpls.in" "if( NOT ${TPL}_CONFIG )\n" )
-                file( APPEND "${_lname_config}.tpls.in" "    include( \"${__import_file}\" OPTIONAL )\n" )
-                file( APPEND "${_lname_config}.tpls.in" "    set( ${TPL}_CONFIG \"${__import_file}\" )\n" )
-                file( APPEND "${_lname_config}.tpls.in" "endif()\n" )
-
-            elseif( ${TPL}_FULL_INSTALL_CMAKE_DIR )
-
-              ecbuild_debug( "Adding TPL ${TPL} import file to ${_lname_config}.tpls.in" )
-                set( __import_file "${${TPL}_FULL_INSTALL_CMAKE_DIR}/${_tpl}-config.cmake" )
-                file( APPEND "${_lname_config}.tpls.in" "include( \"${__import_file}\" OPTIONAL )\n" )
-
-            endif()
-
-        endforeach()
-
-        if( EXISTS "${_lname_config}.tpls.in" )
-            configure_file( "${_lname_config}.tpls.in" "${_lname_config}.tpls" @ONLY )
-            install( FILES "${_lname_config}.tpls" DESTINATION "${INSTALL_CMAKE_DIR}" )
+        if(ECBUILD_2_COMPAT)
+            # Generate <project>-config.cmake.tpls (if there are any TPLs)
+            ecbuild_compat_tplconfig("${PROJECT_BINARY_DIR}/${LNAME}-config.cmake.tpls" TPLS ${${PNAME}_TPLS})
         endif()
 
-        # Generate <project>-config.cmake for use in the install tree
-
-        # Compute path to the include dir relative to the project's CMake dir
-        # where <project>-config.cmake is installed to
-        file( RELATIVE_PATH REL_INCLUDE_DIR "${${PNAME}_FULL_INSTALL_CMAKE_DIR}" "${${PNAME}_FULL_INSTALL_INCLUDE_DIR}" )
-        set( CONF_INCLUDE_DIRS "\${${PNAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
-
-        set( _is_build_dir_export OFF )
-        configure_file( "${_template_config}" "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" @ONLY )
-        install( FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${LNAME}-config.cmake" DESTINATION "${INSTALL_CMAKE_DIR}" )
-
         # install the export
-
         if( ${PROJECT_NAME}_ALL_EXES OR ${PROJECT_NAME}_ALL_LIBS )
             install( EXPORT ${PROJECT_NAME}-targets
                      DESTINATION "${INSTALL_CMAKE_DIR}" )
         endif()
 
-    endif()  # if ( NOT ECBUILD_SKIP_${PNAME}_EXPORT )
+    endif()  # if ( NOT ECBUILD_SKIP_${PROJECT_NAME}_EXPORT )
 
     # exports the package for use from the build-tree but only in DEVELOPER_MODE
     # inserts <package> into the CMake user package registry
@@ -428,28 +300,36 @@ macro( ecbuild_install_project )
 
     else()
 
-    # export variables for upper projects
+        if(ECBUILD_2_COMPAT)
+            # export variables for upper projects
+            set( ${PROJECT_NAME}_FOUND TRUE )
 
-        set( ${PNAME}_FULL_INSTALL_CMAKE_DIR ${${PNAME}_FULL_INSTALL_CMAKE_DIR} PARENT_SCOPE )
+            set( ${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR ${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR} PARENT_SCOPE )
 
-        set( ${PNAME}_FOUND             TRUE                          PARENT_SCOPE )
-        set( ${PROJECT_NAME}_FOUND      TRUE                          PARENT_SCOPE )
-        set( ${PNAME}_VERSION           ${${PNAME}_VERSION}           PARENT_SCOPE )
-        set( ${PNAME}_GIT_SHA1          ${${PNAME}_GIT_SHA1}          PARENT_SCOPE )
-        set( ${PNAME}_GIT_SHA1_SHORT    ${${PNAME}_GIT_SHA1_SHORT}    PARENT_SCOPE )
-        set( ${PROJECT_NAME}_VERSION    ${${PNAME}_VERSION}           PARENT_SCOPE )
-        set( ${PNAME}_INCLUDE_DIRS      ${${PNAME}_INCLUDE_DIRS}      PARENT_SCOPE )
-        set( ${PNAME}_LIBRARIES         ${${PNAME}_LIBRARIES}         PARENT_SCOPE )
-        set( ${PNAME}_DEFINITIONS       ${${PNAME}_DEFINITIONS}       PARENT_SCOPE )
-        set( ${PNAME}_PACKAGES          ${${PNAME}_PACKAGES}          PARENT_SCOPE )
-        set( ${PNAME}_TPLS              ${${PNAME}_TPLS}              PARENT_SCOPE )
-        set( ${PNAME}_TPL_LIBRARIES     ${${PNAME}_TPL_LIBRARIES}     PARENT_SCOPE )
-        set( ${PNAME}_TPL_DEFINITIONS   ${${PNAME}_TPL_DEFINITIONS}   PARENT_SCOPE )
-        set( ${PNAME}_TPL_INCLUDE_DIRS  ${${PNAME}_TPL_INCLUDE_DIRS}  PARENT_SCOPE )
-        set( ${PNAME}_FEATURES          ${${PNAME}_FEATURES}          PARENT_SCOPE )
-        foreach( _f ${${PNAME}_FEATURES} )
-            set( ${PNAME}_HAVE_${_f} ${${PNAME}_HAVE_${_f}} PARENT_SCOPE )
-        endforeach()
+            set( ${PROJECT_NAME}_FOUND             ${${PROJECT_NAME}_FOUND}             PARENT_SCOPE )
+            set( ${PROJECT_NAME}_VERSION           ${${PROJECT_NAME}_VERSION}           PARENT_SCOPE )
+            set( ${PROJECT_NAME}_GIT_SHA1          ${${PROJECT_NAME}_GIT_SHA1}          PARENT_SCOPE )
+            set( ${PROJECT_NAME}_GIT_SHA1_SHORT    ${${PROJECT_NAME}_GIT_SHA1_SHORT}    PARENT_SCOPE )
+            set( ${PROJECT_NAME}_VERSION           ${${PROJECT_NAME}_VERSION}           PARENT_SCOPE )
+            set( ${PROJECT_NAME}_FEATURES          ${${PROJECT_NAME}_FEATURES}          PARENT_SCOPE )
+            foreach( _f ${${PROJECT_NAME}_FEATURES} )
+                set( ${PROJECT_NAME}_HAVE_${_f} ${${PROJECT_NAME}_HAVE_${_f}} PARENT_SCOPE )
+            endforeach()
+
+            ecbuild_declare_compat( ${PNAME}_FULL_INSTALL_CMAKE_DIR  ${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR PARENT_SCOPE )
+            ecbuild_declare_compat( ${PNAME}_FOUND ${PROJECT_NAME}_FOUND PARENT_SCOPE )
+            ecbuild_declare_compat( ${PNAME}_VERSION ${PROJECT_NAME}_VERSION PARENT_SCOPE )
+            ecbuild_declare_compat( ${PNAME}_GIT_SHA1 ${PROJECT_NAME}_GIT_SHA1 PARENT_SCOPE )
+            ecbuild_declare_compat( ${PNAME}_GIT_SHA1_SHORT ${PROJECT_NAME}_GIT_SHA1_SHORT PARENT_SCOPE )
+            ecbuild_declare_compat( ${PNAME}_FEATURES ${PROJECT_NAME}_FEATURES PARENT_SCOPE )
+            foreach( _f ${${PROJECT_NAME}_FEATURES} )
+                ecbuild_declare_compat( ${PNAME}_HAVE_${_f} ${PROJECT_NAME}_HAVE_${_f} PARENT_SCOPE )
+            endforeach()
+
+            set( ${PNAME}_LIBRARIES         ${${PNAME}_LIBRARIES}         PARENT_SCOPE )
+            set( ${PNAME}_PACKAGES          ${${PNAME}_PACKAGES}          PARENT_SCOPE )
+            set( ${PNAME}_TPLS              ${${PNAME}_TPLS}              PARENT_SCOPE )
+        endif()
 
     endif()
 

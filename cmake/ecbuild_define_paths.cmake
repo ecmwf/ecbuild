@@ -19,31 +19,13 @@ file( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set( CMAKE_INSTALL_RPATH_USE_LINK_PATH   TRUE  )
 
 # use RPATHs for the build tree
-set( CMAKE_SKIP_BUILD_RPATH              FALSE  )
+set( CMAKE_SKIP_BUILD_RPATH              FALSE )
 
-# If INSTALL_LIB_DIR is set to anything other than lib, the relative install
-# RPATH is wrong in the build tree
-if( ENABLE_RELATIVE_RPATHS )
-  ecbuild_debug( "Relative RPATHS are enabled" )
-  if( INSTALL_LIB_DIR STREQUAL "lib" OR (NOT INSTALL_LIB_DIR) )
-    # when building, use the install RPATH immediately (we don't want to relink)
-    set( CMAKE_BUILD_WITH_INSTALL_RPATH      TRUE  )
-    ecbuild_debug( "Building with install RPATH" )
-  else()
-    # when building, don't use the install RPATH yet, but later on when installing
-    set( CMAKE_BUILD_WITH_INSTALL_RPATH      FALSE  )
-    ecbuild_debug( "Not building with install RPATH, need to relink when installing" )
-  endif()
-endif()
-
-# Always include srcdir and builddir in include path
-# This saves typing ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
-# in about every subdir
-
-set( CMAKE_INCLUDE_CURRENT_DIR OFF )
+# when building, don't use the install RPATH already (but later on when installing).
+# Various platforms seem to have issues linking otherwise
+set( CMAKE_BUILD_WITH_INSTALL_RPATH      FALSE )
 
 # put the include dirs which are in the source or build tree
 # before all other include dirs, so the headers in the sources
 # are prefered over the already installed ones (since cmake 2.4.1)
-
-set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
+set( CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON )

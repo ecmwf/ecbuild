@@ -23,9 +23,31 @@ if( POLICY CMP0004 )
     cmake_policy( SET CMP0004 NEW )
 endif()
 
-# Allow use of the LOCATION target property.
-if( POLICY CMP0026 )
-    cmake_policy( SET CMP0026 OLD )
+if( ECBUILD_2_COMPAT )
+    # Allow mixed use of plain and keyword target_link_libraries
+    if( POLICY CMP0023 )
+        cmake_policy( SET CMP0023 OLD )
+    endif()
+else()
+    # Prevent mixed use of plain and keyword target_link_libraries
+    cmake_policy( SET CMP0023 NEW )
+endif()
+
+if( POLICY CMP0022 )
+    #The OLD behavior for this policy is to ignore the
+    #INTERFACE_LINK_LIBRARIES property for in-build targets.  The NEW
+    #behavior for this policy is to use the INTERFACE_LINK_LIBRARIES
+    #property for in-build targets, and ignore the old properties matching
+    #``(IMPORTED_)?LINK_INTERFACE_LIBRARIES(_<CONFIG>)?``.
+    cmake_policy( SET CMP0022 NEW )
+endif()
+
+
+if( ECBUILD_2_COMPAT )
+  # Allow use of the LOCATION target property.
+  if( POLICY CMP0026 )
+      cmake_policy( SET CMP0026 OLD )
+  endif()
 endif()
 
 # for macosx use @rpath in a target’s install name
@@ -44,9 +66,14 @@ if( POLICY CMP0046 )
     cmake_policy( SET CMP0046 NEW )
 endif()
 
-# Do not manage VERSION variables in project command
-if( POLICY CMP0048 )
-  cmake_policy( SET CMP0048 OLD )
+if( ECBUILD_2_COMPAT )
+  # Do not manage VERSION variables in project command
+  if( POLICY CMP0048 )
+    cmake_policy( SET CMP0048 OLD )
+  endif()
+else()
+  # Manage VERSION variables in project command
+  cmake_policy( SET CMP0048 NEW )
 endif()
 
 # Disallow add_custom_command SOURCE signatures

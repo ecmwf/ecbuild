@@ -110,7 +110,7 @@
 #
 ##############################################################################
 
-macro( ecbuild_add_executable )
+function( ecbuild_add_executable )
 
   set( options NOINSTALL AUTO_VERSION )
   set( single_value_args TARGET COMPONENT LINKER_LANGUAGE VERSION OUTPUT_NAME )
@@ -133,18 +133,7 @@ macro( ecbuild_add_executable )
   endif()
 
   ### conditional build
-
-  if( DEFINED _PAR_CONDITION )
-    set(_target_condition_file "${CMAKE_CURRENT_BINARY_DIR}/set_${_PAR_TARGET}_condition.cmake")
-    file( WRITE  ${_target_condition_file} "  if( ")
-    foreach( term ${_PAR_CONDITION} )
-      file( APPEND ${_target_condition_file} " ${term}")
-    endforeach()
-    file( APPEND ${_target_condition_file} " )\n    set(_${_PAR_TARGET}_condition TRUE)\n  else()\n    set(_${_PAR_TARGET}_condition FALSE)\n  endif()\n")
-    include( ${_target_condition_file} )
-  else()
-    set( _${_PAR_TARGET}_condition TRUE )
-  endif()
+  ecbuild_evaluate_dynamic_condition( _PAR_CONDITION _${_PAR_TARGET}_condition )
 
   if( _${_PAR_TARGET}_condition )
 
@@ -171,13 +160,7 @@ macro( ecbuild_add_executable )
     endif()
 
     # add persistent layer files
-    if( DEFINED _PAR_PERSISTENT )
-      if( DEFINED PERSISTENT_NAMESPACE )
-        ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE ${PERSISTENT_NAMESPACE} )
-      else()
-        ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} )
-      endif()
-    endif()
+    ecbuild_add_persistent( SRC_LIST _PAR_SOURCES FILES ${_PAR_PERSISTENT} NAMESPACE "${PERSISTENT_NAMESPACE}" )
 
     # remove templates from compilation sources
     if( DEFINED _PAR_TEMPLATES )
@@ -216,15 +199,10 @@ macro( ecbuild_add_executable )
 
     # add include dirs if defined
     if( DEFINED _PAR_INCLUDES )
-      list(REMOVE_DUPLICATES _PAR_INCLUDES )
-      foreach( path ${_PAR_INCLUDES} ) # skip NOTFOUND
-        if( path )
-          ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): add ${path} to include_directories")
-          target_include_directories( ${_PAR_TARGET} PRIVATE ${path} )
-        else()
-          ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): ${path} not found - not adding to include_directories")
-        endif()
-      endforeach()
+      ecbuild_filter_list(INCLUDES LIST ${_PAR_INCLUDES} LIST_INCLUDE path LIST_EXCLUDE skipped_path)
+      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): add [${path}] to include_directories")
+      target_include_directories( ${_PAR_TARGET} PRIVATE ${path} )
+      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): [${skipped_path}] not found - not adding to include_directories")
     endif()
 
     # set OUTPUT_NAME
@@ -242,17 +220,12 @@ macro( ecbuild_add_executable )
 
     # add the link libraries
     if( DEFINED _PAR_LIBS )
-      list(REMOVE_DUPLICATES _PAR_LIBS )
       list(REMOVE_ITEM _PAR_LIBS debug)
       list(REMOVE_ITEM _PAR_LIBS optimized)
-      foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
-        if( lib )
-          ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): linking with ${lib}")
-          target_link_libraries( ${_PAR_TARGET} ${lib} )
-        else()
-          ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): ${lib} not found - not linking")
-        endif()
-      endforeach()
+      ecbuild_filter_list(LIBS LIST ${_PAR_LIBS} LIST_INCLUDE lib LIST_EXCLUDE skipped_lib)
+      target_link_libraries( ${_PAR_TARGET} ${lib} )
+      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): linking with [${lib}]")
+      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): [${skipped_lib}] not found - not linking")
     endif()
 
     # Override compilation flags on a per source file basis
@@ -264,8 +237,8 @@ macro( ecbuild_add_executable )
       set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${_PAR_VERSION}" )
     else()
       if( _PAR_AUTO_VERSION )
-        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): set version to ${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}")
-        set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${${PNAME}_MAJOR_VERSION}.${${PNAME}_MINOR_VERSION}" )
+        ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): set version to ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}")
+        set_target_properties( ${_PAR_TARGET} PROPERTIES VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
       endif()
     endif()
 
@@ -294,7 +267,7 @@ macro( ecbuild_add_executable )
 
       # export location of target to other projects -- must be exactly after setting the build location (see previous command)
 
-      export( TARGETS ${_PAR_TARGET} APPEND FILE "${TOP_PROJECT_TARGETS_FILE}" )
+      export( TARGETS ${_PAR_TARGET} APPEND FILE "${PROJECT_TARGETS_FILE}" )
 
     else()
       ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): not installing")
@@ -305,10 +278,8 @@ macro( ecbuild_add_executable )
 
     # add definitions to compilation
     if( DEFINED _PAR_DEFINITIONS )
-      get_property( _target_defs TARGET ${_PAR_TARGET} PROPERTY COMPILE_DEFINITIONS )
-      list( APPEND _target_defs ${_PAR_DEFINITIONS} )
-      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): using definitions ${_target_defs}")
-      set_target_properties( ${_PAR_TARGET} PROPERTIES COMPILE_DEFINITIONS "${_target_defs}" )
+      target_compile_definitions(${_PAR_TARGET} PRIVATE ${_PAR_DEFINITIONS})
+      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): adding definitions ${_PAR_DEFINITIONS}")
     endif()
 
     # set linker language
@@ -327,11 +298,6 @@ macro( ecbuild_add_executable )
     # make sure target is removed before - some problems with AIX
     add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
 
-    # for the links target
-    if( NOT _PAR_NOINSTALL )
-      ecbuild_link_exe( ${_PAR_TARGET} $<TARGET_FILE_NAME:${_PAR_TARGET}> $<TARGET_FILE:${_PAR_TARGET}>  )
-    endif()
-
     # append to the list of this project targets
     set( ${PROJECT_NAME}_ALL_EXES ${${PROJECT_NAME}_ALL_EXES} ${_PAR_TARGET} CACHE INTERNAL "" )
 
@@ -343,4 +309,4 @@ macro( ecbuild_add_executable )
     ecbuild_declare_project_files( ${_PAR_TEMPLATES} )
   endif()
 
-endmacro( ecbuild_add_executable  )
+endfunction( ecbuild_add_executable  )

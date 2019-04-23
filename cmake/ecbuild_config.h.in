@@ -14,7 +14,10 @@
 /* ecbuild info */
 
 #ifndef ECBUILD_VERSION_STR
-#define ECBUILD_VERSION_STR "@ECBUILD_VERSION_STR@"
+#define ECBUILD_VERSION_STR "@ecbuild_VERSION_STR@"
+#endif
+#ifndef ECBUILD_VERSION
+#define ECBUILD_VERSION "@ecbuild_VERSION@"
 #endif
 #ifndef ECBUILD_MACROS_DIR
 #define ECBUILD_MACROS_DIR  "@ECBUILD_MACROS_DIR@"

@@ -26,11 +26,33 @@
 ##############################################################################
 
 function( ecbuild_path_append var path )
-	list( FIND ${var} ${path} _found )
-	if( _found EQUAL "-1" )
+  list( FIND ${var} ${path} _found )
+  if( _found EQUAL "-1" )
     list( APPEND ${var} ${path})
   endif()
   set( ${var} "${${var}}" PARENT_SCOPE ) #
+endfunction()
+
+function( _make_relative_rpath_entry entry var )
+    if( EC_OS_NAME STREQUAL "macosx" )
+        set( ${var} "@loader_path/${entry}" PARENT_SCOPE )
+
+    elseif( EC_OS_NAME STREQUAL "freebsd" )
+        set( ${var} "$ORIGIN/${entry}" PARENT_SCOPE )
+
+    elseif( EC_OS_NAME STREQUAL "linux" )
+        set( ${var} "$ORIGIN/${entry}" PARENT_SCOPE )
+
+    elseif( EC_OS_NAME STREQUAL "solaris" )
+        set( ${var} "$ORIGIN/${entry}" PARENT_SCOPE )
+
+    elseif( EC_OS_NAME STREQUAL "aix" ) # always relative to executable path
+        set( ${var} "${entry}" PARENT_SCOPE )
+
+    else()
+        set( ${var} "${CMAKE_INSTALL_PREFIX}/${entry}" PARENT_SCOPE )
+
+    endif()
 endfunction()
 
 macro( ecbuild_append_to_rpath RPATH_DIRS )
@@ -41,59 +63,53 @@ macro( ecbuild_append_to_rpath RPATH_DIRS )
 
    foreach( RPATH_DIR ${RPATH_DIRS} )
 
-		if( NOT ${RPATH_DIR} STREQUAL "" )
+        if( NOT ${RPATH_DIR} STREQUAL "" )
 
-			file( TO_CMAKE_PATH ${RPATH_DIR} RPATH_DIR ) # sanitize the path
+            file( TO_CMAKE_PATH ${RPATH_DIR} RPATH_DIR ) # sanitize the path
 
-			if( IS_ABSOLUTE ${RPATH_DIR} )
+            if( IS_ABSOLUTE ${RPATH_DIR} )
 
-				ecbuild_path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
+                ecbuild_path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
 
-			else()
+            else()
 
-				set( _done 0 )
+                _make_relative_rpath_entry( "${RPATH_DIR}" rpath_dir_rel )
+                ecbuild_path_append( CMAKE_INSTALL_RPATH ${rpath_dir_rel} )
 
-				if( EC_OS_NAME STREQUAL "macosx" )
-
-					if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" VERSION_LESS 3.0) # cmake < 3.0
-						set( CMAKE_INSTALL_NAME_DIR "@loader_path/${RPATH_DIR}" )
-					endif()
-					ecbuild_path_append( CMAKE_INSTALL_RPATH "@loader_path/${RPATH_DIR}" )
-
-					set( _done 1 )
-
-				endif()
-
-                if( EC_OS_NAME STREQUAL "freebsd" )
-                    ecbuild_path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
-                    set( _done 1 )
-                endif()
-
-                if( EC_OS_NAME STREQUAL "linux" )
-					ecbuild_path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
-					set( _done 1 )
-				endif()
-
-				if( EC_OS_NAME STREQUAL "solaris" )
-					ecbuild_path_append( CMAKE_INSTALL_RPATH "$ORIGIN/${RPATH_DIR}" )
-					set( _done 1 )
-				endif()
-
-                if( EC_OS_NAME STREQUAL "aix" ) # always relative to exectuable path
-                    ecbuild_path_append( CMAKE_INSTALL_RPATH "${RPATH_DIR}" )
-                    set( _done 1 )
-                endif()
-
-				# fallback
-
-				if( NOT _done )
-					ecbuild_path_append( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RPATH_DIR}" )
-				endif()
-
-			endif()
+            endif()
 
      endif()
 
    endforeach()
 
 endmacro( ecbuild_append_to_rpath )
+
+macro( ecbuild_target_rpath target mode )
+
+    if( "${mode}" STREQUAL REPLACE )
+        set( _target_rpath "" )
+    elseif( "${mode}" STREQUAL APPEND )
+        get_target_property( _target_rpath ${target} INSTALL_RPATH )
+    else()
+        ecbuild_critical( "ecbuild_target_rpath arg 2 should be either APPEND \
+            or REPLACE" )
+    endif()
+
+    foreach( rpath_dir ${ARGN} )
+        if( NOT ${rpath_dir} STREQUAL "" )
+            file( TO_CMAKE_PATH ${rpath_dir} rpath_dir ) # sanitise the path
+
+            if( IS_ABSOLUTE ${rpath_dir} )
+                ecbuild_path_append( _target_rpath "${rpath_dir}" )
+
+            else()
+                _make_relative_rpath_entry( "${rpath_dir}" rpath_dir_rel )
+                ecbuild_path_append( _target_rpath ${rpath_dir_rel} )
+
+            endif()
+        endif()
+    endforeach()
+
+    set_target_properties( ${target} PROPERTIES INSTALL_RPATH "${_target_rpath}" )
+
+endmacro()

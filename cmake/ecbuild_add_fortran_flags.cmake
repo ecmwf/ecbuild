@@ -66,11 +66,6 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
 
       if( ECBUILD_TRUST_FLAGS )
         set( _flag_ok 1 )
-      # Due to a bug in CMake < 3.0, check_fortran_compiler_flag ALWAYS fails with ifort
-      # see https://cmake.org/Bug/view.php?id=14507
-      elseif( CMAKE_MAJOR_VERSION LESS 3 AND CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
-        set( _flag_ok 1 )
-        ecbuild_warn( "Not testing Fortran flags due to a bug in CMake < 3.0 with ifort" )
       else()
         if( DEFINED _PAR_NAME )
           check_fortran_compiler_flag( ${_flags} ${_PAR_NAME} )

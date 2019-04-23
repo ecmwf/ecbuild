@@ -172,7 +172,7 @@ elif [ -d $INSTALL_DIR/../cmake ]; then
 fi
 
 # Fail if we couldn't find ecBuild modules
-if [ ! -f "$ECBUILD_MODULE_PATH/VERSION.cmake" ]; then
+if [ ! -f "$ECBUILD_MODULE_PATH/ecbuild_system.cmake" ]; then
   echo "FATAL: ecBuild modules could not be found in either $INSTALL_DIR/../share/ecbuild/cmake or $INSTALL_DIR/../cmake" >&2
   exit 1
 fi
@@ -187,7 +187,7 @@ fi
 
 version()
 {
-  ecbuild_version=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ECBUILD_VERSION_STR |  perl -p -e 's/.*([\d]\.[\d]\.[\d]).*/\1/' )
+  ecbuild_version=$(cat ${ECBUILD_MODULE_PATH}/VERSION)
   echo "ecbuild version ${ecbuild_version}"
   command -v cmake >/dev/null 2>&1 || { exit 0; }
   cmake --version | head -1

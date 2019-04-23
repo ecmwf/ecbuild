@@ -48,6 +48,9 @@ macro( ecbuild_bundle_initialize )
     add_custom_target( ${PROJECT_NAME}_readme SOURCES "${PROJECT_SOURCE_DIR}/README.md" )
   endif()
 
+  # Point CMake to the packages in the bundle when using find_package
+  set( CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH} )
+
 endmacro()
 
 ##############################################################################
@@ -154,7 +157,20 @@ macro( ecbuild_bundle )
 
     # Do not descend into ecbuild if included in a bundle (ECBUILD-333)
     if( NOT _PAR_PROJECT STREQUAL "ecbuild" )
-      ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
+      add_subdirectory(${PROJECT_SOURCE_DIR}/${_PAR_PROJECT})
+
+      # Some packages define <project>_FOUND by hand, this should not happen
+      if( DEFINED ${_PAR_PROJECT}_FOUND OR DEFINED ${PNAME}_FOUND )
+        if( ECBUILD_2_COMPAT )
+          if( ECBUILD_2_COMPAT_DEPRECATE )
+            ecbuild_deprecate( "Project ${_PAR_PROJECT} defines <project>_FOUND by hand, which may break dependencies." )
+          endif()
+          unset(${_PAR_PROJECT}_FOUND)
+          unset(${PNAME}_FOUND)
+        else()
+          ecbuild_error( "Project ${_PAR_PROJECT} defines <project>_FOUND by hand." )
+        endif()
+      endif()
     endif()
   endif()
 

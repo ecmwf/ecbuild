@@ -380,6 +380,7 @@ endfunction()\n\n" )
         get_filename_component( _file ${_f} NAME )
         get_filename_component( _dir  ${_f} PATH )
 
+        set( _path_comps "" )
         list( APPEND _path_comps ${_p_DIRNAME} ${_dir} )
         join( _path_comps "/" _dirname )
         if( _dirname )
@@ -417,7 +418,7 @@ endfunction()\n\n" )
 
     endforeach()
 
-    if( ENABLE_TESTS )
+    if( HAVE_TESTS )
       add_test(  NAME ${_p_TARGET} COMMAND ${CMAKE_COMMAND} -P ${_script} )
       set( _p_LABELS ${PROJECT_NAME_LOWCASE} download_data ${_p_LABELS} )
       list( REMOVE_DUPLICATES _p_LABELS )

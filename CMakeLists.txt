@@ -11,13 +11,24 @@
 #
 #       -DCMAKE_INSTALL_PREFIX=/path/to/install
 
-cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
-
-project( ecbuild C )
+cmake_minimum_required( VERSION 3.6.0 FATAL_ERROR )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
 
+include( ecbuild_parse_version )
+ecbuild_parse_version_file( "VERSION" PREFIX "ecbuild" )
+
+project( ecbuild VERSION ${ecbuild_VERSION} LANGUAGES C )
+
 include( ecbuild_system )
+
+if(ECBUILD_2_COMPAT)
+  ecbuild_declare_compat( ECBUILD_VERSION       ecbuild_VERSION )
+  ecbuild_declare_compat( ECBUILD_VERSION_STR   ecbuild_VERSION_STR )
+  ecbuild_declare_compat( ECBUILD_MAJOR_VERSION ecbuild_VERSION_MAJOR )
+  ecbuild_declare_compat( ECBUILD_MINOR_VERSION ecbuild_VERSION_MINOR )
+  ecbuild_declare_compat( ECBUILD_PATCH_VERSION ecbuild_VERSION_PATCH )
+endif()
 
 ###############################################################################
 # local project
@@ -46,6 +57,7 @@ add_subdirectory( cmake )
 add_subdirectory( doc )
 
 add_subdirectory( regressions )
+add_subdirectory( tests )
 
 install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
 

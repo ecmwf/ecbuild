@@ -16,6 +16,7 @@
 #
 #   ecbuild_use_package( PROJECT <name>
 #                        [ VERSION <version> [ EXACT ] ]
+#                        [ COMPONENTS <component1> [ <component2> ... ] ]
 #                        [ URL <url> ]
 #                        [ DESCRIPTION <description> ]
 #                        [ TYPE <type> ]
@@ -32,6 +33,9 @@
 #
 # VERSION : optional
 #   minimum required package version
+#
+# COMPONENTS : optional
+#   list of package components to find (behaviour depends on the package)
 #
 # EXACT : optional, requires VERSION
 #   require the exact version rather than a minimum version
@@ -102,7 +106,7 @@ macro( ecbuild_use_package )
 
   set( options            REQUIRED QUIET EXACT )
   set( single_value_args  PROJECT VERSION URL DESCRIPTION TYPE PURPOSE FAILURE_MSG )
-  set( multi_value_args )
+  set( multi_value_args   COMPONENTS )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -130,44 +134,51 @@ macro( ecbuild_use_package )
 
   # user defined dir with subprojects
 
-  if( NOT DEFINED ${pkgUPPER}_SOURCE AND DEFINED SUBPROJECT_DIRS )
+  if(ECBUILD_2_COMPAT AND DEFINED ${pkgUPPER}_SOURCE AND NOT pkgUPPER STREQUAL _p_PROJECT )
+    if(ECBUILD_2_COMPAT_DEPRECATE)
+      ecbuild_deprecate("${pkgUPPER}_SOURCE is deprecated, please use ${_p_PROJECT}_SOURCE instead")
+    endif()
+    set(${_p_PROJECT}_SOURCE ${${pkgUPPER}_SOURCE})
+  endif()
+
+  if( NOT DEFINED ${_p_PROJECT}_SOURCE AND DEFINED SUBPROJECT_DIRS )
     ecbuild_warn("ecbuild_use_package(): setting SUBPROJECT_DIRS is deprecated")
     ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): scanning subproject directories ${SUBPROJECT_DIRS}")
     foreach( dir ${SUBPROJECT_DIRS} )
       if( EXISTS ${dir}/${_p_PROJECT} AND EXISTS ${dir}/${_p_PROJECT}/CMakeLists.txt )
-        ecbuild_debug("ecbuild_use_package(${_p_PROJECT}):   setting ${pkgUPPER}_SOURCE to ${dir}/${_p_PROJECT}")
-        set( ${pkgUPPER}_SOURCE "${dir}/${_p_PROJECT}" )
+        ecbuild_debug("ecbuild_use_package(${_p_PROJECT}):   setting ${_p_PROJECT}_SOURCE to ${dir}/${_p_PROJECT}")
+        set( ${_p_PROJECT}_SOURCE "${dir}/${_p_PROJECT}" )
       endif()
     endforeach()
   endif()
 
   # user defined path to subproject
 
-  if( DEFINED ${pkgUPPER}_SOURCE )
+  if( DEFINED ${_p_PROJECT}_SOURCE )
 
-    if( NOT EXISTS ${${pkgUPPER}_SOURCE} OR NOT EXISTS ${${pkgUPPER}_SOURCE}/CMakeLists.txt )
-      ecbuild_critical("User defined source directory '${${pkgUPPER}_SOURCE}' for project '${_p_PROJECT}' does not exist or does not contain a CMakeLists.txt file.")
+    if( NOT EXISTS ${${_p_PROJECT}_SOURCE} OR NOT EXISTS ${${_p_PROJECT}_SOURCE}/CMakeLists.txt )
+      ecbuild_critical("User defined source directory '${${_p_PROJECT}_SOURCE}' for project '${_p_PROJECT}' does not exist or does not contain a CMakeLists.txt file.")
     endif()
 
-    set( ${pkgUPPER}_subproj_dir_ "${${pkgUPPER}_SOURCE}" )
+    set( ${_p_PROJECT}_subproj_dir_ "${${_p_PROJECT}_SOURCE}" )
 
   else() # default is 'dropped in' subdirectory named as project
 
     if( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT} AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT}/CMakeLists.txt )
       ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): found ${_p_PROJECT} in subdirectory ${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT}")
-      set( ${pkgUPPER}_subproj_dir_ "${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT}" )
+      set( ${_p_PROJECT}_subproj_dir_ "${CMAKE_CURRENT_SOURCE_DIR}/${_p_PROJECT}" )
     endif()
 
   endif()
 
   # check if was already added as subproject ...
 
-  set( _do_version_check 0 )
+  set( _do_compat_check 0 )
   set( _source_description "" )
 
-  list( FIND ECBUILD_PROJECTS ${_p_PROJECT} _ecbuild_project_${pkgUPPER} )
+  list( FIND ECBUILD_PROJECTS ${_p_PROJECT} _ecbuild_project_${_p_PROJECT} )
 
-  if( NOT _ecbuild_project_${pkgUPPER} EQUAL "-1" )
+  if( NOT _ecbuild_project_${_p_PROJECT} EQUAL "-1" )
     ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): ${_p_PROJECT} was previously added as a subproject")
   else()
     ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): ${_p_PROJECT} was not previously added as a subproject")
@@ -181,17 +192,20 @@ macro( ecbuild_use_package )
   if( ${pkgUPPER}_FOUND AND NOT ${_p_PROJECT}_FOUND )
     set( ${_p_PROJECT}_FOUND 1 )
   endif()
+  if( ECBUILD_2_COMPAT )
+    ecbuild_mark_compat(${pkgUPPER}_FOUND ${_p_PROJECT}_FOUND)
+  endif()
 
   # Case 1) project exists as subproject
 
-  if( DEFINED ${pkgUPPER}_subproj_dir_ )
+  if( DEFINED ${_p_PROJECT}_subproj_dir_ )
 
-    # check version is acceptable
-    set( _do_version_check 1 )
+    # check version and components are acceptable
+    set( _do_compat_check 1 )
 
     # Case 1a) project was already found
 
-    if( ${pkgUPPER}_FOUND )
+    if( ${_p_PROJECT}_FOUND )
 
       ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 1a) project was already added as subproject, check version is acceptable")
 
@@ -209,15 +223,8 @@ macro( ecbuild_use_package )
 
       set( ECBUILD_PROJECTS ${ECBUILD_PROJECTS} ${_p_PROJECT} CACHE INTERNAL "" )
 
-      ecbuild_debug("ecbuild_use_package(${_p_PROJECT}):    ${_p_PROJECT} found in subdirectory ${${pkgUPPER}_subproj_dir_}")
-      add_subdirectory( ${${pkgUPPER}_subproj_dir_} ${_p_PROJECT} )
-
-      set( ${_p_PROJECT}_BASE_DIR ${CMAKE_BINARY_DIR} )
-
-      set( ${pkgUPPER}_FOUND 1 )
-      set( ${_p_PROJECT}_VERSION ${${pkgUPPER}_VERSION} )
-
-      list( APPEND ${pkgUPPER}_INCLUDE_DIRS ${${pkgUPPER}_TPL_INCLUDE_DIRS} )
+      ecbuild_debug("ecbuild_use_package(${_p_PROJECT}):    ${_p_PROJECT} found in subdirectory ${${_p_PROJECT}_subproj_dir_}")
+      add_subdirectory( ${${_p_PROJECT}_subproj_dir_} ${_p_PROJECT} )
 
     endif()
 
@@ -226,12 +233,12 @@ macro( ecbuild_use_package )
   # Case 2) project does NOT exist as subproject, but is FOUND
   #   it was previously found as a binary ( either build or install tree )
 
-  if( ${pkgUPPER}_FOUND AND NOT ${pkgUPPER}_subproj_dir_ )
+  if( ${_p_PROJECT}_FOUND AND NOT ${_p_PROJECT}_subproj_dir_ )
 
     ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): 2) project does NOT exist as subproject, but is FOUND")
 
-    # check version is acceptable
-    set( _do_version_check 1 )
+    # check version and components are acceptable
+    set( _do_compat_check 1 )
     set( _source_description "previously found package ${_p_PROJECT} (binaries)" )
 
   endif()
@@ -240,14 +247,14 @@ macro( ecbuild_use_package )
 
   # ecbuild_debug_var( _p_PROJECT )
   # ecbuild_debug_var( _p_VERSION )
-  # ecbuild_debug_var( ${pkgUPPER}_VERSION )
   # ecbuild_debug_var( ${_p_PROJECT}_VERSION )
-  # ecbuild_debug_var( _do_version_check )
+  # ecbuild_debug_var( ${_p_PROJECT}_VERSION )
+  # ecbuild_debug_var( _do_compat_check )
   # ecbuild_debug_var( _source_description )
-  # ecbuild_debug_var( ${pkgUPPER}_FOUND )
-  # ecbuild_debug_var( ${pkgUPPER}_previous_subproj_ )
+  # ecbuild_debug_var( ${_p_PROJECT}_FOUND )
+  # ecbuild_debug_var( ${_p_PROJECT}_previous_subproj_ )
 
-  if( _p_VERSION AND _do_version_check )
+  if( _p_VERSION AND _do_compat_check )
     if( _p_EXACT )
       if( NOT ${_p_PROJECT}_VERSION VERSION_EQUAL _p_VERSION )
         ecbuild_critical( "${PROJECT_NAME} requires (exactly) ${_p_PROJECT} = ${_p_VERSION} -- detected as ${_source_description} ${${_p_PROJECT}_VERSION}" )
@@ -261,10 +268,18 @@ macro( ecbuild_use_package )
     endif()
   endif()
 
+  if( _p_COMPONENTS AND _do_compat_check )
+    foreach( comp ${_p_COMPONENTS} )
+      if( NOT ${_p_PROJECT}_${comp}_FOUND )
+        ecbuild_critical( "${PROJECT_NAME} requires component ${comp} of ${_p_PROJECT} -- not found" )
+      endif()
+    endforeach()
+  endif()
+
   # Case 3) is NOT FOUND so far, NOT as sub-project (now or before), and NOT as binary neither
   #         so try to find precompiled binaries or a build tree
 
-  if( ${pkgUPPER}_FOUND )
+  if( ${_p_PROJECT}_FOUND )
     # Only set package properties if ecbuild_find_package, which itself calls
     # set_package_properties, is not subsequently called since doing so would
     # duplicate the purpose
@@ -280,6 +295,9 @@ macro( ecbuild_use_package )
     set( _opts )
     if( _p_VERSION )
       list( APPEND _opts VERSION ${_p_VERSION} )
+    endif()
+    if( _p_COMPONENTS )
+      list( APPEND _opts COMPONENTS ${_p_COMPONENTS} )
     endif()
     if( _p_EXACT )
       list( APPEND _opts EXACT )
@@ -304,6 +322,10 @@ macro( ecbuild_use_package )
       list( APPEND _opts FAILURE_MSG "${_p_FAILURE_MSG}" )
     endif()
 
+    if (_p_QUIET)
+        list( APPEND _opts QUIET)
+    endif()
+
     ecbuild_find_package( NAME ${_p_PROJECT} ${_opts} )
 
     if( ${_p_PROJECT}_FOUND )
@@ -312,15 +334,16 @@ macro( ecbuild_use_package )
 
   endif()
 
-  if( ${pkgUPPER}_FOUND )
+  if( ECBUILD_2_COMPAT AND ${_p_PROJECT}_FOUND )
+    ecbuild_declare_compat(${pkgUPPER}_FOUND ${_p_PROJECT}_FOUND)
     list( APPEND ${PROJECT_NAME_CAPS}_TPLS ${_p_PROJECT} )
     list( REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS )
   endif()
 
   ### for when we change this macro to a function()
-  # set_parent_scope( ${pkgUPPER}_FOUND )
   # set_parent_scope( ${_p_PROJECT}_FOUND )
-  # set_parent_scope( ${pkgUPPER}_VERSION )
+  # set_parent_scope( ${_p_PROJECT}_FOUND )
+  # set_parent_scope( ${_p_PROJECT}_VERSION )
   # set_parent_scope( ${_p_PROJECT}_VERSION )
   # set_parent_scope( ${_p_PROJECT}_BINARY_DIR )
 
