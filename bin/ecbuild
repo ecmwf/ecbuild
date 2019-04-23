@@ -187,8 +187,14 @@ fi
 
 version()
 {
-  ecbuild_version=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ecbuild_VERSION |  perl -p -e 's/.*([\d]\.[\d]\.[\d]).*/\1/' )
-  echo "ecbuild version ${ecbuild_version}"
+  ecbuild_version_major=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ecbuild_VERSION_MAJOR | sed -n 's/.*"\([0-9]\+\)".*/\1/p' )
+  ecbuild_version_minor=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ecbuild_VERSION_MINOR | sed -n 's/.*"\([0-9]\+\)".*/\1/p' )
+  ecbuild_version_patch=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ecbuild_VERSION_PATCH | sed -n 's/.*"\([0-9]\+\)".*/\1/p' )
+  if [ -z "$ecbuild_version_major" -o -z "$ecbuild_version_minor" -o -z "$ecbuild_version_patch" ] ; then
+    echo "FATAL: could not parse the ecBuild version file ${ECBUILD_MODULE_PATH}/VERSION.cmake" >&2
+    exit 1
+  fi
+  echo "ecbuild version ${ecbuild_version_major}.${ecbuild_version_minor}.${ecbuild_version_patch}"
   command -v cmake >/dev/null 2>&1 || { exit 0; }
   cmake --version | head -1
   exit 0
