@@ -46,8 +46,7 @@ endif()
 
 set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
 
-include( ecbuild_parse_version )
-ecbuild_parse_version_file( "${ECBUILD_MACROS_DIR}/VERSION" PREFIX ecbuild )
+include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
 
 # Set policies
 include( ecbuild_policies NO_POLICY_SCOPE )
@@ -88,7 +87,7 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     ecbuild_debug( "---------------------------------------------------------\n${__env}" )
     ecbuild_debug( "---------------------------------------------------------" )
 
-    ecbuild_info( "ecbuild   ${ecbuild_VERSION_STR}\t${ECBUILD_MACROS_DIR}" )
+    ecbuild_info( "ecbuild   ${ecbuild_VERSION}\t${ECBUILD_MACROS_DIR}" )
     ecbuild_info( "cmake     ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}\t${CMAKE_COMMAND}" )
 
     if( CMAKE_TOOLCHAIN_FILE )
@@ -173,7 +172,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     include( ecbuild_evaluate_dynamic_condition )
     include( ecbuild_filter_list )
-    include( ecbuild_parse_version )
 
     include( ecbuild_list_macros )
     include( ecbuild_list_add_pattern )
@@ -232,7 +230,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_cache )
     include( ecbuild_remove_fortran_flags )
     include( ecbuild_configure_file )
-
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
