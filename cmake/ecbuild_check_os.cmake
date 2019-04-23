@@ -427,7 +427,7 @@ if( WIN32 )
   find_program( BASH_EXE NAMES bash )
 
   if( NOT BASH_EXE )
-      ecbuild_critical("Bash not found")
+      ecbuild_critical("Could not find program 'bash'. Specify the location with -DBASH_EXE=C:/...")
   endif()
 
   ecbuild_warn( "CMake doesn't support symlinks on Windows. "
