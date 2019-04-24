@@ -23,7 +23,6 @@
 #                     [ ARGS <argument1> [<argument2> ...] ]
 #                     [ RESOURCES <file1> [<file2> ...] ]
 #                     [ TEST_DATA <file1> [<file2> ...] ]
-#                     [ BOOST ]
 #                     [ MPI <number-of-mpi-tasks> ]
 #                     [ OMP <number-of-threads-per-mpi-task> ]
 #                     [ ENABLED ON|OFF ]
@@ -74,7 +73,6 @@
 #   :executable: for type ``EXE``
 #   :script:     for type ``SCRIPT``
 #   :python:     for type ``PYTHON``
-#   :boost:      uses Boost unit test
 #   :mpi:        if ``MPI`` is set
 #   :openmp:     if ``OMP`` is set
 #
@@ -89,9 +87,6 @@
 #
 # TEST_DATA : optional
 #   list of test data files to download
-#
-# BOOST : optional
-#   use the Boost Unit Test Framework
 #
 # MPI : optional
 #   Run with MPI using the given number of MPI tasks.
@@ -157,7 +152,7 @@
 
 function( ecbuild_add_test )
 
-  set( options           BOOST )
+  set( options           )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI OMP WORKING_DIRECTORY )
   set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS LABELS ARGS
                          PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS
@@ -233,25 +228,6 @@ function( ecbuild_add_test )
   ### conditional build
 
   ecbuild_evaluate_dynamic_condition( _PAR_CONDITION _${_PAR_TARGET}_condition )
-
-  # boost unit test linking to unit_test lib ?
-
-  if( _PAR_BOOST AND HAVE_TESTS AND _${_PAR_TARGET}_condition )
-
-    if( HAVE_BOOST_UNIT_TEST )
-      set( _PAR_LABELS boost ${_PAR_LABELS} )
-      if( BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-        include_directories( ${ECBUILD_BOOST_HEADER_DIRS} )
-        include_directories( ${Boost_INCLUDE_DIRS}  ) # temporary until we ship Boost Unit Test with ecBuild
-      else()
-        include_directories( ${ECBUILD_BOOST_HEADER_DIRS} ${Boost_INCLUDE_DIRS} )
-      endif()
-    else()
-      ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): boost unit test framework not available - not building test")
-      set( _${_PAR_TARGET}_condition FALSE )
-    endif()
-
-  endif()
 
   ### enable the tests
 
@@ -333,11 +309,6 @@ function( ecbuild_add_test )
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): [${skipped_lib}] not found - not linking")
       endif()
 
-      # add test libraries
-      if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_LINKED AND HAVE_BOOST_UNIT_TEST )
-        target_link_libraries( ${_PAR_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} ${Boost_TEST_EXEC_MONITOR_LIBRARY} )
-      endif()
-
       # filter sources
       ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
 
@@ -347,12 +318,6 @@ function( ecbuild_add_test )
       if( DEFINED _PAR_GENERATED )
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): mark as generated ${_PAR_GENERATED}")
         set_source_files_properties( ${_PAR_GENERATED} PROPERTIES GENERATED 1 )
-      endif()
-
-      # modify definitions to compilation ( -D... )
-      if( _PAR_BOOST AND BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY )
-        target_compile_definitions(${_PAR_TARGET} PRIVATE BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY)
-        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): adding -DBOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY")
       endif()
 
       if( DEFINED _PAR_DEFINITIONS )
@@ -399,12 +364,7 @@ function( ecbuild_add_test )
 
     # define the arguments
     set( TEST_ARGS "" )
-    # Boost Unit Test >= 1.60 requires arguments to be passed to the application to be separated by --
-    if( DEFINED _PAR_ARGS AND _PAR_BOOST )
-      list( APPEND TEST_ARGS "--" ${_PAR_ARGS} )
-    elseif( DEFINED _PAR_ARGS )
-      list( APPEND TEST_ARGS ${_PAR_ARGS} )
-    endif()
+    list( APPEND TEST_ARGS ${_PAR_ARGS} )
 
     # Wrap with MPIEXEC
     if( _PAR_MPI )

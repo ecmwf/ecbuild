@@ -66,7 +66,4 @@
 
 #endif
 
-#cmakedefine BOOST_UNIT_TEST_FRAMEWORK_HEADER_ONLY
-#cmakedefine BOOST_UNIT_TEST_FRAMEWORK_LINKED
-
 #endif /* @PROJECT_NAME@_ecbuild_config_h */
