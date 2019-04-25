@@ -36,19 +36,32 @@ macro(ecbuild_compat_setversion)
     set( __version "0.0.0" )
   endif()
 
+  # Remove any non-numbers
+  string( REGEX REPLACE "^((([0-9]+)\\.)+([0-9]+)).*" "\\1" __version "${__version}" )
+
   string( REPLACE "." " " _version_list "${__version}" ) # dots to spaces
 
   separate_arguments( _version_list )
+  list( LENGTH _version_list _len )
+  set( __version "" )
+  if( ${_len} GREATER 0 )
+    list( GET _version_list 0 ${PROJECT_NAME}_VERSION_MAJOR )
+    set( __version "${${PROJECT_NAME}_VERSION_MAJOR}" )
+  endif()
+  if( ${_len} GREATER 1 )
+    list( GET _version_list 1 ${PROJECT_NAME}_VERSION_MINOR )
+    set( __version "${__version}.${${PROJECT_NAME}_VERSION_MINOR}" )
+  endif()
+  if( ${_len} GREATER 2 )
+    list( GET _version_list 2 ${PROJECT_NAME}_VERSION_PATCH )
+    set( __version "${__version}.${${PROJECT_NAME}_VERSION_PATCH}" )
+  endif()
+  if( ${_len} GREATER 3 )
+    list( GET _version_list 3 ${PROJECT_NAME}_VERSION_TWEAK )
+    set( __version "${__version}.${${PROJECT_NAME}_VERSION_TWEAK}" )
+  endif()
 
-  list( GET _version_list 0 ${PROJECT_NAME}_VERSION_MAJOR )
-  list( GET _version_list 1 ${PROJECT_NAME}_VERSION_MINOR )
-  list( GET _version_list 2 ${PROJECT_NAME}_VERSION_PATCH )
-
-  # cleanup patch version of any extra qualifiers ( -dev -rc1 ... )
-
-  string( REGEX REPLACE "^([0-9]+).*" "\\1" ${PROJECT_NAME}_VERSION_PATCH "${${PROJECT_NAME}_VERSION_PATCH}" )
-
-  set( ${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
+  set( ${PROJECT_NAME}_VERSION "${__version}")
   set( ${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION}" CACHE INTERNAL "package ${PROJECT_NAME} version" )
   set( ${PROJECT_NAME}_VERSION_STR "${${PROJECT_NAME}_VERSION}" CACHE INTERNAL "package ${PROJECT_NAME} version" )
 endmacro()
