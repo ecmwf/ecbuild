@@ -64,7 +64,7 @@
 ##############################################################################
 
 # Define colour escape sequences (not available on Windows)
-if(NOT (WIN32 OR ECBUILD_NO_COLOUR))
+if(NOT (WIN32 OR ECBUILD_NO_COLOUR OR DEFINED ENV{ECBUILD_NO_COLOUR}))
   string(ASCII 27 Esc)
   set(ColourReset "${Esc}[m")
   set(ColourBold  "${Esc}[1m")
