@@ -462,6 +462,7 @@ function( ecbuild_pkgconfig )
   set( PKGCONFIG_DIR ${CMAKE_BINARY_DIR}/lib/pkgconfig )
   ecbuild_configure_file(${_PAR_TEMPLATE} ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}.tmp @ONLY)
 
+  # Reprocess the generated file to make it relocatable
   configure_file(${ECBUILD_MACROS_DIR}/pkg-config.cmake.in  ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake @ONLY ESCAPE_QUOTES )
   add_custom_target(${_PAR_FILENAME}-pkg-config ALL
     BYPRODUCTS ${PKGCONFIG_DIR}/${_PAR_FILENAME}
@@ -470,9 +471,7 @@ function( ecbuild_pkgconfig )
       ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
   )
 
-  set( PKGCONFIG_DIR ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig )
-  configure_file(${ECBUILD_MACROS_DIR}/pkg-config.cmake.in  ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-install.cmake @ONLY ESCAPE_QUOTES )
-  install( SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-install.cmake )
+  install( FILES ${PKGCONFIG_DIR}/${_PAR_FILENAME} DESTINATION lib/pkgconfig )
 
   ecbuild_info( "pkg-config file to be created during build: ${_PAR_FILENAME}" )
 
