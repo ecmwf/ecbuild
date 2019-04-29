@@ -19,6 +19,8 @@
 #                         [ TARGET_C <file> ]
 #                         [ DEPENDANT <file1> [ <file2> ... ] ] )
 #
+# DEPRECATED.
+#
 # Options
 # -------
 #
@@ -37,6 +39,11 @@
 ##############################################################################
 
 macro( ecbuild_generate_rpc )
+
+  if( ECBUILD_2_COMPAT_DEPRECATE )
+      ecbuild_deprecate("ecbuild_generate_rpc is deprecated and will be "
+          "removed in a future version.")
+  endif()
 
   set( options )
   set( single_value_args SOURCE TARGET_H TARGET_C )
