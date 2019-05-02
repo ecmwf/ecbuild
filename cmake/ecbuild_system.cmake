@@ -6,17 +6,10 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-########################################################################################################
-# compatibility with ecbuild 2
-if ( NOT DEFINED ECBUILD_2_COMPAT_VALUE )
-    set( ECBUILD_2_COMPAT_VALUE ON )
-endif()
-if ( NOT DEFINED ECBUILD_2_COMPAT_DEPRECATE_VALUE )
-    set( ECBUILD_2_COMPAT_DEPRECATE_VALUE OFF )
-endif()
+if( NOT ${PROJECT_NAME}_ECBUILD_SYSTEM_INCLUDED )
+set( ${PROJECT_NAME}_ECBUILD_SYSTEM_INCLUDED TRUE )
 
-option( ECBUILD_2_COMPAT "Keep compatibility with ecbuild 2" ${ECBUILD_2_COMPAT_VALUE} )
-option( ECBUILD_2_COMPAT_DEPRECATE "Emit deprecation warnings in the compatibility layer" ${ECBUILD_2_COMPAT_DEPRECATE_VALUE} )
+include( ecbuild )
 
 ########################################################################################################
 # disallow in-source build
@@ -46,8 +39,10 @@ endif()
 
 set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
 
-include( ecbuild_parse_version )
-ecbuild_parse_version_file( "${ECBUILD_MACROS_DIR}/VERSION" PREFIX ecbuild )
+if( NOT ecbuild_VERSION_STR )
+  include( ecbuild_parse_version )
+  ecbuild_parse_version_file( "${ECBUILD_MACROS_DIR}/VERSION" PREFIX ecbuild )
+endif()
 
 # Set policies
 include( ecbuild_policies NO_POLICY_SCOPE )
@@ -286,4 +281,5 @@ else()
     endif()
     include( ecbuild_compiler_flags )
 
+endif()
 endif()

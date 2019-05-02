@@ -9,10 +9,11 @@
 # Set policies
 include( ecbuild_policies NO_POLICY_SCOPE )
 
-include(CMakeParseArguments)
+include( CMakeParseArguments )
 
-include(ecbuild_git)
+include( ecbuild_git )
 
+include( ecbuild )
 ##############################################################################
 #.rst:
 #

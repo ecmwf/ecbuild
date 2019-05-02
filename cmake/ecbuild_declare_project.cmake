@@ -56,6 +56,9 @@
 
 macro( ecbuild_declare_project )
 
+if( NOT ${PROJECT_NAME}_DECLARED )
+  set( ${PROJECT_NAME}_DECLARED TRUE )
+
   string( TOUPPER ${PROJECT_NAME} PNAME )
 
   # reset the lists of targets (executables, libs, tests & resources)
@@ -86,19 +89,22 @@ macro( ecbuild_declare_project )
       AND DEFINED ${PROJECT_NAME}_VERSION_MAJOR
       AND DEFINED ${PROJECT_NAME}_VERSION_MINOR
       AND DEFINED ${PROJECT_NAME}_VERSION_PATCH)
+     AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.cmake
     )
     if(ECBUILD_2_COMPAT)
       if(ECBUILD_2_COMPAT_DEPRECATE)
-        ecbuild_deprecate("Please set a project version in the project() rather than using VERSION.cmake")
+    ecbuild_warn( "Please set a version in the project statement rather than using VERSION.cmake:\n\t project( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )" )
       endif()
 
       ecbuild_compat_setversion()
 
-    else()
+    elseif( EXISTS)
 
-      ecbuild_critical("Please define a version for ${PROJECT_NAME}\n\tproject( ${PROJECT_NAME} VERSION 1.1.0 LANGUAGES C CXX )")
+    ecbuild_warn( "Please set a version in the project statement rather than using VERSION.cmake:\n\t project( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )" )
 
     endif()
+  elseif( NOT DEFINED ${PROJECT_NAME}_VERSION )
+    ecbuild_warn( "Please set a version in the project statement:\n\t project( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )" )
   endif()
   if( NOT DEFINED ${PROJECT_NAME}_VERSION_STR )
     set( ${PROJECT_NAME}_VERSION_STR ${${PROJECT_NAME}_VERSION} )
@@ -111,13 +117,6 @@ macro( ecbuild_declare_project )
     ecbuild_declare_compat( ${PNAME}_VERSION_STR   ${PROJECT_NAME}_VERSION_STR )
     ecbuild_declare_compat( ${PNAME}_VERSION       ${PROJECT_NAME}_VERSION )
   endif()
-
-  #    ecbuild_debug_var( ${PROJECT_NAME}_VERSION )
-  #    ecbuild_debug_var( ${PROJECT_NAME}_VERSION_STR )
-  #    ecbuild_debug_var( ${PROJECT_NAME}_MAJOR_VERSION )
-  #    ecbuild_debug_var( ${PROJECT_NAME}_MINOR_VERSION )
-  #    ecbuild_debug_var( ${PROJECT_NAME}_PATCH_VERSION )
-
   # install dirs for this project
 
   # Use defaults unless values are already present in cache
@@ -203,10 +202,17 @@ macro( ecbuild_declare_project )
 
   ecbuild_info( "---------------------------------------------------------" )
 
-  if( ${PROJECT_NAME}_GIT_SHA1_SHORT )
-    ecbuild_info( "${Green}[${PROJECT_NAME}] (${${PROJECT_NAME}_VERSION_STR}) [${${PROJECT_NAME}_GIT_SHA1_SHORT}]${ColourReset}" )
-  else()
-    ecbuild_info( "[${PROJECT_NAME}] (${${PROJECT_NAME}_VERSION_STR})" )
+  unset( _version_str )
+  if( ${PROJECT_NAME}_VERSION_STR )
+    set( _version_str "(${${PROJECT_NAME}_VERSION_STR})" )  
   endif()
+
+  if( ${PROJECT_NAME}_GIT_SHA1_SHORT )
+    ecbuild_info( "${Green}[${PROJECT_NAME}] ${_version_str} [${${PROJECT_NAME}_GIT_SHA1_SHORT}]${ColourReset}" )
+  else()
+    ecbuild_info( "[${PROJECT_NAME}] ${_version_str}" )
+  endif()
+
+endif()
 
 endmacro( ecbuild_declare_project )
