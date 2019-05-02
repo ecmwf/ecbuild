@@ -172,7 +172,7 @@ elif [ -d $INSTALL_DIR/../cmake ]; then
 fi
 
 # Fail if we couldn't find ecBuild modules
-if [ ! -f "$ECBUILD_MODULE_PATH/VERSION.cmake" ]; then
+if [ ! -f "$ECBUILD_MODULE_PATH/ecbuild_system.cmake" ]; then
   echo "FATAL: ecBuild modules could not be found in either $INSTALL_DIR/../share/ecbuild/cmake or $INSTALL_DIR/../cmake" >&2
   exit 1
 fi
@@ -187,14 +187,8 @@ fi
 
 version()
 {
-  ecbuild_version_major=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ecbuild_VERSION_MAJOR | sed -n 's/.*"\([0-9]\+\)".*/\1/p' )
-  ecbuild_version_minor=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ecbuild_VERSION_MINOR | sed -n 's/.*"\([0-9]\+\)".*/\1/p' )
-  ecbuild_version_patch=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ecbuild_VERSION_PATCH | sed -n 's/.*"\([0-9]\+\)".*/\1/p' )
-  if [ -z "$ecbuild_version_major" -o -z "$ecbuild_version_minor" -o -z "$ecbuild_version_patch" ] ; then
-    echo "FATAL: could not parse the ecBuild version file ${ECBUILD_MODULE_PATH}/VERSION.cmake" >&2
-    exit 1
-  fi
-  echo "ecbuild version ${ecbuild_version_major}.${ecbuild_version_minor}.${ecbuild_version_patch}"
+  ecbuild_version=$(cat ${ECBUILD_MODULE_PATH}/VERSION)
+  echo "ecbuild version ${ecbuild_version}"
   command -v cmake >/dev/null 2>&1 || { exit 0; }
   cmake --version | head -1
   exit 0
