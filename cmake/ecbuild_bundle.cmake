@@ -73,7 +73,7 @@ endmacro()
 # PROJECT : required
 #   project name for the Git repository to be managed
 #
-# STASH : cannot be combined with GIT or SOURCE
+# STASH : DEPRECATED ; cannot be combined with GIT or SOURCE
 #   Stash repository in the form <project>/<repository>
 #
 # GIT : cannot be combined with STASH or SOURCE
@@ -141,7 +141,14 @@ macro( ecbuild_bundle )
     ecbuild_info( "Adding bundle project ${_PAR_PROJECT}" )
 
     if( _PAR_STASH )
-      ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} STASH ${_PAR_STASH} ${_PAR_UNPARSED_ARGUMENTS} )
+      if( ECBUILD_2_COMPAT )
+        if( ECBUILD_2_COMPAT_DEPRECATE )
+          ecbuild_deprecate( "Keyword STASH of ecbuild_bundle is deprecated, please use GIT with the full URL instead." )
+        endif()
+        ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} STASH ${_PAR_STASH} ${_PAR_UNPARSED_ARGUMENTS} )
+      else()
+        ecbuild_critical( "ecbuild_bundle(${_PAR_PROJECT}): the STASH keyword has been removed, please use GIT instead." )
+      endif()
     elseif( _PAR_GIT )
       ecbuild_git( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} URL ${_PAR_GIT} ${_PAR_UNPARSED_ARGUMENTS} )
     elseif( _PAR_SOURCE )

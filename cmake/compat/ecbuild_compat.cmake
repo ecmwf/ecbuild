@@ -56,6 +56,7 @@ if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
   include(ecbuild_add_extra_search_paths)
   include(ecbuild_list_extra_search_paths)
   include(ecbuild_generate_rpc)
+  include(ecmwf_git)
 
   include(ecbuild_check_cxx11)
 endif()
