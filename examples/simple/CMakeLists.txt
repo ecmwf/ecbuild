@@ -1,16 +1,10 @@
 cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
 
-project( simple CXX Fortran )
-
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake" )
 
-include( ecbuild_system NO_POLICY_SCOPE )
+include(ecbuild)
 
-ecbuild_requires_macro_version( 1.9 )
-
-### open project
-
-ecbuild_declare_project()
+project( simple CXX Fortran )
 
 ### declare options
 

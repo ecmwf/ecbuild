@@ -1,12 +1,9 @@
-cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
-
-project( test_paths C )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake" )
 
-include( ecbuild_system NO_POLICY_SCOPE )
-
-ecbuild_requires_macro_version( 2.9 )
+include( ecbuild )
+project( test_paths C )
 
 ### open project
 
