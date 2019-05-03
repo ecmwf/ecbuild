@@ -93,14 +93,14 @@ if( NOT ${PROJECT_NAME}_DECLARED )
     )
     if(ECBUILD_2_COMPAT)
       if(ECBUILD_2_COMPAT_DEPRECATE)
-    ecbuild_warn( "Please set a version in the project statement rather than using VERSION.cmake:\n\t project( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )" )
+        ecbuild_deprecate("Please set a project version in the project() rather than using VERSION.cmake:\n\t project( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )")
       endif()
 
       ecbuild_compat_setversion()
 
-    elseif( EXISTS)
+    else()
 
-    ecbuild_warn( "Please set a version in the project statement rather than using VERSION.cmake:\n\t project( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )" )
+      ecbuild_critical("Please define a version for ${PROJECT_NAME}\n\tproject( ${PROJECT_NAME} VERSION 1.1.0 LANGUAGES C CXX )")
 
     endif()
   elseif( NOT DEFINED ${PROJECT_NAME}_VERSION )
