@@ -184,6 +184,14 @@ macro( ecbuild_use_package )
     ecbuild_debug("ecbuild_use_package(${_p_PROJECT}): ${_p_PROJECT} was not previously added as a subproject")
   endif()
 
+
+  if( ECBUILD_2_COMPAT )
+    # Disable deprecation warnings until ecbuild_mark_compat, because "<PROJECT>_FOUND" may already have been
+    #   marked with "ecbuild_mark_compat()" in a bundle.
+    set( DISABLE_ECBUILD_DEPRECATION_WARNINGS_orig ${DISABLE_ECBUILD_DEPRECATION_WARNINGS} )
+    set( DISABLE_ECBUILD_DEPRECATION_WARNINGS ON )
+  endif()
+
   # solve capitalization issues
 
   if( ${_p_PROJECT}_FOUND AND NOT ${pkgUPPER}_FOUND )
@@ -194,6 +202,10 @@ macro( ecbuild_use_package )
   endif()
   if( ECBUILD_2_COMPAT )
     ecbuild_mark_compat(${pkgUPPER}_FOUND ${_p_PROJECT}_FOUND)
+  endif()
+
+  if( ECBUILD_2_COMPAT )
+    set( DISABLE_ECBUILD_DEPRECATION_WARNINGS ${DISABLE_ECBUILD_DEPRECATION_WARNINGS_orig} )
   endif()
 
   # Case 1) project exists as subproject

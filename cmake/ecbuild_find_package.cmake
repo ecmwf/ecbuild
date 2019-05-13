@@ -192,6 +192,13 @@ macro( ecbuild_find_package )
     set( _find_quiet QUIET )
   endif()
 
+  if( ECBUILD_2_COMPAT )
+    # Disable deprecation warnings until ecbuild_mark_compat, because "<PROJECT>_FOUND" may already have been
+    #   marked with "ecbuild_mark_compat()" in a bundle.
+    set( DISABLE_ECBUILD_DEPRECATION_WARNINGS_orig ${DISABLE_ECBUILD_DEPRECATION_WARNINGS} )
+    set( DISABLE_ECBUILD_DEPRECATION_WARNINGS ON )
+  endif()
+
   # cancel the effect of ecbuild_install_project setting <package>_FOUND in
   # compat mode (otherwise this means the <package>-config.cmake file may not
   # always be loaded, see ECBUILD-401)
@@ -300,6 +307,10 @@ macro( ecbuild_find_package )
 
   if(ECBUILD_2_COMPAT)
     ecbuild_declare_compat(${pkgUPPER}_FOUND ${_PAR_NAME}_FOUND)
+  endif()
+
+  if( ECBUILD_2_COMPAT )
+    set( DISABLE_ECBUILD_DEPRECATION_WARNINGS ${DISABLE_ECBUILD_DEPRECATION_WARNINGS_orig} )
   endif()
 
   ### final messages
