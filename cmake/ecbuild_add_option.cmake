@@ -139,6 +139,11 @@ macro( ecbuild_add_option )
   # check CONDITION parameter
   ecbuild_evaluate_dynamic_condition( _p_CONDITION _${_p_FEATURE}_condition  )
 
+  # Disable deprecation warnings until end of macro, because "ENABLE_<FEATURE>" may already have been
+  #   marked with "ecbuild_mark_compat()" in a bundle.
+  set( DISABLE_ECBUILD_DEPRECATION_WARNINGS_orig ${DISABLE_ECBUILD_DEPRECATION_WARNINGS} )
+  set( DISABLE_ECBUILD_DEPRECATION_WARNINGS ON )
+
   # Check if user explicitly enabled/disabled the feature in cache
   get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE SET )
 
@@ -267,5 +272,7 @@ macro( ecbuild_add_option )
       ecbuild_declare_compat( ${PROJECT_NAME_CAPS}_HAVE_${_p_FEATURE} ${PROJECT_NAME}_HAVE_${_p_FEATURE})
     endif()
   endif()
+
+  set( DISABLE_ECBUILD_DEPRECATION_WARNINGS ${DISABLE_ECBUILD_DEPRECATION_WARNINGS_orig} )
 
 endmacro( ecbuild_add_option  )
