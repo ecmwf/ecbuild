@@ -13,7 +13,6 @@ include( CMakeParseArguments )
 
 include( ecbuild_git )
 
-include( ecbuild )
 ##############################################################################
 #.rst:
 #
