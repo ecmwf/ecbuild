@@ -51,7 +51,7 @@ function(ecbuild_compat_tplconfig cfile)
 
       if(${TPL}_IMPORT_FILE) # ecBuild packages should trigger this if they export themselves
 
-        ecbuild_debug("Adding find_dependency call for TPL ${TPL} to ${cfile}.in")
+        ecbuild_debug("Adding find_dependency call for TPL ${_tpl} to ${cfile}.in")
         get_filename_component(__import_dir "${${TPL}_IMPORT_FILE}" DIRECTORY)
         file(RELATIVE_PATH __import_dir_rel "${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR}" "${__import_dir}")
         set(__import_dir_rel "\${CMAKE_CURRENT_LIST_DIR}/${__import_dir_rel}")
@@ -59,22 +59,22 @@ function(ecbuild_compat_tplconfig cfile)
         file(APPEND "${cfile}.in" "    find_dependency(${_tpl} REQUIRED HINTS \"${__import_dir_rel}\" \"${__import_dir}\")\n")
         file(APPEND "${cfile}.in" "endif()\n")
 
-      elseif(${TPL}_CONFIG) # cmake built packages (e.g. CGAL) may have exported their targets
+      elseif(${_tpl}_CONFIG) # cmake built packages (e.g. CGAL) may have exported their targets
 
-        ecbuild_debug("Adding TPL ${TPL} import file to ${cfile}.in")
-        set(__import_file "${${TPL}_CONFIG}")
+        ecbuild_debug("Adding TPL ${_tpl} import file to ${cfile}.in")
+        set(__import_file "${${_tpl}_CONFIG}")
         get_filename_component(__import_dir "${__import_file}" DIRECTORY)
-        file(APPEND "${cfile}.in" "if(NOT ${TPL}_CONFIG)\n")
+        file(APPEND "${cfile}.in" "if(NOT ${_tpl}_CONFIG)\n")
         file(APPEND "${cfile}.in" "    find_dependency(${_tpl} REQUIRED HINTS \"${__import_dir}\")\n")
-        file(APPEND "${cfile}.in" "    set(${TPL}_CONFIG \"${__import_file}\")\n")
+        file(APPEND "${cfile}.in" "    set(${_tpl}_CONFIG \"${__import_file}\")\n")
         file(APPEND "${cfile}.in" "endif()\n")
 
-      elseif(${TPL}_FULL_INSTALL_CMAKE_DIR)
+      elseif(${_tpl}_FULL_INSTALL_CMAKE_DIR)
         # This variable is only available for a ecbuild exported TPL in a bundle. It is therefore safe to use
         # relative install paths between this project and the TPL
 
-        ecbuild_debug("Adding find_dependency call for TPL ${TPL} to ${cfile}.in")
-        file(RELATIVE_PATH __import_dir "${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR}" "${${TPL}_FULL_INSTALL_CMAKE_DIR}")
+        ecbuild_debug("Adding find_dependency call for TPL ${_tpl} to ${cfile}.in")
+        file(RELATIVE_PATH __import_dir "${${PROJECT_NAME}_FULL_INSTALL_CMAKE_DIR}" "${${_tpl}_FULL_INSTALL_CMAKE_DIR}")
         set(__import_dir "\${CMAKE_CURRENT_LIST_DIR}/${__import_dir}")
         file(APPEND "${cfile}.in" "find_dependency(${_tpl} REQUIRED HINTS \"${__import_dir}\")\n")
 
