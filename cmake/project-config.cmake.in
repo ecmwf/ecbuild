@@ -29,8 +29,8 @@ if(DEFINED ECBUILD_2_COMPAT AND ECBUILD_2_COMPAT)
 endif()
 
 ### has this configuration been exported from a build tree?
+set(@PROJECT_NAME@_IS_BUILD_DIR_EXPORT @_is_build_dir_export@)
 if(DEFINED ECBUILD_2_COMPAT AND ECBUILD_2_COMPAT)
-  set(@PROJECT_NAME@_IS_BUILD_DIR_EXPORT @_is_build_dir_export@)
   set(@PNAME@_IS_BUILD_DIR_EXPORT ${@PROJECT_NAME@_IS_BUILD_DIR_EXPORT})
 endif()
 
