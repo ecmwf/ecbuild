@@ -85,12 +85,7 @@ if( NOT ${PROJECT_NAME}_DECLARED )
     endif()
   endif()
 
-  if(NOT (DEFINED ${PROJECT_NAME}_VERSION
-      AND DEFINED ${PROJECT_NAME}_VERSION_MAJOR
-      AND DEFINED ${PROJECT_NAME}_VERSION_MINOR
-      AND DEFINED ${PROJECT_NAME}_VERSION_PATCH)
-     AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/VERSION.cmake
-    )
+  if(NOT DEFINED ${PROJECT_NAME}_VERSION)
     if(ECBUILD_2_COMPAT)
       if(ECBUILD_2_COMPAT_DEPRECATE)
         ecbuild_deprecate("Please set a project version in the project() rather than using VERSION.cmake:\n\t project( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )")
@@ -100,11 +95,9 @@ if( NOT ${PROJECT_NAME}_DECLARED )
 
     else()
 
-      ecbuild_critical("Please define a version for ${PROJECT_NAME}\n\tproject( ${PROJECT_NAME} VERSION 1.1.0 LANGUAGES C CXX )")
+      ecbuild_critical("Please define a version for ${PROJECT_NAME}\n\tproject( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )")
 
     endif()
-  elseif( NOT DEFINED ${PROJECT_NAME}_VERSION )
-    ecbuild_warn( "Please set a version in the project statement:\n\t project( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )" )
   endif()
   if( NOT DEFINED ${PROJECT_NAME}_VERSION_STR )
     set( ${PROJECT_NAME}_VERSION_STR ${${PROJECT_NAME}_VERSION} )
