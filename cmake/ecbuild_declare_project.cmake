@@ -85,7 +85,8 @@ if( NOT ${PROJECT_NAME}_DECLARED )
     endif()
   endif()
 
-  if(NOT DEFINED ${PROJECT_NAME}_VERSION)
+  if(NOT (DEFINED ${PROJECT_NAME}_VERSION
+      AND DEFINED ${PROJECT_NAME}_VERSION_MAJOR))
     if(ECBUILD_2_COMPAT)
       if(ECBUILD_2_COMPAT_DEPRECATE)
         ecbuild_deprecate("Please set a project version in the project() rather than using VERSION.cmake:\n\t project( ${PROJECT_NAME} VERSION x.x.x LANGUAGES C CXX Fortran )")
