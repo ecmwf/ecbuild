@@ -128,6 +128,10 @@ macro( ecbuild_use_package )
     set( _p_TYPE REQUIRED )
   endif()
 
+  if(ECBUILD_2_COMPAT_DEPRECATE)
+    ecbuild_deprecate("ecbuild_use_package is deprecated, please use add_subdirectory or ecbuild_find_package instead.")
+  endif()
+
   # try to find the package as a subproject and build it
 
   string( TOUPPER ${_p_PROJECT} pkgUPPER )
