@@ -42,8 +42,7 @@ function( ecbuild_parse_version version_str )
   set( single_value_args PREFIX )
   set( multi_value_args )
 
-  cmake_parse_arguments( PARSE_ARGV 1
-                         _PAR "${options}" "${single_value_args}" "${multi_value_args}" )
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN} )
 
   if( NOT _PAR_PREFIX )
     set( prefix "_" )
@@ -128,8 +127,7 @@ function( ecbuild_parse_version_file file )
   set( single_value_args PREFIX )
   set( multi_value_args )
 
-  cmake_parse_arguments( PARSE_ARGV 1
-                         _PAR "${options}" "${single_value_args}" "${multi_value_args}" )
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN} )
 
   if( NOT _PAR_PREFIX )
     set( prefix "_" )
