@@ -12,3 +12,11 @@
 
 install( DIRECTORY ecbuild/toolchains USE_SOURCE_PERMISSIONS DESTINATION ${INSTALL_DATA_DIR} )
 install( DIRECTORY ecbuild/check_linker DESTINATION ${INSTALL_DATA_DIR} )
+install( DIRECTORY ecbuild/find_package DESTINATION ${INSTALL_DATA_DIR} )
+# Fix permissions
+file( GLOB find_files ecbuild/find_package/find_* )
+install( FILES ${find_files} DESTINATION ${INSTALL_DATA_DIR}/find_package
+  PERMISSIONS
+    OWNER_EXECUTE OWNER_READ OWNER_WRITE
+    GROUP_EXECUTE GROUP_READ
+    WORLD_EXECUTE WORLD_READ )
