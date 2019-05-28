@@ -18,6 +18,9 @@
 #
 ##############################################################################
 
+if( NOT ${PROJECT_NAME}_ECBUILD_POLICIES_INCLUDED )
+set( ${PROJECT_NAME}_ECBUILD_POLICIES_INCLUDED TRUE )
+
 # fail if empty spaces are found around linked library names
 if( POLICY CMP0004 )
     cmake_policy( SET CMP0004 NEW )
@@ -102,4 +105,6 @@ endif()
 # find packages use <package>_ROOT by default
 if( POLICY CMP0074 )
     cmake_policy( SET CMP0074 NEW )
+endif()
+
 endif()
