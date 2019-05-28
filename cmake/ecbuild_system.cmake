@@ -45,7 +45,9 @@ if( NOT ecbuild_VERSION_STR )
 endif()
 
 # Set policies
-include( ecbuild_policies NO_POLICY_SCOPE )
+if( NOT ( PROJECT_NAME STREQUAL ecbuild ) )
+    include( ecbuild_policies NO_POLICY_SCOPE )
+endif()
 
 # set capitalised project name
 
@@ -220,12 +222,13 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_enable_fortran )
     include( ecbuild_source_flags )
     include( ecbuild_target_flags )
-    include( ecbuild_bundle )
     include( ecbuild_pkgconfig )
     include( ecbuild_cache )
     include( ecbuild_remove_fortran_flags )
     include( ecbuild_configure_file )
-
+if( NOT (PROJECT_NAME STREQUAL ecbuild) )
+    include( ecbuild_bundle )
+endif()
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
@@ -238,10 +241,12 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     ecbuild_prepare_cache()
 
-    include( ecbuild_define_options )               # define build options
-    include( ecbuild_compiler_flags )               # compiler flags
-    include( ecbuild_check_compiler )               # check for compiler characteristics
-    include( ecbuild_check_os )                     # check for os characteristics
+    if( NOT (PROJECT_NAME STREQUAL ecbuild ) )
+      include( ecbuild_define_options )               # define build options
+      include( ecbuild_compiler_flags )               # compiler flags
+      include( ecbuild_check_compiler )               # check for compiler characteristics
+      include( ecbuild_check_os )                     # check for os characteristics
+    endif()
     include( ecbuild_define_paths )                 # defines installation paths
     include( ecbuild_setup_test_framework )         # setup test framework
     include( ecbuild_define_uninstall )             # define uninstall target
