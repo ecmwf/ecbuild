@@ -9,10 +9,8 @@ ecbuild_declare_project()
 
 if( @_FUNC@ STREQUAL "std" )
   find_package( mylib REQUIRED )
-elseif( @_FUNC@ STREQUAL "ecbfind" )
+else() #( @_FUNC@ STREQUAL "ecbfind" )
   ecbuild_find_package( NAME mylib REQUIRED )
-else() #( @_FUNC@ STREQUAL "ecbuse" )
-  ecbuild_use_package( PROJECT mylib REQUIRED )
 endif()
 
 if( NOT mylib_CONFNAME STREQUAL "BUNDLE" )

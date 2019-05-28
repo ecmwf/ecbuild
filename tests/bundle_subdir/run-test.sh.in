@@ -19,7 +19,7 @@ cd $HERE/mylib
 
 mkdir build
 cd build
-ecbuild --prefix=../install -- @COMPAT_FLAG@ ..
+ecbuild --prefix=../install -- ..
 make install
 
 export mylib_DIR=$HERE/mylib/install/lib/cmake/mylib
@@ -29,4 +29,4 @@ cd $HERE
 
 mkdir build
 cd build
-ecbuild -- @COMPAT_FLAG@ ../mybundle
+ecbuild -- ../mybundle
