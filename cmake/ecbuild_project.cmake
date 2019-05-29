@@ -7,7 +7,7 @@
 # does it submit to any jurisdiction.
 
 if( NOT ECBUILD_PROJECT_INCLUDED )
-set( ECBUILD_PROJECT_INCLUDED TRUE )
+set( ECBUILD_PROJECT_INCLUDED TRUE CACHE INTERNAL "" FORCE )
 
 
 # XXX: CMake apparently parses the main CMakeLists.txt looking for a direct call
