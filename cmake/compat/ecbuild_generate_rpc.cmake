@@ -68,7 +68,13 @@ macro( ecbuild_generate_rpc )
     ecbuild_critical("The call to ecbuild_generate_rpc() doesn't specify the _PAR_TARGET_H or _PAR_TARGET_C files.")
   endif()
 
-  find_package( RPCGEN REQUIRED )
+  if( DEFINED RPCGEN_PATH )
+      find_program( RPCGEN_EXECUTABLE NAMES rpcgen PATHS ${RPCGEN_PATH} PATH_SUFFIXES bin NO_DEFAULT_PATH )
+  endif()
+  find_program( RPCGEN_EXECUTABLE NAMES rpcgen )
+  if( NOT RPCGEN_EXECUTABLE )
+    ecbuild_critical("Could not find rpcgen. Please provide RPCGEN_PATH.")
+  endif()
 
   if( DEFINED _PAR_TARGET_H )
 
