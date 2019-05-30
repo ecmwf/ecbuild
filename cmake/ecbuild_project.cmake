@@ -6,8 +6,9 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-if( NOT ECBUILD_PROJECT_INCLUDED )
-set( ECBUILD_PROJECT_INCLUDED TRUE CACHE INTERNAL "" FORCE )
+get_property( _ECBUILD_PROJECT_INCLUDED GLOBAL PROPERTY ECBUILD_PROJECT_INCLUDED SET )
+if( NOT _ECBUILD_PROJECT_INCLUDED )
+set_property( GLOBAL PROPERTY ECBUILD_PROJECT_INCLUDED TRUE )
 
 
 # XXX: CMake apparently parses the main CMakeLists.txt looking for a direct call
