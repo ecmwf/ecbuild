@@ -1,30 +1,21 @@
-cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-project( baz C CXX )
-
-set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild/cmake")
-
-include( ecbuild_system NO_POLICY_SCOPE )
-
-ecbuild_requires_macro_version( 2.7 )
-
-### open project
-
-ecbuild_declare_project()
+find_package( ecbuild REQUIRED )
+project( baz VERSION 1.0.0 LANGUAGES C CXX )
 
 ### targets
 
-ecbuild_use_package( PROJECT foo REQUIRED )
+ecbuild_find_package( NAME foo REQUIRED )
 
 ecbuild_add_library( TARGET            baz
                      SOURCES           baz.h baz.c
-                     PRIVATE_INCLUDES  ${FOO_INCLUDE_DIRS}
-                     LIBS              foo )
+                     PUBLIC_LIBS       foo
+                     PUBLIC_INCLUDES
+                        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
 
 ecbuild_add_executable(
     TARGET     master_baz
     SOURCES    main.cc
-    INCLUDES   ${FOO_INCLUDE_DIRS}
     LIBS       baz
 )
 

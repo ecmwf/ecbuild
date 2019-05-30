@@ -6,19 +6,10 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-project( compute_circle Fortran )
-
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake")
-
-include( ecbuild_system NO_POLICY_SCOPE )
-
-ecbuild_requires_macro_version( 2.0 )
-
-### open project
-
-ecbuild_declare_project()
+find_package( ecbuild REQUIRED )
+project( compute_circle VERSION 0.10.0 LANGUAGES Fortran )
 
 ### options
 
@@ -48,8 +39,6 @@ ecbuild_generate_fortran_interfaces(
     DIRECTORIES api/area api/volume
 
     DESTINATION  api
-
-    INCLUDE_DIRS intf_circ_includes
 )
 
 ecbuild_add_library(
@@ -61,16 +50,11 @@ ecbuild_add_library(
     SOURCES_GLOB  "api/area/*.F90" "api/volume/*.F90"
 )
 
-ecbuild_debug( "intf_circ_includes" )
-
-ecbuild_debug_var( intf_circ_includes )
-
 ecbuild_add_library(
-    TARGET  area_circle
-    SOURCES ${area_srcs}
-    OBJECTS api_objs
-    LIBS    const
-    DEPENDS intf_circ
+    TARGET      area_circle
+    SOURCES     ${area_srcs}
+    OBJECTS     api_objs
+    PUBLIC_LIBS const intf_circ
 )
 
 # application conditionally compiled

@@ -6,32 +6,19 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-project( cxx11 CXX )
-
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake" )
-
-include( ecbuild_system NO_POLICY_SCOPE )
-
-ecbuild_requires_macro_version( 1.9 )
-
-### open project
-
-ecbuild_declare_project()
+find_package(ecbuild REQUIRED)
+project( cxx11 VERSION 0.0.1 LANGUAGES CXX )
 
 ### definitions
 
-ecbuild_add_cxx11_flags()
+set(CMAKE_CXX_STANDARD 11)
 
 ### targets
 
 ecbuild_add_executable( TARGET compute
                         SOURCES compute.cc )
-
-### pkgconfig exports
-
-ecbuild_pkgconfig()
 
 ### finalize project
 
