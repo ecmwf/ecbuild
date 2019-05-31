@@ -43,5 +43,3 @@ make install
 
 cd $HERE
 projectC/install/bin/main-C
-
-# This should not have any issues running.

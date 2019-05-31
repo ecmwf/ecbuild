@@ -1,0 +1,5 @@
+find_package test projects
+
+The projects/ directory contains test projects for specific libraries. They
+serve as examples but can also be used to check these libraries by running the
+find_*.sh scripts.
