@@ -563,7 +563,9 @@ function( ecbuild_add_library_impl )
     endif()
 
     # append to the list of this project targets
-    set( ${PROJECT_NAME}_ALL_LIBS ${${PROJECT_NAME}_ALL_LIBS} ${_PAR_TARGET} CACHE INTERNAL "" )
+    if( NOT ECBUILD_2_COMPAT OR NOT _PAR_TYPE MATCHES "INTERFACE" )
+      set( ${PROJECT_NAME}_ALL_LIBS ${${PROJECT_NAME}_ALL_LIBS} ${_PAR_TARGET} CACHE INTERNAL "" )
+    endif()
 
   endif()
 
