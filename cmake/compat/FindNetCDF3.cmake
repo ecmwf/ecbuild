@@ -21,6 +21,8 @@
 #  NETCDF_INCLUDE_DIRS - The NetCDF include directories
 #  NETCDF_LIBRARIES - The libraries needed to use NetCDF
 
+ecbuild_deprecate("The FindNetCDF3.cmake module is deprecated and will be removed from ecbuild")
+
 ### TODO: generalize this into a macro for all ecbuild
 
 if( DEFINED NETCDF_PATH )
