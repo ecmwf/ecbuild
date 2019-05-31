@@ -18,7 +18,7 @@
 #                        SOURCES <source1> [<source2> ...]
 #                        [ SOURCES_GLOB <glob1> [<glob2> ...] ]
 #                        [ SOURCES_EXCLUDE_REGEX <regex1> [<regex2> ...] ]
-#                        [ TYPE SHARED|STATIC|MODULE|OBJECT ]
+#                        [ TYPE SHARED|STATIC|MODULE|OBJECT|INTERFACE ]
 #                        [ OBJECTS <obj1> [<obj2> ...] ]
 #                        [ TEMPLATES <template1> [<template2> ...] ]
 #                        [ LIBS <library1> [<library2> ...] ]
@@ -58,11 +58,13 @@
 # TYPE : optional
 #   library type, one of:
 #
-#   :SHARED: libraries are linked dynamically and loaded at runtime
-#   :STATIC: archives of object files for use when linking other targets.
-#   :MODULE: plugins that are not linked into other targets but may be loaded
-#            dynamically at runtime using dlopen-like functionality
-#   :OBJECT: files are just compiled into objects
+#   :SHARED:    libraries are linked dynamically and loaded at runtime
+#   :STATIC:    archives of object files for use when linking other targets.
+#   :MODULE:    plugins that are not linked into other targets but may be loaded
+#               dynamically at runtime using dlopen-like functionality
+#   :OBJECT:    files are just compiled into objects
+#   :INTERFACE: no direct build output, but can be used to aggregate headers,
+#               compilation flags and libraries
 #
 # SOURCES_GLOB : optional
 #   search pattern to find source files to compile (note: not recommend according to CMake guidelines)
@@ -208,8 +210,9 @@ function( ecbuild_add_library_impl )
       if( NOT _PAR_TYPE MATCHES "STATIC" AND
           NOT _PAR_TYPE MATCHES "SHARED" AND
           NOT _PAR_TYPE MATCHES "OBJECT" AND
-          NOT _PAR_TYPE MATCHES "MODULE" )
-        ecbuild_critical( "library type must be one of [ STATIC | SHARED | MODULE | OBJECT ]" )
+          NOT _PAR_TYPE MATCHES "MODULE" AND
+          NOT _PAR_TYPE MATCHES "INTERFACE" )
+        ecbuild_critical( "library type must be one of [ STATIC | SHARED | MODULE | OBJECT | INTERFACE ]" )
       endif()
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): library type is ${_PAR_TYPE}")
     endif()
@@ -248,6 +251,11 @@ function( ecbuild_add_library_impl )
     # Separate sources
     if( _PAR_SOURCES )
       ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+    endif()
+
+    # Purge the sources list for interface libraries (now that they have been filtered)
+    if( _PAR_TYPE MATCHES "INTERFACE" )
+      set( _PAR_SOURCES "" )
     endif()
 
     if( ${_PAR_TARGET}_cuda_srcs )
@@ -292,6 +300,13 @@ function( ecbuild_add_library_impl )
       add_dependencies( ${_PAR_TARGET} ${_PAR_DEPENDS} )
     endif()
 
+    # For interface libraries, there is no build requirement, therefore only
+    # the INTERFACE properties should be populated
+    set( _PUBLIC_INTF "PUBLIC" )
+    if( _PAR_TYPE MATCHES "INTERFACE" )
+      set( _PUBLIC_INTF "INTERFACE" )
+    endif()
+
     # takes a list of possible includes LIST and an INTERFACE parameter
     function(__addDeps)
       set( options )
@@ -309,7 +324,7 @@ function( ecbuild_add_library_impl )
         if(ECBUILD_2_COMPAT_DEPRECATE)
           ecbuild_deprecate("ecbuild_add_library(${_PAR_TARGET}): the usage of ${_p_TYPE} is deprecated. Use PUBLIC_${_p_TYPE} or PRIVATE_${_p_TYPE}.")
         endif()
-        set(_p_INTERFACE PUBLIC)
+        set(_p_INTERFACE ${_PUBLIC_INTF})
       endif()
 
       if( "${_p_TYPE}" STREQUAL LIBS )
@@ -335,7 +350,7 @@ function( ecbuild_add_library_impl )
 
     # add the public link libraries
     if( DEFINED _PAR_PUBLIC_LIBS )
-      __addDeps(TYPE LIBS LIST ${_PAR_PUBLIC_LIBS} INTERFACE PUBLIC)
+      __addDeps(TYPE LIBS LIST ${_PAR_PUBLIC_LIBS} INTERFACE ${_PUBLIC_INTF})
     endif()
 
     # add include dirs if defined
@@ -350,21 +365,23 @@ function( ecbuild_add_library_impl )
 
     # add public include dirs if defined
     if( DEFINED _PAR_PUBLIC_INCLUDES )
-      __addDeps(TYPE INCLUDES LIST ${_PAR_PUBLIC_INCLUDES} INTERFACE PUBLIC)
+      __addDeps(TYPE INCLUDES LIST ${_PAR_PUBLIC_INCLUDES} INTERFACE ${_PUBLIC_INTF})
     endif()
 
     # FIX: Cray compiler PIC option is not detected by CMake
 
-    get_property( _target_pic TARGET ${_PAR_TARGET} PROPERTY POSITION_INDEPENDENT_CODE )
-    if( _target_pic )
-      if( "${CMAKE_C_COMPILER_ID}" STREQUAL "Cray" )
-        set( _PAR_CFLAGS "-fPIC -h PIC ${_PAR_CFLAGS}" )
-      endif()
-      if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
-        set( _PAR_CXXFLAGS "-fPIC -h PIC ${_PAR_CXXFLAGS}" )
-      endif()
-      if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
-        set( _PAR_FFLAGS "-fPIC -h PIC ${_PAR_FFLAGS}" )
+    if( NOT _PAR_TYPE MATCHES "INTERFACE" )
+      get_property( _target_pic TARGET ${_PAR_TARGET} PROPERTY POSITION_INDEPENDENT_CODE )
+      if( _target_pic )
+        if( "${CMAKE_C_COMPILER_ID}" STREQUAL "Cray" )
+          set( _PAR_CFLAGS "-fPIC -h PIC ${_PAR_CFLAGS}" )
+        endif()
+        if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
+          set( _PAR_CXXFLAGS "-fPIC -h PIC ${_PAR_CXXFLAGS}" )
+        endif()
+        if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
+          set( _PAR_FFLAGS "-fPIC -h PIC ${_PAR_FFLAGS}" )
+        endif()
       endif()
     endif()
 
@@ -419,7 +436,7 @@ function( ecbuild_add_library_impl )
 
     # Publish the relevant include directories for the headers
     if(ECBUILD_2_COMPAT)
-      target_include_directories( ${_PAR_TARGET} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
+      target_include_directories( ${_PAR_TARGET} ${_PUBLIC_INTF} $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
       get_property(_incdirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
       string( TOUPPER "${PROJECT_NAME}" PNAME )
       if( ${PNAME}_INCLUDE_DIRS )
@@ -432,11 +449,11 @@ function( ecbuild_add_library_impl )
         if(NOT incdir MATCHES "^\\$<")
           file(RELATIVE_PATH _rel_inc ${PROJECT_SOURCE_DIR} "${incdir}")
           if(NOT _rel_inc MATCHES "^\\.\\./")
-            target_include_directories( ${_PAR_TARGET} PUBLIC $<BUILD_INTERFACE:${incdir}> )
+            target_include_directories( ${_PAR_TARGET} ${_PUBLIC_INTF} $<BUILD_INTERFACE:${incdir}> )
           endif()
           file(RELATIVE_PATH _rel_inc ${PROJECT_BINARY_DIR} "${incdir}")
           if(NOT _rel_inc MATCHES "^\\.\\./")
-            target_include_directories( ${_PAR_TARGET} PUBLIC $<BUILD_INTERFACE:${incdir}> )
+            target_include_directories( ${_PAR_TARGET} ${_PUBLIC_INTF} $<BUILD_INTERFACE:${incdir}> )
           endif()
         endif()
       endforeach()
@@ -464,10 +481,10 @@ function( ecbuild_add_library_impl )
       # install headers
       if( _PAR_HEADER_DESTINATION )
         set( _h_destination "${_PAR_HEADER_DESTINATION}" )
-        target_include_directories(${_PAR_TARGET} PUBLIC $<INSTALL_INTERFACE:${_h_destination}> $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
+        target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${_h_destination}> $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
       else()
         set( _h_destination "${INSTALL_INCLUDE_DIR}" )
-        target_include_directories(${_PAR_TARGET} PUBLIC $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
+        target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
       endif()
 
       if(ECBUILD_INSTALL_LIBRARY_HEADERS)
@@ -516,10 +533,12 @@ function( ecbuild_add_library_impl )
 
       # set build location
 
-      set_target_properties( ${_PAR_TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
-      set_target_properties( ${_PAR_TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
-      if( EC_OS_NAME MATCHES "windows" )
-        set_target_properties( ${_PAR_TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+      if( NOT _PAR_TYPE MATCHES "INTERFACE" )
+        set_target_properties( ${_PAR_TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+        set_target_properties( ${_PAR_TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
+        if( EC_OS_NAME MATCHES "windows" )
+          set_target_properties( ${_PAR_TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+        endif()
       endif()
 
       # export location of target to other projects -- must be exactly after setting the build location (see previous 3 commands)
@@ -530,12 +549,16 @@ function( ecbuild_add_library_impl )
 
     # add definitions to compilation
     if( DEFINED _PAR_DEFINITIONS )
-      target_compile_definitions(${_PAR_TARGET} PRIVATE ${_PAR_DEFINITIONS})
+      if( _PAR_TYPE MATCHES "INTERFACE" )
+        target_compile_definitions(${_PAR_TARGET} PUBLIC ${_PAR_DEFINITIONS})
+      else()
+        target_compile_definitions(${_PAR_TARGET} PRIVATE ${_PAR_DEFINITIONS})
+      endif()
       ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): adding definitions ${_PAR_DEFINITIONS}")
     endif()
 
     # make sure target is removed before - some problems with AIX
-    if( NOT _PAR_TYPE MATCHES "OBJECT" )
+    if( NOT _PAR_TYPE MATCHES "OBJECT" AND NOT _PAR_TYPE MATCHES "INTERFACE" )
       add_custom_command( TARGET ${_PAR_TARGET} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${_PAR_TARGET}> )
     endif()
 
