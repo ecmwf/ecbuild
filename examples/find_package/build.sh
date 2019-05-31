@@ -18,7 +18,7 @@ trap cleanup EXIT
 
 function build() {
     echo "build"
-  export ecbuild_DIR=${HERE}/../../..
+  export ecbuild_DIR=${HERE}/../..
 
   _NAME="$1"
   _SRC="$2"

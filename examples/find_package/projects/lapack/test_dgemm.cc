@@ -5,6 +5,7 @@ extern "C" {
               const int* ldc);
 }
 
+#include <cmath>
 #include <iostream>
 
 static const char* trans  = "N";
