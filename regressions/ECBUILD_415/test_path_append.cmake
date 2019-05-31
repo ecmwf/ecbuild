@@ -1,15 +1,9 @@
 cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake" )
+find_package( ecbuild REQUIRED )
+include( ecbuild_append_to_rpath )
 
-include( ecbuild )
-project( test_paths C )
-
-### open project
-
-ecbuild_declare_project()
-
-message( "${SOME_PATH}" )
+unset( SOME_PATH )
 
 ecbuild_path_append( SOME_PATH "/usr/local/foo" )
 
