@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
 
-include( ecbuild )
+find_package( ecbuild REQUIRED )
 project( projectB VERSION 0.1.0 LANGUAGES CXX )
 
 find_package( projectA REQUIRED )
