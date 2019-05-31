@@ -132,8 +132,7 @@ function( ecbuild_generate_fortran_interfaces )
     WORKING_DIRECTORY ${P_DESTINATION} VERBATIM )
 
   add_custom_target(${P_TARGET}_gen DEPENDS ${interface_files}) # XXX: needed because add_library does not honour file dependencies
-  add_library(${P_TARGET} INTERFACE)
-  add_dependencies(${P_TARGET} ${P_TARGET}_gen)
+  ecbuild_add_library(TARGET ${P_TARGET} TYPE INTERFACE SOURCES ${interface_files} DEPENDS ${P_TARGET}_gen)
   target_include_directories(${P_TARGET} INTERFACE $<BUILD_INTERFACE:${include_dir}>)
 
 endfunction( ecbuild_generate_fortran_interfaces )
