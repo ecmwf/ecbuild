@@ -8,18 +8,24 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
+set -e
+
 HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+
+ECBUILD_PATH=@CMAKE_SOURCE_DIR@/bin
+EXAMPLES_DIR=@CMAKE_SOURCE_DIR@/examples
+SRC_DIR=@CMAKE_CURRENT_SOURCE_DIR@
+
+# Add ecbuild to path
+export PATH=$ECBUILD_PATH:$PATH
 
 # Cleanup previous builds
 rm -rf $HERE/build $HERE/bundle
 
-# Add ecbuild to path
-export PATH=$HERE/../../bin:$PATH
-
 # Build and install bundle
 mkdir -p $HERE/bundle/build
 cd $HERE/bundle/build
-ecbuild --prefix=$HERE/bundle/install $HERE/../cpp-bundle
+ecbuild --prefix=$HERE/bundle/install $EXAMPLES_DIR/cpp-bundle
 make install
 
 # Build project that uses subproject bar of bundle
