@@ -100,9 +100,6 @@ find_path(NetCDF_INCLUDE_DIRS
 mark_as_advanced(NetCDF_INCLUDE_DIRS)
 
 ## Find libraries for each component
-if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY )
-  message( STATUS "Find${CMAKE_FIND_PACKAGE_NAME} defines targets:" )
-endif()
 foreach( _comp ${_search_components} )
   string( TOUPPER "${_comp}" _COMP )
 
@@ -126,27 +123,43 @@ foreach( _comp ${_search_components} )
       set_target_properties(NetCDF::NetCDF_${_comp} PROPERTIES
         IMPORTED_LOCATION "${NetCDF_${_comp}_LIBRARY}"
         INTERFACE_INCLUDE_DIRECTORIES "${NetCDF_INCLUDE_DIRS}")
-      if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY )
-        message( STATUS "  - NetCDF::NetCDF_${_comp} [${NetCDF_${_comp}_LIBRARY}]")
-      endif()
     endif()
   endif()
 endforeach()
 
 ## Find version
 if (NetCDF_INCLUDE_DIRS)
-  file(STRINGS "${NetCDF_INCLUDE_DIRS}/netcdf_meta.h" _netcdf_version_lines
-    REGEX "#define[ \t]+NC_VERSION_(MAJOR|MINOR|PATCH|NOTE)")
-  string(REGEX REPLACE ".*NC_VERSION_MAJOR *\([0-9]*\).*" "\\1" _netcdf_version_major "${_netcdf_version_lines}")
-  string(REGEX REPLACE ".*NC_VERSION_MINOR *\([0-9]*\).*" "\\1" _netcdf_version_minor "${_netcdf_version_lines}")
-  string(REGEX REPLACE ".*NC_VERSION_PATCH *\([0-9]*\).*" "\\1" _netcdf_version_patch "${_netcdf_version_lines}")
-  string(REGEX REPLACE ".*NC_VERSION_NOTE *\"\([^\"]*\)\".*" "\\1" _netcdf_version_note "${_netcdf_version_lines}")
-  set(NetCDF_VERSION "${_netcdf_version_major}.${_netcdf_version_minor}.${_netcdf_version_patch}${_netcdf_version_note}")
-  unset(_netcdf_version_major)
-  unset(_netcdf_version_minor)
-  unset(_netcdf_version_patch)
-  unset(_netcdf_version_note)
-  unset(_netcdf_version_lines)
+  find_program( NETCDF_CONFIG_EXECUTABLE
+      NAMES nc-config
+      HINTS ${_search_hints}
+      PATH_SUFFIXES bin Bin ../../bin
+      DOC "NetCDF nc-config helper" )
+  mark_as_advanced( NETCDF_CONFIG_EXECUTABLE )
+
+  if( NETCDF_CONFIG_EXECUTABLE )
+    execute_process( COMMAND ${NETCDF_CONFIG_EXECUTABLE} --version
+      RESULT_VARIABLE _netcdf_config_result
+      OUTPUT_VARIABLE _netcdf_config_version)
+
+    if( _netcdf_config_result EQUAL 0 )
+      string(REGEX REPLACE ".* ((([0-9]+)\\.)+([0-9]+)).*" "\\1" NetCDF_VERSION "${_netcdf_config_version}" )
+    endif()
+
+  elseif( EXISTS "${NetCDF_INCLUDE_DIRS}/netcdf_meta.h" )
+
+    file(STRINGS "${NetCDF_INCLUDE_DIRS}/netcdf_meta.h" _netcdf_version_lines
+      REGEX "#define[ \t]+NC_VERSION_(MAJOR|MINOR|PATCH|NOTE)")
+    string(REGEX REPLACE ".*NC_VERSION_MAJOR *\([0-9]*\).*" "\\1" _netcdf_version_major "${_netcdf_version_lines}")
+    string(REGEX REPLACE ".*NC_VERSION_MINOR *\([0-9]*\).*" "\\1" _netcdf_version_minor "${_netcdf_version_lines}")
+    string(REGEX REPLACE ".*NC_VERSION_PATCH *\([0-9]*\).*" "\\1" _netcdf_version_patch "${_netcdf_version_lines}")
+    string(REGEX REPLACE ".*NC_VERSION_NOTE *\"\([^\"]*\)\".*" "\\1" _netcdf_version_note "${_netcdf_version_lines}")
+    set(NetCDF_VERSION "${_netcdf_version_major}.${_netcdf_version_minor}.${_netcdf_version_patch}${_netcdf_version_note}")
+    unset(_netcdf_version_major)
+    unset(_netcdf_version_minor)
+    unset(_netcdf_version_patch)
+    unset(_netcdf_version_note)
+    unset(_netcdf_version_lines)
+  endif()
 endif ()
 
 ## Finalize find_package
@@ -157,18 +170,29 @@ find_package_handle_standard_args( ${CMAKE_FIND_PACKAGE_NAME}
   VERSION_VAR NetCDF_VERSION
   HANDLE_COMPONENTS )
 
+if( ${CMAKE_FIND_PACKAGE_NAME}_FOUND AND NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY )
+  message( STATUS "Find${CMAKE_FIND_PACKAGE_NAME} defines targets:" )
+  foreach( _comp ${_search_components} )
+    string( TOUPPER "${_comp}" _COMP )
+
+    if( ${CMAKE_FIND_PACKAGE_NAME}_${_arg_${_COMP}}_FOUND )
+      message( STATUS "  - NetCDF::NetCDF_${_comp} [${NetCDF_${_comp}_LIBRARY}]")
+    endif()
+  endforeach()
+endif()
+
 foreach( _prefix NetCDF NetCDF4 NETCDF NETCDF4 ${CMAKE_FIND_PACKAGE_NAME} )
   set( ${_prefix}_INCLUDE_DIRS ${NetCDF_INCLUDE_DIRS} )
   set( ${_prefix}_LIBRARIES    ${NetCDF_LIBRARIES})
   set( ${_prefix}_VERSION      ${NetCDF_VERSION} )
-  set( ${_prefix}_FOUND        ${CMAKE_FIND_PACKAGE_NAME}_FOUND )
+  set( ${_prefix}_FOUND        ${${CMAKE_FIND_PACKAGE_NAME}_FOUND} )
   
   foreach( _comp ${_search_components} )
     string( TOUPPER "${_comp}" _COMP )
     set( _arg_comp ${_arg_${_COMP}} )
-    set( ${_prefix}_${_comp}_FOUND     ${CMAKE_FIND_PACKAGE_NAME}_${_arg_comp}_FOUND )
-    set( ${_prefix}_${_COMP}_FOUND     ${CMAKE_FIND_PACKAGE_NAME}_${_arg_comp}_FOUND )
-    set( ${_prefix}_${_arg_comp}_FOUND ${CMAKE_FIND_PACKAGE_NAME}_${_arg_comp}_FOUND )
+    set( ${_prefix}_${_comp}_FOUND     ${${CMAKE_FIND_PACKAGE_NAME}_${_arg_comp}_FOUND} )
+    set( ${_prefix}_${_COMP}_FOUND     ${${CMAKE_FIND_PACKAGE_NAME}_${_arg_comp}_FOUND} )
+    set( ${_prefix}_${_arg_comp}_FOUND ${${CMAKE_FIND_PACKAGE_NAME}_${_arg_comp}_FOUND} )
 
     set( ${_prefix}_${_comp}_LIBRARIES     ${NetCDF_${_comp}_LIBRARIES} )
     set( ${_prefix}_${_COMP}_LIBRARIES     ${NetCDF_${_comp}_LIBRARIES} )
