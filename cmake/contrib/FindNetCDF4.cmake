@@ -4,11 +4,8 @@
 #
 # - Find NETCDF, a library for reading and writing self describing array data.
 #
-# This module invokes the NETCDF wrapper compiler that should be installed
-# alongside NETCDF.  Depending upon the NETCDF Configuration, the wrapper compiler
-# is called either h5cc or h5pcc.  If this succeeds, the module will then call
-# the compiler with the -show argument to see what flags are used when compiling
-# an NETCDF client application.
+# This module invokes the NETCDF "nc-config" script that is provided by the 
+# NetCDF4 package.
 #
 # The module will optionally accept the COMPONENTS argument.  If no COMPONENTS
 # are specified, then the find module will default to finding only the NETCDF C
@@ -42,6 +39,7 @@
 #  NETCDF_FOUND - true if NETCDF was found on the system
 #  NETCDF_LIBRARY_DIRS - the full set of library directories
 #  NETCDF_IS_PARALLEL - Whether or not NETCDF was found with parallel IO support
+#                       for version 4 files via a parallel HDF5 library.
 #  NETCDF_CONFIG_EXECUTABLE - the path to the NC-CONFIG tool
 
 #=============================================================================
@@ -98,33 +96,33 @@ find_program( NETCDF_CONFIG_EXECUTABLE
 mark_as_advanced( NETCDF_CONFIG_EXECUTABLE )
 ecbuild_debug("FindNetCDF4: nc-config executable = ${NETCDF_CONFIG_EXECUTABLE}")
 
+#Use nc-config to check for parallel support for v4 files.
 set(output "no")
-_NETCDF_CONFIG (--has-hdf5 output return)
-set(HAS_HDF5 FALSE)
-
-if(${output} STREQUAL yes)
-  set(HAS_HDF5 TRUE)
-  set(HDF5_FIND_QUIETLY ${NETCDF_FIND_QUIETLY})
-  set(HDF5_FIND_REQUIRED ${NETCDF_FIND_REQUIRED})
-  find_package(HDF5)
-#        list( APPEND NETCDF_LIBRARIES_DEBUG
-#            ${HDF5_LIBRARIES_DEBUG} )
-#        list( APPEND NETCDF_LIBRARIES_RELEASE
-#            ${HDF5_LIBRARIES_RELEASE} )
-  set (NETCDF_IS_PARALLEL ${HDF5_IS_PARALLEL})
-endif()
-_NETCDF_CONFIG (--has-pnetcdf output return)
-if(${output} STREQUAL yes)
-  set (NETCDF_IS_PARALLEL TRUE)
+_NETCDF_CONFIG (--has-parallel4 output return) #available with NetCDF>=4.7.0
+if(${return} EQUAL 0)
+    if(${output} STREQUAL yes)
+        set(NETCDF_IS_PARALLEL TRUE)
+    else()
+        set(NETCDF_IS_PARALLEL FALSE)
+    endif()
 else()
-#   set(NETCDF_IS_PARALLEL FALSE)
+    set(output "no")
+    _NETCDF_CONFIG (--has-parallel output return)
+    if(${output} STREQUAL yes)
+        #NOTE: With NetCDF<4.7.0 This may be set to true when only v3 parallel support is available.
+        #currently there is no way to completely disambiguate v3 and v4 parallel support for <4.7.0
+        set(NETCDF_IS_PARALLEL TRUE)
+    else()
+        set(NETCDF_IS_PARALLEL FALSE)
+    endif()
 endif()
-set( NETCDF_IS_PARALLEL TRUE CACHE BOOL
-    "NETCDF library compiled with parallel IO support" )
+
+set(NETCDF_IS_PARALLEL ${NETCDF_IS_PARALLEL} CACHE BOOL
+    "NETCDF library compiled with parallel IO support for version 4 files." )
 
 
 if( NETCDF_INCLUDE_DIRS AND NETCDF_LIBRARIES )
-    # Do nothing: we already have NETCDF_INCLUDE_PATH and NETCDF_LIBRARIES in the
+    # Do nothing: we already have NETCDF_INCLUDE_DIRS and NETCDF_LIBRARIES in the
     # cache, it would be a shame to override them
 else()
     if( NOT NETCDF_FIND_COMPONENTS )
@@ -142,17 +140,6 @@ else()
         endforeach()
     endif()
 
-    # seed the initial lists of libraries to find with items we know we need
-    set( NETCDF_C_INCLUDE_NAMES netcdf.h )
-    set( NETCDF_CXX_INCLUDE_NAMES netcdfcpp.h ${NETCDF_C_INCLUDE_NAMES} )
-    set( NETCDF_FORTRAN_INCLUDE_NAMES ${NETCDF_C_INCLUDE_NAMES} )
-    set( NETCDF_F90_INCLUDE_NAMES netcdf.mod typesizes.mod ${NETCDF_C_INCLUDE_NAMES} )
-
-    set( NETCDF_C_LIBRARY_NAMES netcdf)
-    set( NETCDF_CXX_LIBRARY_NAMES netcdf_c++ netcdf_c++4 ${NETCDF_C_LIBRARY_NAMES} )
-    set( NETCDF_FORTRAN_LIBRARY_NAMES netcdff ${NETCDF_C_LIBRARY_NAMES})
-    set( NETCDF_F90_LIBRARY_NAMES ${NETCDF_FORTRAN_LIBRARY_NAMES} )
-
     set( NETCDF_REQUIRED netcdf.h netcdfcpp.h netcdf.mod typesizes.mod netcdf netcdff netcdf_c++ netcdf_c++4)
 
     foreach( LANGUAGE ${NETCDF_LANGUAGE_BINDINGS} )
@@ -161,52 +148,57 @@ else()
         set( NETCDF_${LANGUAGE}_FOUND 1 ) # disable this in following if necessary
 
         # find the NETCDF includes
-        foreach( INC ${NETCDF_${LANGUAGE}_INCLUDE_NAMES} )
-          #ecbuild_debug( "FindNetCDF4: looking for include file ${INC}")
+        set(output "no")
+        if( ${LANGUAGE} STREQUAL C )
+          _NETCDF_CONFIG (--cflags output return)
+        elseif( ${LANGUAGE} STREQUAL CXX )
+          _NETCDF_CONFIG (--cxx4flags output return)
+        elseif( ${LANGUAGE} STREQUAL FORTRAN OR ${LANGUAGE} STREQUAL F90 )
+          _NETCDF_CONFIG (--fflags output return)
+        endif()
+        if (${output} STREQUAL no)
+          message( STATUS "NETCDF_INCLUDE_DIRS is not found for NetCDF component ${LANGUAGE}." )
+        else()
+          string(REGEX MATCHALL "-I[^ ]*" _INCLUDE_DIRS_ALL "${output}")
+          set (NETCDF_${LANGUAGE}_INCLUDE_DIRS)
+          foreach (incdir ${_INCLUDE_DIRS_ALL})
+            string (REPLACE "-I" "" _tmp ${incdir})
+            string (STRIP ${_tmp} _tmp)
+            list (APPEND NETCDF_${LANGUAGE}_INCLUDE_DIRS ${_tmp})
+          endforeach()
+          list( REMOVE_DUPLICATES NETCDF_${LANGUAGE}_INCLUDE_DIRS )
+          list( APPEND NETCDF_INCLUDE_DIRS ${NETCDF_${LANGUAGE}_INCLUDE_DIRS} )
+        endif()
 
-          find_path( NETCDF_${INC}_INCLUDE_DIR ${INC}
-              HINTS ${NETCDF_${LANGUAGE}_INCLUDE_FLAGS}
-                    ${NETCDF_ROOT} ${NETCDF_DIR} ${NETCDF_PATH} ${NETCDF4_DIR}
-                    ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF_PATH ENV NETCDF4_DIR
-              PATH_SUFFIXES
-                  include
-                  Include
-          )
-          if( NOT NETCDF_${INC}_INCLUDE_DIR )
-            #ecbuild_debug( "FindNetCDF4: ${INC} not found" )
-            GET_FILENAME_COMPONENT( _basename ${INC} NAME_WE )
-            GET_FILENAME_COMPONENT( _ext ${INC} EXT )
-            string( TOUPPER ${_basename} _BASENAME )
-            set( INC_MOD "${_BASENAME}${_ext}")
-            #ecbuild_debug( "FindNetCDF4:     try ${INC_MOD}" )
-            find_path( NETCDF_${INC}_INCLUDE_DIR ${INC_MOD}
-              HINTS ${NETCDF_${LANGUAGE}_INCLUDE_FLAGS}
-                    ${NETCDF_ROOT} ${NETCDF_DIR} ${NETCDF_PATH} ${NETCDF4_DIR}
-                    ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF_PATH ENV NETCDF4_DIR
-              PATH_SUFFIXES
-                  include
-                  Include
-            )
-          endif()
-
-          mark_as_advanced( NETCDF_${INC}_INCLUDE_DIR )
-          #ecbuild_debug_var( NETCDF_${INC}_INCLUDE_DIR)
-          if (NETCDF_${INC}_INCLUDE_DIR)
-            list( APPEND NETCDF_INCLUDE_DIRS ${NETCDF_${INC}_INCLUDE_DIR} )
-          else()
-            list( FIND NETCDF_REQUIRED ${INC} location )
-            if( ${location} GREATER -1 )
-              if(NETCDF_FIND_REQUIRED)
-                ecbuild_error( "\"${INC}\" is not found for NetCDF component ${LANGUAGE}" )
-              elseif( NOT NETCDF_FIND_QUIETLY )
-                message( STATUS "\"${INC}\" is not found for NetCDF component ${LANGUAGE}" )
-              endif()
-              set( NETCDF_${LANGUAGE}_FOUND 0 )
-            endif()
-          endif()
-        endforeach()
         # find the NETCDF libraries
-        foreach( LIB ${NETCDF_${LANGUAGE}_LIBRARY_NAMES} )
+        set(output "no")
+        if( ${LANGUAGE} STREQUAL C )
+          _NETCDF_CONFIG (--libs output return)
+        elseif( ${LANGUAGE} STREQUAL CXX )
+          _NETCDF_CONFIG (--cxx4libs output return)
+        elseif( ${LANGUAGE} STREQUAL FORTRAN OR ${LANGUAGE} STREQUAL F90 )
+          _NETCDF_CONFIG (--flibs output return)
+        endif()
+        if (${output} STREQUAL no)
+          message( STATUS "NETCDF_LIBRARIES is not found for NetCDF component ${LANGUAGE}." )
+        else()
+          string(REGEX MATCHALL "-L[^ ]*" _LIBRARY_DIRS_ALL "${output}")
+          set (NETCDF_${LANGUAGE}_LIBRARY_DIRS)
+          foreach (libdir ${_LIBRARY_DIRS_ALL})
+            string (REPLACE "-L" "" _tmp ${libdir})
+            string (STRIP ${_tmp} _tmp)
+            list (APPEND NETCDF_${LANGUAGE}_LIBRARY_DIRS ${_tmp})
+          endforeach()
+          list( REMOVE_DUPLICATES NETCDF_${LANGUAGE}_LIBRARY_DIRS )
+          string(REGEX MATCHALL " -l[^ ]*" _LIBRARY_NAMES_ALL "${output}")
+          set (NETCDF_${LANGUAGE}_LIBRARY_NAMES)
+          foreach (lib ${_LIBRARY_NAMES_ALL})
+            string (REPLACE "-l" "" _tmp ${lib})
+            string (STRIP ${_tmp} _tmp)
+            list (APPEND NETCDF_${LANGUAGE}_LIBRARY_NAMES ${_tmp})
+          endforeach()
+          list( REMOVE_DUPLICATES NETCDF_${LANGUAGE}_LIBRARY_NAMES )
+          foreach( LIB ${NETCDF_${LANGUAGE}_LIBRARY_NAMES} )
             if( UNIX AND NETCDF_USE_STATIC_LIBRARIES )
                 # According to bug 1643 on the CMake bug tracker, this is the
                 # preferred method for searching for a static library.
@@ -221,16 +213,10 @@ else()
             endif()
             find_library( NETCDF_${LIB}_LIBRARY_DEBUG
                 NAMES ${THIS_LIBRARY_SEARCH_DEBUG}
-                HINTS ${NETCDF_${LANGUAGE}_LIBRARY_DIRS}
-                      ${NETCDF_ROOT} ${NETCDF_DIR} ${NETCDF_PATH} ${NETCDF4_DIR}
-                      ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF_PATH ENV NETCDF4_DIR
-                PATH_SUFFIXES lib64 Lib64 lib Lib)
+                HINTS ${NETCDF_${LANGUAGE}_LIBRARY_DIRS})
             find_library( NETCDF_${LIB}_LIBRARY_RELEASE
                 NAMES ${THIS_LIBRARY_SEARCH_RELEASE}
-                HINTS ${NETCDF_${LANGUAGE}_LIBRARY_DIRS}
-                      ${NETCDF_ROOT} ${NETCDF_DIR} ${NETCDF_PATH} ${NETCDF4_DIR}
-                      ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF_PATH ENV NETCDF4_DIR
-                PATH_SUFFIXES lib64 Lib64 lib Lib )
+                HINTS ${NETCDF_${LANGUAGE}_LIBRARY_DIRS})
             select_library_configurations( NETCDF_${LIB} )
             # even though we adjusted the individual library names in
             # select_library_configurations, we still need to distinguish
@@ -240,29 +226,30 @@ else()
             # up by the selection macro above) because it may specify debug and
             # optimized variants for a particular library, but a list of
             # libraries is allowed to specify debug and optimized only once.
-          if (NETCDF_${LIB}_LIBRARY_RELEASE)
-            list( APPEND NETCDF_LIBRARIES_RELEASE ${NETCDF_${LIB}_LIBRARY_RELEASE} )
-            list( APPEND NETCDF_${LANGUAGE}_LIBRARIES_RELEASE ${NETCDF_${LIB}_LIBRARY_RELEASE} )
-          endif()
-          if (NETCDF_${LIB}_LIBRARY_DEBUG)
-            list( APPEND NETCDF_LIBRARIES_DEBUG ${NETCDF_${LIB}_LIBRARY_DEBUG} )
-            list( APPEND NETCDF_${LANGUAGE}_LIBRARIES_DEBUG ${NETCDF_${LIB}_LIBRARY_DEBUG} )
-          endif()
-          if (NETCDF_${LIB}_LIBRARY_RELEASE OR NETCDF_${LIB}_LIBRARY_DEBUG )
-          else()
-            list( FIND NETCDF_REQUIRED ${LIB} location )
-            if( ${location} EQUAL -1 )
+            if (NETCDF_${LIB}_LIBRARY_RELEASE)
+              list( APPEND NETCDF_LIBRARIES_RELEASE ${NETCDF_${LIB}_LIBRARY_RELEASE} )
+              list( APPEND NETCDF_${LANGUAGE}_LIBRARIES_RELEASE ${NETCDF_${LIB}_LIBRARY_RELEASE} )
+            endif()
+            if (NETCDF_${LIB}_LIBRARY_DEBUG)
+              list( APPEND NETCDF_LIBRARIES_DEBUG ${NETCDF_${LIB}_LIBRARY_DEBUG} )
+              list( APPEND NETCDF_${LANGUAGE}_LIBRARIES_DEBUG ${NETCDF_${LIB}_LIBRARY_DEBUG} )
+            endif()
+            if ( NETCDF_${LIB}_LIBRARY_RELEASE OR NETCDF_${LIB}_LIBRARY_DEBUG )
             else()
-              if(NETCDF_FIND_REQUIRED)
-                message( SEND_ERROR "\"${LIB}\" is not found for NetCDF component ${LANGUAGE}." )
-              elseif( NOT NETCDF_FIND_QUIETLY )
-                message( STATUS "\"${LIB}\" is not found for NetCDF component ${LANGUAGE}." )
+              list( FIND NETCDF_REQUIRED ${LIB} location )
+              if( ${location} EQUAL -1 )
               else()
-                set( NETCDF_${LANGUAGE}_FOUND 0 )
-              endif()
-           endif()
-          endif()
-        endforeach()
+                if(NETCDF_FIND_REQUIRED)
+                  message( SEND_ERROR "\"${LIB}\" is not found for NetCDF component ${LANGUAGE}." )
+                elseif( NOT NETCDF_FIND_QUIETLY )
+                  message( STATUS "\"${LIB}\" is not found for NetCDF component ${LANGUAGE}." )
+                else()
+                  set( NETCDF_${LANGUAGE}_FOUND 0 )
+                endif()
+             endif()
+            endif()
+          endforeach()
+        endif()
         list( APPEND NETCDF_LIBRARY_DIRS ${NETCDF_${LANGUAGE}_LIBRARY_DIRS} )
 
         # Append the libraries for this language binding to the list of all
@@ -286,18 +273,22 @@ else()
     # We may have picked up some duplicates in various lists during the above
     # process for the language bindings (both the C and C++ bindings depend on
     # libz for example).  Remove the duplicates.
-    if( NETCDF_INCLUDE_DIRS )
-        list( REMOVE_DUPLICATES NETCDF_INCLUDE_DIRS )
-    endif()
-    if( NETCDF_LIBRARIES_DEBUG )
-        list( REMOVE_DUPLICATES NETCDF_LIBRARIES_DEBUG )
-    endif()
-    if( NETCDF_LIBRARIES_RELEASE )
-        list( REMOVE_DUPLICATES NETCDF_LIBRARIES_RELEASE )
-    endif()
-    if( NETCDF_LIBRARY_DIRS )
-        list( REMOVE_DUPLICATES NETCDF_LIBRARY_DIRS )
-    endif()
+   if( NETCDF_INCLUDE_DIRS )
+       list( REMOVE_DUPLICATES NETCDF_INCLUDE_DIRS )
+   endif()
+   if( NETCDF_LIBRARIES_DEBUG )
+       list( REVERSE NETCDF_LIBRARIES_DEBUG )
+       list( REMOVE_DUPLICATES NETCDF_LIBRARIES_DEBUG )
+       list( REVERSE NETCDF_LIBRARIES_DEBUG )
+   endif()
+   if( NETCDF_LIBRARIES_RELEASE )
+       list( REVERSE NETCDF_LIBRARIES_RELEASE )
+       list( REMOVE_DUPLICATES NETCDF_LIBRARIES_RELEASE )
+       list( REVERSE NETCDF_LIBRARIES_RELEASE )
+   endif()
+   if( NETCDF_LIBRARY_DIRS )
+       list( REMOVE_DUPLICATES NETCDF_LIBRARY_DIRS )
+   endif()
 
     # Construct the complete list of NETCDF libraries with debug and optimized
     # variants when the generator supports them.
@@ -311,6 +302,7 @@ else()
     else()
         set( NETCDF_LIBRARIES ${NETCDF_LIBRARIES_RELEASE} )
     endif()
+
 endif()
 
 set( NETCDF4_FIND_QUIETLY ${NETCDF_FIND_QUIETLY} )
