@@ -90,7 +90,7 @@ foreach(format ${doc_formats})
             -d ${CMAKE_CURRENT_BINARY_DIR}/doctrees
             -b ${format}
             ${sphinx_flags}
-            ${CMAKE_CURRENT_SOURCE_DIR}/src
+            ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_BINARY_DIR}/${format}
             > ${doc_format_log} # log stdout, pass stderr
     ${${format}_extra_commands}

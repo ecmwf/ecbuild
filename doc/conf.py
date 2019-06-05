@@ -22,7 +22,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, here)
 
 source_suffix = '.rst'
-master_doc = 'index'
+master_doc = 'src/index'
 
 project = 'ecBuild'
 copyright = 'ECMWF'
