@@ -30,11 +30,6 @@ elseif(NOT SPHINX_EXECUTABLE)
   message(FATAL_ERROR "SPHINX_EXECUTABLE (sphinx-build) is not found!")
 endif()
 
-set(conf_path "${CMAKE_CURRENT_SOURCE_DIR}")
-set(conf_version "${ECBUILD_VERSION_STR}")
-set(conf_release "${ECBUILD_VERSION_STR}")
-configure_file(conf.py.in conf.py @ONLY)
-
 set(doc_formats "")
 if(SPHINX_HTML)
   list(APPEND doc_formats html)
@@ -91,7 +86,7 @@ foreach(format ${doc_formats})
   add_custom_command(
     OUTPUT ${doc_format_output}
     COMMAND ${SPHINX_EXECUTABLE}
-            -c ${CMAKE_CURRENT_BINARY_DIR}
+            -c ${CMAKE_CURRENT_SOURCE_DIR}
             -d ${CMAKE_CURRENT_BINARY_DIR}/doctrees
             -b ${format}
             ${sphinx_flags}

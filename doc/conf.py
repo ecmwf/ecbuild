@@ -12,33 +12,40 @@
 import sys
 import os
 import re
-import glob
 
-sys.path.insert(0, r'@conf_path@')
+
+def parse_version(ver_str):
+    return re.sub("^((([0-9]+)\\.)+([0-9]+)).*", "\\1", ver_str)
+
+
+here = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, here)
 
 source_suffix = '.rst'
 master_doc = 'index'
 
 project = 'ecBuild'
 copyright = 'ECMWF'
-version = '@conf_version@' # feature version
-release = '@conf_release@' # full version string
+
+with open(os.path.join(here, '..', 'VERSION'), 'r') as f:
+    release = f.readline().strip() # full version string
+version = parse_version(release) # feature version
 
 primary_domain = 'cmake'
 
 exclude_patterns = []
 
 extensions = ['cmake']
-templates_path = ['@conf_path@/templates']
+templates_path = [os.path.join(here, 'templates')]
 
 nitpicky = True
 
 html_show_sourcelink = True
-html_static_path = ['@conf_path@/static']
+html_static_path = [os.path.join(here, 'static')]
 html_theme = 'default'
 html_title = 'ecBuild %s Documentation' % release
 html_short_title = '%s Documentation' % release
-html_favicon = '@conf_path@/static/ecbuild.ico'
+html_favicon = os.path.join(here, 'static', 'ecbuild.ico')
 # Not supported yet by sphinx:
 # https://bitbucket.org/birkenfeld/sphinx/issue/1448/make-qthelp-more-configurable
 # qthelp_namespace = "org.cmake"
