@@ -10,7 +10,7 @@ TOC = [('macros', 'ecbuild*.cmake'),
        ('find', 'Find*.cmake'),
        ('contrib', 'contrib/*.cmake')]
 
-CWD = path.abspath(path.join(path.dirname(__file__), 'src'))
+CWD = path.abspath(path.dirname(__file__))
 
 
 def generate(basedir):

@@ -50,3 +50,7 @@ html_favicon = os.path.join(here, 'static', 'ecbuild.ico')
 # https://bitbucket.org/birkenfeld/sphinx/issue/1448/make-qthelp-more-configurable
 # qthelp_namespace = "org.cmake"
 # qthelp_qch_name = "CMake-300.qch"
+
+# Extract the docs from the .cmake files
+from generate import generate
+generate(os.path.join(here, '..', 'cmake'))

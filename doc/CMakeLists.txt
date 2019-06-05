@@ -111,13 +111,6 @@ find_package( PythonInterp )
 
 if( PYTHONINTERP_FOUND )
 
-  # Generate documentation
-
-  add_custom_target( generate_docs COMMENT "Generating documentation" )
-  add_custom_command( TARGET generate_docs POST_BUILD
-                      COMMAND ${PYTHON_EXECUTABLE} generate.py ${CMAKE_SOURCE_DIR}/cmake
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
-
   # Upload documentation
 
   if( DEFINED ENV{CONFLUENCE_PASSWORD} )
