@@ -79,7 +79,7 @@ foreach( _comp ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS} )
   endif()
 endforeach()
 if( NOT _search_components )
-  set( _search_components ${_possible_components} )
+  set( _search_components C )
 endif()
 
 ## Search hints for finding include directories and libraries
