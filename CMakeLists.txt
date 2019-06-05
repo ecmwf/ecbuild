@@ -28,7 +28,8 @@ configure_file( cmake/ecbuild_version.h.in ${CMAKE_BINARY_DIR}/ecbuild_version.h
 
 ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                         SOURCES_PACK
-                            INSTALL
+                            README.rst
+                            INSTALL.rst
                             AUTHORS
                             NOTICE
                             LICENSE
