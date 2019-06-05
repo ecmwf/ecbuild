@@ -4,6 +4,6 @@ CMakeLists.txt.user*
 *.py[cdo]
 *.swp
 *~
-doc/src/contrib
-doc/src/find
-doc/src/macros
+doc/contrib
+doc/find
+doc/macros
