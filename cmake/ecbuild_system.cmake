@@ -6,9 +6,13 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+if( NOT ${PROJECT_NAME}_ECBUILD_SYSTEM_INCLUDED )
+set( ${PROJECT_NAME}_ECBUILD_SYSTEM_INCLUDED TRUE )
+
+include( ecbuild )
+
 ########################################################################################################
 # disallow in-source build
-
 if( EXISTS ${CMAKE_SOURCE_DIR}/CMakeCache.txt ) # check for failed attempts to build within the source tree
     message( FATAL_ERROR "Project ${PROJECT_NAME} contains a CMakeCache.txt inside source tree [${CMAKE_SOURCE_DIR}/CMakeCache.txt].\n Please remove it and
     make sure that source tree is prestine and clean of unintended files, before retrying." )
@@ -28,19 +32,22 @@ endif()
 ########################################################################################################
 # ecbuild versioning support
 
-set( ECBUILD_CMAKE_MINIMUM "2.8.10" )
+set( ECBUILD_CMAKE_MINIMUM "3.6.0" )
 if( ${CMAKE_VERSION} VERSION_LESS ${ECBUILD_CMAKE_MINIMUM} )
     message(FATAL_ERROR "${PROJECT_NAME} requires at least CMake ${ECBUILD_CMAKE_MINIMUM} -- you are using ${CMAKE_COMMAND} [${CMAKE_VERSION}]\n Please, get a newer version of CMake @ www.cmake.org" )
 endif()
 
 set( ECBUILD_MACROS_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "where ecbuild system is" )
 
-include( "${ECBUILD_MACROS_DIR}/VERSION.cmake" )
-
-set( ecbuild_VERSION_STR "${ECBUILD_VERSION_STR}" )
+if( NOT ecbuild_VERSION_STR )
+  include( ecbuild_parse_version )
+  ecbuild_parse_version_file( "${ECBUILD_MACROS_DIR}/VERSION" PREFIX ecbuild )
+endif()
 
 # Set policies
-include( ecbuild_policies NO_POLICY_SCOPE )
+if( NOT ( PROJECT_NAME STREQUAL ecbuild ) )
+    include( ecbuild_policies NO_POLICY_SCOPE )
+endif()
 
 # set capitalised project name
 
@@ -61,6 +68,16 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     # Include log macros since these are used right away
     include( ecbuild_log )
+
+    # Enable the compatibility layer
+    if(ECBUILD_2_COMPAT)
+        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/compat" )
+        include(ecbuild_compat)
+
+        # Deprecate capitalised project name
+        ecbuild_mark_compat(${PROJECT_NAME_CAPS} ${PROJECT_NAME})
+        ecbuild_mark_compat(${PROJECT_NAME_LOWCASE} ${PROJECT_NAME})
+    endif()
 
     execute_process( COMMAND env OUTPUT_VARIABLE __env )
     ecbuild_debug( "---------------------------------------------------------" )
@@ -86,11 +103,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     ecbuild_info( "---------------------------------------------------------" )
 
-    # clear the build dir exported targets file (only on the top project)
-
-    set( TOP_PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}-targets.cmake" CACHE INTERNAL "" )
-    file( REMOVE ${TOP_PROJECT_TARGETS_FILE} )
-
     # add backport support for versions up too 2.8.4
     if( ${CMAKE_VERSION} VERSION_LESS "2.8" )
     set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/2.8" ${CMAKE_MODULE_PATH} )
@@ -98,9 +110,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     # add extra macros from external contributions
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
-
-    # would bring FindEigen in, so for the moment keep it out
-    # set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/GreatCMakeCookOff" )
 
     ############################################################################################
     # define valid build types
@@ -159,6 +168,10 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     ############################################################################################
     # add our macros
 
+    include( ecbuild_evaluate_dynamic_condition )
+    include( ecbuild_filter_list )
+    include( ecbuild_parse_version )
+
     include( ecbuild_list_macros )
     include( ecbuild_list_add_pattern )
     include( ecbuild_list_exclude_pattern )
@@ -166,14 +179,12 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_try_run )
     include( ecbuild_check_c_source_return )
     include( ecbuild_check_cxx_source_return )
-    include( ecbuild_check_cxx11 )
     include( ecbuild_check_fortran_source_return )
 
     include( ecbuild_requires_macro_version )
     include( ecbuild_get_date )
     include( ecbuild_add_persistent )
     include( ecbuild_generate_config_headers )
-    include( ecbuild_generate_rpc )
     include( ecbuild_generate_yy )
     include( ecbuild_generate_fortran_interfaces )
     include( ecbuild_echo_targets )
@@ -186,7 +197,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_get_test_data )
     include( ecbuild_add_c_flags )
     include( ecbuild_add_cxx_flags )
-    include( ecbuild_add_cxx11_flags )
     include( ecbuild_get_cxx11_flags )
     include( ecbuild_check_fortran )
     include( ecbuild_add_fortran_flags )
@@ -196,12 +206,10 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_dont_pack )
     include( ecbuild_project_files )
     include( ecbuild_declare_project )
+    include( ecbuild_generate_project_config )
     include( ecbuild_install_project )
     include( ecbuild_separate_sources )
     include( ecbuild_find_package )
-    include( ecbuild_use_package )
-    include( ecbuild_list_extra_search_paths )
-    include( ecbuild_add_extra_search_paths )
     include( ecbuild_print_summary )
     include( ecbuild_warn_unused_files )
     include( ecbuild_find_mpi )
@@ -214,10 +222,13 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_enable_fortran )
     include( ecbuild_source_flags )
     include( ecbuild_target_flags )
-    include( ecbuild_bundle )
     include( ecbuild_pkgconfig )
     include( ecbuild_cache )
     include( ecbuild_remove_fortran_flags )
+    include( ecbuild_configure_file )
+if( NOT (PROJECT_NAME STREQUAL ecbuild) )
+    include( ecbuild_bundle )
+endif()
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
@@ -230,13 +241,13 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     ecbuild_prepare_cache()
 
-    include( ecbuild_define_options )               # define build options
-    include( ecbuild_compiler_flags )               # compiler flags
-    include( ecbuild_check_compiler )               # check for compiler characteristics
-    include( ecbuild_check_os )                     # check for os characteristics
+    if( NOT (PROJECT_NAME STREQUAL ecbuild ) )
+      include( ecbuild_define_options )               # define build options
+      include( ecbuild_compiler_flags )               # compiler flags
+      include( ecbuild_check_compiler )               # check for compiler characteristics
+      include( ecbuild_check_os )                     # check for os characteristics
+    endif()
     include( ecbuild_define_paths )                 # defines installation paths
-    include( ecbuild_define_libs_and_execs_target ) # defines the top level execs and libs
-    include( ecbuild_define_links_target )          # defines the links target
     include( ecbuild_setup_test_framework )         # setup test framework
     include( ecbuild_define_uninstall )             # define uninstall target
 
@@ -274,4 +285,5 @@ else()
     endif()
     include( ecbuild_compiler_flags )
 
+endif()
 endif()

@@ -6,19 +6,10 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-project( mix CXX Fortran )
-
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake" )
-
-include( ecbuild_system NO_POLICY_SCOPE )
-
-ecbuild_requires_macro_version( 1.9 )
-
-### open project
-
-ecbuild_declare_project()
+find_package( ecbuild REQUIRED )
+project( mix VERSION 0.10.0 LANGUAGES CXX Fortran )
 
 ### targets
 

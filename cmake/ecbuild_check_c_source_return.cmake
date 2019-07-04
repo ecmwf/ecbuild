@@ -71,6 +71,7 @@ macro( ecbuild_check_c_source_return SOURCE )
 
         set(MACRO_CHECK_FUNCTION_DEFINITIONS "-D${_PAR_VAR} ${CMAKE_REQUIRED_FLAGS}")
 
+        set(__add_libs "")
         set(CHECK_C_SOURCE_COMPILES_ADD_LIBRARIES)
         if( CMAKE_REQUIRED_LIBRARIES )
             list( APPEND __add_libs ${CMAKE_REQUIRED_LIBRARIES} )
@@ -82,6 +83,7 @@ macro( ecbuild_check_c_source_return SOURCE )
             set(CHECK_C_SOURCE_COMPILES_ADD_LIBRARIES "-DLINK_LIBRARIES:STRING=${__add_libs}")
         endif()
 
+        set(__add_incs "")
         set(CHECK_C_SOURCE_COMPILES_ADD_INCLUDES)
         if( CMAKE_REQUIRED_INCLUDES )
             list( APPEND __add_incs ${CMAKE_REQUIRED_INCLUDES} )

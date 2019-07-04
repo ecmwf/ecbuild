@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+
+# --------------------- cleanup ------------------------
+rm -rf $HERE/build
+
+# ---------------- build --------------------
+cd $HERE
+
+mkdir build
+cd build
+
+@_EXPORTS@
+cmake @_CMDLINE_OPTS@ ..

@@ -27,8 +27,8 @@ macro( ecbuild_get_resources )
     endif()
 
     if( NOT _PAR_TO_DIR )
-		set( _PAR_TO_DIR ${CMAKE_CURRENT_BINARY_DIR} )
-	endif()
+        set( _PAR_TO_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+    endif()
 
     list( LENGTH _PAR_LIST _rsize )
     math( EXPR _max "${_rsize}-1" )

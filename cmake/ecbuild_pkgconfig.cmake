@@ -10,50 +10,31 @@
 
 # Write transitive list of library dependencies of each library in ${libraries}
 # to CMake variable ${dependencies}
-function( ecbuild_library_dependencies dependencies libraries )
+function( _ecbuild_library_dependencies_impl dependencies libraries )
 
+  set( _dependencies "" )
   set( _libraries ${${libraries}} )
 
   foreach( _lib ${_libraries})
 
     unset( _location )
 
+    string( REGEX REPLACE "^\\$<LINK_ONLY:" "" _lib ${_lib} )
+    string( REGEX REPLACE ">$" "" _lib ${_lib} )
+
     if( TARGET ${_lib} ) # check if this is an existing target
 
-      set( _imported 0 )
-      get_property( _imported TARGET ${_lib} PROPERTY IMPORTED )
-
-      unset( _deps )
-
-      if( _imported )
-
-        get_property( _type TARGET ${_lib} PROPERTY TYPE )
-        if( NOT( "${_type}" STREQUAL "INTERFACE_LIBRARY" ) )
-          get_property( _location TARGET ${_lib} PROPERTY LOCATION )
-          get_property( _configs   TARGET ${_lib} PROPERTY IMPORTED_CONFIGURATIONS )
-          if( _configs )
-            list( REVERSE _configs )
-            list( GET _configs 0 _config)
-            get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_${_config} )
-          else()
-            get_property( _deps     TARGET ${_lib} PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES )
-          endif()
-        endif()
-
-      else()
-
-        list( APPEND _location ${_lib} )
-        get_property( _type TARGET ${_lib} PROPERTY TYPE )
-        if( "${_type}" STREQUAL "INTERFACE_LIBRARY" )
-          get_property( _deps TARGET ${_lib} PROPERTY INTERFACE_LINK_LIBRARIES )
-        else()
-          get_property( _deps TARGET ${_lib} PROPERTY LINK_LIBRARIES )
-        endif()
-
+      get_property( _type TARGET ${_lib} PROPERTY TYPE )
+      if( NOT( "${_type}" STREQUAL "INTERFACE_LIBRARY" ) )
+         list( APPEND _location ${_lib} )
       endif()
 
-      ecbuild_library_dependencies( _deps_location _deps )
-      list( APPEND _location ${_deps_location} )
+      unset( _deps )
+      get_property( _deps TARGET ${_lib} PROPERTY INTERFACE_LINK_LIBRARIES )
+      if( _deps )
+        _ecbuild_library_dependencies_impl( _deps_location _deps )
+        list( APPEND _location ${_deps_location} )
+      endif()
 
     else()
 
@@ -72,7 +53,18 @@ function( ecbuild_library_dependencies dependencies libraries )
     set( ${dependencies} ${_dependencies} PARENT_SCOPE )
   endif()
 
-endfunction(ecbuild_library_dependencies)
+endfunction()
+
+
+function(ecbuild_library_dependencies dependencies libraries)
+  _ecbuild_library_dependencies_impl(_dependencies ${libraries} )
+  foreach( _lib ${${libraries}} )
+    list( REMOVE_ITEM _dependencies ${_lib} )
+  endforeach()
+  if( _dependencies )
+    set( ${dependencies} ${_dependencies} PARENT_SCOPE )
+  endif()
+endfunction()
 
 ##############################################################################
 
@@ -80,19 +72,28 @@ endfunction(ecbuild_library_dependencies)
 # to CMake variable ${dependencies}
 function( ecbuild_include_dependencies dependencies libraries )
 
+  set( _dependencies "" )
   set( _libraries ${${libraries}} )
 
   foreach( _lib ${_libraries})
 
     if( TARGET ${_lib} ) # check if this is an existing target
 
-      get_property( _type TARGET ${_lib} PROPERTY TYPE )
-      if( "${_type}" STREQUAL "INTERFACE_LIBRARY" )
-        get_property( _include_dirs TARGET ${_lib} PROPERTY INTERFACE_INCLUDE_DIRECTORIES )
-      else()
-        get_property( _include_dirs TARGET ${_lib} PROPERTY INCLUDE_DIRECTORIES )
-      endif()
-      list( APPEND _dependencies ${_include_dirs} )
+      get_property( _include_dirs TARGET ${_lib} PROPERTY INTERFACE_INCLUDE_DIRECTORIES )
+
+      # drop build interface
+      string(REGEX REPLACE "\\$<BUILD_INTERFACE:([^>]+)>;?" "" _include_dirs "${_include_dirs}")
+      # resolve install interface
+      string(REGEX REPLACE "\\$<INSTALL_INTERFACE:([^>]+)>" "\\1" _include_dirs "${_include_dirs}")
+
+      # resolve relative includes
+      foreach(_include ${_include_dirs})
+        if(IS_ABSOLUTE ${_include})
+          list(APPEND _dependencies "${_include}")
+        else()
+          list(APPEND _dependencies "${CMAKE_INSTALL_PREFIX}/${_include}")
+        endif()
+      endforeach()
 
     endif()
 
@@ -113,6 +114,17 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
   set( _libraries ${${libraries}} )
   set( _ignore_libs ${${ignore_libs}} )
+  set( _pkgconfig_libs "" )
+
+  if( CMAKE_CXX_COMPILER_LOADED )
+   set( _linker_lang CXX )
+  elseif( CMAKE_C_COMPILER_LOADED )
+   set( _linker_lang C )
+  elseif( CMAKE_Fortran_COMPILER_LOADED )
+   set( _linker_lang Fortran )
+  endif()
+
+  set( RPATH_FLAG ${CMAKE_SHARED_LIBRARY_RUNTIME_${_linker_lang}_FLAG} )
 
   foreach( _lib ${_libraries} )
 
@@ -127,6 +139,7 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
     if( NOT _skip )
         unset( _name )
         unset( _dir  )
+        unset( _file )
 
         if( ${_lib} MATCHES ".+/Frameworks/.+" )
 
@@ -135,7 +148,11 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
         else()
 
-          if( ${_lib} MATCHES "-l.+" )
+          if( TARGET ${_lib} )
+
+            set( _file "${RPATH_FLAG}$<TARGET_LINKER_FILE_DIR:${_lib}> $<TARGET_LINKER_FILE:${_lib}>" )
+
+          elseif( ${_lib} MATCHES "-l.+" )
 
             string( REGEX REPLACE "^-l" "" _name ${_lib} )
 
@@ -144,9 +161,6 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
             get_filename_component( _name ${_lib} NAME_WE )
             get_filename_component( _dir  ${_lib} PATH )
 
-            if( TARGET ${_lib} )
-              get_target_property( _name ${_lib} OUTPUT_NAME )
-            endif()
             if( NOT _name )
               set( _name ${_lib} )
             endif()
@@ -171,8 +185,10 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
           if( _set_append )
 
-            if( _dir )
-              list( APPEND _pkgconfig_libs "-L${_dir}" "-l${_name}" )
+            if( _file )
+              list( APPEND _pkgconfig_libs "${_file}" )
+            elseif( _dir )
+              list( APPEND _pkgconfig_libs "${RPATH_FLAG}${dir}" "-L${_dir}" "-l${_name}" )
             else()
               list( APPEND _pkgconfig_libs "-l${_name}" )
             endif()
@@ -187,7 +203,6 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
   if( _pkgconfig_libs )
     list( REMOVE_DUPLICATES _pkgconfig_libs )
     string( REPLACE ";" " " _pkgconfig_libs "${_pkgconfig_libs}" )
-
     set( ${pkgconfig_libs} ${_pkgconfig_libs} PARENT_SCOPE )
   endif()
 
@@ -277,7 +292,7 @@ endfunction(ecbuild_pkgconfig_include)
 # DESCRIPTION : optional, defaults to ``${UPPERCASE_PROJECT_NAME}_DESCRIPTION``
 #   description of the package
 #
-# LIBRARIES : optional, defaults to ``${UPPERCASE_PROJECT_NAME}_LIBRARIES``
+# LIBRARIES : required
 #   list of package libraries
 #
 # IGNORE_INCLUDE_DIRS : optional
@@ -304,11 +319,10 @@ endfunction(ecbuild_pkgconfig_include)
 # The following CMake variables are used as default values for some of the
 # options listed above, where ``PNAME`` is the project name in upper case:
 #
-# :<PNAME>_LIBRARIES:    list of libraries to export
 # :<PNAME>_DESCRIPTION:  package description
 # :<PNAME>_URL:          package URL
 # :<PNAME>_VERSION:      package version
-# :<PNAME>_GIT_SHA1:     Git revision
+# :<PROJECT_NAME>_GIT_SHA1:     Git revision
 #
 # Usage
 # -----
@@ -342,6 +356,17 @@ function( ecbuild_pkgconfig )
     ecbuild_critical("Unknown keywords given to ecbuild_add_executable(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
 
+  if( NOT _PAR_LIBRARIES)
+    if(ECBUILD_2_COMPAT)
+      if(ECBUILD_2_COMPAT_DEPRECATE)
+        ecbuild_deprecate("Please specify the LIBRARIES argument of ecbuild_pkgconfig.")
+      endif()
+      set( LIBRARIES ${${PNAME}_LIBRARIES} )
+    else()
+      ecbuild_critical("The call to ecbuild_pkgconfig() doesn't specify the LIBRARIES.")
+    endif()
+  endif()
+
   unset( PKGCONFIG_LANGUAGES )
   if( NOT _PAR_LANGUAGES )
     if( CMAKE_C_COMPILER_LOADED )
@@ -365,7 +390,6 @@ function( ecbuild_pkgconfig )
     set( PKGCONFIG_HAVE_${_lang} 1 )
   endforeach()
 
-  set( LIBRARIES ${${PNAME}_LIBRARIES} )
   if( _PAR_LIBRARIES )
     set( LIBRARIES ${_PAR_LIBRARIES} )
   endif()
@@ -389,9 +413,6 @@ function( ecbuild_pkgconfig )
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS LIBRARIES _PAR_IGNORE_LIBRARIES )
 
   ecbuild_library_dependencies( _libraries LIBRARIES )
-  foreach( _lib ${LIBRARIES} )
-    list( REMOVE_ITEM _libraries ${_lib} )
-  endforeach()
 
   ecbuild_pkgconfig_libs( PKGCONFIG_LIBS_PRIVATE _libraries _PAR_IGNORE_LIBRARIES )
 
@@ -428,8 +449,8 @@ function( ecbuild_pkgconfig )
     set( PKGCONFIG_URL ${_PAR_URL} )
   endif()
 
-  set( PKGCONFIG_VERSION ${${PNAME}_VERSION} )
-  set( PKGCONFIG_GIT_TAG ${${PNAME}_GIT_SHA1} )  # For now set it to a commit id
+  set( PKGCONFIG_VERSION ${${PROJECT_NAME}_VERSION} )
+  set( PKGCONFIG_GIT_TAG ${${PROJECT_NAME}_GIT_SHA1} )  # For now set it to a commit id
 
   if( _PAR_VARIABLES )
     set( PKGCONFIG_VARIABLES "\n### Features:\n\n")
@@ -438,11 +459,20 @@ function( ecbuild_pkgconfig )
     endforeach()
   endif()
 
-  configure_file( ${_PAR_TEMPLATE} "${CMAKE_BINARY_DIR}/${_PAR_FILENAME}" @ONLY )
-  ecbuild_info( "pkg-config file created: ${_PAR_FILENAME}" )
+  set( PKGCONFIG_DIR ${CMAKE_BINARY_DIR}/lib/pkgconfig )
+  ecbuild_configure_file(${_PAR_TEMPLATE} ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}.tmp @ONLY)
 
-  install( FILES ${CMAKE_BINARY_DIR}/${_PAR_FILENAME}
-           DESTINATION ${INSTALL_LIB_DIR}/pkgconfig/
-           COMPONENT utilities )
+  # Reprocess the generated file to make it relocatable
+  configure_file(${ECBUILD_MACROS_DIR}/pkg-config.cmake.in  ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake @ONLY ESCAPE_QUOTES )
+  add_custom_target(${_PAR_FILENAME}-pkg-config ALL
+    BYPRODUCTS ${PKGCONFIG_DIR}/${_PAR_FILENAME}
+    COMMAND ${CMAKE_COMMAND} -P ${PROJECT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
+    DEPENDS 
+      ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
+  )
+
+  install( FILES ${PKGCONFIG_DIR}/${_PAR_FILENAME} DESTINATION lib/pkgconfig )
+
+  ecbuild_info( "pkg-config file to be created during build: ${_PAR_FILENAME}" )
 
 endfunction(ecbuild_pkgconfig)

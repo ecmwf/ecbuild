@@ -31,6 +31,11 @@
 # :ecbuild_debug_list:     logs given CMake lists if log level <= ``DEBUG``
 # :ecbuild_debug_env_var:  logs given environment variables if log level <= ``DEBUG``
 # :ecbuild_debug_property: logs given global CMake property if log level <= ``DEBUG``
+
+# :ecbuild_warn_var:       logs given CMake variables if log level <= ``WARN``
+# :ecbuild_warn_list:      logs given CMake lists if log level <= ``WARN``
+# :ecbuild_warn_env_var:   logs given environment variables if log level <= ``WARN``
+# :ecbuild_warn_property:  logs given global CMake property if log level <= ``WARN``
 #
 # To log a message to the ecBuild log file only at a given log level, use ::
 #
@@ -63,8 +68,11 @@
 #
 ##############################################################################
 
+if( NOT ECBUILD_LOG_INCLUDED )
+set( ECBUILD_LOG_INCLUDED TRUE )
+
 # Define colour escape sequences (not available on Windows)
-if(NOT (WIN32 OR ECBUILD_NO_COLOUR))
+if(NOT (WIN32 OR ECBUILD_NO_COLOUR OR DEFINED ENV{ECBUILD_NO_COLOUR}))
   string(ASCII 27 Esc)
   set(ColourReset "${Esc}[m")
   set(ColourBold  "${Esc}[1m")
@@ -111,9 +119,6 @@ endif()
 
 if( NOT DEFINED ECBUILD_LOG_FILE )
   set( ECBUILD_LOG_FILE ${CMAKE_BINARY_DIR}/ecbuild.log )
-endif()
-if( NOT DEFINED CMAKE_ERROR_DEPRECATED AND NOT DEFINED CMAKE_WARN_DEPRECATED )
-  set( CMAKE_WARN_DEPRECATED ON )
 endif()
 
 ##############################################################################
@@ -193,13 +198,22 @@ function( ecbuild_critical )
 endfunction( ecbuild_critical )
 
 ##############################################################################
-# function for debugging CMake variables
+# functions for debugging CMake variables
 
 function( ecbuild_debug_var )
   foreach( VAR ${ARGV} )
     ecbuild_log(DEBUG "${VAR} : ${${VAR}}")
     if( ECBUILD_LOG_LEVEL LESS 11)
       message(STATUS "${Blue}DEBUG - ${VAR} : ${${VAR}}${ColourReset}")
+    endif()
+  endforeach()
+endfunction()
+
+function( ecbuild_warn_var )
+  foreach( VAR ${ARGV} )
+    ecbuild_log(WARNING "${VAR} : ${${VAR}}")
+    if( ECBUILD_LOG_LEVEL LESS 31)
+      message(WARNING "${Yellow}WARN - ${VAR} : ${${VAR}}${ColourReset}")
     endif()
   endforeach()
 endfunction()
@@ -223,8 +237,24 @@ function( ecbuild_debug_list )
   endforeach()
 endfunction()
 
+function( ecbuild_warn_list )
+  foreach( VAR ${ARGV} )
+    ecbuild_log(WARNING "${VAR} : ${${VAR}}")
+    foreach( _elem ${${VAR}} )
+      ecbuild_log( WARNING "  ${_elem}" )
+    endforeach()
+    if( ECBUILD_LOG_LEVEL LESS 31)
+      message( STATUS "${Yellow}WARN - ${VAR}" )
+      foreach( _elem ${${VAR}} )
+        message( STATUS "  ${_elem}" )
+      endforeach()
+      message(WARNING "${ColourReset}")
+    endif()
+  endforeach()
+endfunction()
+
 ##############################################################################
-# function for debugging environment variables
+# functions for debugging environment variables
 
 function( ecbuild_debug_env_var )
   foreach( VAR ${ARGV} )
@@ -235,8 +265,17 @@ function( ecbuild_debug_env_var )
   endforeach()
 endfunction()
 
+function( ecbuild_warn_env_var )
+  foreach( VAR ${ARGV} )
+    ecbuild_log(WARNING "ENV ${VAR} : $ENV{${VAR}}")
+    if( ECBUILD_LOG_LEVEL LESS 31)
+      message(WARNING "${Yellow}WARN - ENV ${VAR} [$ENV{${VAR}}]${ColourReset}")
+    endif()
+  endforeach()
+endfunction()
+
 ##############################################################################
-# function for debugging a CMake global property
+# functions for debugging a CMake global property
 
 function( ecbuild_debug_property )
   foreach( VAR ${ARGV} )
@@ -247,3 +286,15 @@ function( ecbuild_debug_property )
     endif()
   endforeach()
 endfunction()
+
+function( ecbuild_warn_property )
+  foreach( VAR ${ARGV} )
+    get_property( __prop GLOBAL PROPERTY ${VAR} )
+    ecbuild_log(WARN "PROPERTY ${VAR} : ${__prop}")
+    if( ECBUILD_LOG_LEVEL LESS 31)
+      message(WARNING "${Yellow}WARN - PROPERTY ${VAR} [${__prop}]${ColourReset}")
+    endif()
+  endforeach()
+endfunction()
+
+endif()

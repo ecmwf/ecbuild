@@ -132,6 +132,7 @@ function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
   endif()
 
   # Build argument list for try_compile
+  set( _opts "" )
   foreach( _opt CMAKE_FLAGS COMPILE_DEFINITIONS LINK_LIBRARIES  )
     if( _p_${_opt} )
       list( APPEND _opts ${_opt} "${_p_${_opt}}" )

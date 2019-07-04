@@ -37,10 +37,6 @@ mark_as_advanced( ECBUILD_INSTALL_FORTRAN_MODULES )
 
 include( CMakeDependentOption ) # make options depend on one another
 
-option( ECBUILD_USE_INCLUDE_DIRECTORIES "Forces to use global include_directories() instead of target specific. Adverse effect on PkgConfig generation." OFF )
-
-mark_as_advanced( ECBUILD_USE_INCLUDE_DIRECTORIES )
-
 set( CMAKE_NO_SYSTEM_FROM_IMPORTED ON )
 
 # hide some CMake options from CMake UI

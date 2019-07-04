@@ -291,6 +291,8 @@ if( UNIX )
 
         try_compile( _linker_understands_origin
           ${_linker_check_bindir} ${_linker_check_srcdir} test_ld_origin )
+        cmake_policy( PUSH )
+        cmake_policy( SET CMP0012 NEW )
         if( NOT ${_linker_understands_origin} )
           ecbuild_warn( "The linker does not support $ORIGIN at link-time, \
             disabling dynamic symbol check when linking against shared libraries" )
@@ -299,6 +301,7 @@ if( UNIX )
           set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
           set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
         endif()
+        cmake_policy( POP )
       endif()
     endif()
 
@@ -424,9 +427,16 @@ if( WIN32 )
 
   set( EC_OS_NAME "windows" )
 
+  find_program( BASH_EXE NAMES bash
+                         DOC "Used under Windows for fixing symlinks and running unit tests" )
+
+  if( NOT BASH_EXE )
+      ecbuild_critical("Could not find program 'bash'. Specify the location with -DBASH_EXE=C:/...")
+  endif()
+
   ecbuild_warn( "CMake doesn't support symlinks on Windows. "
                 "Replacing all symlinks with copies." )
-  execute_process( COMMAND bash -c "${ECBUILD_MACROS_DIR}/ecbuild_windows_replace_symlinks.sh"
+  execute_process( COMMAND ${BASH_EXE} -c "${ECBUILD_MACROS_DIR}/ecbuild_windows_replace_symlinks.sh"
                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                    RESULT_VARIABLE CMD_RESULT
                    OUTPUT_VARIABLE CMD_OUTPUT

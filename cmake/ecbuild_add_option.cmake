@@ -100,7 +100,11 @@ macro( ecbuild_add_option )
 
   set( options ADVANCED NO_TPL )
   set( single_value_args FEATURE DEFAULT DESCRIPTION TYPE PURPOSE )
-  set( multi_value_args  REQUIRED_PACKAGES CONDITION )
+  if( ECBUILD_2_COMPAT )
+    set( multi_value_args REQUIRED_PACKAGES CONDITION )
+  else()
+    set( multi_value_args CONDITION )
+  endif()
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -133,17 +137,13 @@ macro( ecbuild_add_option )
   endif()
 
   # check CONDITION parameter
-  if( DEFINED _p_CONDITION )
-    set(_feature_condition_file "${CMAKE_CURRENT_BINARY_DIR}/set_${_p_FEATURE}_condition.cmake")
-    file( WRITE  ${_feature_condition_file} "  if( ")
-    foreach( term ${_p_CONDITION} )
-      file( APPEND ${_feature_condition_file} " ${term}")
-    endforeach()
-    file( APPEND ${_feature_condition_file} " )\n    set(_${_p_FEATURE}_condition TRUE)\n  else()\n    set(_${_p_FEATURE}_condition FALSE)\n  endif()\n")
-    include( ${_feature_condition_file} )
-    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): checking condition ${_p_CONDITION} -> ${_${_p_FEATURE}_condition}")
-  else()
-    set( _${_p_FEATURE}_condition TRUE )
+  ecbuild_evaluate_dynamic_condition( _p_CONDITION _${_p_FEATURE}_condition  )
+
+  # Disable deprecation warnings until end of macro, because "ENABLE_<FEATURE>" may already have been
+  #   marked with "ecbuild_mark_compat()" in a bundle.
+  if( ECBUILD_2_COMPAT )
+    set( DISABLE_ECBUILD_DEPRECATION_WARNINGS_orig ${DISABLE_ECBUILD_DEPRECATION_WARNINGS} )
+    set( DISABLE_ECBUILD_DEPRECATION_WARNINGS ON )
   endif()
 
   # Check if user explicitly enabled/disabled the feature in cache
@@ -188,112 +188,33 @@ macro( ecbuild_add_option )
       ### search for dependent packages
 
       set( _failed_to_find_packages )  # clear variable
-      foreach( pkg ${_p_REQUIRED_PACKAGES} )
-        ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for dependent package ${pkg}")
-
-        string(REPLACE " " ";" pkglist ${pkg}) # string to list
-
-        list( GET pkglist 0 pkgname )
-
-        if( pkgname STREQUAL "PROJECT" )  # if 1st entry is PROJECT, then we are looking for a ecbuild project
-          set( pkgproject 1 )
-          list( GET pkglist 1 pkgname )
-          # Use feature description as package description if there is none
-          list( FIND pkglist DESCRIPTION __description )
-          if( __description LESS 0 )
-            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): no description for ${pkgname}, using feature description '${_p_DESCRIPTION}'")
-            list( APPEND pkglist DESCRIPTION "${_p_DESCRIPTION}" )
-          endif()
-        else()                            # else 1st entry is package name
-          set( pkgproject 0 )
+      if( ECBUILD_2_COMPAT )
+        if( ECBUILD_2_COMPAT_DEPRECATE AND _p_REQUIRED_PACKAGES )
+          ecbuild_deprecate("Keyword REQUIRED_PACKAGES of ecbuild_add_option is deprecated, "
+            "please include the package and use CONDITION \${package}_FOUND instead")
         endif()
 
-        # ecbuild_debug_var( pkg )
-        # ecbuild_debug_var( pkglist )
-        # ecbuild_debug_var( pkgname )
+        foreach( pkg ${_p_REQUIRED_PACKAGES} )
+          ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for dependent package ${pkg}")
 
-        string( TOUPPER ${pkgname} pkgUPPER )
-        string( TOLOWER ${pkgname} pkgLOWER )
-
-        set( __help_msg "Provide ${pkgname} location with -D${pkgUPPER}_PATH=/..." )
-        if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
-
-          ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ${pkgname} has already been found")
-          set( ${pkgname}_already_found 1 )
-
-        else()
-
-          if( pkgproject )
-
-            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for ecbuild project ${pkgname} - ecbuild_use_package( ${pkglist} )")
-            ecbuild_use_package( ${pkglist} )
-
+          if(${_p_NO_TPL})
+            set(_no_tpl NO_TPL)
           else()
+            set(_no_tpl)
+          endif()
+          ecbuild_compat_require(pkgname ${pkg} ${_no_tpl} FEATURE "${_p_FEATURE}" DESCRIPTION "${_p_DESCRIPTION}")
 
-            if( pkgname STREQUAL "LAPACK" )
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for LAPACK - ecbuild_find_package( NAME ${pkglist} )")
-              ecbuild_find_package( NAME ${pkglist} )
-              if( HAVE_LAPACK AND TARGET lapack )
-                ecbuild_debug( "LAPACK found as CMake target lapack" )
-                set( LAPACK_LIBRARIES lapack )
-              endif()
-            elseif( pkgname STREQUAL "MPI" )
-              set( _find_args ${pkglist} )
-              list( REMOVE_ITEM _find_args "MPI" )
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for MPI - ecbuild_find_mpi( ${_find_args} )")
-              ecbuild_find_mpi( ${_find_args} )
-            elseif( pkgname STREQUAL "OMP" )
-              set( _find_args ${pkglist} )
-              list( REMOVE_ITEM _find_args "OMP" )
-              if( NOT ENABLE_${_p_FEATURE} )
-                list( APPEND _find_args STUBS )
-              endif()
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for OpenMP - ecbuild_find_omp( ${_find_args} )")
-              ecbuild_find_omp( ${_find_args} )
-            elseif( pkgname STREQUAL "Python" OR pkgname STREQUAL "PYTHON" )
-              set( _find_args ${pkglist} )
-              list( REMOVE_ITEM _find_args ${pkgname} )
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for Python - ecbuild_find_python( ${_find_args} )")
-              ecbuild_find_python( ${_find_args} )
-              set( __help_msg "Specify the location of the Python interpreter with -DPYTHON_EXECUTABLE=/..." )
-            elseif( pkgname STREQUAL "LEXYACC" )
-              set( _find_args ${pkglist} )
-              list( REMOVE_ITEM _find_args ${pkgname} )
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for lex-yacc - ecbuild_find_lexyacc( ${_find_args} )")
-              ecbuild_find_lexyacc( ${_find_args} )
-            else()
-              ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for package ${pkgname} - find_package( ${pkglist} )")
-              find_package( ${pkglist} )
-            endif()
-
+          # we have feature if all required packages were FOUND
+          if( ${pkgname}_FOUND )
+            ecbuild_info( "Found package ${pkgname} required for feature ${_p_FEATURE}" )
+          else()
+            ecbuild_info( "Could NOT find package ${pkgname} required for feature ${_p_FEATURE} -- ${${pkgname}_HELP_MSG}" )
+            set( HAVE_${_p_FEATURE} 0 )
+            list( APPEND _failed_to_find_packages ${pkgname} )
           endif()
 
-        endif()
-
-        # ecbuild_debug_var( ${pkgname}_FOUND  )
-        # ecbuild_debug_var( ${pkgLOWER}_FOUND )
-        # ecbuild_debug_var( ${pkgUPPER}_FOUND )
-
-        # we have feature if all required packages were FOUND
-
-        if( ${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND )
-          ecbuild_info( "Found package ${pkgname} required for feature ${_p_FEATURE}" )
-
-          # append to list of third-party libraries (to be forward to other packages )
-          # unless the NO_TPL option was given
-          if( NOT _p_NO_TPL )
-            ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): appending ${pkgname} to ${PROJECT_NAME_CAPS}_TPLS")
-            list( APPEND ${PROJECT_NAME_CAPS}_TPLS ${pkgname} )
-            list( REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS )
-          endif()
-
-        else()
-          ecbuild_info( "Could NOT find package ${pkgname} required for feature ${_p_FEATURE} -- ${__help_msg}" )
-          set( HAVE_${_p_FEATURE} 0 )
-          list( APPEND _failed_to_find_packages ${pkgname} )
-        endif()
-
-      endforeach()
+        endforeach()
+      endif()
     else( _${_p_FEATURE}_condition )
       set( HAVE_${_p_FEATURE} 0 )
     endif( _${_p_FEATURE}_condition )
@@ -343,6 +264,19 @@ macro( ecbuild_add_option )
     mark_as_advanced( ENABLE_${_p_FEATURE} )
   endif()
 
-  set( ${PROJECT_NAME_CAPS}_HAVE_${_p_FEATURE} ${HAVE_${_p_FEATURE}} )
+  set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} ${HAVE_${_p_FEATURE}} )
+
+  if(ECBUILD_2_COMPAT)
+    set(ENABLE_${_p_FEATURE} ${ENABLE_${_p_FEATURE}})
+    ecbuild_mark_compat(ENABLE_${_p_FEATURE} "HAVE_${_p_FEATURE} or ${PROJECT_NAME}_HAVE_${_p_FEATURE}")
+
+    if (NOT "${PROJECT_NAME_CAPS}" STREQUAL "${PROJECT_NAME}")
+      ecbuild_declare_compat( ${PROJECT_NAME_CAPS}_HAVE_${_p_FEATURE} ${PROJECT_NAME}_HAVE_${_p_FEATURE})
+    endif()
+  endif()
+
+  if( ECBUILD_2_COMPAT )
+    set( DISABLE_ECBUILD_DEPRECATION_WARNINGS ${DISABLE_ECBUILD_DEPRECATION_WARNINGS_orig} )
+  endif()
 
 endmacro( ecbuild_add_option  )

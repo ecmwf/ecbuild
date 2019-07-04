@@ -18,17 +18,17 @@
 
 function( JOIN _listname _glue _output )
 
-	set( _ret "" )
+    set( _ret "" )
 
-	foreach( _v ${${_listname}} )
-		if( _ret )
-			set(_ret "${_ret}${_glue}${_v}") # append
-		else()
-			set(_ret "${_v}") # init
-		endif()
-	endforeach()
+    foreach( _v ${${_listname}} )
+        if( _ret )
+            set(_ret "${_ret}${_glue}${_v}") # append
+        else()
+            set(_ret "${_v}") # init
+        endif()
+    endforeach()
 
-	set(${_output} "${_ret}" PARENT_SCOPE)
+    set(${_output} "${_ret}" PARENT_SCOPE)
 
 endfunction()
 
@@ -41,7 +41,7 @@ endfunction()
 #
 
 function( MAP_INSERT _map _key _value )
-	set( "_${_map}_${_key}" "${_value}" PARENT_SCOPE )
+    set( "_${_map}_${_key}" "${_value}" PARENT_SCOPE )
 endfunction(MAP_INSERT)
 
 ##############################################################################
@@ -53,6 +53,6 @@ endfunction(MAP_INSERT)
 #
 
 function( MAP_GET _map _key _var )
-	set( ${_var} "${_${_map}_${_key}}" PARENT_SCOPE )
+    set( ${_var} "${_${_map}_${_key}}" PARENT_SCOPE )
 endfunction(MAP_GET)
 

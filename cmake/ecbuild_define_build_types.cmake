@@ -12,7 +12,7 @@
 set( _BUILD_TYPE_MSG "Build type options are: [ None | Debug | Bit | Production | Release | RelWithDebInfo ]" )
 
 if( NOT ECBUILD_DEFAULT_BUILD_TYPE )
-	set( ECBUILD_DEFAULT_BUILD_TYPE "RelWithDebInfo" )
+    set( ECBUILD_DEFAULT_BUILD_TYPE "RelWithDebInfo" )
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -50,9 +50,9 @@ endif()
 
 # fail if build type is not one of the defined ones
 if( NOT CMAKE_BUILD_TYPE MATCHES "None"  AND
-	  NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND
-	  NOT CMAKE_BUILD_TYPE MATCHES "Bit" AND
-	  NOT CMAKE_BUILD_TYPE MATCHES "Production" AND
+      NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND
+      NOT CMAKE_BUILD_TYPE MATCHES "Bit" AND
+      NOT CMAKE_BUILD_TYPE MATCHES "Production" AND
     NOT CMAKE_BUILD_TYPE MATCHES "Release"  AND
     NOT CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" )
     ecbuild_critical( "CMAKE_BUILD_TYPE is not recognized. ${_BUILD_TYPE_MSG}" )

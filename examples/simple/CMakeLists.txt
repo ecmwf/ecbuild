@@ -1,27 +1,20 @@
-cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-project( simple CXX Fortran )
+find_package(ecbuild REQUIRED)
 
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake" )
-
-include( ecbuild_system NO_POLICY_SCOPE )
-
-ecbuild_requires_macro_version( 1.9 )
-
-### open project
-
-ecbuild_declare_project()
+project( simple VERSION 0.10.0 LANGUAGES C CXX Fortran )
 
 ### declare options
 
+find_package(LAPACK QUIET)
 ecbuild_add_option( FEATURE MATRIX
                     DESCRIPTION "Use matrix operations"
-                    REQUIRED_PACKAGES LAPACK )
+                    CONDITION LAPACK_FOUND )
 
+find_package(GSL QUIET)
 ecbuild_add_option( FEATURE BESSEL
-                    CONDITION HAVE_MATRIX
                     DESCRIPTION "Compute Bessel function"
-                    REQUIRED_PACKAGES GSL )
+                    CONDITION HAVE_MATRIX AND GSL_FOUND )
 
 ### targets
 

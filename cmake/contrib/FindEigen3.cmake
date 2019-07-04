@@ -51,7 +51,7 @@ macro(_eigen3_check_version)
     message(STATUS "Eigen3 version ${EIGEN3_VERSION} found in ${EIGEN3_INCLUDE_DIR}, "
                    "but at least version ${Eigen3_FIND_VERSION} is required")
   else()
-	set( EIGEN3_VERSION ${EIGEN3_VERSION} CACHE INTERNAL "Eigen3 version" )
+    set( EIGEN3_VERSION ${EIGEN3_VERSION} CACHE INTERNAL "Eigen3 version" )
   endif()
 
 endmacro(_eigen3_check_version)

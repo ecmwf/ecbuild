@@ -38,8 +38,7 @@
 # define the script to build the persistent class information
 set( sg_perl "${CMAKE_CURRENT_LIST_DIR}/sg.pl" CACHE INTERNAL "perl script to generate persistent objects" )
 
-macro( ecbuild_add_persistent )
-
+function( ecbuild_add_persistent )
   ecbuild_find_perl( REQUIRED )
 
   set( options )
@@ -56,11 +55,9 @@ macro( ecbuild_add_persistent )
     ecbuild_critical("The call to ecbuild_add_persistent() doesn't specify the SRC_LIST.")
   endif()
 
-  if( NOT _PAR_FILES )
-    ecbuild_critical("The call to ecbuild_add_persistent() doesn't specify the FILES.")
-  endif()
+  ecbuild_debug( "ecbuild_add_persistent: adding persistent layer for [${_PAR_FILES}]" )
 
-  ecbuild_debug( "ecbuild_add_persistent: adding persistent layer for ${_PAR_FILES}" )
+  set(_SOURCES ${${_PAR_SRC_LIST}})
 
   foreach( file ${_PAR_FILES} )
 
@@ -73,15 +70,19 @@ macro( ecbuild_add_persistent )
       set( file ${_file_dir}/${_file_we} )
     endif()
 
-    ecbuild_debug( "ecbuild_add_persistent: adding persistent layer for ${file}.b with namespace ${_PAR_NAMESPACE} from ${file}.h in ${CMAKE_CURRENT_BINARY_DIR}/${_file_dir}" )
+    ecbuild_debug( "ecbuild_add_persistent: adding persistent layer for ${file}.b with namespace '${_PAR_NAMESPACE}' from ${file}.h in ${CMAKE_CURRENT_BINARY_DIR}/${_file_dir}" )
 
     add_custom_command( OUTPUT  ${file}.b
                         COMMAND ${PERL_EXECUTABLE} ${sg_perl} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.h
                                 ${CMAKE_CURRENT_BINARY_DIR}/${_file_dir} ${_PAR_NAMESPACE}
                         DEPENDS ${sg_perl} ${file}.h )
     set_source_files_properties( ${file}.h PROPERTIES OBJECT_DEPENDS "${file}.b" )
-    list( APPEND ${_PAR_SRC_LIST} ${CMAKE_CURRENT_BINARY_DIR}/${file}.b )
+    list( APPEND _SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${file}.b )
 
   endforeach()
+  if( _SOURCES )
+    list(REMOVE_DUPLICATES _SOURCES)
+  endif()
+  set(${_PAR_SRC_LIST} ${_SOURCES} PARENT_SCOPE)
 
-endmacro( ecbuild_add_persistent  )
+endfunction( ecbuild_add_persistent  )

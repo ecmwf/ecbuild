@@ -9,9 +9,9 @@
 # Set policies
 include( ecbuild_policies NO_POLICY_SCOPE )
 
-include(CMakeParseArguments)
+include( CMakeParseArguments )
 
-include(ecbuild_git)
+include( ecbuild_git )
 
 ##############################################################################
 #.rst:
@@ -48,6 +48,9 @@ macro( ecbuild_bundle_initialize )
     add_custom_target( ${PROJECT_NAME}_readme SOURCES "${PROJECT_SOURCE_DIR}/README.md" )
   endif()
 
+  # Point CMake to the packages in the bundle when using find_package
+  set( CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH} )
+
 endmacro()
 
 ##############################################################################
@@ -70,7 +73,7 @@ endmacro()
 # PROJECT : required
 #   project name for the Git repository to be managed
 #
-# STASH : cannot be combined with GIT or SOURCE
+# STASH : DEPRECATED ; cannot be combined with GIT or SOURCE
 #   Stash repository in the form <project>/<repository>
 #
 # GIT : cannot be combined with STASH or SOURCE
@@ -138,7 +141,14 @@ macro( ecbuild_bundle )
     ecbuild_info( "Adding bundle project ${_PAR_PROJECT}" )
 
     if( _PAR_STASH )
-      ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} STASH ${_PAR_STASH} ${_PAR_UNPARSED_ARGUMENTS} )
+      if( ECBUILD_2_COMPAT )
+        if( ECBUILD_2_COMPAT_DEPRECATE )
+          ecbuild_deprecate( "Keyword STASH of ecbuild_bundle is deprecated, please use GIT with the full URL instead." )
+        endif()
+        ecmwf_stash( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} STASH ${_PAR_STASH} ${_PAR_UNPARSED_ARGUMENTS} )
+      else()
+        ecbuild_critical( "ecbuild_bundle(${_PAR_PROJECT}): the STASH keyword has been removed, please use GIT instead." )
+      endif()
     elseif( _PAR_GIT )
       ecbuild_git( PROJECT ${_PAR_PROJECT} DIR ${PROJECT_SOURCE_DIR}/${_PAR_PROJECT} URL ${_PAR_GIT} ${_PAR_UNPARSED_ARGUMENTS} )
     elseif( _PAR_SOURCE )
@@ -154,7 +164,20 @@ macro( ecbuild_bundle )
 
     # Do not descend into ecbuild if included in a bundle (ECBUILD-333)
     if( NOT _PAR_PROJECT STREQUAL "ecbuild" )
-      ecbuild_use_package( PROJECT ${_PAR_PROJECT} )
+      add_subdirectory(${PROJECT_SOURCE_DIR}/${_PAR_PROJECT})
+
+      # Some packages define <project>_FOUND by hand, this should not happen
+      if( DEFINED ${_PAR_PROJECT}_FOUND OR DEFINED ${PNAME}_FOUND )
+        if( ECBUILD_2_COMPAT )
+          if( ECBUILD_2_COMPAT_DEPRECATE )
+            ecbuild_deprecate( "Project ${_PAR_PROJECT} defines <project>_FOUND by hand, which may break dependencies." )
+          endif()
+          unset(${_PAR_PROJECT}_FOUND)
+          unset(${PNAME}_FOUND)
+        else()
+          ecbuild_error( "Project ${_PAR_PROJECT} defines <project>_FOUND by hand." )
+        endif()
+      endif()
     endif()
   endif()
 

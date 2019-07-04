@@ -6,12 +6,10 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-cmake_minimum_required( VERSION 2.8.11 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake" ${CMAKE_MODULE_PATH} )
-
-include( ecbuild_bundle )
-project( config_bundle C )
+find_package(ecbuild REQUIRED)
+project( config_bundle VERSION 0.1 LANGUAGES C )
 
 ecbuild_bundle_initialize()
 

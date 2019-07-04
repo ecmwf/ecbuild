@@ -10,8 +10,8 @@
 
 set -eua
 
-CMAKE_MIN_REQUIRED=2.8.11
-CMAKE_BUILD_VERSION=3.5.2
+CMAKE_MIN_REQUIRED=3.6
+CMAKE_BUILD_VERSION=3.14.4
 
 usage()
 {
@@ -172,7 +172,7 @@ elif [ -d $INSTALL_DIR/../cmake ]; then
 fi
 
 # Fail if we couldn't find ecBuild modules
-if [ ! -f "$ECBUILD_MODULE_PATH/VERSION.cmake" ]; then
+if [ ! -f "$ECBUILD_MODULE_PATH/ecbuild_system.cmake" ]; then
   echo "FATAL: ecBuild modules could not be found in either $INSTALL_DIR/../share/ecbuild/cmake or $INSTALL_DIR/../cmake" >&2
   exit 1
 fi
@@ -187,7 +187,7 @@ fi
 
 version()
 {
-  ecbuild_version=$(cat ${ECBUILD_MODULE_PATH}/VERSION.cmake | grep ECBUILD_VERSION_STR |  perl -p -e 's/.*([\d]\.[\d]\.[\d]).*/\1/' )
+  ecbuild_version=$(cat ${ECBUILD_MODULE_PATH}/VERSION)
   echo "ecbuild version ${ecbuild_version}"
   command -v cmake >/dev/null 2>&1 || { exit 0; }
   cmake --version | head -1
@@ -398,7 +398,8 @@ elif [[ $build_cmake ]]; then
   echo "Building CMake version ${CMAKE_BUILD_VERSION} and installing into ${cmake_prefix} ..." >&2
   tarball=cmake-${CMAKE_BUILD_VERSION}.tar.gz
   if [[ ! -r $tarball ]]; then
-    url=http://www.cmake.org/files/v${CMAKE_BUILD_VERSION:0:3}/$tarball
+    shortver=$(echo $CMAKE_BUILD_VERSION | cut -d. -f1-2)
+    url=http://www.cmake.org/files/v$shortver/$tarball
     # -N          Download only if the remote version of the file is newer
     # --continue  Continue an interrupted download
     # -T 60       Time out a download attempt after 60 seconds

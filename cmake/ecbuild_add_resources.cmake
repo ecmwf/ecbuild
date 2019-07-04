@@ -112,12 +112,12 @@ macro( ecbuild_add_resources )
     # define as project files, but dont pack them
     if( DEFINED _PAR_SOURCES_DONT_PACK )
         list( APPEND LOCAL_FILES_NOT_TO_PACK ${_PAR_SOURCES_DONT_PACK} )
-		foreach( sfile ${_PAR_SOURCES_DONT_PACK} )
-			set( _full_sfile "${CMAKE_CURRENT_SOURCE_DIR}/${sfile}" )
-	        if( EXISTS ${_full_sfile} )
-				list( APPEND ${_PAR_TARGET}_files ${_full_sfile} )
-			endif()
-		endforeach()
+        foreach( sfile ${_PAR_SOURCES_DONT_PACK} )
+            set( _full_sfile "${CMAKE_CURRENT_SOURCE_DIR}/${sfile}" )
+            if( EXISTS ${_full_sfile} )
+                list( APPEND ${_PAR_TARGET}_files ${_full_sfile} )
+            endif()
+        endforeach()
     endif()
 
     # define as project files and pack them

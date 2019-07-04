@@ -15,10 +15,10 @@ ecbuild_add_library(TARGET dso1 SOURCES dso1.c)
 
 ecbuild_add_library(TARGET dso2 SOURCES dso2.c)
 target_link_libraries(dso2 PRIVATE dso1)
-set_target_properties(dso2 PROPERTIES INSTALL_RPATH "$ORIGIN")
+ecbuild_target_rpath(dso2 REPLACE "../lib")
 
 ecbuild_add_executable(TARGET main SOURCES main.c)
 target_link_libraries(main PRIVATE dso2)
-set_target_properties(main PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
+ecbuild_target_rpath(main REPLACE "../lib")
 
 ecbuild_install_project(NAME ${PROJECT_NAME})

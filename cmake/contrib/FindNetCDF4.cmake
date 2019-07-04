@@ -302,6 +302,9 @@ else()
     # Construct the complete list of NETCDF libraries with debug and optimized
     # variants when the generator supports them.
     if( CMAKE_CONFIGURATION_TYPES OR CMAKE_BUILD_TYPE )
+        if( NOT NETCDF_LIBRARIES_DEBUG )
+          set( NETCDF_LIBRARIES_DEBUG ${NETCDF_LIBRARIES_RELEASE} )
+        endif()
         set( NETCDF_LIBRARIES
             debug ${NETCDF_LIBRARIES_DEBUG}
             optimized ${NETCDF_LIBRARIES_RELEASE} )
@@ -327,7 +330,9 @@ mark_as_advanced(
     NETCDF_LIBRARY_DIRS
 )
 
-set( NETCDF_FOUND ${NETCDF4_FOUND} )
+set( NETCDF_FOUND  ${NETCDF4_FOUND} )
+set( NetCDF_FOUND  ${NETCDF4_FOUND} )
+set( NetCDF4_FOUND ${NETCDF4_FOUND} )
 
 # For backwards compatibility we set NETCDF_INCLUDE_DIR to the value of
 # NETCDF_INCLUDE_DIRS
