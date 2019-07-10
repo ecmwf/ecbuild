@@ -21,9 +21,8 @@ set( CMAKE_INSTALL_RPATH_USE_LINK_PATH   TRUE  )
 # use RPATHs for the build tree
 set( CMAKE_SKIP_BUILD_RPATH              FALSE )
 
-# when building, don't use the install RPATH already (but later on when installing).
-# Various platforms seem to have issues linking otherwise
-set( CMAKE_BUILD_WITH_INSTALL_RPATH      FALSE )
+# build with *relative* rpaths
+set( CMAKE_BUILD_WITH_INSTALL_RPATH      TRUE )
 
 # put the include dirs which are in the source or build tree
 # before all other include dirs, so the headers in the sources
