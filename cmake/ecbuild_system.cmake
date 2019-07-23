@@ -111,6 +111,14 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # add extra macros from external contributions
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
 
+    # add backported CMake modules if needed
+    if( ${CMAKE_VERSION} VERSION_LESS "3.7" )
+      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/cmake-3.7.0" )
+    endif()
+    if( ${CMAKE_VERSION} VERSION_LESS "3.9" )
+      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/cmake-3.9.0" )
+    endif()
+
     ############################################################################################
     # define valid build types
 
