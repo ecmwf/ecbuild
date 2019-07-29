@@ -187,6 +187,11 @@ if( NOT ${PROJECT_NAME}_DECLARED )
 
   endif()
 
+  # make sure nothing breaks if INSTALL_LIB_DIR is not lib
+  if( NOT INSTALL_LIB_DIR STREQUAL "lib" AND NOT EXISTS ${CMAKE_BINARY_DIR}/${INSTALL_LIB_DIR} )
+    execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink lib ${CMAKE_BINARY_DIR}/${INSTALL_LIB_DIR} )
+  endif()
+
   # ecbuild_debug_var( CMAKE_INSTALL_RPATH )
 
   set( PROJECT_TARGETS_FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-targets.cmake" )
