@@ -471,7 +471,7 @@ function( ecbuild_pkgconfig )
       ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
   )
 
-  install( FILES ${PKGCONFIG_DIR}/${_PAR_FILENAME} DESTINATION lib/pkgconfig )
+  install( FILES ${PKGCONFIG_DIR}/${_PAR_FILENAME} DESTINATION ${INSTALL_LIB_DIR}/pkgconfig )
 
   ecbuild_info( "pkg-config file to be created during build: ${_PAR_FILENAME}" )
 
