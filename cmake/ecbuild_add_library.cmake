@@ -478,18 +478,20 @@ function( ecbuild_add_library_impl )
         ARCHIVE DESTINATION ${INSTALL_LIB_DIR} )
       #              COMPONENT ${COMPONENT_DIRECTIVE} )
 
-      # install headers
-      if( _PAR_HEADER_DESTINATION )
-        set( _h_destination "${_PAR_HEADER_DESTINATION}" )
-        target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${_h_destination}> $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
-      else()
-        set( _h_destination "${INSTALL_INCLUDE_DIR}" )
-        target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
-      endif()
-
       if(ECBUILD_INSTALL_LIBRARY_HEADERS)
 
+        if( _PAR_HEADER_DESTINATION )
+          set( _h_destination "${_PAR_HEADER_DESTINATION}" )
+        else()
+          set( _h_destination "${INSTALL_INCLUDE_DIR}" )
+        endif()
+
+        unset( _need_include_dirs )
+
         if( _PAR_INSTALL_HEADERS )
+
+          set( _need_include_dirs TRUE )
+
           if( _PAR_INSTALL_HEADERS MATCHES "LISTED" )
             foreach( file ${${_PAR_TARGET}_h_srcs} )
               get_filename_component( _file_dir ${file} PATH )
@@ -522,13 +524,21 @@ function( ecbuild_add_library_impl )
         endif()
 
         if( DEFINED _PAR_INSTALL_HEADERS_LIST )
+          set( _need_include_dirs TRUE )
           install( FILES ${_PAR_INSTALL_HEADERS_LIST} DESTINATION ${_h_destination} )
         endif()
 
         if( DEFINED _PAR_INSTALL_HEADERS_REGEX )
+          set( _need_include_dirs TRUE )
           install( DIRECTORY ./  DESTINATION ${_h_destination} FILES_MATCHING PATTERN "${_PAR_INSTALL_HEADERS_REGEX}")
         endif()
 
+        if( _need_include_dirs )
+          target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
+          if( _PAR_HEADER_DESTINATION )
+            target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${_PAR_HEADER_DESTINATION}> )
+          endif()
+        endif()
       endif()
 
       # set build location
