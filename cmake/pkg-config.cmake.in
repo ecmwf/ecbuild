@@ -2,6 +2,9 @@
 file(READ @CMAKE_CURRENT_BINARY_DIR@/@_PAR_FILENAME@.tmp _content)
 
 string(REGEX REPLACE "@CMAKE_BINARY_DIR@/lib" "\${libdir}" _content "${_content}")
-string(REGEX REPLACE "@CMAKE_INSTALL_PREFIX@/lib" "\${libdir}" _content "${_content}")
+if(NOT "@INSTALL_LIB_DIR@" STREQUAL "lib")
+  string(REGEX REPLACE "@CMAKE_BINARY_DIR@/@INSTALL_LIB_DIR@" "\${libdir}" _content "${_content}")
+endif()
+string(REGEX REPLACE "@CMAKE_INSTALL_PREFIX@/@INSTALL_LIB_DIR@" "\${libdir}" _content "${_content}")
 
 file(WRITE @PKGCONFIG_DIR@/@_PAR_FILENAME@ "${_content}")
