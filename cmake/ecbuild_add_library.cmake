@@ -195,8 +195,10 @@ function( ecbuild_add_library_impl )
     ecbuild_critical("The call to ecbuild_add_library() doesn't specify the TARGET.")
   endif()
 
-  if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS AND NOT _PAR_SOURCES_GLOB )
-    ecbuild_critical("The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS nor SOURCES_GLOB")
+  if( NOT _PAR_TYPE MATCHES "INTERFACE" )
+    if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS AND NOT _PAR_SOURCES_GLOB )
+      ecbuild_critical("The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS nor SOURCES_GLOB")
+    endif()
   endif()
 
   ### conditional build
@@ -307,10 +309,10 @@ function( ecbuild_add_library_impl )
       set( _PUBLIC_INTF "INTERFACE" )
     endif()
 
-    # takes a list of possible includes LIST and an INTERFACE parameter
+    # takes a list of possible includes LIST and a INTF parameter
     function(__addDeps)
       set( options )
-      set( single_value_args TYPE INTERFACE )
+      set( single_value_args TYPE INTF )
       set( multi_value_args  LIST )
 
       cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN} )
@@ -320,52 +322,53 @@ function( ecbuild_add_library_impl )
         list(REMOVE_ITEM _p_LIST optimized)
       endif()
       ecbuild_filter_list(${_p_TYPE} LIST ${_p_LIST} LIST_INCLUDE deps LIST_EXCLUDE skipped_deps)
-      if( "${_p_INTERFACE}" STREQUAL "LEGACY" )
+      if( "${_p_INTF}" STREQUAL "LEGACY" )
         if(ECBUILD_2_COMPAT_DEPRECATE)
           ecbuild_deprecate("ecbuild_add_library(${_PAR_TARGET}): the usage of ${_p_TYPE} is deprecated. Use PUBLIC_${_p_TYPE} or PRIVATE_${_p_TYPE}.")
         endif()
-        set(_p_INTERFACE ${_PUBLIC_INTF})
+        set(_p_INTF ${_PUBLIC_INTF})
       endif()
 
+
       if( "${_p_TYPE}" STREQUAL LIBS )
-        target_link_libraries( ${_PAR_TARGET} ${_p_INTERFACE} ${deps} )
-        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with [${deps}] ${_p_INTERFACE}")
-        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_deps}] not found - not linking ${_p_INTERFACE}")
+        target_link_libraries( ${_PAR_TARGET} ${_p_INTF} ${deps} )
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with [${deps}] ${_p_INTF}")
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_deps}] not found - not linking ${_p_INTF}")
       else()
-        target_include_directories( ${_PAR_TARGET} ${_p_INTERFACE} ${deps} )
-        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add [${deps}] to include_directories ${_p_INTERFACE}")
-        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_deps}] not found - not adding to include_directories ${_p_INTERFACE}")
+        target_include_directories( ${_PAR_TARGET} ${_p_INTF} ${deps} )
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): add [${deps}] to include_directories ${_p_INTF}")
+        ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): [${skipped_deps}] not found - not adding to include_directories ${_p_INTF}")
       endif()
     endfunction()
 
     # add the link libraries
     if( DEFINED _PAR_LIBS )
-      __addDeps(TYPE LIBS LIST ${_PAR_LIBS} INTERFACE LEGACY)
+      __addDeps(TYPE LIBS LIST ${_PAR_LIBS} INTF LEGACY)
     endif()
 
     # add the private link libraries
     if( DEFINED _PAR_PRIVATE_LIBS )
-      __addDeps(TYPE LIBS LIST ${_PAR_PRIVATE_LIBS} INTERFACE PRIVATE)
+      __addDeps(TYPE LIBS LIST ${_PAR_PRIVATE_LIBS} INTF PRIVATE)
     endif()
 
     # add the public link libraries
     if( DEFINED _PAR_PUBLIC_LIBS )
-      __addDeps(TYPE LIBS LIST ${_PAR_PUBLIC_LIBS} INTERFACE ${_PUBLIC_INTF})
+      __addDeps(TYPE LIBS LIST ${_PAR_PUBLIC_LIBS} INTF ${_PUBLIC_INTF})
     endif()
 
     # add include dirs if defined
     if( DEFINED _PAR_INCLUDES )
-      __addDeps(TYPE INCLUDES LIST ${_PAR_INCLUDES} INTERFACE LEGACY)
+      __addDeps(TYPE INCLUDES LIST ${_PAR_INCLUDES} INTF LEGACY)
     endif()
 
     # add private include dirs if defined
     if( DEFINED _PAR_PRIVATE_INCLUDES )
-      __addDeps(TYPE INCLUDES LIST ${_PAR_PRIVATE_INCLUDES} INTERFACE PRIVATE)
+      __addDeps(TYPE INCLUDES LIST ${_PAR_PRIVATE_INCLUDES} INTF PRIVATE)
     endif()
 
     # add public include dirs if defined
     if( DEFINED _PAR_PUBLIC_INCLUDES )
-      __addDeps(TYPE INCLUDES LIST ${_PAR_PUBLIC_INCLUDES} INTERFACE ${_PUBLIC_INTF})
+      __addDeps(TYPE INCLUDES LIST ${_PAR_PUBLIC_INCLUDES} INTF ${_PUBLIC_INTF})
     endif()
 
     # FIX: Cray compiler PIC option is not detected by CMake
@@ -478,18 +481,20 @@ function( ecbuild_add_library_impl )
         ARCHIVE DESTINATION ${INSTALL_LIB_DIR} )
       #              COMPONENT ${COMPONENT_DIRECTIVE} )
 
-      # install headers
-      if( _PAR_HEADER_DESTINATION )
-        set( _h_destination "${_PAR_HEADER_DESTINATION}" )
-        target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${_h_destination}> $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
-      else()
-        set( _h_destination "${INSTALL_INCLUDE_DIR}" )
-        target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
-      endif()
-
       if(ECBUILD_INSTALL_LIBRARY_HEADERS)
 
+        if( _PAR_HEADER_DESTINATION )
+          set( _h_destination "${_PAR_HEADER_DESTINATION}" )
+        else()
+          set( _h_destination "${INSTALL_INCLUDE_DIR}" )
+        endif()
+
+        unset( _need_include_dirs )
+
         if( _PAR_INSTALL_HEADERS )
+
+          set( _need_include_dirs TRUE )
+
           if( _PAR_INSTALL_HEADERS MATCHES "LISTED" )
             foreach( file ${${_PAR_TARGET}_h_srcs} )
               get_filename_component( _file_dir ${file} PATH )
@@ -522,13 +527,21 @@ function( ecbuild_add_library_impl )
         endif()
 
         if( DEFINED _PAR_INSTALL_HEADERS_LIST )
+          set( _need_include_dirs TRUE )
           install( FILES ${_PAR_INSTALL_HEADERS_LIST} DESTINATION ${_h_destination} )
         endif()
 
         if( DEFINED _PAR_INSTALL_HEADERS_REGEX )
+          set( _need_include_dirs TRUE )
           install( DIRECTORY ./  DESTINATION ${_h_destination} FILES_MATCHING PATTERN "${_PAR_INSTALL_HEADERS_REGEX}")
         endif()
 
+        if( _need_include_dirs )
+          target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
+          if( _PAR_HEADER_DESTINATION )
+            target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${_PAR_HEADER_DESTINATION}> )
+          endif()
+        endif()
       endif()
 
       # set build location
