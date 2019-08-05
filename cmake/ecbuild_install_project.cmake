@@ -333,4 +333,12 @@ macro( ecbuild_install_project )
 
     endif()
 
+    # Some libraries install no headers, and a ${CMAKE_INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}
+    # may not have been created, although it is added to each library's public interface.
+    # We therefore need to create the include directory regardless to avoid errors in downstream
+    # libraries referencing this include directory. ( see ECBUILD-437 )
+    if( ECBUILD_INSTALL_LIBRARY_HEADERS )
+        install(CODE "file( MAKE_DIRECTORY \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}\")" )
+    endif()
+
 endmacro( ecbuild_install_project )
