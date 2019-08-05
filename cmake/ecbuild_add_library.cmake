@@ -489,11 +489,7 @@ function( ecbuild_add_library_impl )
           set( _h_destination "${INSTALL_INCLUDE_DIR}" )
         endif()
 
-        unset( _need_include_dirs )
-
         if( _PAR_INSTALL_HEADERS )
-
-          set( _need_include_dirs TRUE )
 
           if( _PAR_INSTALL_HEADERS MATCHES "LISTED" )
             foreach( file ${${_PAR_TARGET}_h_srcs} )
@@ -527,20 +523,16 @@ function( ecbuild_add_library_impl )
         endif()
 
         if( DEFINED _PAR_INSTALL_HEADERS_LIST )
-          set( _need_include_dirs TRUE )
           install( FILES ${_PAR_INSTALL_HEADERS_LIST} DESTINATION ${_h_destination} )
         endif()
 
         if( DEFINED _PAR_INSTALL_HEADERS_REGEX )
-          set( _need_include_dirs TRUE )
           install( DIRECTORY ./  DESTINATION ${_h_destination} FILES_MATCHING PATTERN "${_PAR_INSTALL_HEADERS_REGEX}")
         endif()
 
-        if( _need_include_dirs )
-          target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
-          if( _PAR_HEADER_DESTINATION )
-            target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${_PAR_HEADER_DESTINATION}> )
-          endif()
+        target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR}>)
+        if( _PAR_HEADER_DESTINATION )
+          target_include_directories(${_PAR_TARGET} ${_PUBLIC_INTF} $<INSTALL_INTERFACE:${_PAR_HEADER_DESTINATION}> )
         endif()
       endif()
 
