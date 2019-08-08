@@ -228,11 +228,16 @@ function( ecbuild_pkgconfig_include INCLUDE INCLUDE_DIRS ignore_includes )
      "\\$<INSTALL_INTERFACE"  # Ignore generator expressions
      ${_ignore_includes}
   )
+  set( ignore_include_dirs_escaped )
+  foreach( _ignore ${ignore_include_dirs} )
+    ecbuild_string( REGEX ESCAPE "${_ignore}" _ignore_escaped )
+    list( APPEND ignore_include_dirs_escaped "${_ignore_escaped}" )
+  endforeach()
 
   foreach( _incdir ${${INCLUDE_DIRS}} )
 
-    foreach( _ignore ${ignore_include_dirs} )
-      if( "${_incdir}" STREQUAL "${_ignore}" )
+    foreach( _ignore ${ignore_include_dirs_escaped} )
+      if( "${_incdir}" MATCHES "${_ignore}" )
         unset( _incdir )
         break()
       endif()
