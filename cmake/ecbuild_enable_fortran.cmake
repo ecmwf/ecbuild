@@ -19,8 +19,11 @@
 # Options
 # -------
 #
-# MODULE_DIRECTORY : optional, defaults to ``${CMAKE_BINARY_DIR}/module``
+# MODULE_DIRECTORY : optional, defaults to ``${PROJECT_BINARY_DIR}/module``
 #   set the CMAKE_Fortran_MODULE_DIRECTORY
+#
+# NO_MODULE_DIRECTORY : optional
+#   unset CMAKE_Fortran_MODULE_DIRECTORY
 #
 # REQUIRED : optional
 #   fail if no working Fortran compiler was detected
@@ -29,7 +32,7 @@
 
 macro( ecbuild_enable_fortran )
 
-  set( options REQUIRED )
+  set( options REQUIRED NO_MODULE_DIRECTORY )
   set( single_value_args MODULE_DIRECTORY )
   set( multi_value_args  )
 
@@ -73,19 +76,21 @@ macro( ecbuild_enable_fortran )
 
   endif()
 
-  if( _PAR_MODULE_DIRECTORY )
-    set( CMAKE_Fortran_MODULE_DIRECTORY  ${_PAR_MODULE_DIRECTORY} )
+  if( _PAR_NO_MODULE_DIRECTORY )
+    unset( CMAKE_Fortran_MODULE_DIRECTORY )
   else()
-    set( CMAKE_Fortran_MODULE_DIRECTORY  ${PROJECT_BINARY_DIR}/module )
+    if( _PAR_MODULE_DIRECTORY )
+      set( CMAKE_Fortran_MODULE_DIRECTORY  ${_PAR_MODULE_DIRECTORY} )
+    else()
+      set( CMAKE_Fortran_MODULE_DIRECTORY  ${PROJECT_BINARY_DIR}/module )
+    endif()
+    file( MAKE_DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY} )
+    if( ECBUILD_2_COMPAT )
+      include_directories( ${CMAKE_Fortran_MODULE_DIRECTORY} )
+    endif()
+
+    # We should also not auto-install. Every project is already doing this anyway
+    #    install( CODE "EXECUTE_PROCESS (COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${CMAKE_Fortran_MODULE_DIRECTORY}/\${BUILD_TYPE}\" \"${INSTALL_INCLUDE_DIR}\")" )
   endif()
-
-  file( MAKE_DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY} )
-
-  if( ECBUILD_2_COMPAT )
-    include_directories( ${CMAKE_Fortran_MODULE_DIRECTORY} )
-  endif()
-
-# We should also not auto-install. Every project is already doing this anyway
-#    install( CODE "EXECUTE_PROCESS (COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${CMAKE_Fortran_MODULE_DIRECTORY}/\${BUILD_TYPE}\" \"${INSTALL_INCLUDE_DIR}\")" )
 
 endmacro( ecbuild_enable_fortran )
