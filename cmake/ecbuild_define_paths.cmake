@@ -21,8 +21,14 @@ set( CMAKE_INSTALL_RPATH_USE_LINK_PATH   TRUE  )
 # use RPATHs for the build tree
 set( CMAKE_SKIP_BUILD_RPATH              FALSE )
 
-# build with *relative* rpaths
-set( CMAKE_BUILD_WITH_INSTALL_RPATH      TRUE )
+# build with *relative* rpaths by default
+if( ENABLE_RELATIVE_RPATHS )
+    set( CMAKE_BUILD_WITH_INSTALL_RPATH  TRUE )
+else()
+    # in case the RPATH is absolute, the install RPATH cannot be set
+    # at build-time since it breaks the build tree dynamic links
+    set( CMAKE_BUILD_WITH_INSTALL_RPATH  FALSE )
+endif()
 
 # put the include dirs which are in the source or build tree
 # before all other include dirs, so the headers in the sources
