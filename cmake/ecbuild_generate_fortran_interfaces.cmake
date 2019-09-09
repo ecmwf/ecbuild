@@ -105,7 +105,7 @@ function( ecbuild_generate_fortran_interfaces )
   foreach( fortran_file ${fortran_files} )
     #list( APPEND fullpath_fortran_files ${CMAKE_CURRENT_SOURCE_DIR}/${fortran_file} )
     get_filename_component(base ${fortran_file} NAME_WE)
-    set( interface_file "${CMAKE_CURRENT_BINARY_DIR}/interfaces/include/${base}${P_SUFFIX}" )
+    set( interface_file "${CMAKE_CURRENT_BINARY_DIR}/${P_DESTINATION}/interfaces/include/${base}${P_SUFFIX}" )
     list( APPEND interface_files ${interface_file} )
     set_source_files_properties( ${interface_file} PROPERTIES GENERATED TRUE )
     math(EXPR _cnt "${_cnt}+1")
@@ -124,15 +124,19 @@ function( ecbuild_generate_fortran_interfaces )
   execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${include_dir}
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
 
+  set( _fcm_lock ${CMAKE_CURRENT_BINARY_DIR}/${P_DESTINATION}/fcm-make.lock )
+  set( _timestamp ${CMAKE_CURRENT_BINARY_DIR}/${P_DESTINATION}/generated.timestamp )
   add_custom_command(
-    OUTPUT  ${interface_files}
+    OUTPUT  ${_timestamp}
     COMMAND ${FCM_EXECUTABLE} make -j ${P_PARALLEL} --config-file=${FCM_CONFIG_FILE} interfaces.ns-incl=${_srcdirs} interfaces.source=${P_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${_fcm_lock}
+    COMMAND ${CMAKE_COMMAND} -E touch ${_timestamp}
     DEPENDS ${fortran_files}
-    COMMENT "Generating ${_cnt} interface files for target ${P_TARGET}"
+    COMMENT "[fcm] Generating ${_cnt} Fortran interface files for target ${P_TARGET} in ${CMAKE_CURRENT_BINARY_DIR}/${P_DESTINATION}/interfaces/include"
     WORKING_DIRECTORY ${P_DESTINATION} VERBATIM )
 
-  add_custom_target(${P_TARGET}_gen DEPENDS ${interface_files}) # XXX: needed because add_library does not honour file dependencies
-  ecbuild_add_library(TARGET ${P_TARGET} TYPE INTERFACE SOURCES ${interface_files} DEPENDS ${P_TARGET}_gen)
+  add_custom_target(${P_TARGET}_gen DEPENDS ${_timestamp} )
+  ecbuild_add_library(TARGET ${P_TARGET} TYPE INTERFACE DEPENDS ${P_TARGET}_gen)
   target_include_directories(${P_TARGET} INTERFACE $<BUILD_INTERFACE:${include_dir}>)
 
 endfunction( ecbuild_generate_fortran_interfaces )
