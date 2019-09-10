@@ -128,8 +128,8 @@ function( ecbuild_generate_fortran_interfaces )
   set( _timestamp ${CMAKE_CURRENT_BINARY_DIR}/${P_DESTINATION}/generated.timestamp )
   add_custom_command(
     OUTPUT  ${_timestamp}
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${_fcm_lock}
     COMMAND ${FCM_EXECUTABLE} make -j ${P_PARALLEL} --config-file=${FCM_CONFIG_FILE} interfaces.ns-incl=${_srcdirs} interfaces.source=${P_SOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${_fcm_lock}
     COMMAND ${CMAKE_COMMAND} -E touch ${_timestamp}
     DEPENDS ${fortran_files}
     COMMENT "[fcm] Generating ${_cnt} Fortran interface files for target ${P_TARGET} in ${CMAKE_CURRENT_BINARY_DIR}/${P_DESTINATION}/interfaces/include"
