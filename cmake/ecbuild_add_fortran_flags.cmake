@@ -62,7 +62,7 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
         set( N_FortranFLAG 0 )
       endif()
 
-      math( EXPR N_FortranFLAG '${N_FortranFLAG}+1' )
+      math( EXPR N_FortranFLAG "${N_FortranFLAG}+1" )
 
       if( ECBUILD_TRUST_FLAGS )
         set( _flag_ok 1 )
