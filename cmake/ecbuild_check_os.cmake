@@ -261,7 +261,8 @@ if( UNIX )
       option( ECBUILD_DISABLE_RPATH_FIX "Disable the linker fix for relative RPATH" OFF )
       mark_as_advanced( ECBUILD_DISABLE_RPATH_FIX )
 
-      if( NOT ECBUILD_DISABLE_RPATH_FIX )
+      get_property(HAVE_SHARED_LIBS GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+      if( HAVE_SHARED_LIBS AND NOT ECBUILD_DISABLE_RPATH_FIX )
         # GNU ld versions before 2.28 do not expand $ORIGIN at link time.
         # If this is the case for the current linker, disable checking for dynamic symbols
         # See https://sourceware.org/bugzilla/show_bug.cgi?id=20535
