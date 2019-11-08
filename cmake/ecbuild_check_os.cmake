@@ -291,6 +291,8 @@ if( UNIX )
 
         try_compile( _linker_understands_origin
           ${_linker_check_bindir} ${_linker_check_srcdir} test_ld_origin )
+        cmake_policy( PUSH )
+        cmake_policy( SET CMP0012 NEW )
         if( NOT ${_linker_understands_origin} )
           ecbuild_warn( "The linker does not support $ORIGIN at link-time, \
             disabling dynamic symbol check when linking against shared libraries" )
@@ -299,6 +301,7 @@ if( UNIX )
           set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
           set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
         endif()
+        cmake_policy( POP )
       endif()
     endif()
 

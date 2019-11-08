@@ -6,33 +6,24 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-cmake_minimum_required( VERSION 2.8.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-project( bar C CXX )
-
-set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild/cmake")
-
-include( ecbuild_system NO_POLICY_SCOPE )
-
-ecbuild_requires_macro_version( 2.7 )
-
-### open project
-
-ecbuild_declare_project()
+find_package( ecbuild REQUIRED )
+project( bar VERSION 1.0.0 LANGUAGES C CXX )
 
 ### targets
 
 ecbuild_bundle( PROJECT foo )
 
 ecbuild_add_library( TARGET            bar
-                     PRIVATE_INCLUDES  ${FOO_INCLUDE_DIRS}
-                     LIBS              foo
-                     SOURCES           bar.h bar.c )
+                     PUBLIC_LIBS       foo
+                     SOURCES           bar.h bar.c
+                     PUBLIC_INCLUDES
+                        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
 
 ecbuild_add_executable(
     TARGET     master_bar
     SOURCES    main.cc
-    INCLUDES   ${FOO_INCLUDE_DIRS}
     LIBS       bar
 )
 

@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+
+find_package(ecbuild 3.0 REQUIRED)
+project(dummy VERSION 0.1 LANGUAGES NONE)
+
+if(NOT DEFINED ECBUILD_MACROS_DIR)
+  ecbuild_critical("ecbuild has not been loaded properly")
+endif()

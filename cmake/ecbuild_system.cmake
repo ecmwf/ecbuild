@@ -45,7 +45,9 @@ if( NOT ecbuild_VERSION_STR )
 endif()
 
 # Set policies
-include( ecbuild_policies NO_POLICY_SCOPE )
+if( NOT ( PROJECT_NAME STREQUAL ecbuild ) )
+    include( ecbuild_policies NO_POLICY_SCOPE )
+endif()
 
 # set capitalised project name
 
@@ -109,6 +111,14 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     # add extra macros from external contributions
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
 
+    # add backported CMake modules if needed
+    if( ${CMAKE_VERSION} VERSION_LESS "3.7" )
+      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/cmake-3.7.0" )
+    endif()
+    if( ${CMAKE_VERSION} VERSION_LESS "3.9" )
+      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/cmake-3.9.0" )
+    endif()
+
     ############################################################################################
     # define valid build types
 
@@ -168,6 +178,8 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     include( ecbuild_evaluate_dynamic_condition )
     include( ecbuild_filter_list )
+
+    include( ecbuild_regex_escape )
     include( ecbuild_parse_version )
 
     include( ecbuild_list_macros )
@@ -208,7 +220,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_install_project )
     include( ecbuild_separate_sources )
     include( ecbuild_find_package )
-    include( ecbuild_use_package )
     include( ecbuild_print_summary )
     include( ecbuild_warn_unused_files )
     include( ecbuild_find_mpi )
@@ -221,12 +232,13 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_enable_fortran )
     include( ecbuild_source_flags )
     include( ecbuild_target_flags )
-    include( ecbuild_bundle )
     include( ecbuild_pkgconfig )
     include( ecbuild_cache )
     include( ecbuild_remove_fortran_flags )
     include( ecbuild_configure_file )
-
+if( NOT (PROJECT_NAME STREQUAL ecbuild) )
+    include( ecbuild_bundle )
+endif()
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
@@ -239,10 +251,12 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
     ecbuild_prepare_cache()
 
-    include( ecbuild_define_options )               # define build options
-    include( ecbuild_compiler_flags )               # compiler flags
-    include( ecbuild_check_compiler )               # check for compiler characteristics
-    include( ecbuild_check_os )                     # check for os characteristics
+    if( NOT (PROJECT_NAME STREQUAL ecbuild ) )
+      include( ecbuild_define_options )               # define build options
+      include( ecbuild_compiler_flags )               # compiler flags
+      include( ecbuild_check_compiler )               # check for compiler characteristics
+      include( ecbuild_check_os )                     # check for os characteristics
+    endif()
     include( ecbuild_define_paths )                 # defines installation paths
     include( ecbuild_setup_test_framework )         # setup test framework
     include( ecbuild_define_uninstall )             # define uninstall target

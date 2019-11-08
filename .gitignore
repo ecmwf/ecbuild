@@ -1,5 +1,9 @@
 *sublime-workspace
 CMakeLists.txt.user*
 *.log
+*.py[cdo]
 *.swp
-build*/
+*~
+doc/contrib
+doc/find
+doc/macros

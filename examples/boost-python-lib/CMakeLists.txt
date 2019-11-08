@@ -6,15 +6,10 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-cmake_minimum_required( VERSION 2.8.4 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
 
-project( mypython CXX )
-
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake" )
-
-include( ecbuild_system )
-
-ecbuild_declare_project()
+find_package(ecbuild REQUIRED)
+project( mypython VERSION 0.10.0 LANGUAGES CXX )
 
 ###############################################################################
 # find extra packages
@@ -28,7 +23,6 @@ ecbuild_info("PYTHON_LIBRARIES     : ${PYTHON_LIBRARIES}")
 
 # Boost
 # Can specify non-default distribution with CMake variable BOOST_ROOT
-ecbuild_add_extra_search_paths( boost )
 set( Boost_MINIMUM_VERSION "1.47" )
 find_package( Boost ${Boost_MINIMUM_VERSION} REQUIRED
               COMPONENTS python )
@@ -39,7 +33,7 @@ ecbuild_info("Boost_LIBRARIES     : ${Boost_LIBRARIES}" )
 
 ecbuild_add_library( TARGET       mypython
                      INCLUDES     ${Boost_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS}
-                     LIBS         ${Boost_LIBRARIES} ${PYTHON_LIBRARIES}
+                     PRIVATE_LIBS ${Boost_LIBRARIES} ${PYTHON_LIBRARIES}
                      SOURCES      pythonlib.hpp pythonlib.cpp )
 configure_file( mypython.py       ${CMAKE_BINARY_DIR}/lib COPYONLY )
 

@@ -228,10 +228,15 @@ function( ecbuild_pkgconfig_include INCLUDE INCLUDE_DIRS ignore_includes )
      "\\$<INSTALL_INTERFACE"  # Ignore generator expressions
      ${_ignore_includes}
   )
+  set( ignore_include_dirs_escaped )
+  foreach( _ignore ${ignore_include_dirs} )
+    ecbuild_regex_escape( "${_ignore}" _ignore_escaped )
+    list( APPEND ignore_include_dirs_escaped "${_ignore_escaped}" )
+  endforeach()
 
   foreach( _incdir ${${INCLUDE_DIRS}} )
 
-    foreach( _ignore ${ignore_include_dirs} )
+    foreach( _ignore ${ignore_include_dirs_escaped} )
       if( "${_incdir}" MATCHES "${_ignore}" )
         unset( _incdir )
         break()
@@ -471,7 +476,7 @@ function( ecbuild_pkgconfig )
       ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
   )
 
-  install( FILES ${PKGCONFIG_DIR}/${_PAR_FILENAME} DESTINATION lib/pkgconfig )
+  install( FILES ${PKGCONFIG_DIR}/${_PAR_FILENAME} DESTINATION ${INSTALL_LIB_DIR}/pkgconfig )
 
   ecbuild_info( "pkg-config file to be created during build: ${_PAR_FILENAME}" )
 

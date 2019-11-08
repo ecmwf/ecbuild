@@ -1,13 +1,8 @@
 
-set( _funcs std ecbfind ecbuse )
+set( _funcs std ecbfind )
 foreach( _func ${_funcs} )
   set( _ref ${CMAKE_CURRENT_BINARY_DIR}/${_func} )
   set( _FUNC ${_func} )
-
-  set( COMPAT_FLAG )
-  if( _func STREQUAL ecbuse )
-    set( COMPAT_FLAG "-DECBUILD_2_COMPAT=OFF" )
-  endif()
 
   configure_file( run-test.sh.in ${_ref}/run-test.sh @ONLY )
 

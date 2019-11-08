@@ -68,12 +68,19 @@ macro( ecbuild_generate_rpc )
     ecbuild_critical("The call to ecbuild_generate_rpc() doesn't specify the _PAR_TARGET_H or _PAR_TARGET_C files.")
   endif()
 
-  find_package( RPCGEN REQUIRED )
+  if( DEFINED RPCGEN_PATH )
+      find_program( RPCGEN_EXECUTABLE NAMES rpcgen PATHS ${RPCGEN_PATH} PATH_SUFFIXES bin NO_DEFAULT_PATH )
+  endif()
+  find_program( RPCGEN_EXECUTABLE NAMES rpcgen )
+  if( NOT RPCGEN_EXECUTABLE )
+    ecbuild_critical("Could not find rpcgen. Please provide RPCGEN_PATH.")
+  endif()
 
   if( DEFINED _PAR_TARGET_H )
 
     add_custom_command(
       OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_TARGET_H}
+      COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_TARGET_H}
       COMMAND ${RPCGEN_EXECUTABLE} -h -o ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_TARGET_H} ${_PAR_SOURCE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_SOURCE} )
@@ -90,6 +97,7 @@ macro( ecbuild_generate_rpc )
 
     add_custom_command(
       OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_TARGET_C}
+      COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_TARGET_C}
       COMMAND ${RPCGEN_EXECUTABLE} -c -o ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_TARGET_C} ${_PAR_SOURCE}
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_PAR_SOURCE} )

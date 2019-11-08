@@ -17,21 +17,19 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 
 include( ecbuild )
-project( ecbuild LANGUAGES C )
+project( ecbuild LANGUAGES NONE )
 
 ###############################################################################
 # local project
 
 configure_file( cmake/ecbuild_version.h.in ${CMAKE_BINARY_DIR}/ecbuild_version.h  )
 
-ecbuild_add_option( FEATURE INSTALL
-                    DEFAULT OFF
-                    DESCRIPTION "Whether to install ecbuild files" )
 # contents
 
 ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                         SOURCES_PACK
-                            INSTALL
+                            README.rst
+                            INSTALL.rst
                             AUTHORS
                             NOTICE
                             LICENSE

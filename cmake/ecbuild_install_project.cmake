@@ -105,7 +105,7 @@ macro( ecbuild_install_project )
     ecbuild_set_if_not_defined(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
     ecbuild_set_if_not_defined(CPACK_PACKAGE_VERSION   "${${PROJECT_NAME}_VERSION}")
     # Convert "/" to "-" for the case where the version string contains a "/"
-    string( REPLACE "/" "-" CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION} )
+    string( REPLACE "/" "-" CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}" )
 
     ecbuild_set_if_not_defined(CPACK_PACKAGE_FILE_NAME   "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 
@@ -331,6 +331,14 @@ macro( ecbuild_install_project )
             set( ${PNAME}_TPLS              ${${PNAME}_TPLS}              PARENT_SCOPE )
         endif()
 
+    endif()
+
+    # Some libraries install no headers, and a ${CMAKE_INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}
+    # may not have been created, although it is added to each library's public interface.
+    # We therefore need to create the include directory regardless to avoid errors in downstream
+    # libraries referencing this include directory. ( see ECBUILD-437 )
+    if( ECBUILD_INSTALL_LIBRARY_HEADERS )
+        install(CODE "file( MAKE_DIRECTORY \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${INSTALL_INCLUDE_DIR}\")" )
     endif()
 
 endmacro( ecbuild_install_project )

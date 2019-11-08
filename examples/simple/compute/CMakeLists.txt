@@ -13,11 +13,14 @@ ecbuild_add_executable(
     DEFINITIONS
         "${compute_defs}"
 
-    INCLUDES
-        ${GSL_INCLUDE_DIRS}
-
     LIBS
         circle
-        ${LAPACK_LIBRARIES}
-        ${GSL_LIBRARIES}
 )
+if( GSL_FOUND )
+    target_compile_definitions(compute PRIVATE HAVE_GSL)
+    target_include_directories(compute PRIVATE ${GSL_INCLUDE_DIRS})
+    target_link_libraries(compute ${GSL_LIBRARIES})
+endif()
+if( LAPACK_FOUND )
+    target_link_libraries(compute ${LAPACK_LIBRARIES})
+endif()

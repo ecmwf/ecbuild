@@ -28,19 +28,19 @@
 #
 # The libraries corresponding to each of the ``COMPONENTS`` are:
 #
-# :single:      ``fftw3f``
-# :double:      ``fftw3``
-# :long_double: ``fftw3l``
-# :quad:        ``fftw3q``
+# :single:      ``FFTW::fftw3f``
+# :double:      ``FFTW::fftw3``
+# :long_double: ``FFTW::fftw3l``
+# :quad:        ``FFTW::fftw3q``
 #
 # Output variables
 # ----------------
 #
 # The following CMake variables are set on completion:
 #
-# :FFTW_FOUND:      true if FFTW is found on the system
-# :FFTW_LIBRARIES:  full paths to requested FFTW libraries
-# :FFTW_INCLUDES:   FFTW include directory
+# :FFTW_FOUND:            true if FFTW is found on the system
+# :FFTW_LIBRARIES:        full paths to requested FFTW libraries
+# :FFTW_INCLUDE_DIRS:     FFTW include directory
 #
 # Input variables
 # ---------------
@@ -52,9 +52,23 @@
 # :FFTW_DIR:              equivalent to FFTW_ROOT
 # :FFTW_PATH:             equivalent to FFTW_ROOT
 # :FFTW_LIBRARIES:        User overriden FFTW libraries
-# :FFTW_INCLUDES:         User overriden FFTW includes directories
+# :FFTW_INCLUDE_DIRS:     User overriden FFTW includes directories
 #
 ##############################################################################
+
+list( APPEND _possible_components double single long_double quad )
+
+if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS )
+  ecbuild_debug( "FindFFTW: no components specified, looking for double precision (fftw3)" )
+  set( ${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS double )
+else()
+  ecbuild_debug( "FindFFTW: looking for components: ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS}" )
+endif()
+
+set( ${CMAKE_FIND_PACKAGE_NAME}_double_LIBRARY_NAME fftw3 )
+set( ${CMAKE_FIND_PACKAGE_NAME}_single_LIBRARY_NAME fftw3f )
+set( ${CMAKE_FIND_PACKAGE_NAME}_long_double_LIBRARY_NAME fftw3l )
+set( ${CMAKE_FIND_PACKAGE_NAME}_quad_LIBRARY_NAME fftw3q )
 
 if( (NOT FFTW_ROOT) AND EXISTS $ENV{FFTW_ROOT} )
   set( FFTW_ROOT ${FFTW_ROOT} )
@@ -105,29 +119,6 @@ else()
 endif()
 
 
-if( FFTW_FIND_COMPONENTS )
-  ecbuild_debug( "FindFFTW: looking for components: ${FFTW_FIND_COMPONENTS}" )
-  foreach( _component ${FFTW_FIND_COMPONENTS} )
-    if( _component MATCHES "single" )
-      ecbuild_debug( "FindFFTW: looking for single precision (fftw3f)" )
-      set( _require_sp TRUE )
-    elseif( _component MATCHES "double" )
-      ecbuild_debug( "FindFFTW: looking for double precision (fftw3)" )
-      set( _require_dp TRUE )
-    elseif( _component MATCHES "long_double" )
-      ecbuild_debug( "FindFFTW: looking for long double precision (fftw3l)" )
-      set( _require_lp TRUE )
-    elseif( _component MATCHES "quad" )
-      ecbuild_debug( "FindFFTW: looking for quad precision (fftw3q)" )
-      set( _require_qp TRUE )
-    else()
-    endif()
-  endforeach()
-else()
-  ecbuild_debug( "FindFFTW: no components specified, looking for double precision (fftw3)" )
-  set( _require_dp TRUE )
-endif()
-
 if( FFTW_ROOT )
   set( _default_paths NO_DEFAULT_PATH )
   set( _lib_paths ${FFTW_ROOT} )
@@ -139,97 +130,74 @@ endif()
 
 # find includes
 
-if( NOT FFTW_INCLUDES ) # allow user to override with FFTW_INCLUDES
+if( NOT FFTW_INCLUDE_DIRS AND FFTW_INCLUDES ) # allow user to override with FFTW_INCLUDE_DIRS
+  set( FFTW_INCLUDE_DIRS ${FFTW_INCLUDES} )
+endif()
+
+if( NOT FFTW_INCLUDE_DIRS ) # allow user to override with FFTW_INCLUDES
 
     find_path(
-      FFTW_INCLUDES
+      FFTW_INCLUDE_DIRS
       NAMES "fftw3.h"
       PATHS ${_include_paths}
       PATH_SUFFIXES "include"
       ${_default_paths}
     )
 
-    if( NOT FFTW_INCLUDES )
-      ecbuild_warn("FindFFTW: fftw include headers not found")
+    if( NOT FFTW_INCLUDE_DIRS )
+      if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY OR ${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED )
+        ecbuild_warn("FindFFTW: fftw include headers not found")
+      endif()
     endif()
 
 endif()
 
 # find libs
 
-if( NOT FFTW_LIBRARIES ) # allow user to override with FFTW_LIBRARIES (e.g. for MKL implementation)
+foreach( _component ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS} )
 
-    if( _require_dp )
-      find_library(
-        FFTW_LIB
-        NAMES "fftw3"
-        PATHS ${_lib_paths}
-        PATH_SUFFIXES "lib" "lib64"
-        ${_default_paths}
-      )
-      if( NOT FFTW_LIB )
-        ecbuild_warn("FindFFTW: double precision required, but fftw3 was not found")
-      else()
-        ecbuild_info("FFTW double precision: ${FFTW_LIB}")
-      endif()
+  find_library(
+    ${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIB
+    NAMES ${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIBRARY_NAME}
+    PATHS ${_lib_paths}
+    PATH_SUFFIXES "lib" "lib64"
+    ${_default_paths}
+  )
+  if( NOT ${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIB )
+    if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY OR ${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED )
+        ecbuild_warn("FindFFTW: ${_component} precision required, but ${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIBRARY_NAME} was not found")
     endif()
-
-    if( _require_sp )
-      find_library(
-        FFTWF_LIB
-        NAMES "fftw3f"
-        PATHS ${_lib_paths}
-        PATH_SUFFIXES "lib" "lib64"
-        ${_default_paths}
-      )
-      if( NOT FFTWF_LIB )
-        ecbuild_warn("FindFFTW: single precision required, but fftw3f was not found")
-      else()
-        ecbuild_info("FFTW single precision: ${FFTWF_LIB}")
-      endif()
+    set( ${CMAKE_FIND_PACKAGE_NAME}_${_component}_FOUND FALSE )
+  else()
+    set( _target FFTW::${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIBRARY_NAME} )
+    if (NOT TARGET ${_target} )
+      add_library( ${_target} UNKNOWN IMPORTED)
+      set_target_properties( ${_target} PROPERTIES
+        IMPORTED_LOCATION "${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIB}"
+        INTERFACE_INCLUDE_DIRECTORIES "${FFTW_INCLUDE_DIRS}")
     endif()
+    set( ${CMAKE_FIND_PACKAGE_NAME}_${_component}_FOUND TRUE )
+    list( APPEND FFTW_LIBRARIES ${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIB} )
+  endif()
 
-    if( _require_lp )
-      find_library(
-        FFTWL_LIB
-        NAMES "fftw3l"
-        PATHS ${_lib_paths}
-        PATH_SUFFIXES "lib" "lib64"
-        ${_default_paths}
-      )
-      if( NOT FFTWL_LIB )
-        ecbuild_warn("FindFFTW: long double precision required, but fftw3l was not found")
-      else()
-        ecbuild_info("FFTW long double precision: ${FFTWL_LIB}")
-      endif()
-    endif()
+endforeach()
 
-    if( _require_qp )
-      find_library(
-        FFTWQ_LIB
-        NAMES "fftw3q"
-        PATHS ${_lib_paths}
-        PATH_SUFFIXES "lib" "lib64"
-        ${_default_paths}
-      )
-      if( NOT FFTWQ_LIB )
-        ecbuild_warn("FindFFTW: quad precision required, but fftw3q was not found")
-      else()
-        ecbuild_info("FFTW quad precision: ${FFTWQ_LIB}")
-      endif()
-    endif()
-
-    set(FFTW_LIBRARIES ${FFTW_LIB} ${FFTWF_LIB} ${FFTWL_LIB} ${FFTWQ_LIB})
-
+if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY AND FFTW_LIBRARIES )
+  ecbuild_info( "FFTW targets:" )
+  foreach( _component ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS} )
+    set( _target FFTW::${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIBRARY_NAME} )
+    ecbuild_info("    ${_target} (${_component} precision)  [${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIB}]")
+  endforeach()
 endif()
-
-ecbuild_info("FFTW includes : ${FFTW_INCLUDES}")
-ecbuild_info("FFTW libraries: ${FFTW_LIBRARIES}")
 
 set( CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES_SAV} )
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(FFTW DEFAULT_MSG
-                                  FFTW_INCLUDES FFTW_LIBRARIES)
+find_package_handle_standard_args( FFTW
+                                   REQUIRED_VARS FFTW_INCLUDE_DIRS FFTW_LIBRARIES
+                                   HANDLE_COMPONENTS )
 
-mark_as_advanced(FFTW_INCLUDES FFTW_LIBRARIES FFTW_LIB FFTWF_LIB FFTWL_LIB FFTWQ_LIB)
+set( FFTW_INCLUDES ${FFTW_INCLUDE_DIRS} ) # deprecated
+set( FFTW_LIB ${${CMAKE_FIND_PACKAGE_NAME}_double_LIB} ) # deprecated
+
+mark_as_advanced(FFTW_INCLUDE_DIRS FFTW_LIBRARIES FFTW_LIB FFTWF_LIB FFTWL_LIB FFTWQ_LIB)

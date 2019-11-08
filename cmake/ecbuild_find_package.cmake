@@ -222,6 +222,14 @@ macro( ecbuild_find_package )
         NO_DEFAULT_PATH )
     endif()
 
+    if( NOT ${_PAR_NAME}_FOUND )
+      if( ${_PAR_NAME}_CONSIDERED_VERSIONS )
+        ecbuild_critical( "${_PAR_NAME} was found in the source tree but no suitable version (or component set) was found at '${${_PAR_NAME}_BINARY_DIR}'" )
+      else()
+        ecbuild_critical( "${_PAR_NAME} was found in the source tree but could not be loaded from '${${_PAR_NAME}_BINARY_DIR}'" )
+      endif()
+    endif()
+
   endif()
 
   if( NOT ${_PAR_NAME}_FOUND )
