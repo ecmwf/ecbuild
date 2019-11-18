@@ -16,13 +16,13 @@
 #
 #   ecbuild_generate_fortran_interfaces( TARGET <name>
 #                                        DESTINATION <path>
-#                                        PARALLEL <integer>
-#                                        INCLUDE_DIRS <name>
-#                                        GENERATED <name>
-#                                        SOURCE_DIR <path>
-#                                        SUFFIX <suffix>
-#                                        FCM_CONFIG_FILE <file>
 #                                        DIRECTORIES <directory1> [<directory2> ... ]
+#                                        [ PARALLEL <integer> ]
+#                                        [ INCLUDE_DIRS <name> ]
+#                                        [ GENERATED <name> ]
+#                                        [ SOURCE_DIR <path> ]
+#                                        [ SUFFIX <suffix> ]
+#                                        [ FCM_CONFIG_FILE <file> ]
 #                                      )
 #
 # Options
@@ -33,6 +33,9 @@
 #
 # DESTINATION : required
 #   sub-directory of ``CMAKE_CURRENT_BINARY_DIR`` to install target to
+#
+# DIRECTORIES : required
+#   list of directories in ``SOURCE_DIR`` in which to search for Fortran files to be processed
 #
 # PARALLEL : optional, defaults to 1
 #   number of processes to use (always 1 on Darwin systems)
@@ -51,9 +54,6 @@
 #
 # FCM_CONFIG_FILE : optional, defaults to the ``fcm-make-interfaces.cfg`` file in the ecbuild project
 #   FCM configuration file to be used to generate interfaces
-#
-# DIRECTORIES : required
-#   list of directories in ``SOURCE_DIR`` in which to search for Fortran files to be processed
 #
 # Usage
 # _____
