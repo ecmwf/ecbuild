@@ -16,7 +16,7 @@
 #
 #   ecbuild_generate_fortran_interfaces( TARGET <name>
 #                                        DESTINATION <path>
-#                                        DIRECTORIES <directory1> [<directory2> ... ]
+#                                        DIRECTORIES <directory1> [<directory2> ...]
 #                                        [ PARALLEL <integer> ]
 #                                        [ INCLUDE_DIRS <name> ]
 #                                        [ GENERATED <name> ]
