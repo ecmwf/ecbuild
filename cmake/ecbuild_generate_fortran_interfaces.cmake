@@ -12,15 +12,58 @@
 # ecbuild_generate_fortran_interfaces
 # ===================================
 #
-# Generates interfaces from the Fortran source files. ::
+# Generates interfaces from Fortran source files. ::
 #
-#   ecbuild_generate_fortran_interfaces()
+#   ecbuild_generate_fortran_interfaces( TARGET <name>
+#                                        DESTINATION <path>
+#                                        PARALLEL <integer>
+#                                        INCLUDE_DIRS <name>
+#                                        GENERATED <name>
+#                                        SOURCE_DIR <path>
+#                                        SUFFIX <suffix>
+#                                        FCM_CONFIG_FILE <file>
+#                                        DIRECTORIES <directory1> [<directory2> ... ]
+#                                      )
 #
 # Options
 # -------
 #
 # TARGET : required
 #   target name
+#
+# DESTINATION : required
+#   sub-directory of ``CMAKE_CURRENT_BINARY_DIR`` to install target to
+#
+# PARALLEL : optional, defaults to 1
+#   number of processes to use (always 1 on Darwin systems)
+#
+# INCLUDE_DIRS : optional
+#   name of CMake variable to store the path to the include directory containing the resulting interfaces
+#
+# GENERATED : optional
+#   name of CMake variable to store the list of generated interface files, including the full path to each
+#
+# SOURCE_DIR : optional, defaults to ``CMAKE_CURRENT_SOURCE_DIR``
+#   directory in which to look for the sub-directories given as arguments to ``DIRECTORIES``
+#
+# SUFFIX : optional, defaults to ".intfb.h"
+#   suffix to apply to name of each interface file
+#
+# FCM_CONFIG_FILE : optional, defaults to the ``fcm-make-interfaces.cfg`` file in the ecbuild project
+#   FCM configuration file to be used to generate interfaces
+#
+# DIRECTORIES : required
+#   list of directories in ``SOURCE_DIR`` in which to search for Fortran files to be processed
+#
+# Usage
+# _____
+#
+# The listed directories will be recursively searched for Fortran files of the
+# form ``<fname>.[fF]``, ``<fname>.[fF]90``, ``<fname>.[fF]03`` or
+# ``<fname>.[fF]08``. For each matching file, a file ``<fname><suffix>`` will be
+# created containing the interface blocks for all external subprograms within
+# it, where ``<suffix>`` is the value given to the ``SUFFIX`` option. If a file
+# contains no such subprograms, no interface file will be generated for it.
 #
 ##############################################################################
 
