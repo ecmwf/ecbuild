@@ -193,13 +193,17 @@ function( ecbuild_get_test_data )
       set( ECBUILD_DOWNLOAD_BASE_URL http://download.ecmwf.org/test-data )
     endif()
 
-    # download the data
+    if( NOT _p_NOCHECK AND NOT _p_MD5 AND NOT _p_SHA1 AND EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${_p_DIRSAVE}/${_p_NAME}" )
+      # special case where data have been downloaded already, but will be checked with remote md5 anyway
+      add_custom_command( OUTPUT ${_p_NAME}
+                          COMMAND echo "Data have been downloaded already")
+    else()
+      # download the data
+      _download_test_data( ${_p_NAME} ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} ${_p_DIRSAVE} )
 
-    _download_test_data( ${_p_NAME} ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} ${_p_DIRSAVE} )
-
-    # perform the checksum if requested
-
-    set( _deps ${_p_NAME} )
+      # perform the checksum if requested
+      set( _deps ${_p_NAME} )
+    endif()
 
     if( NOT _p_NOCHECK )
 
