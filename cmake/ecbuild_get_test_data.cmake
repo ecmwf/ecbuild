@@ -10,7 +10,7 @@
 
 # function for downloading test data
 
-function( _download_test_data _p_NAME _p_DIR_URL _p_DIRSAVE )
+function( _download_test_data _p_NAME _p_DIR_URL _p_DIRSAVE _p_CHECK_FILE_EXISTS )
 
   # TODO: make that 'at ecmwf'
   #if(1)
@@ -31,14 +31,30 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRSAVE )
   find_program( CURL_PROGRAM curl )
   mark_as_advanced(CURL_PROGRAM)
 
-  if( CURL_PROGRAM )
+  # The "--continue-at - " option of curl is buggy... (ask Google)
+  # Error message is: "curl: (33) HTTP server doesn't seem to support byte ranges. Cannot resume."
+  # Switch to wget if _p_CHECK_FILE_EXISTS is activated
+  if( CURL_PROGRAM AND NOT _p_CHECK_FILE_EXISTS)
 
-    add_custom_command( OUTPUT ${_p_NAME}
-      COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
-      COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_DIRSAVE}/${_p_NAME}
-              --retry ${ECBUILD_DOWNLOAD_RETRIES}
-              --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
-              ${_p_DIR_URL}/${_p_NAME} )
+    if( _p_CHECK_FILE_EXISTS )
+
+      add_custom_command( OUTPUT ${_p_NAME}
+        COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
+        COMMAND ${CURL_PROGRAM} --continue-at - --silent --show-error --fail --output ${_p_DIRSAVE}/${_p_NAME}
+                --retry ${ECBUILD_DOWNLOAD_RETRIES}
+                --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
+                ${_p_DIR_URL}/${_p_NAME} )
+
+    else()
+
+      add_custom_command( OUTPUT ${_p_NAME}
+        COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
+        COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_DIRSAVE}/${_p_NAME}
+                --retry ${ECBUILD_DOWNLOAD_RETRIES}
+                --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
+                ${_p_DIR_URL}/${_p_NAME} )
+
+    endif()
 
   else()
 
@@ -49,11 +65,23 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRSAVE )
       # wget takes the total number of tries, curl the number or retries
       math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
 
-      add_custom_command( OUTPUT ${_p_NAME}
-        COMMENT "(wget) downloading ${_p_DIR_URL}/${_p_NAME}"
-        COMMAND ${WGET_PROGRAM} -nv -O ${_p_DIRSAVE}/${_p_NAME}
-                -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
-                ${_p_DIR_URL}/${_p_NAME} )
+      if( _p_CHECK_FILE_EXISTS )
+
+        add_custom_command( OUTPUT ${_p_NAME}
+          COMMENT "(wget) downloading ${_p_DIR_URL}/${_p_NAME}"
+          COMMAND ${WGET_PROGRAM} -c -nv -O ${_p_DIRSAVE}/${_p_NAME}
+                  -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
+                  ${_p_DIR_URL}/${_p_NAME} )
+
+      else()
+
+        add_custom_command( OUTPUT ${_p_NAME}
+          COMMENT "(wget) downloading ${_p_DIR_URL}/${_p_NAME}"
+          COMMAND ${WGET_PROGRAM} -nv -O ${_p_DIRSAVE}/${_p_NAME}
+                  -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
+                  ${_p_DIR_URL}/${_p_NAME} )
+
+      endif()
 
     else()
 
@@ -193,17 +221,21 @@ function( ecbuild_get_test_data )
       set( ECBUILD_DOWNLOAD_BASE_URL http://download.ecmwf.org/test-data )
     endif()
 
-    if( NOT _p_NOCHECK AND NOT _p_MD5 AND NOT _p_SHA1 AND EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${_p_DIRSAVE}/${_p_NAME}" )
-      # special case where data have been downloaded already, but will be checked with remote md5 anyway
-      add_custom_command( OUTPUT ${_p_NAME}
-                          COMMAND echo "Data have been downloaded already")
+    if( NOT _p_NOCHECK AND NOT _p_MD5 AND NOT _p_SHA1 )
+      # special case where data might have been downloaded already and will be checked with the remote md5 anyway
+      set( CHECK_FILE_EXISTS ON)
     else()
-      # download the data
-      _download_test_data( ${_p_NAME} ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} ${_p_DIRSAVE} )
-
-      # perform the checksum if requested
-      set( _deps ${_p_NAME} )
+      # always download the data
+      set( CHECK_FILE_EXISTS OFF)
     endif()
+
+    # download the data
+
+    _download_test_data( ${_p_NAME} ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} ${_p_DIRSAVE} ${CHECK_FILE_EXISTS} )
+
+    # perform the checksum if requested
+
+    set( _deps ${_p_NAME} )
 
     if( NOT _p_NOCHECK )
 
@@ -213,7 +245,7 @@ function( ecbuild_get_test_data )
                                 COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_DIRSAVE}/${_p_NAME} > ${_p_DIRSAVE}/${_p_NAME}.localmd5
                                 DEPENDS ${_p_NAME} )
 
-            _download_test_data( ${_p_NAME}.md5 ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} ${_p_DIRSAVE} )
+            _download_test_data( ${_p_NAME}.md5 ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} ${_p_DIRSAVE} OFF )
 
             add_custom_command( OUTPUT ${_p_NAME}.ok
                                 COMMAND ${CMAKE_COMMAND} -E compare_files ${_p_DIRSAVE}/${_p_NAME}.md5 ${_p_DIRSAVE}/${_p_NAME}.localmd5 &&
