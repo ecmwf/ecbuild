@@ -139,7 +139,6 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
     if( NOT _skip )
         unset( _name )
         unset( _dir  )
-        unset( _file )
 
         if( ${_lib} MATCHES ".+/Frameworks/.+" )
 
@@ -150,7 +149,9 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
           if( TARGET ${_lib} )
 
-            set( _file "${RPATH_FLAG}$<TARGET_LINKER_FILE_DIR:${_lib}> $<TARGET_LINKER_FILE:${_lib}>" )
+            # XXX: %SHORTEN:...% will be resolved later, see pkg-config.cmake.in
+            set( _name "%SHORTEN:$<TARGET_LINKER_FILE_NAME:${_lib}>%" )
+            set( _dir "$<TARGET_LINKER_FILE_DIR:${_lib}>" )
 
           elseif( ${_lib} MATCHES "-l.+" )
 
@@ -185,9 +186,7 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
 
           if( _set_append )
 
-            if( _file )
-              list( APPEND _pkgconfig_libs "${_file}" )
-            elseif( _dir )
+            if( _dir )
               list( APPEND _pkgconfig_libs "${RPATH_FLAG}${dir}" "-L${_dir}" "-l${_name}" )
             else()
               list( APPEND _pkgconfig_libs "-l${_name}" )
