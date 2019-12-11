@@ -187,7 +187,7 @@ function( ecbuild_pkgconfig_libs pkgconfig_libs libraries ignore_libs )
           if( _set_append )
 
             if( _dir )
-              list( APPEND _pkgconfig_libs "${RPATH_FLAG}${dir}" "-L${_dir}" "-l${_name}" )
+              list( APPEND _pkgconfig_libs "${RPATH_FLAG}${_dir}" "-L${_dir}" "-l${_name}" )
             else()
               list( APPEND _pkgconfig_libs "-l${_name}" )
             endif()
