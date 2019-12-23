@@ -54,96 +54,32 @@
 #        * capitalisation as used in find_package() arguments
 #   - If no components are defined, all components will be searched without guarantee that the required component is available.
 #
-# Output:
-#  NETCDF_FOUND - System has NetCDF
-#  NETCDF_DEFINITIONS
-#  NETCDF_INCLUDE_DIRS - The NetCDF include directories
-#  NETCDF_LIBRARIES - The libraries needed to use NetCDF
 
-# default is netcdf4
-if( NetCDF_FIND_VERSION STREQUAL "3" )
-  set( PREFER_NETCDF3 1 )
-endif()
+list( APPEND _possible_components C CXX Fortran CXX_LEGACY )
 
-if( NOT PREFER_NETCDF3 )
-  set( PREFER_NETCDF4 1 )
-else()
-  set( PREFER_NETCDF4 0 )
-endif()
-mark_as_advanced( PREFER_NETCDF4 PREFER_NETCDF3 )
+## Library names for each component
+set( NetCDF_C_LIBRARY_NAME          netcdf )
+set( NetCDF_CXX_LIBRARY_NAME        netcdf_c++4 )
+set( NetCDF_CXX_LEGACY_LIBRARY_NAME netcdf_c++ )
+set( NetCDF_Fortran_LIBRARY_NAME    netcdff )
 
-set( NETCDF_FIND_REQUIRED   ${NetCDF_FIND_REQUIRED} )
-set( NETCDF_FIND_QUIETLY    ${NetCDF_FIND_QUIETLY} )
-set( NETCDF_FIND_COMPONENTS ${NetCDF_FIND_COMPONENTS} )
+foreach( _comp ${_possible_components} )
+  string( TOUPPER "${_comp}" _COMP )
+  set( _arg_${_COMP} ${_comp} )
+  set( _name_${_COMP} ${_comp} )
+endforeach()
 
-list( APPEND NETCDF_FIND_COMPONENTS C )
-
-if( NETCDF_CXX )
-  ecbuild_debug( "FindNetCDF: also looking for C++ libraries" )
-  list( APPEND NETCDF_FIND_COMPONENTS CXX )
-endif()
-
-if( NETCDF_Fortran OR NETCDF_FORTRAN OR NETCDF_F90 )
-  ecbuild_debug( "FindNetCDF: also looking for Fortran libraries" )
-  list( APPEND NETCDF_FIND_COMPONENTS FORTRAN F90 )
-endif()
-
-list(FIND NETCDF_FIND_COMPONENTS "FORTRAN" _index)
-if(${_index} GREATER -1)
-  list( APPEND NETCDF_FIND_COMPONENTS F90 )
-endif()
-
-list (FIND NETCDF_FIND_COMPONENTS "F90" _index)
-if(${_index} GREATER -1)
-  list( APPEND NETCDF_FIND_COMPONENTS FORTRAN )
-endif()
-
-list(FIND NETCDF_FIND_COMPONENTS "Fortran" _index)
-if(${_index} GREATER -1)
-  list( REMOVE_ITEM NETCDF_FIND_COMPONENTS Fortran )
-  list( APPEND NETCDF_FIND_COMPONENTS FORTRAN F90 )
-endif()
-
-list( REMOVE_DUPLICATES NETCDF_FIND_COMPONENTS )
-ecbuild_debug( "FindNetCDF: looking for components ${NETCDF_FIND_COMPONENTS}" )
-
-### NetCDF4
-
-if( PREFER_NETCDF4 )
-
-  ecbuild_debug( "FindNetCDF: looking for NetCDF4" )
-
-  # CONFIGURE the NETCDF_FIND_COMPONENTS variable
-
-  # Find NetCDF4
-
-  # message( "NETCDF CMAKE_PREFIX_PATH = [${CMAKE_PREFIX_PATH}]")
-  # ecbuild_debug_var( NETCDF_ROOT )
-  # ecbuild_debug_var( NETCDF_FIND_COMPONENTS )
-  # ecbuild_debug_var( NETCDF_FIND_QUIETLY )
-  # ecbuild_debug_var( NETCDF_FIND_REQUIRED )
-  find_package( NetCDF4 COMPONENTS ${NETCDF_FIND_COMPONENTS} )
-  # ecbuild_debug_var( NETCDF4_FOUND )
-  # ecbuild_debug_var( NETCDF_FOUND )
-  # ecbuild_debug_var( NETCDF_LIBRARIES )
-  # ecbuild_debug_var( NETCDF_INCLUDE_DIRS )
-
-  list( APPEND NETCDF_Fortran_LIBRARIES ${NETCDF_FORTRAN_LIBRARIES} ${NETCDF_F90_LIBRARIES} )
-  if( NETCDF_Fortran_LIBRARIES )
-    list( REMOVE_DUPLICATES NETCDF_Fortran_LIBRARIES )
+unset( _search_components )
+foreach( _comp ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS} )
+  string( TOUPPER "${_comp}" _COMP )
+  set( _arg_${_COMP} ${_comp} )
+  list( APPEND _search_components ${_name_${_COMP}} )
+  if( NOT _name_${_COMP} )
+    ecbuild_error( "Find${CMAKE_FIND_PACKAGE_NAME}: COMPONENT ${_comp} is not a valid component. Valid components: ${_possible_components}" )
   endif()
-
-  # ecbuild_debug_var( NETCDF_Fortran_LIBRARIES )
-  # ecbuild_debug_var( NETCDF_C_LIBRARIES )
-  # ecbuild_debug_var( NETCDF_CXX_LIBRARIES )
-
-
-  set_package_properties( NetCDF4 PROPERTIES TYPE RECOMMENDED PURPOSE "support for NetCDF4 file format" )
-
-  #ecbuild_debug_var( NETCDF_FOUND )
-  #ecbuild_debug_var( NETCDF_LIBRARIES )
-  #ecbuild_debug_var( NETCDF_INCLUDE_DIRS )
-
+endforeach()
+if( NOT _search_components )
+  set( _search_components C )
 endif()
 
 ## Search hints for finding include directories and libraries
