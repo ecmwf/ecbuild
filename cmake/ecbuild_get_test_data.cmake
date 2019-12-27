@@ -203,12 +203,10 @@ function( ecbuild_get_test_data )
     endif()
 
     if( NOT _p_DIRHOST )
-      set( _p_DIRHOST ${PROJECT_NAME}/${currdir} )
+      set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL} )
+    else()
+      set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRHOST} )
     endif()
-
-#  Create download directory in source directory for test data
-    set( DIRLOCAL_SOURCE ${PROJECT_SOURCE_DIR}/test_data_download/${_p_DIRLOCAL})
-    file(MAKE_DIRECTORY ${DIRLOCAL_SOURCE})
 
 
     # Allow the user to override the download URL (ECBUILD-447)
@@ -226,7 +224,7 @@ function( ecbuild_get_test_data )
 
     # download the data
 
-    _download_test_data( ${_p_NAME} ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRHOST} ${DIRLOCAL_SOURCE} ${CHECK_FILE_EXISTS} )
+    _download_test_data( ${_p_NAME} ${DOWNLOAD_URL} ${_p_DIRLOCAL} ${CHECK_FILE_EXISTS} )
 
     # perform the checksum if requested
 
@@ -238,15 +236,15 @@ function( ecbuild_get_test_data )
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
 		                COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
-		                WORKING_DIRECTORY ${DIRLOCAL_SOURCE}
+		                WORKING_DIRECTORY ${_p_DIRLOCAL}
                                 DEPENDS ${_p_NAME} )
 
-            _download_test_data( ${_p_NAME}.md5 ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRHOST} ${DIRLOCAL_SOURCE} OFF )
+            _download_test_data( ${_p_NAME}.md5 ${DOWNLOAD_URL} ${_p_DIRLOCAL} OFF )
 
             add_custom_command( OUTPUT ${_p_NAME}.ok
                                 COMMAND ${CMAKE_COMMAND} -E compare_files ${_p_NAME}.md5 ${_p_NAME}.localmd5 &&
                                         ${CMAKE_COMMAND} -E touch ${_p_NAME}.ok
-		                WORKING_DIRECTORY ${DIRLOCAL_SOURCE}
+		                WORKING_DIRECTORY ${_p_DIRLOCAL}
                                 DEPENDS ${_p_NAME}.localmd5 ${_p_NAME}.md5 )
 
             list( APPEND _deps  ${_p_NAME}.localmd5 ${_p_NAME}.ok )
@@ -257,15 +255,15 @@ function( ecbuild_get_test_data )
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
                                 COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
-		                WORKING_DIRECTORY ${DIRLOCAL_SOURCE}
+		                WORKING_DIRECTORY ${_p_DIRLOCAL}
                                 DEPENDS ${_p_NAME} )
 
-            configure_file( "${ECBUILD_MACROS_DIR}/md5.in" ${DIRLOCAL_SOURCE}/${_p_NAME}.md5 @ONLY )
+            configure_file( "${ECBUILD_MACROS_DIR}/md5.in" ${_p_DIRLOCAL}/${_p_NAME}.md5 @ONLY )
 
             add_custom_command( OUTPUT ${_p_NAME}.ok
                                 COMMAND ${CMAKE_COMMAND} -E compare_files ${_p_NAME}.md5 ${_p_NAME}.localmd5 &&
                                         ${CMAKE_COMMAND} -E touch ${_p_NAME}.ok
-		                WORKING_DIRECTORY ${DIRLOCAL_SOURCE}
+		                WORKING_DIRECTORY ${_p_DIRLOCAL}
                                 DEPENDS ${_p_NAME}.localmd5 )
 
             list( APPEND _deps ${_p_NAME}.localmd5 ${_p_NAME}.ok )
@@ -277,12 +275,12 @@ function( ecbuild_get_test_data )
 #            find_program( SHASUM NAMES sha1sum shasum )
 #            if( SHASUM )
 #                add_custom_command( OUTPUT ${_p_NAME}.localsha1
-#                                    COMMAND ${SHASUM} ${DIRLOCAL_SOURCE}/${_p_NAME} > ${DIRLOCAL_SOURCE}/${_p_NAME}.localsha1 )
+#                                    COMMAND ${SHASUM} ${_p_DIRLOCAL}/${_p_NAME} > ${_p_DIRLOCAL}/${_p_NAME}.localsha1 )
 
 #                add_custom_command( OUTPUT ${_p_NAME}.ok
-#                                    COMMAND diff ${DIRLOCAL_SOURCE}/${_p_NAME}.sha1 ${DIRLOCAL_SOURCE}/${_p_NAME}.localsha1 && touch ${DIRLOCAL_SOURCE}/${_p_NAME}.ok )
+#                                    COMMAND diff ${_p_DIRLOCAL}/${_p_NAME}.sha1 ${_p_DIRLOCAL}/${_p_NAME}.localsha1 && touch ${_p_DIRLOCAL}/${_p_NAME}.ok )
 
-#                configure_file( "${ECBUILD_MACROS_DIR}/sha1.in" ${DIRLOCAL_SOURCE}/${_p_NAME}.sha1 @ONLY )
+#                configure_file( "${ECBUILD_MACROS_DIR}/sha1.in" ${_p_DIRLOCAL}/${_p_NAME}.sha1 @ONLY )
 
 #                list( APPEND _deps ${_p_NAME}.localsha1 ${_p_NAME}.ok )
 #            endif()
@@ -294,9 +292,9 @@ function( ecbuild_get_test_data )
     add_custom_target( ${_p_TARGET} DEPENDS ${_deps} )
 
     if( _p_EXTRACT )
-      ecbuild_debug("ecbuild_get_test_data: extracting ${DIRLOCAL_SOURCE}/${_p_NAME} (post-build for target ${_p_TARGET}")
+      ecbuild_debug("ecbuild_get_test_data: extracting ${_p_DIRLOCAL}/${_p_NAME} (post-build for target ${_p_TARGET}")
       add_custom_command( TARGET ${_p_TARGET} POST_BUILD
-                          COMMAND ${CMAKE_COMMAND} -E chdir ${DIRLOCAL_SOURCE} tar xvf ${_p_NAME} )
+                          COMMAND ${CMAKE_COMMAND} -E chdir ${_p_DIRLOCAL} tar xvf ${_p_NAME} )
     endif()
 
 endfunction(ecbuild_get_test_data)
