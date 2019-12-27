@@ -202,16 +202,16 @@ function( ecbuild_get_test_data )
 #      set( _p_TARGET ${_p_NAME} )
     endif()
 
+    # Allow the user to override the base download URL (ECBUILD-447)
+    if( NOT DEFINED ECBUILD_DOWNLOAD_BASE_URL )
+      set( ECBUILD_DOWNLOAD_BASE_URL http://download.ecmwf.org/test-data )
+    endif()
+
+    # Set download URL
     if( NOT _p_DIRHOST )
       set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL} )
     else()
       set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRHOST} )
-    endif()
-
-
-    # Allow the user to override the download URL (ECBUILD-447)
-    if( NOT DEFINED ECBUILD_DOWNLOAD_BASE_URL )
-      set( ECBUILD_DOWNLOAD_BASE_URL http://download.ecmwf.org/test-data )
     endif()
 
     if( NOT _p_NOCHECK AND NOT _p_MD5 AND NOT _p_SHA1 )
