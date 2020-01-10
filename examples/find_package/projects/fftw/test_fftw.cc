@@ -26,8 +26,8 @@ int main(int argc, char* argv[] ) {
   fftw->out = fftwf_alloc_real( nlats * nlons );
 
   fftw->plan =
-     fftwf_plan_many_dft_c2r( 1, &nlons, nlats, fftw->in, nullptr, 1, num_complex,
-                             fftw->out, nullptr, 1, nlons, FFTW_ESTIMATE );
+     fftwf_plan_many_dft_c2r( 1, &nlons, nlats, fftw->in, NULL, 1, num_complex,
+                             fftw->out, NULL, 1, nlons, FFTW_ESTIMATE );
 
   int idx = 0;
   for ( int jlat = 0; jlat < nlats; jlat++ ) {

@@ -10,7 +10,7 @@
 
 # function for downloading test data
 
-function( _download_test_data _p_NAME _p_DIRNAME )
+function( _download_test_data _p_NAME _p_DIR_URL )
 
   # TODO: make that 'at ecmwf'
   #if(1)
@@ -34,11 +34,11 @@ function( _download_test_data _p_NAME _p_DIRNAME )
   if( CURL_PROGRAM )
 
     add_custom_command( OUTPUT ${_p_NAME}
-      COMMENT "(curl) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
+      COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
       COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_NAME}
               --retry ${ECBUILD_DOWNLOAD_RETRIES}
               --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
-              http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
+              ${_p_DIR_URL}/${_p_NAME} )
 
   else()
 
@@ -50,10 +50,10 @@ function( _download_test_data _p_NAME _p_DIRNAME )
       math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
 
       add_custom_command( OUTPUT ${_p_NAME}
-        COMMENT "(wget) downloading http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME}"
+        COMMENT "(wget) downloading ${_p_DIR_URL}/${_p_NAME}"
         COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME}
                 -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
-                http://download.ecmwf.org/test-data/${_p_DIRNAME}/${_p_NAME} )
+                ${_p_DIR_URL}/${_p_NAME} )
 
     else()
 
@@ -111,7 +111,10 @@ endfunction()
 # Usage
 # -----
 #
-# Download test data from ``http://download.ecmwf.org/test-data/<DIRNAME>/<NAME>``
+# Download test data from ``<ECBUILD_DOWNLOAD_BASE_URL>/<DIRNAME>/<NAME>``
+#
+# If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
+# ``http://download.ecmwf.org/test-data`` is used.
 #
 # If the ``DIRNAME`` argument is not given, the project name followed by the
 # relative path from the root directory to the current directory is used.
@@ -176,9 +179,14 @@ function( ecbuild_get_test_data )
 #    ecbuild_debug_var( _p_URL )
 #    ecbuild_debug_var( _p_DIRNAME )
 
+    # Allow the user to override the download URL (ECBUILD-447)
+    if( NOT DEFINED ECBUILD_DOWNLOAD_BASE_URL )
+      set( ECBUILD_DOWNLOAD_BASE_URL http://download.ecmwf.org/test-data )
+    endif()
+
     # download the data
 
-    _download_test_data( ${_p_NAME} ${_p_DIRNAME} )
+    _download_test_data( ${_p_NAME} ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} )
 
     # perform the checksum if requested
 
@@ -192,7 +200,7 @@ function( ecbuild_get_test_data )
                                 COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
                                 DEPENDS ${_p_NAME} )
 
-            _download_test_data( ${_p_NAME}.md5 ${_p_DIRNAME} )
+            _download_test_data( ${_p_NAME}.md5 ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} )
 
             add_custom_command( OUTPUT ${_p_NAME}.ok
                                 COMMAND ${CMAKE_COMMAND} -E compare_files ${_p_NAME}.md5 ${_p_NAME}.localmd5 &&
@@ -295,10 +303,13 @@ endfunction(ecbuild_get_test_data)
 # Usage
 # -----
 #
-# Download test data from ``http://download.ecmwf.org/test-data/<DIRNAME>``
+# Download test data from ``<ECBUILD_DOWNLOAD_BASE_URL>/<DIRNAME>``
 # for each name given in the list of ``NAMES``. Each name may contain a
 # relative path, which is appended to ``DIRNAME`` and may be followed by an
 # md5 checksum, separated with a ``:`` (the name must not contain spaces).
+#
+# If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
+# ``http://download.ecmwf.org/test-data`` is used.
 #
 # If the ``DIRNAME`` argument is not given, the project name followed by the
 # relative path from the root directory to the current directory is used.

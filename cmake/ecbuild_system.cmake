@@ -125,6 +125,11 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include(ecbuild_define_build_types)
 
     ############################################################################################
+    # define custom properties
+
+    include(ecbuild_define_properties)
+
+    ############################################################################################
     # add cmake macros
 
     include(AddFileDependencies)

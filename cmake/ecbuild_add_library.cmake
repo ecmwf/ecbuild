@@ -159,17 +159,42 @@
 # CFLAGS : optional
 #   list of C compiler flags to use for all C source files
 #
+#   See usage note below.
+#
 # CXXFLAGS : optional
 #   list of C++ compiler flags to use for all C++ source files
 #
+#   See usage note below.
+#
 # FFLAGS : optional
 #   list of Fortran compiler flags to use for all Fortran source files
+#
+#   See usage note below.
 #
 # LINKER_LANGUAGE : optional
 #   sets the LINKER_LANGUAGE property on the target
 #
 # OUTPUT_NAME : optional
 #   sets the OUTPUT_NAME property on the target
+#
+# Usage
+# -----
+#
+# The ``CFLAGS``, ``CXXFLAGS`` and ``FFLAGS`` options apply the given compiler
+# flags to all C, C++ and Fortran sources passed to this command, respectively.
+# If any two ``ecbuild_add_executable``, ``ecbuild_add_library`` or
+# ``ecbuild_add_test`` commands are passed the *same* source file and each sets
+# a different value for the compiler flags to be applied to that file (including
+# when one command adds flags and another adds none), then the two commands
+# will be in conflict and the result may not be as expected.
+#
+# For this reason it is recommended not to use the ``*FLAGS`` options when
+# multiple targets share the same source files, unless the exact same flags are
+# applied to those sources by each relevant command.
+#
+# Care should also be taken to ensure that these commands are not passed source
+# files which are not required to build the target, if those sources are also
+# passed to other commands which set different compiler flags.
 #
 ##############################################################################
 
