@@ -60,15 +60,38 @@ function( ecbuild_target_flags target c_flags cxx_flags fortran_flags )
             ecbuild_debug( "ecbuild_target_flags(${target}): overriding flags for ${src} with '${oflags} ${oflags_btype}'" )
           # Otherwise append source file specific flags to project specific and target specific flags
           else()
+
             get_property( flags SOURCE ${src} PROPERTY COMPILE_FLAGS )
             get_property( flags_btype SOURCE ${src} PROPERTY COMPILE_FLAGS_${CMAKE_BUILD_TYPE_CAPS} )
-            set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS "${pflags} ${${l}_flags} ${flags} ${flags_btype}" )
-            ecbuild_debug( "ecbuild_target_flags(${target}): setting flags for ${src} to '${pflags} ${${l}_flags} ${flags} ${flags_btype}'" )
+
+            # Has this file already been processed in another target?
+            get_property( has_flags SOURCE ${src} PROPERTY CUSTOM_FLAGS )
+
+            if ( has_flags )
+              # Avoid applying duplicate flags to a source we've already processed
+
+              # Don't add the project-level custom flags (${pflags}) again.
+              # Does not protect against misuse of ${l}_flags from multiple targets.
+              set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS                 "${${l}_flags} ${flags} ${flags_btype}" )
+              ecbuild_debug( "ecbuild_target_flags(${target}): setting flags for ${src} to '${${l}_flags} ${flags} ${flags_btype}'" )
+
+            else()
+              # First time processing this file; add everything
+
+              set_source_files_properties( ${src} PROPERTIES COMPILE_FLAGS                 "${pflags} ${${l}_flags} ${flags} ${flags_btype}" )
+              ecbuild_debug( "ecbuild_target_flags(${target}): setting flags for ${src} to '${pflags} ${${l}_flags} ${flags} ${flags_btype}'" )
+
+              # Mark source file as already processed.
+              set_property( SOURCE ${src} PROPERTY CUSTOM_FLAGS TRUE )
+
+            endif()
+
           endif()
         endforeach()
 
       # 2) Override compile flags from user specified JSON file
       elseif( ECBUILD_SOURCE_FLAGS )
+
         ecbuild_source_flags( ${target}_${lang}_SOURCE_FLAGS
                               ${target}_${l}
                               "${${l}_flags}"
