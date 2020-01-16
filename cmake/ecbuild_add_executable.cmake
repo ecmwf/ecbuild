@@ -199,20 +199,10 @@ function( ecbuild_add_executable )
       ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
     endif()
 
-    if( ${_PAR_TARGET}_cuda_srcs )
-      if( NOT CUDA_FOUND )
-        ecbuild_error("ecbuild_add_executable(${_PAR_TARGET}): CUDA source files detected"
-                      "but CUDA was not found.")
-      endif()
-      ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): CUDA sources detected."
-                    "Building executable with ecbuild_add_executable() rather than intrinsic"
-                    "add_executable().")
-    endif()
-
-    if( NOT ${_PAR_TARGET}_cuda_srcs )
-      add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
-    else()
+    if( ${_PAR_TARGET}_cuda_srcs AND CUDA_FOUND )
       cuda_add_executable( ${_PAR_TARGET} ${_PAR_SOURCES}  ${_all_objects} )
+    else()
+      add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
     endif()
 
     # Set custom properties

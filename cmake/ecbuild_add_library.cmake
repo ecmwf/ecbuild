@@ -285,27 +285,13 @@ function( ecbuild_add_library_impl )
       set( _PAR_SOURCES "" )
     endif()
 
-    if( ${_PAR_TARGET}_cuda_srcs )
-      if( NOT CUDA_FOUND )
-          ecbuild_error("ecbuild_add_library(${_PAR_TARGET}): CUDA source files detected"
-                        "but CUDA was not found.")
-      endif()
-      if( _PAR_TYPE MATCHES "OBJECT" )
-          ecbuild_error("ecbuild_add_library(${_PAR_TARGET}): CUDA source files detected"
-                        "but CMake OBJECT libraries with CUDA are not supported.")
-      endif()
-      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): CUDA sources detected."
-                    "Building library with cuda_add_library() rather than intrinsic"
-                    "add_library().")
-    endif()
-
-    if( NOT ${_PAR_TARGET}_cuda_srcs )
-      add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
-    else()
+    if( ${_PAR_TARGET}_cuda_srcs AND CUDA_FOUND )
       if( NOT DEFINED CUDA_LINK_LIBRARIES_KEYWORD )
         set ( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
       endif()
       cuda_add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
+    else()
+      add_library( ${_PAR_TARGET} ${_PAR_TYPE} ${_PAR_SOURCES}  ${_all_objects} )
     endif()
     # ecbuild_echo_target( ${_PAR_TARGET} )
 
