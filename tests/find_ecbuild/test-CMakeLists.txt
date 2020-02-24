@@ -6,3 +6,7 @@ project(dummy VERSION 0.1 LANGUAGES NONE)
 if(NOT DEFINED ECBUILD_MACROS_DIR)
   ecbuild_critical("ecbuild has not been loaded properly")
 endif()
+
+if(NOT ecbuild_DIR)
+  ecbuild_critical("ecbuild_DIR has not been defined properly")
+endif()
