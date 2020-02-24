@@ -32,5 +32,6 @@ if(ecbuild_FOUND)
     find_path(ecbuild_DIR ecbuild-config.cmake
         HINTS
             ${CMAKE_CURRENT_LIST_DIR}/../lib/cmake/ecbuild
+            ${CMAKE_CURRENT_LIST_DIR}/../../../lib/cmake/ecbuild
         NO_DEFAULT_PATH)
 endif()
