@@ -29,4 +29,8 @@ find_package_handle_standard_args(ecbuild
 
 if(ecbuild_FOUND)
     include(ecbuild)
+    find_path(ecbuild_DIR ecbuild-config.cmake
+        HINTS
+            ${CMAKE_CURRENT_LIST_DIR}/../lib/cmake/ecbuild
+        NO_DEFAULT_PATH)
 endif()
