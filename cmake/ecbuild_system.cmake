@@ -56,7 +56,8 @@ string( TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWCASE )
 
 ########################################################################################################
 # include our cmake macros, but only do so if this is the top project
-if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
+
+if( NOT ECBUILD_SYSTEM_INITIALISED )
 
     # hostname of where we build
 
@@ -241,9 +242,10 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_cache )
     include( ecbuild_remove_fortran_flags )
     include( ecbuild_configure_file )
-if( NOT (PROJECT_NAME STREQUAL ecbuild) )
-    include( ecbuild_bundle )
-endif()
+
+    if( NOT (PROJECT_NAME STREQUAL ecbuild) )
+        include( ecbuild_bundle )
+    endif()
 
     include( ${CMAKE_CURRENT_LIST_DIR}/contrib/GetGitRevisionDescription.cmake )
 
@@ -257,10 +259,10 @@ endif()
     ecbuild_prepare_cache()
 
     if( NOT (PROJECT_NAME STREQUAL ecbuild ) )
-      include( ecbuild_define_options )               # define build options
-      include( ecbuild_compiler_flags )               # compiler flags
-      include( ecbuild_check_compiler )               # check for compiler characteristics
-      include( ecbuild_check_os )                     # check for os characteristics
+        include( ecbuild_define_options )               # define build options
+        include( ecbuild_compiler_flags )               # compiler flags
+        include( ecbuild_check_compiler )               # check for compiler characteristics
+        include( ecbuild_check_os )                     # check for os characteristics
     endif()
     include( ecbuild_define_paths )                 # defines installation paths
     include( ecbuild_setup_test_framework )         # setup test framework
@@ -275,7 +277,9 @@ endif()
     enable_testing()
 
     # keep this until we modify the meaning to 'check' if installation worked
-    add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
+    if( NOT TARGET check )
+      add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
+    endif()
 
     ############################################################################################
     # define the build timestamp, unless the user provided one via EC_BUILD_TIMESTAMP
@@ -286,6 +290,8 @@ endif()
     endif()
 
     ecbuild_info( "---------------------------------------------------------" )
+
+    set( ECBUILD_SYSTEM_INITIALISED TRUE )
 
 else()
 

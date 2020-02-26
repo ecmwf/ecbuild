@@ -8,7 +8,7 @@
 
 ####################################################################################################
 # include our cmake macros, but only do so if this is the top project
-if(ECBUILD_2_COMPAT AND PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
+if(ECBUILD_2_COMPAT AND NOT ECBUILD_SYSTEM_INITIALISED )
   if(ECBUILD_2_COMPAT_DEPRECATE)
     ecbuild_deprecate("The ecbuild 2 compatibility layer is deprecated. "
       "Please upgrade the build system and unset `ECBUILD_2_COMPAT`.")

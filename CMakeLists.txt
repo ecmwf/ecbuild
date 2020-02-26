@@ -46,6 +46,10 @@ add_subdirectory( tests )
 
 install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
 
+if( NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR AND ECBUILD_2_COMPAT )
+    set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE )
+endif()
+
 ############################################################################################
 # finalize
 

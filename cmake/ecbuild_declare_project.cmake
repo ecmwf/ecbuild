@@ -214,4 +214,8 @@ if( NOT ${PROJECT_NAME}_DECLARED )
 
 endif()
 
+if( NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR )
+    set( ${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} PARENT_SCOPE )
+endif()
+
 endmacro( ecbuild_declare_project )
