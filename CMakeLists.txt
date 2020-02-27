@@ -47,6 +47,14 @@ add_subdirectory( tests )
 install( DIRECTORY cmake DESTINATION ${INSTALL_DATA_DIR} PATTERN "CMakeLists.txt" EXCLUDE )
 
 if( NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR AND ECBUILD_2_COMPAT )
+    # Required for ecbuild-2 packages when ecbuild is added using `add_subdirectory( ecbuild ) [See ECBUILD-460].
+
+    # When adding ecbuild to your project using `add_subdirectory( ecbuild )`, and subsequently add a ecbuild-2 project
+    # which by definition is not using `find_package( ecbuild )`, then the ecbuild-macros dir must be added to
+    # the CMAKE_MODULE_PATH.
+    # The `find_package( ecbuild ... )` works for the ecbuild-3-ported packages, as `ecbuild_DIR` gets defined in
+    # `ecbuild_declare_project(ecbuild...)` of ecbuild during `add_subdirectory( ecbuild )`
+    
     set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE )
 endif()
 

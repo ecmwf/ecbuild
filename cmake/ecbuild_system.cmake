@@ -55,7 +55,7 @@ string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
 string( TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWCASE )
 
 ########################################################################################################
-# include our cmake macros, but only do so if this is the top project
+# include our cmake macros, but only if any parent project is not an ecbuild project
 
 if( NOT ECBUILD_SYSTEM_INITIALISED )
 
@@ -266,7 +266,6 @@ if( NOT ECBUILD_SYSTEM_INITIALISED )
     endif()
     include( ecbuild_define_paths )                 # defines installation paths
     include( ecbuild_setup_test_framework )         # setup test framework
-    include( ecbuild_define_uninstall )             # define uninstall target
 
     ecbuild_flush_cache()
 
@@ -275,11 +274,6 @@ if( NOT ECBUILD_SYSTEM_INITIALISED )
 
     include(CTest)                 # add cmake testing support
     enable_testing()
-
-    # keep this until we modify the meaning to 'check' if installation worked
-    if( NOT TARGET check )
-      add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} )
-    endif()
 
     ############################################################################################
     # define the build timestamp, unless the user provided one via EC_BUILD_TIMESTAMP
