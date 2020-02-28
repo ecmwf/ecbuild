@@ -1,0 +1,1 @@
+set( mylib_found_using_find_package 1 )

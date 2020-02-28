@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+
+# --------------------- cleanup ------------------------
+rm -rf $HERE/build
+
+# ---------------- build the bundle --------------------
+cd $HERE
+
+mkdir build
+cd build
+cmake @mybundle_SOURCE_DIR@ -DECBUILD_2_COMPAT=OFF
