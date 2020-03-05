@@ -20,7 +20,6 @@ step.class[interfaces] = build
 steps  = interfaces
 
 interfaces.target{task}     = ext-iface
-interfaces.target{category} = include
 
 interfaces.source = $SRC
 

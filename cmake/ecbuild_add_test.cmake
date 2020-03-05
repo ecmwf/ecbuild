@@ -304,7 +304,13 @@ function( ecbuild_add_test )
         list( APPEND _all_objects $<TARGET_OBJECTS:${_obj}> )
       endforeach()
 
-      add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
+      ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
+
+      if( ${_PAR_TARGET}_cuda_srcs AND CUDA_FOUND )
+        cuda_add_executable( ${_PAR_TARGET} ${_PAR_SOURCES}  ${_all_objects} )
+      else()
+        add_executable( ${_PAR_TARGET} ${_PAR_SOURCES} ${_all_objects} )
+      endif()
 
       # add include dirs if defined
       if( DEFINED _PAR_INCLUDES )
@@ -333,9 +339,6 @@ function( ecbuild_add_test )
         target_link_libraries( ${_PAR_TARGET} ${lib} )
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): [${skipped_lib}] not found - not linking")
       endif()
-
-      # filter sources
-      ecbuild_separate_sources( TARGET ${_PAR_TARGET} SOURCES ${_PAR_SOURCES} )
 
       # Override compilation flags on a per source file basis
       ecbuild_target_flags( ${_PAR_TARGET} "${_PAR_CFLAGS}" "${_PAR_CXXFLAGS}" "${_PAR_FFLAGS}" )
