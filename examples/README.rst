@@ -1,6 +1,6 @@
-==================
-ecbuild - Examples
-==================
+========
+Examples
+========
 
 This directory contains examples of some useful features of ecBuild:
 
@@ -10,8 +10,8 @@ This directory contains examples of some useful features of ecBuild:
 * `transitive-dependencies/ <transitive-dependencies/README.md>`_ - Propagating
   dependencies across several projects
 * `find_package/ <find_package/README>`_ - Using some popular third-party libraries
-* `cpp-bundle/ <cpp-bundle/README.md>`_ and `cpp-bundle-nested/
-  <cpp-bundle-nested/README.md>`_ - Bundling projects together
+* `cpp-bundle/ <cpp-bundle/README.md>`_ - Bundling projects together
+* `cpp-bundle-nested/ <cpp-bundle-nested/README.md>`_ - Nested bundles
 * `boost-python-lib/ <boost-python-lib/README.md>`_ - Using Boost::Python
 * `mix/ <mix/README.md>`_ - Mixing C++ and Fortran
 * `override-compile-flags/ <override-compile-flags/README.md>`_ - Overriding
