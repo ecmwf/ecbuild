@@ -11,6 +11,9 @@ is equivalent to::
 
    cmake -DCMAKE_MODULE_PATH=$ECBUILD_DIR/cmake $SRC_DIR
 
+Prior knowledge of CMake is assumed. For a tutorial, see e.g.
+https://cmake.org/cmake/help/latest/guide/tutorial/index.html
+
 Quick start
 ===========
 
@@ -26,11 +29,8 @@ file.
 
    export PATH=$PWD/ecbuild/bin:$PATH
 
-Using ecBuild in your project
-=============================
-
-Since ecBuild is based on CMake, prior knowledge of CMake is assumed. For a
-tutorial, see https://cmake.org/cmake/help/latest/guide/tutorial/index.html
+Examples
+========
 
 The `examples/ <examples/README.rst>`_ directory contains some sample projects
 that show how ecBuild can be used in various situations. For a quick
