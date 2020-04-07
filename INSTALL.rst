@@ -1,25 +1,25 @@
-============================
-ecbuild - ECMWF build system
-============================
+==================
+Installing ecBuild
+==================
 
-Getting the sources
-===================
+Bootstrap and install
+=====================
 
-First, retrieve ecBuild, for instance from GitHub::
+::
 
    git clone https://github.com/ecmwf/ecbuild
-   ECBUILD_SRC_DIR=$PWD/ecbuild
 
-Booststrapping ecBuild
-======================
+   cd ecbuild
 
-ecBuild does not need to be built, however, the installation needs to be
-bootstrapped::
+   mkdir bootstrap
 
-   mkdir $TMPDIR/ecbuild # out-of-source build directory
-   cd $TMPDIR/ecbuild
-   ECBUILD_INSTALL_DIR=/usr/local/apps/ecbuild # where to install ecBuild
-   $ECBUILD_SRC_DIR/bin/ecbuild --prefix=$ECBUILD_INSTALL_DIR $ECBUILD_SRC_DIR
+   cd bootstrap
+
+   ../bin/ecbuild --prefix=/path/to/install/ecbuild ..
+
+   ctest
+
+   make install
 
 Generating documentation
 ========================
@@ -29,27 +29,11 @@ can be located using ``PATH`` or ``CMAKE_PREFIX_PATH``. You can either add the
 ``-DSPHINX_HTML=ON`` option (as well as ``-DCMAKE_PREFIX_PATH=...`` if needed)
 to the above ``ecbuild`` command, or re-run ecBuild::
 
-   cd $TMPDIR/ecbuild
-   $ECBUILD_SRC_DIR/bin/ecbuild -DSPHINX_HTML=ON .
+   cd ecbuild/bootstrap
+
+   ../bin/ecbuild -DSPHINX_HTML=ON ..
+
    make documentation
 
-The documentation tree will be available in ``$TMPDIR/ecbuild/doc/html``.
-
-Running the tests
-=================
-
-Some ecBuild features can be tested::
-
-   cd $TMPDIR/ecbuild
-   ctest
-
-Installing
-==========
-
-By default, CMake generates a ``Makefile`` (can be overwritten with the ``-G``
-command-line option, supported by both CMake and ecBuild)::
-
-   cd $TMPDIR/ecbuild
-   make install
-   export PATH=$ECBUILD_INSTALL_DIR/bin:$PATH
+The documentation tree will be available in ``doc/html``.
 
