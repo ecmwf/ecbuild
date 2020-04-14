@@ -2,6 +2,8 @@
 # ARCHITECTURE
 ####################################################################
 
+message(WARNING "Toolchain ecmwf-XC30-Cray.cmake will be discontinued in ecbuild version 3.4.0")
+
 set( EC_HAVE_C_INLINE 1 )
 set( EC_HAVE_FUNCTION_DEF 1 )
 set( EC_HAVE_CXXABI_H 1 )
@@ -103,13 +105,6 @@ set( ENABLE_RELATIVE_RPATHS OFF CACHE STRING "Disable relative rpaths" FORCE )
 ####################################################################
 # COMPILER
 ####################################################################
-
-if( "${CMAKE_VERSION}" VERSION_LESS 3.5 )
-include(CMakeForceCompiler)
-CMAKE_FORCE_C_COMPILER       ( cc  Cray )
-CMAKE_FORCE_CXX_COMPILER     ( CC  Cray )
-CMAKE_FORCE_Fortran_COMPILER ( ftn Cray )
-endif()
 
 set(CMAKE_Fortran_PREPROCESS_SOURCE
   "${CMAKE_CURRENT_LIST_DIR}/preprocess_cray_fortran \"<CMAKE_Fortran_COMPILER>\" \"<DEFINES>\" \"<INCLUDES>\" \"<FLAGS>\" <SOURCE> <PREPROCESSED_SOURCE>")

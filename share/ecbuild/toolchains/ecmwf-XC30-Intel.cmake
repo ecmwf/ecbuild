@@ -2,6 +2,8 @@
 # ARCHITECTURE
 ####################################################################
 
+message(WARNING "Toolchain ecmwf-XC30-Intel.cmake will be discontinued in ecbuild version 3.4.0")
+
 set( EC_HAVE_C_INLINE 1 )
 set( EC_HAVE_FUNCTION_DEF 1 )
 set( EC_HAVE_CXXABI_H 1 )
@@ -98,16 +100,9 @@ set( EC_HAVE_DLADDR 1 )
 # Disable relative rpaths as aprun does not respect it
 set( ENABLE_RELATIVE_RPATHS OFF CACHE STRING "Disable relative rpaths" FORCE )
 
-
 ####################################################################
 # COMPILER
 ####################################################################
-
-include(CMakeForceCompiler)
-
-CMAKE_FORCE_C_COMPILER       ( cc  Intel )
-CMAKE_FORCE_CXX_COMPILER     ( CC  Intel )
-CMAKE_FORCE_Fortran_COMPILER ( ftn Intel )
 
 set( ECBUILD_FIND_MPI OFF )
 set( ECBUILD_TRUST_FLAGS ON )
