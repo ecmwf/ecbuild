@@ -2,6 +2,8 @@
 # ARCHITECTURE
 ####################################################################
 
+message(WARNING "Toolchain ecmwf-XC30-Intel.cmake will be discontinued in ecbuild version 3.4.0")
+
 set( EC_HAVE_C_INLINE 1 )
 set( EC_HAVE_FUNCTION_DEF 1 )
 set( EC_HAVE_CXXABI_H 1 )
