@@ -98,16 +98,9 @@ set( EC_HAVE_DLADDR 1 )
 # Disable relative rpaths as aprun does not respect it
 set( ENABLE_RELATIVE_RPATHS OFF CACHE STRING "Disable relative rpaths" FORCE )
 
-
 ####################################################################
 # COMPILER
 ####################################################################
-
-include(CMakeForceCompiler)
-
-CMAKE_FORCE_C_COMPILER       ( cc  Intel )
-CMAKE_FORCE_CXX_COMPILER     ( CC  Intel )
-CMAKE_FORCE_Fortran_COMPILER ( ftn Intel )
 
 set( ECBUILD_FIND_MPI OFF )
 set( ECBUILD_TRUST_FLAGS ON )
