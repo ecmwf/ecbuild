@@ -10,7 +10,7 @@
 
 # function for downloading test data
 
-function( _download_test_data _p_NAME _p_DIR_URL )
+function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXISTS )
 
   # TODO: make that 'at ecmwf'
   #if(1)
@@ -27,18 +27,22 @@ function( _download_test_data _p_NAME _p_DIR_URL )
   if( NOT DEFINED ECBUILD_DOWNLOAD_TIMEOUT )
     set( ECBUILD_DOWNLOAD_TIMEOUT 30 )
   endif()
-
+ 
   find_program( CURL_PROGRAM curl )
   mark_as_advanced(CURL_PROGRAM)
 
-  if( CURL_PROGRAM )
-
-    add_custom_command( OUTPUT ${_p_NAME}
-      COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
-      COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_NAME}
-              --retry ${ECBUILD_DOWNLOAD_RETRIES}
-              --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
-              ${_p_DIR_URL}/${_p_NAME} )
+  # The "--continue-at - " option of curl is buggy... (ask Google)
+  # Error message is: "curl: (33) HTTP server doesn't seem to support byte ranges. Cannot resume."
+  # Switch to wget if _p_CHECK_FILE_EXISTS is activated
+#  if( CURL_PROGRAM )                            # should be uncommented when curl bug is corrected
+  if( CURL_PROGRAM AND NOT _p_CHECK_FILE_EXISTS) # should be removed when curl bug is corrected
+ 
+      add_custom_command( OUTPUT ${_p_NAME}
+        COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
+        COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_DIRLOCAL}/${_p_NAME}
+                --retry ${ECBUILD_DOWNLOAD_RETRIES}
+                --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
+                ${_p_DIR_URL}/${_p_NAME} )
 
   else()
 
@@ -49,11 +53,23 @@ function( _download_test_data _p_NAME _p_DIR_URL )
       # wget takes the total number of tries, curl the number or retries
       math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
 
-      add_custom_command( OUTPUT ${_p_NAME}
-        COMMENT "(wget) downloading ${_p_DIR_URL}/${_p_NAME}"
-        COMMAND ${WGET_PROGRAM} -nv -O ${_p_NAME}
-                -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
-                ${_p_DIR_URL}/${_p_NAME} )
+      if( _p_CHECK_FILE_EXISTS )
+
+        add_custom_command( OUTPUT ${_p_NAME}
+          COMMENT "(wget) downloading ${_p_DIR_URL}/${_p_NAME}"
+          COMMAND ${WGET_PROGRAM} -c -nv -O ${_p_DIRLOCAL}/${_p_NAME}
+                  -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
+                  ${_p_DIR_URL}/${_p_NAME} )
+
+      else()
+
+        add_custom_command( OUTPUT ${_p_NAME}
+          COMMENT "(wget) downloading ${_p_DIR_URL}/${_p_NAME}"
+          COMMAND ${WGET_PROGRAM} -nv -O ${_p_DIRLOCAL}/${_p_NAME}
+                  -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
+                  ${_p_DIR_URL}/${_p_NAME} )
+
+      endif()
 
     else()
 
@@ -80,6 +96,7 @@ endfunction()
 #   ecbuild_get_test_data( NAME <name>
 #                          [ TARGET <target> ]
 #                          [ DIRNAME <dir> ]
+#                          [ DIRLOCAL <dir> ]
 #                          [ MD5 <hash> ]
 #                          [ EXTRACT ]
 #                          [ NOCHECK ] )
@@ -95,8 +112,11 @@ endfunction()
 # TARGET : optional, defaults to test_data_<name>
 #   CMake target name
 #
-# DIRNAME : optional, defaults to <project>/<relative path to current dir>
-#   directory in which the test data resides
+# DIRNAME : optional
+#   use when there is a directory structure on the server that 
+#   hosts test files
+#
+# DIRLOCAL : optional, defaults to ".", local directory in which the test data is copied
 #
 # MD5 : optional, ignored if NOCHECK is given
 #   md5 checksum of the data set to verify. If not given and NOCHECK is *not*
@@ -116,8 +136,8 @@ endfunction()
 # If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
 # ``http://download.ecmwf.org/test-data`` is used.
 #
-# If the ``DIRNAME`` argument is not given, the project name followed by the
-# relative path from the root directory to the current directory is used.
+# If the ``DIRNAME`` argument is not given, test data will be downloaded
+# from ``<ECBUILD_DOWNLOAD_BASE_URL>/<project>/<relative path to current dir>/<NAME>``
 #
 # By default, the downloaded file is verified against an md5 checksum, either
 # given as the ``MD5`` argument or downloaded from the server otherwise. Use
@@ -147,7 +167,7 @@ endfunction()
 function( ecbuild_get_test_data )
 
     set( options NOCHECK EXTRACT )
-    set( single_value_args TARGET URL NAME DIRNAME MD5 SHA1)
+    set( single_value_args TARGET NAME DIRNAME DIRLOCAL MD5 SHA1)
     set( multi_value_args  )
 
     cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -170,23 +190,34 @@ function( ecbuild_get_test_data )
 #      set( _p_TARGET ${_p_NAME} )
     endif()
 
-    if( NOT _p_DIRNAME )
-      set( _p_DIRNAME ${PROJECT_NAME}/${currdir} )
+    if( NOT _p_DIRLOCAL )
+      set( _p_DIRLOCAL "." )
     endif()
 
-#    ecbuild_debug_var( _p_TARGET )
-#    ecbuild_debug_var( _p_NAME )
-#    ecbuild_debug_var( _p_URL )
-#    ecbuild_debug_var( _p_DIRNAME )
-
-    # Allow the user to override the download URL (ECBUILD-447)
+    # Allow the user to override the base download URL (ECBUILD-447)
     if( NOT DEFINED ECBUILD_DOWNLOAD_BASE_URL )
       set( ECBUILD_DOWNLOAD_BASE_URL http://download.ecmwf.org/test-data )
     endif()
 
+    # Set download URL
+    if( NOT _p_DIRNAME )
+      set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL}/${PROJECT_NAME}/${currdir}) 
+	      #      set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL} )
+    else()
+      set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} )
+    endif()
+
+    if( NOT _p_NOCHECK AND NOT _p_MD5 AND NOT _p_SHA1 )
+      # special case where data might have been downloaded already and will be checked with the remote md5 anyway
+      set( CHECK_FILE_EXISTS ON)
+    else()
+      # always download the data
+      set( CHECK_FILE_EXISTS OFF)
+    endif()
+
     # download the data
 
-    _download_test_data( ${_p_NAME} ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} )
+    _download_test_data( ${_p_NAME} ${DOWNLOAD_URL} ${_p_DIRLOCAL} ${CHECK_FILE_EXISTS} )
 
     # perform the checksum if requested
 
@@ -197,14 +228,16 @@ function( ecbuild_get_test_data )
         if( NOT _p_MD5 AND NOT _p_SHA1) # use remote md5
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
-                                COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
+		                COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
+		                WORKING_DIRECTORY ${_p_DIRLOCAL}
                                 DEPENDS ${_p_NAME} )
 
-            _download_test_data( ${_p_NAME}.md5 ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} )
+            _download_test_data( ${_p_NAME}.md5 ${DOWNLOAD_URL} ${_p_DIRLOCAL} OFF )
 
             add_custom_command( OUTPUT ${_p_NAME}.ok
                                 COMMAND ${CMAKE_COMMAND} -E compare_files ${_p_NAME}.md5 ${_p_NAME}.localmd5 &&
                                         ${CMAKE_COMMAND} -E touch ${_p_NAME}.ok
+		                WORKING_DIRECTORY ${_p_DIRLOCAL}
                                 DEPENDS ${_p_NAME}.localmd5 ${_p_NAME}.md5 )
 
             list( APPEND _deps  ${_p_NAME}.localmd5 ${_p_NAME}.ok )
@@ -215,13 +248,15 @@ function( ecbuild_get_test_data )
 
             add_custom_command( OUTPUT ${_p_NAME}.localmd5
                                 COMMAND ${CMAKE_COMMAND} -E md5sum ${_p_NAME} > ${_p_NAME}.localmd5
+		                WORKING_DIRECTORY ${_p_DIRLOCAL}
                                 DEPENDS ${_p_NAME} )
 
-            configure_file( "${ECBUILD_MACROS_DIR}/md5.in" ${_p_NAME}.md5 @ONLY )
+            configure_file( "${ECBUILD_MACROS_DIR}/md5.in" ${_p_DIRLOCAL}/${_p_NAME}.md5 @ONLY )
 
             add_custom_command( OUTPUT ${_p_NAME}.ok
                                 COMMAND ${CMAKE_COMMAND} -E compare_files ${_p_NAME}.md5 ${_p_NAME}.localmd5 &&
                                         ${CMAKE_COMMAND} -E touch ${_p_NAME}.ok
+		                WORKING_DIRECTORY ${_p_DIRLOCAL}
                                 DEPENDS ${_p_NAME}.localmd5 )
 
             list( APPEND _deps ${_p_NAME}.localmd5 ${_p_NAME}.ok )
@@ -233,12 +268,12 @@ function( ecbuild_get_test_data )
 #            find_program( SHASUM NAMES sha1sum shasum )
 #            if( SHASUM )
 #                add_custom_command( OUTPUT ${_p_NAME}.localsha1
-#                                    COMMAND ${SHASUM} ${_p_NAME} > ${_p_NAME}.localsha1 )
+#                                    COMMAND ${SHASUM} ${_p_DIRLOCAL}/${_p_NAME} > ${_p_DIRLOCAL}/${_p_NAME}.localsha1 )
 
 #                add_custom_command( OUTPUT ${_p_NAME}.ok
-#                                    COMMAND diff ${_p_NAME}.sha1 ${_p_NAME}.localsha1 && touch ${_p_NAME}.ok )
+#                                    COMMAND diff ${_p_DIRLOCAL}/${_p_NAME}.sha1 ${_p_DIRLOCAL}/${_p_NAME}.localsha1 && touch ${_p_DIRLOCAL}/${_p_NAME}.ok )
 
-#                configure_file( "${ECBUILD_MACROS_DIR}/sha1.in" ${_p_NAME}.sha1 @ONLY )
+#                configure_file( "${ECBUILD_MACROS_DIR}/sha1.in" ${_p_DIRLOCAL}/${_p_NAME}.sha1 @ONLY )
 
 #                list( APPEND _deps ${_p_NAME}.localsha1 ${_p_NAME}.ok )
 #            endif()
@@ -250,9 +285,9 @@ function( ecbuild_get_test_data )
     add_custom_target( ${_p_TARGET} DEPENDS ${_deps} )
 
     if( _p_EXTRACT )
-      ecbuild_debug("ecbuild_get_test_data: extracting ${_p_NAME} (post-build for target ${_p_TARGET}")
+      ecbuild_debug("ecbuild_get_test_data: extracting ${_p_DIRLOCAL}/${_p_NAME} (post-build for target ${_p_TARGET}")
       add_custom_command( TARGET ${_p_TARGET} POST_BUILD
-                          COMMAND ${CMAKE_COMMAND} -E tar xv ${_p_NAME} )
+                          COMMAND ${CMAKE_COMMAND} -E chdir ${_p_DIRLOCAL} tar xvf ${_p_NAME} )
     endif()
 
 endfunction(ecbuild_get_test_data)
@@ -268,6 +303,7 @@ endfunction(ecbuild_get_test_data)
 #   ecbuild_get_test_multidata( NAMES <name1> [ <name2> ... ]
 #                               TARGET <target>
 #                               [ DIRNAME <dir> ]
+#                               [ DIRLOCAL <dir> ]
 #                               [ LABELS <label1> [<label2> ...] ]
 #                               [ EXTRACT ]
 #                               [ NOCHECK ] )
@@ -283,8 +319,11 @@ endfunction(ecbuild_get_test_data)
 # TARGET : optional
 #   CMake target name
 #
-# DIRNAME : optional, defaults to <project>/<relative path to current dir>
-#   directory in which the test data resides
+# DIRNAME : optional
+#   use when there is a directory structure on the server that 
+#   hosts test files
+#
+# DIRLOCAL : optional, defaults to ".", local directory in which the test data is copied
 #
 # LABELS : optional
 #   list of labels to assign to the test
@@ -311,8 +350,8 @@ endfunction(ecbuild_get_test_data)
 # If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
 # ``http://download.ecmwf.org/test-data`` is used.
 #
-# If the ``DIRNAME`` argument is not given, the project name followed by the
-# relative path from the root directory to the current directory is used.
+# If the ``DIRNAME`` argument is not given, test data will be downloaded
+# from ``<ECBUILD_DOWNLOAD_BASE_URL>/<project>/<relative path to current dir>/<NAME>``
 #
 # By default, each downloaded file is verified against an md5 checksum, either
 # given as part of the name as described above or a remote checksum downloaded
@@ -341,7 +380,7 @@ endfunction(ecbuild_get_test_data)
 function( ecbuild_get_test_multidata )
 
     set( options EXTRACT NOCHECK )
-    set( single_value_args TARGET DIRNAME )
+    set( single_value_args TARGET DIRNAME DIRLOCAL )
     set( multi_value_args  NAMES LABELS )
 
     cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -360,16 +399,16 @@ function( ecbuild_get_test_multidata )
       ecbuild_critical("ecbuild_get_test_data() expects a TARGET")
     endif()
 
-#    ecbuild_debug_var( _p_TARGET )
-#    ecbuild_debug_var( _p_NAME )
-#    ecbuild_debug_var( _p_DIRNAME )
+    if( NOT _p_DIRLOCAL )
+      set( _p_DIRLOCAL ".")
+    endif()
 
     if( _p_EXTRACT )
-        set( _extract EXTRACT )
+      set( _extract EXTRACT )
     endif()
 
     if( _p_NOCHECK )
-        set( _nocheck NOCHECK )
+      set( _nocheck NOCHECK )
     endif()
 
     ### prepare file
@@ -393,9 +432,9 @@ endfunction()\n\n" )
 
         set( _path_comps "" )
         list( APPEND _path_comps ${_p_DIRNAME} ${_dir} )
-        join( _path_comps "/" _dirname )
-        if( _dirname )
-            set( _dirname DIRNAME ${_dirname} )
+        join( _path_comps "/" _DIRNAME )
+        if( _DIRNAME )
+            set( _DIRNAME DIRNAME ${_DIRNAME} )
         endif()
         unset( _path_comps )
 
@@ -407,15 +446,10 @@ endfunction()\n\n" )
             set( _md5 MD5 ${_md5} )
         endif()
 
-        #ecbuild_debug_var(_f)
-        #ecbuild_debug_var(_file)
-        #ecbuild_debug_var(_dirname)
-        #ecbuild_debug_var(_name)
-        #ecbuild_debug_var(_md5)
-
         ecbuild_get_test_data(
             TARGET __get_data_${_p_TARGET}_${_name}
-            NAME ${_file} ${_dirname} ${_md5} ${_extract} ${_nocheck} )
+            DIRLOCAL ${_p_DIRLOCAL}
+            NAME ${_file} ${_DIRNAME} ${_md5} ${_extract} ${_nocheck} )
 
         if ( ${CMAKE_GENERATOR} MATCHES Ninja )
           set( _fast "" )
