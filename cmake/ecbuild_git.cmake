@@ -26,8 +26,9 @@ endif()
 #                DIR <directory>
 #                URL <giturl>
 #                [ BRANCH <gitbranch> | TAG <gittag> ]
-#                [ UPDATE | NOREMOTE ] )
-#                [ MANUAL ] )
+#                [ UPDATE | NOREMOTE ]
+#                [ MANUAL ]
+#                [ RECURSIVE ] )
 #
 # Options
 # -------
@@ -56,11 +57,14 @@ endif()
 # MANUAL : optional
 #   Do not automatically switch branches or tags
 #
+# RECURSIVE : optional
+#   Do a recursive fetch or update
+#
 ##############################################################################
 
 macro( ecbuild_git )
 
-  set( options UPDATE NOREMOTE MANUAL )
+  set( options UPDATE NOREMOTE MANUAL RECURSIVE )
   set( single_value_args PROJECT DIR URL TAG BRANCH )
   set( multi_value_args )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
@@ -223,6 +227,16 @@ macro( ecbuild_git )
         endif()
 
       endif() ####################################################################################
+
+      if( _PAR_RECURSIVE )
+        ecbuild_info("git submodule --quiet update --init --recursive @ ${ABS_PAR_DIR}")
+        execute_process( COMMAND "${GIT_EXECUTABLE}" submodule --quiet update --init --recursive -q
+                        RESULT_VARIABLE nok ERROR_VARIABLE error
+                        WORKING_DIRECTORY "${ABS_PAR_DIR}")
+        if(nok)
+          ecbuild_warn("git submodule update --init --recursive in ${_PAR_DIR} failed:\n ${error}")
+        endif()
+      endif()
 
     endif( _needs_switch AND IS_DIRECTORY "${_PAR_DIR}/.git" )
 
