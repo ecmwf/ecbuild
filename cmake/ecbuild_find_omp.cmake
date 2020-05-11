@@ -170,6 +170,7 @@ macro( ecbuild_find_omp )
 
 
     set( OMP${_STUBS}_${_LANG}_FIND_QUIETLY TRUE )
+    include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args( OMP${_STUBS}_${_LANG} REQUIRED_VARS ${_LANG}_COMPILER_SUPPORTS_OMP${_STUBS}  )
 
     if( OMP${_STUBS}_FORTRAN_FOUND )
