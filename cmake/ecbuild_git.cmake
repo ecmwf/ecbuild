@@ -230,7 +230,7 @@ macro( ecbuild_git )
 
       if( _PAR_RECURSIVE )
         ecbuild_info("git submodule --quiet update --init --recursive @ ${ABS_PAR_DIR}")
-        execute_process( COMMAND "${GIT_EXECUTABLE}" submodule --quiet update --init --recursive -q
+        execute_process( COMMAND "${GIT_EXECUTABLE}" submodule --quiet update --init --recursive
                         RESULT_VARIABLE nok ERROR_VARIABLE error
                         WORKING_DIRECTORY "${ABS_PAR_DIR}")
         if(nok)
@@ -243,4 +243,3 @@ macro( ecbuild_git )
   endif( ECBUILD_GIT )
 
 endmacro()
-
