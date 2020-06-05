@@ -24,14 +24,14 @@
 #   on the server hosting test files (if available)
 #
 # RESULT : required
-#   check result (0 if the URL exists, more if not)
+#   check result (0 if all URLs exist, more if not)
 #
 # Usage
 # -----
 #
 # Check whether files exist on ``<ECBUILD_DOWNLOAD_BASE_URL>/<NAME>``
 # for each name given in the list of ``NAMES``.
-# ``RESULT`` is set to 0 if all the files exist, more if any file is missing.
+# ``RESULT`` is set to the number of missing files.
 #
 # Examples
 # --------
@@ -77,13 +77,12 @@ function(ecbuild_check_urls)
 
     # Initialise CODE_SUM
     set( CODE_SUM 0 )
-
-    # Loop over files
-    foreach( NAME ${_p_NAMES} )
-
-      find_program( CURL_PROGRAM curl )
-      mark_as_advanced(CURL_PROGRAM)
-      if( CURL_PROGRAM )
+ 
+    find_program( CURL_PROGRAM curl )
+    mark_as_advanced(CURL_PROGRAM)
+    if( CURL_PROGRAM )
+      # Loop over files
+      foreach( NAME ${_p_NAMES} )
 
         execute_process(
           COMMAND ${CURL_PROGRAM} --silent --head --fail --output /dev/null
@@ -93,9 +92,12 @@ function(ecbuild_check_urls)
           RESULT_VARIABLE CODE
         )
 
-      else()
-        find_program( WGET_PROGRAM wget )
-        if( WGET_PROGRAM )
+    else()
+
+      find_program( WGET_PROGRAM wget )
+      if( WGET_PROGRAM )
+        # Loop over files
+        foreach( NAME ${_p_NAMES} )
 
           # wget takes the total number of tries, curl the number or retries
           math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
@@ -121,7 +123,10 @@ function(ecbuild_check_urls)
       endif()
 
       # Add to CODE_SUM
-      math( EXPR CODE_SUM "${CODE_SUM} + ${CODE}" )
+      if( CODE GREATER 0)
+        math( EXPR CODE_SUM "${CODE_SUM} + 1" )
+      endif()
+
     endforeach()
 
     # Set result
