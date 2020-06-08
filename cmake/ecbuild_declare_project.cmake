@@ -32,7 +32,7 @@
 # :INSTALL_CMAKE_DIR:      relative install directory for CMake files
 #
 # Generation of the first two variables can be disabled by setting the
-# RECORD_GIT_SHA1_IN_VARIABLES option to OFF.  This prevents
+# ECBUILD_RECORD_GIT_COMMIT_SHA1 option to OFF.  This prevents
 # makefiles from being regenerated whenever the Git revision changes.
 #
 # Customising install locations
@@ -73,7 +73,7 @@ if( NOT ${PROJECT_NAME}_DECLARED )
   # if git project get its HEAD SHA1
   # leave it here so we may use ${PROJECT_NAME}_GIT_SHA1 on the version file
 
-  if( (${RECORD_GIT_SHA1_IN_VARIABLES}) AND (EXISTS ${PROJECT_SOURCE_DIR}/.git) )
+  if( (${ECBUILD_RECORD_GIT_COMMIT_SHA1}) AND (EXISTS ${PROJECT_SOURCE_DIR}/.git) )
     get_git_head_revision( GIT_REFSPEC ${PROJECT_NAME}_GIT_SHA1 )
     if( ${PROJECT_NAME}_GIT_SHA1 )
       string( SUBSTRING "${${PROJECT_NAME}_GIT_SHA1}" 0 7 ${PROJECT_NAME}_GIT_SHA1_SHORT )
