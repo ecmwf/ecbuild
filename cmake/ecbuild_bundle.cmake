@@ -64,8 +64,9 @@ endmacro()
 #   ecbuild_bundle( PROJECT <name>
 #                   STASH <repository> | GIT <giturl> | SOURCE <path>
 #                   [ BRANCH <gitbranch> | TAG <gittag> ]
-#                   [ UPDATE | NOREMOTE ] )
-#                   [ MANUAL ] )
+#                   [ UPDATE | NOREMOTE ]
+#                   [ MANUAL ]
+#                   [ RECURSIVE ] )
 #
 # Options
 # -------
@@ -96,6 +97,9 @@ endmacro()
 #
 # MANUAL : optional
 #   Do not automatically switch branches or tags
+#
+# RECURSIVE : optional
+#   Do a recursive fetch or update
 #
 # Usage
 # -----
