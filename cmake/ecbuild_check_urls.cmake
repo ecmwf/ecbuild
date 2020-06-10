@@ -79,57 +79,46 @@ function(ecbuild_check_urls)
     set( CODE_SUM 0 )
  
     find_program( CURL_PROGRAM curl )
-    mark_as_advanced(CURL_PROGRAM)
-    if( CURL_PROGRAM )
-      # Loop over files
-      foreach( NAME ${_p_NAMES} )
+    if ( NOT CURL_PROGRAM )
+      find_program( WGET_PROGRAM wget )
+      if ( NOT WGET_PROGRAM )
+        set( CODE 1 )
+        if( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
+          ecbuild_warn( "Couldn't find curl neither wget -- cannot check URL, set result to 0." )
+          set( WARNING_CANNOT_DOWNLOAD_TEST_DATA 1 CACHE INTERNAL "Couldn't find curl neither wget -- cannot check URL, set result to 0" )
+          mark_as_advanced( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
+        endif() 
+      endif() 
+    endif()
 
-        execute_process(
-          COMMAND ${CURL_PROGRAM} --silent --head --fail --output /dev/null
+   foreach( NAME ${_p_NAMES} )
+
+     if ( CURL_PROGRAM )
+       execute_process(
+         COMMAND ${CURL_PROGRAM} --silent --head --fail --output /dev/null
                   --retry ${ECBUILD_DOWNLOAD_RETRIES}
                   --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
 	          ${ECBUILD_DOWNLOAD_BASE_URL}/${NAME}
-          RESULT_VARIABLE CODE
-        )
+         RESULT_VARIABLE CODE
+         )    
+     else()
+       math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
+       execute_process(
+         COMMAND ${WGET_PROGRAM} -O/dev/null -q
+                 -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
+                 ${ECBUILD_DOWNLOAD_BASE_URL}/${NAME}
+         RESULT_VARIABLE CODE
+         )
+     endif()
 
-    else()
+     # Add to CODE_SUM
+     if( CODE GREATER 0)
+       math( EXPR CODE_SUM "${CODE_SUM} + 1" )
+     endif()
 
-      find_program( WGET_PROGRAM wget )
-      if( WGET_PROGRAM )
-        # Loop over files
-        foreach( NAME ${_p_NAMES} )
+   endforeach()
 
-          # wget takes the total number of tries, curl the number or retries
-          math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
-
-          execute_process(
-            COMMAND ${WGET_PROGRAM} -O/dev/null -q
-                    -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
-	            ${ECBUILD_DOWNLOAD_BASE_URL}/${NAME}
-              RESULT_VARIABLE CODE
-          )
-
-        else()
-
-          set( CODE 1 )
-          if( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
-            ecbuild_warn( "Couldn't find curl neither wget -- cannot check URL, set result to 0." )
-            set( WARNING_CANNOT_DOWNLOAD_TEST_DATA 1 CACHE INTERNAL "Couldn't find curl neither wget -- cannot check URL, set result to 0" )
-            mark_as_advanced( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
-          endif()
-
-        endif()
-
-      endif()
-
-      # Add to CODE_SUM
-      if( CODE GREATER 0)
-        math( EXPR CODE_SUM "${CODE_SUM} + 1" )
-      endif()
-
-    endforeach()
-
-    # Set result
-    set( ${_p_RESULT} ${CODE_SUM} PARENT_SCOPE )
+   # Set result
+   set( ${_p_RESULT} ${CODE_SUM} PARENT_SCOPE )
 
 endfunction(ecbuild_check_urls)
