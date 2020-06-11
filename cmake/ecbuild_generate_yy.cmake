@@ -168,7 +168,7 @@ macro( ecbuild_generate_yy )
   add_custom_command(OUTPUT  ${${BASE}yy_target}
     COMMAND ${CMAKE_COMMAND} -E copy ${${BASE}yy_tmp_target} ${${BASE}yy_target}
     COMMAND ${PERL_EXECUTABLE} -pi -e 's/yy/${_PAR_YYPREFIX}/g' ${${BASE}yy_target}
-    COMMAND ${PERL_EXECUTABLE} -pi -e 's/\bregister\b//g' ${${BASE}yy_target} # remove deprecated register keyword
+    COMMAND ${PERL_EXECUTABLE} -pi -e 's/\\bregister\\b//g' ${${BASE}yy_target} # remove deprecated register keyword
     COMMAND ${PERL_EXECUTABLE} -pi -e 's/\\.tmp\\.c/\\.c/g' ${${BASE}yy_target}
     DEPENDS ${${BASE}yy_tmp_target}
     )
@@ -176,7 +176,7 @@ macro( ecbuild_generate_yy )
   add_custom_command(OUTPUT  ${${BASE}yh_target}
     COMMAND ${CMAKE_COMMAND} -E copy ${${BASE}yh_tmp_target} ${${BASE}yh_target}
     COMMAND ${PERL_EXECUTABLE} -pi -e 's/yy/${_PAR_YYPREFIX}/g' ${${BASE}yh_target}
-    COMMAND ${PERL_EXECUTABLE} -pi -e 's/\bregister\b//g' ${${BASE}yh_target} # remove deprecated register keyword
+    COMMAND ${PERL_EXECUTABLE} -pi -e 's/\\bregister\\b//g' ${${BASE}yh_target} # remove deprecated register keyword
     COMMAND ${PERL_EXECUTABLE} -pi -e 's/\\.tmp\\.h/\\.h/g' ${${BASE}yh_target}
     DEPENDS ${${BASE}yh_tmp_target}
     )
@@ -184,7 +184,7 @@ macro( ecbuild_generate_yy )
   add_custom_command(OUTPUT  ${${BASE}yl_target}
     COMMAND ${CMAKE_COMMAND} -E copy ${${BASE}yl_tmp_target} ${${BASE}yl_target}
     COMMAND ${PERL_EXECUTABLE} -pi -e 's/yy/${_PAR_YYPREFIX}/g' ${${BASE}yl_target}
-    COMMAND ${PERL_EXECUTABLE} -pi -e 's/\bregister\b//g' ${${BASE}yl_target} # remove deprecated register keyword
+    COMMAND ${PERL_EXECUTABLE} -pi -e 's/\\bregister\\b//g' ${${BASE}yl_target} # remove deprecated register keyword
     COMMAND ${PERL_EXECUTABLE} -pi -e 's/\\.tmp\\.c/\\.c/g' ${${BASE}yl_target}
     DEPENDS ${${BASE}yl_tmp_target}
     )
