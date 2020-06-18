@@ -73,7 +73,7 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
 
     else()
 
-      if( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
+      if( NOT WARNING_CANNOT_DOWNLOAD_TEST_DATA )
         ecbuild_warn( "Couldn't find curl neither wget -- cannot download test data from server.\nPlease obtain the test data by other means and pleace it in the build directory." )
         set( WARNING_CANNOT_DOWNLOAD_TEST_DATA 1 CACHE INTERNAL "Couldn't find curl neither wget -- cannot download test data from server" )
         mark_as_advanced( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
