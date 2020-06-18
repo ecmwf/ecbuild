@@ -30,13 +30,34 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
  
   find_program( CURL_PROGRAM curl )
   mark_as_advanced(CURL_PROGRAM)
+  find_program( WGET_PROGRAM wget )
+  mark_as_advanced(WGET_PROGRAM)
 
-  # The "--continue-at - " option of curl is buggy... (ask Google)
-  # Error message is: "curl: (33) HTTP server doesn't seem to support byte ranges. Cannot resume."
-  # Switch to wget if _p_CHECK_FILE_EXISTS is activated
-#  if( CURL_PROGRAM )                            # should be uncommented when curl bug is corrected
-  if( CURL_PROGRAM AND NOT _p_CHECK_FILE_EXISTS) # should be removed when curl bug is corrected
- 
+  if( NOT CURL_PROGRAM AND NOT WGET_PROGRAM )
+    if( NOT WARNING_CANNOT_DOWNLOAD_TEST_DATA )
+      ecbuild_warn( "Couldn't find curl neither wget -- cannot download test data from server.\nPlease obtain the test data by other means and pleace it in the build directory." )
+      set( WARNING_CANNOT_DOWNLOAD_TEST_DATA 1 CACHE INTERNAL "Couldn't find curl neither wget -- cannot download test data from server" )
+      mark_as_advanced( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
+      return()
+    endif()
+  endif()
+
+  set( use_curl TRUE )
+  if( _p_CHECK_FILE_EXISTS )
+    # The "--continue-at - " option of curl is buggy... (ask Google)
+    # Error message is: "curl: (33) HTTP server doesn't seem to support byte ranges. Cannot resume."
+    # Switch to wget if _p_CHECK_FILE_EXISTS is activated
+    if( WGET_PROGRAM )
+      set( use_curl FALSE )
+    else()
+      set( _p_CHECK_FILE_EXISTS FALSE )
+    endif()
+  elseif( NOT CURL_PROGRAM )
+    set( use_curl FALSE )
+  endif()
+
+  if( use_curl )
+
       add_custom_command( OUTPUT ${_p_NAME}
         COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
         COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_DIRLOCAL}/${_p_NAME}
@@ -45,10 +66,6 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
                 ${_p_DIR_URL}/${_p_NAME} )
 
   else()
-
-    find_program( WGET_PROGRAM wget )
-
-    if( WGET_PROGRAM )
 
       # wget takes the total number of tries, curl the number or retries
       math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
@@ -70,16 +87,6 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
                   ${_p_DIR_URL}/${_p_NAME} )
 
       endif()
-
-    else()
-
-      if( NOT WARNING_CANNOT_DOWNLOAD_TEST_DATA )
-        ecbuild_warn( "Couldn't find curl neither wget -- cannot download test data from server.\nPlease obtain the test data by other means and pleace it in the build directory." )
-        set( WARNING_CANNOT_DOWNLOAD_TEST_DATA 1 CACHE INTERNAL "Couldn't find curl neither wget -- cannot download test data from server" )
-        mark_as_advanced( WARNING_CANNOT_DOWNLOAD_TEST_DATA )
-      endif()
-
-    endif()
 
   endif()
 
