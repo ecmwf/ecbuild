@@ -91,7 +91,7 @@ macro( project _project_name )
         list(APPEND _args ${arg} )
       endforeach()
 
-      if( VERSION IN_LIST _args )
+      if( "VERSION" IN_LIST _args )
         set(_cmp0048_val NEW)
       else()
         set(_cmp0048_val OLD)
