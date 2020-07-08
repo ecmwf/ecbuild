@@ -103,8 +103,31 @@ macro( ecbuild_install_project )
     # name, version, etc ...
 
     ecbuild_set_if_not_defined(CPACK_PACKAGE_NAME      "${_PAR_NAME}")
-    ecbuild_set_if_not_defined(CPACK_PACKAGE_VERSION   "${${PROJECT_NAME}_VERSION}")
-    # Convert "/" to "-" for the case where the version string contains a "/"
+
+    if(NOT DEFINED CPACK_PACKAGE_VERSION)
+      # ecbuild_info("\n
+      # ${PROJECT_NAME}_VERSION : ${${PROJECT_NAME}_VERSION}
+      # ${PROJECT_NAME}_VERSION_MAJOR :
+      # ${PROJECT_NAME}_VERSION_MINOR : ${${PROJECT_NAME}_VERSION_MINOR}
+      # ${PROJECT_NAME}_VERSION_PATCH : ${${PROJECT_NAME}_VERSION_PATCH}
+      # ${PROJECT_NAME}_VERSION_TWEAK : ${${PROJECT_NAME}_VERSION_TWEAK}
+      # ${PROJECT_NAME}_VERSION_SUFFIX : ${${PROJECT_NAME}_VERSION_SUFFIX}")
+      set(CPACK_PACKAGE_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}")
+      if(DEFINED ${PROJECT_NAME}_VERSION_MINOR)
+        set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}.${${PROJECT_NAME}_VERSION_MINOR}")
+      endif()
+      if(DEFINED ${PROJECT_NAME}_VERSION_PATCH)
+        set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}.${${PROJECT_NAME}_VERSION_PATCH}")
+      endif()
+      if(DEFINED ${PROJECT_NAME}_VERSION_TWEAK)
+        set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}.${${PROJECT_NAME}_VERSION_TWEAK}")
+      endif()
+      if(DEFINED ${PROJECT_NAME}_VERSION_SUFFIX)
+        set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}${${PROJECT_NAME}_VERSION_SUFFIX}")
+      endif()
+    endif()
+
+    # Convert "/" to "-" for the case where the version string contains a "/" -- if set externally
     string( REPLACE "/" "-" CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}" )
 
     ecbuild_set_if_not_defined(CPACK_PACKAGE_FILE_NAME   "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
