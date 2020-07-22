@@ -32,3 +32,8 @@ test_remove_flags("-g" "-g   " "")
 test_remove_flags("-g" "   -g   " "   ")
 test_remove_flags("-g" "-g-g" "-g-g")
 
+test_remove_flags("-foo;-bar" "-foobar" "-foobar")
+test_remove_flags("-foo;-bar" "-barfoo" "-barfoo")
+test_remove_flags("-foo;-bar" "-foo -bar" "")
+test_remove_flags("-foo;-bar" "-foo -g -bar" "-g ")
+test_remove_flags("-foo;-bar" "-g -bar -foo" "-g ")
