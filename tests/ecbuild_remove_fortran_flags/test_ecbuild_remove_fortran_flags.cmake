@@ -37,3 +37,7 @@ test_remove_flags("-foo;-bar" "-barfoo" "-barfoo")
 test_remove_flags("-foo;-bar" "-foo -bar" "")
 test_remove_flags("-foo;-bar" "-foo -g -bar" "-g ")
 test_remove_flags("-foo;-bar" "-g -bar -foo" "-g ")
+
+set(CMAKE_BUILD_TYPE Unused)
+test_remove_flags("-foo" "" "")
+test_remove_flags("-foo;BUILD;Unused" "" "")
