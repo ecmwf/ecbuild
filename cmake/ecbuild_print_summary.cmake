@@ -42,11 +42,7 @@ macro( ecbuild_print_summary )
     list( FILTER langs EXCLUDE REGEX NONE )
 
     ecbuild_info( "---------------------------------------------------------" )
-    if( NOT ${DEVELOPER_MODE} )
-      ecbuild_info( "Build summary" )
-    else()
-      ecbuild_info( "Build summary -- ( DEVELOPER_MODE )" )
-    endif()
+    ecbuild_info( "Build summary" )
     ecbuild_info( "---------------------------------------------------------" )
 
     ecbuild_info( "system : [${BUILD_SITE}] [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )

@@ -69,7 +69,6 @@
 # The following CMake variables influence the behaviour if set (``<name>`` is
 # the package name as given, ``<NAME>`` is the capitalised version):
 #
-# :DEVELOPER_MODE: if enabled, discover projects parallel in the build tree
 # :<name>_PATH:    install prefix path of the package
 # :<NAME>_PATH:    install prefix path of the package
 # :<name>_DIR:     directory containing the ``<name>-config.cmake`` file
@@ -84,15 +83,13 @@
 # The search proceeds as follows:
 #
 # 1.  If any paths have been specified by the user via CMake or environment
-#     variables as given above or a parallel build tree has been discovered in
-#     DEVELOPER_MODE:
+#     variables as given above:
 #
 #     * search for ``<name>-config.cmake`` in those paths only
 #     * search using ``Find<name>.cmake`` (which should respect those paths)
 #     * fail if the package was not found in any of those paths
 #
-# 2.  Search for ``<name>-config.cmake`` in the ``CMAKE_PREFIX_PATH`` and if
-#     DEVELOPER_MODE is enabled also in the user package registry.
+# 2.  Search for ``<name>-config.cmake`` in the ``CMAKE_PREFIX_PATH``.
 #
 # 3.  Search system paths for ``<name>-config.cmake``.
 #
@@ -148,30 +145,6 @@ macro( ecbuild_find_package )
     endif()
   endif()
 
-  # check developer mode (search in cmake cache )
-
-  if( NOT ${DEVELOPER_MODE} )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): Not in DEVELOPER_MODE - do not search package registry or recent GUI build paths")
-    set( NO_DEV_BUILD_DIRS NO_CMAKE_PACKAGE_REGISTRY NO_CMAKE_BUILDS_PATH )
-  endif()
-
-  # in DEVELOPER_MODE we give priority to projects parallel in the build tree
-  # so lets prepend a parallel build tree to the search path if we find it
-
-  if( DEVELOPER_MODE )
-    get_filename_component( _proj_bdir "${CMAKE_BINARY_DIR}/../${pkgLOWER}" ABSOLUTE )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - searching for ${pkgLOWER}-config.cmake in ${_proj_bdir}")
-    if( EXISTS ${_proj_bdir}/${pkgLOWER}-config.cmake )
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - found parallel build tree in ${_proj_bdir}")
-      if( ${pkgUPPER}_PATH )
-        ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - ${pkgUPPER}_PATH already set to ${${pkgUPPER}_PATH}, not modifying")
-      else()
-        ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): in DEVELOPER_MODE - setting ${pkgUPPER}_PATH to ${_proj_bdir}")
-        set( ${pkgUPPER}_PATH "${_proj_bdir}" )
-      endif()
-    endif()
-  endif()
-
   # Read environment variables but ONLY if the corresponding CMake variables are unset
 
   if( NOT DEFINED ${pkgUPPER}_PATH AND NOT "$ENV{${pkgUPPER}_PATH}" STREQUAL "" )
@@ -186,9 +159,9 @@ macro( ecbuild_find_package )
 
   # XXX: the <package>_DIR variable is handled later, see explanation below
 
-  # Find packages quietly unless in DEVELOPER_MODE or LOG_LEVEL is DEBUG
+  # Find packages quietly unless LOG_LEVEL is DEBUG
 
-  if( NOT DEVELOPER_MODE AND ( ECBUILD_LOG_LEVEL GREATER ${ECBUILD_DEBUG} ) )
+  if( ECBUILD_LOG_LEVEL GREATER ${ECBUILD_DEBUG} )
     set( _find_quiet QUIET )
   endif()
 
@@ -287,8 +260,14 @@ macro( ecbuild_find_package )
 
   endif()
 
-  # 4) search developer cache and recently configured packages in the CMake GUI if in DEVELOPER_MODE
-  #    otherwise only search CMAKE_PREFIX_PATH and system paths, for <package>-config.cmake
+  # 4) search developer cache if in DEVELOPER_MODE, otherwise only search
+  #    CMAKE_PREFIX_PATH and system paths, for <package>-config.cmake
+
+  if( NOT ${DEVELOPER_MODE} )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): Not in DEVELOPER_MODE - do not search package registry")
+    set( NO_DEV_BUILD_DIRS NO_CMAKE_PACKAGE_REGISTRY )
+  endif()
+
 
   if( NOT ${_PAR_NAME}_FOUND )
     if (NO_DEV_BUILD_DIRS)

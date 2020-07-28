@@ -47,9 +47,6 @@
 # override the default templates used to generate ``<project>-config.cmake``
 # and ``<project>-config-version.cmake``.
 #
-# In DEVELOPER_MODE, the build tree location is also added to the CMake user
-# package registry for top level projects.
-#
 # If the project is added as a subdirectory, the following CMake variables
 # are set in the parent scope:
 #
@@ -317,16 +314,7 @@ macro( ecbuild_install_project )
 
     endif()  # if ( NOT ECBUILD_SKIP_${PROJECT_NAME}_EXPORT )
 
-    # exports the package for use from the build-tree but only in DEVELOPER_MODE
-    # inserts <package> into the CMake user package registry
-
-    if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
-
-        if( DEVELOPER_MODE )
-            export( PACKAGE ${PROJECT_NAME} )
-        endif()
-
-    else()
+    if( NOT PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
 
         if(ECBUILD_2_COMPAT)
             # export variables for upper projects
