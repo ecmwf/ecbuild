@@ -89,8 +89,8 @@ macro( ecbuild_install_project )
 
     ### PACKAGING ########################################################
 
-    set( PNAME ${PROJECT_NAME_CAPS} )
-    set( LNAME ${PROJECT_NAME_LOWCASE} )
+    string( TOUPPER ${PROJECT_NAME} PNAME )
+    string( TOLOWER ${PROJECT_NAME} LNAME )
 
     # components
 
@@ -228,8 +228,8 @@ macro( ecbuild_install_project )
     ecbuild_enabled_features( ${PROJECT_NAME}_FEATURES )
     foreach( _f ${${PROJECT_NAME}_FEATURES} )
         set( ${PROJECT_NAME}_HAVE_${_f} True )
-        if(ECBUILD_2_COMPAT AND NOT PROJECT_NAME_CAPS STREQUAL PROJECT_NAME)
-            ecbuild_declare_compat( ${PROJECT_NAME_CAPS}_HAVE_${_f} ${PROJECT_NAME}_HAVE_${_f} )
+        if(ECBUILD_2_COMPAT AND NOT PNAME STREQUAL PROJECT_NAME)
+            ecbuild_declare_compat( ${PNAME}_HAVE_${_f} ${PROJECT_NAME}_HAVE_${_f} )
         endif()
     endforeach()
 

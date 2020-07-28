@@ -160,6 +160,7 @@ macro(ecbuild_compat_require out_name pkg)
     # append to list of third-party libraries (to be forward to other packages )
     # unless the NO_TPL option was given
     if(NOT _p_NO_TPL)
+      string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
       ecbuild_debug("ecbuild_compat_require(${pkgname}): appending ${pkgname} to ${PROJECT_NAME_CAPS}_TPLS")
       list(APPEND ${PROJECT_NAME_CAPS}_TPLS ${pkgname})
       list(REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS)
