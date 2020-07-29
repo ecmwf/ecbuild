@@ -82,23 +82,21 @@
 #
 # The search proceeds as follows:
 #
-# 1.  If any paths have been specified by the user via CMake or environment
+# 1.  If <name> is a subproject of the top-level project, search for
+#     ``<name>-config.cmake`` in ``<name>_BINARY_DIR``.
+#
+# 2.  If ``Find<name>.cmake`` exists in ``CMAKE_MODULE_PATH``, search using it.
+#
+# 3.  If any paths have been specified by the user via CMake or environment
 #     variables as given above:
 #
 #     * search for ``<name>-config.cmake`` in those paths only
-#     * search using ``Find<name>.cmake`` (which should respect those paths)
 #     * fail if the package was not found in any of those paths
 #
-# 2.  Search for ``<name>-config.cmake`` in the ``CMAKE_PREFIX_PATH``.
+# 4.  Search for ``<name>-config.cmake`` in the ``CMAKE_PREFIX_PATH`` and
+#     system paths.
 #
-# 3.  Search system paths for ``<name>-config.cmake``.
-#
-# 4.  Search system paths using ``Find<name>.cmake``.
-#
-# 5.  If the package was found, and a minimum version was requested, check if
-#     the version is acceptable and if not, unset ``<NAME>_FOUND``.
-#
-# 6.  Fail if the package was not found and is REQUIRED.
+# 5.  Fail if the package was not found and is REQUIRED.
 #
 ##############################################################################
 
@@ -205,6 +203,14 @@ macro( ecbuild_find_package )
 
   endif()
 
+  # 2) search using a file Find<package>.cmake if it exists
+
+  if( NOT ${_PAR_NAME}_FOUND )
+    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 2) search using a file Find${_PAR_NAME}.cmake if it exists")
+    find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} MODULE ${_find_quiet}
+                  COMPONENTS ${_PAR_COMPONENTS} )
+  endif()
+
   if( NOT ${_PAR_NAME}_FOUND )
     # XXX: if set, <package>_DIR short-circuits most of the options one can give
     # to find_package, do NOT move above the previous find_package
@@ -218,10 +224,10 @@ macro( ecbuild_find_package )
 
   if( ${_PAR_NAME}_PATH OR ${pkgUPPER}_PATH OR ${_PAR_NAME}_DIR )
 
-    # 2) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
+    # 3) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
 
     if( NOT ${_PAR_NAME}_FOUND )
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 2) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
       ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${pkgUPPER}_PATH=${${pkgUPPER}_PATH}, ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
       find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} NO_MODULE ${_find_quiet}
         COMPONENTS ${_PAR_COMPONENTS}
@@ -230,15 +236,7 @@ macro( ecbuild_find_package )
       set( _cfg_considered_versions ${${_PAR_NAME}_CONSIDERED_VERSIONS} )
     endif()
 
-    # 3) search using a file Find<package>.cmake if it exists ( macro should itself take *_PATH into account )
-
-    if( NOT ${_PAR_NAME}_FOUND )
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search using a file Find${_PAR_NAME}.cmake if it exists")
-      find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} MODULE ${_find_quiet}
-                    COMPONENTS ${_PAR_COMPONENTS} )
-    endif()
-
-    # is <package>_PATH was given and we don't find anything then we FAIL
+    # if <package>_PATH was given and we don't find anything then we FAIL
 
     if( NOT ${_PAR_NAME}_FOUND )
       if( _cfg_considered_versions OR ${_PAR_NAME}_CONSIDERED_VERSIONS )
@@ -279,16 +277,6 @@ macro( ecbuild_find_package )
     find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} ${_find_quiet} NO_MODULE
       COMPONENTS ${_PAR_COMPONENTS}
       ${NO_DEV_BUILD_DIRS} )
-
-  endif()
-
-  # 5) search system paths, using Find<package>.cmake if it exists
-
-  if( NOT ${_PAR_NAME}_FOUND )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 5) search system paths, using Find${_PAR_NAME}.cmake if it exists")
-
-    find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} ${_find_quiet} MODULE
-                  COMPONENTS ${_PAR_COMPONENTS} )
 
   endif()
 
