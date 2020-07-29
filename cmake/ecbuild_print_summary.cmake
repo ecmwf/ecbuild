@@ -94,11 +94,7 @@ macro( ecbuild_print_summary )
     ecbuild_info( "Feature summary" )
     ecbuild_info( "---------------------------------------------------------" )
 
-    if( ${CMAKE_VERSION} VERSION_LESS "2.8.6" )
-      set( __what ALL )
-    else()
-      set( __what ALL INCLUDE_QUIET_PACKAGES )
-    endif()
+    set( __what ALL INCLUDE_QUIET_PACKAGES )
 
     # Print feature summary
     feature_summary( WHAT ${__what} )

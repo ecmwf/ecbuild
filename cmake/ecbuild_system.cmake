@@ -104,21 +104,8 @@ if( NOT ECBUILD_SYSTEM_INITIALISED )
 
     ecbuild_info( "---------------------------------------------------------" )
 
-    # add backport support for versions up too 2.8.4
-    if( ${CMAKE_VERSION} VERSION_LESS "2.8" )
-    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/2.8" ${CMAKE_MODULE_PATH} )
-    endif()
-
     # add extra macros from external contributions
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib" )
-
-    # add backported CMake modules if needed
-    if( ${CMAKE_VERSION} VERSION_LESS "3.7" )
-      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/cmake-3.7.0" )
-    endif()
-    if( ${CMAKE_VERSION} VERSION_LESS "3.9" )
-      set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/contrib/cmake-3.9.0" )
-    endif()
 
     ############################################################################################
     # define valid build types
@@ -147,6 +134,7 @@ if( NOT ECBUILD_SYSTEM_INITIALISED )
     include(CheckCSourceRuns)
 
     include(CMakeParseArguments)
+    include(CMakePushCheckState)
 
     # include(CMakePrintSystemInformation) # available in cmake 2.8.4
 
@@ -169,15 +157,6 @@ if( NOT ECBUILD_SYSTEM_INITIALISED )
     include(FeatureSummary) # support features in cmake
 
     include(TestBigEndian)
-
-    ############################################################################################
-    # backport of cmake > 2.8.4 functions
-
-    if( "${CMAKE_VERSION}" VERSION_LESS "2.8.6" )
-        include( ${CMAKE_CURRENT_LIST_DIR}/2.8/CMakePushCheckState.cmake )
-    else()
-        include(CMakePushCheckState)
-    endif()
 
     ############################################################################################
     # add our macros
