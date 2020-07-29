@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 find_package( ecbuild 3.0.0 REQUIRED )
 project( find_netcdf VERSION 0.0.0 LANGUAGES C CXX Fortran )
 

@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.11 FATAL_ERROR )
 
 find_package( ecbuild REQUIRED )
 project( foo VERSION 0.1 LANGUAGES Fortran C )
