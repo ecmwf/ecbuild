@@ -28,6 +28,8 @@
 #                        [ PRIVATE_INCLUDES <path1> [<path2> ...] ]
 #                        [ PUBLIC_INCLUDES <path1> [<path2> ...] ]
 #                        [ DEFINITIONS <definition1> [<definition2> ...] ]
+#                        [ PRIVATE_DEFINITIONS <definition1> [<definition2> ...] ]
+#                        [ PUBLIC_DEFINITIONS <definition1> [<definition2> ...] ]
 #                        [ PERSISTENT <file1> [<file2> ...] ]
 #                        [ GENERATED <file1> [<file2> ...] ]
 #                        [ DEPENDS <target1> [<target2> ...] ]
@@ -83,7 +85,7 @@
 # LIBS : (DEPRECATED) optional
 #   list of libraries to link against (CMake targets or external libraries),
 #   behaves as PUBLIC_LIBS
-#   Please use target_link_libraries instead
+#   Please use PRIVATE_LIBS or PUBLIC_LIBS or CMake command ``target_link_libraries`` instead
 #
 # PRIVATE_LIBS : optional
 #   list of libraries to link against (CMake targets or external libraries),
@@ -95,19 +97,24 @@
 #
 # INCLUDES : (DEPRECATED) optional
 #   list of paths to add to include directories, behaves as PUBLIC_INCLUDES
-#   Please use target_include_directories instead
+#   Please use PUBLIC_INCLUDES or PRIVATE_INCLUDES or CMake command ``target_include_directories`` instead
 #
-# PUBLIC_INCLUDES : (DEPRECATED) optional
-#   list of paths to add to include directories which will be publicly exported to other projects
-#   Please use target_include_directories instead
+# PUBLIC_INCLUDES : optional
+#   list of paths to add to include directories which will be publicly exported to other targets and projects
 #
-# PRIVATE_INCLUDES : (DEPRECATED) optional
-#   list of paths to add to include directories which won't be exported to other projects
-#   Please use target_include_directories instead
+# PRIVATE_INCLUDES : optional
+#   list of paths to add to include directories which won't be exported beyond this target
 #
 # DEFINITIONS : (DEPRECATED) optional
 #   list of definitions to add to preprocessor defines
-#   Please use target_compile_definitions instead
+#   behaves as PRIVATE_DEFINITIONS
+#   Please use PRIVATE_DEFINITIONS or PUBLIC_DEFINITIONS or CMake command ``target_compile_definitions`` instead
+#
+# PRIVATE_DEFINITIONS : optional
+#   list of definitions to add to preprocessor defines that will not be exported beyond this target
+#
+# PUBLIC_DEFINITIONS : optional
+#   list of definitions to add to preprocessor defines that will be publicly exported to other targets and projects
 #
 # PERSISTENT : optional
 #   list of persistent layer object files
@@ -207,8 +214,9 @@ function( ecbuild_add_library_impl )
   set( multi_value_args  SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS
                          TEMPLATES LIBS PRIVATE_LIBS PUBLIC_LIBS INCLUDES
                          PRIVATE_INCLUDES PUBLIC_INCLUDES DEPENDS PERSISTENT
-                         DEFINITIONS INSTALL_HEADERS_LIST CFLAGS CXXFLAGS
-                         FFLAGS GENERATED CONDITION PROPERTIES )
+                         DEFINITIONS PRIVATE_DEFINITIONS PUBLIC_DEFINITIONS
+                         INSTALL_HEADERS_LIST CFLAGS CXXFLAGS FFLAGS
+                         GENERATED CONDITION PROPERTIES )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -564,6 +572,14 @@ function( ecbuild_add_library_impl )
     endif()
 
     # add definitions to compilation
+    if( DEFINED _PAR_PUBLIC_DEFINITIONS )
+      target_compile_definitions(${_PAR_TARGET} PUBLIC ${_PAR_PUBLIC_DEFINITIONS})
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): adding PUBLIC definitions ${_PAR_PUBLIC_DEFINITIONS}")
+    endif()
+    if( DEFINED _PAR_PRIVATE_DEFINITIONS )
+      target_compile_definitions(${_PAR_TARGET} PRIVATE ${_PAR_PRIVATE_DEFINITIONS})
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): adding PRIVATE definitions ${_PAR_PRIVATE_DEFINITIONS}")
+    endif()
     if( DEFINED _PAR_DEFINITIONS )
       if( _PAR_TYPE MATCHES "INTERFACE" )
         target_compile_definitions(${_PAR_TARGET} PUBLIC ${_PAR_DEFINITIONS})
