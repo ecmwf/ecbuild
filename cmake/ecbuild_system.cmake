@@ -268,7 +268,6 @@ if( NOT ECBUILD_SYSTEM_INITIALISED )
         include( ecbuild_check_os )                     # check for os characteristics
     endif()
     include( ecbuild_define_paths )                 # defines installation paths
-    include( ecbuild_setup_test_framework )         # setup test framework
 
     ecbuild_flush_cache()
 
