@@ -472,6 +472,7 @@ endfunction()\n\n" )
 
     if( HAVE_TESTS )
       add_test(  NAME ${_p_TARGET} COMMAND ${CMAKE_COMMAND} -P ${_script} )
+      string( TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWCASE )
       set( _p_LABELS ${PROJECT_NAME_LOWCASE} download_data ${_p_LABELS} )
       list( REMOVE_DUPLICATES _p_LABELS )
       set_property( TEST ${_p_TARGET} APPEND PROPERTY LABELS "${_p_LABELS}" )

@@ -51,8 +51,10 @@ endif()
 
 # set capitalised project name
 
-string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
-string( TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWCASE )
+if( ECBUILD_2_COMPAT )
+  string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
+  string( TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWCASE )
+endif()
 
 ########################################################################################################
 # include our cmake macros, but only if any parent project is not an ecbuild project

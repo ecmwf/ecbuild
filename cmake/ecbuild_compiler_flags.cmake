@@ -160,6 +160,8 @@ endmacro()
 #
 ##############################################################################
 
+string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
+
 # Custom (project specific) compilation flags enabled?
 foreach( _flags COMPILE SOURCE )
   if( ${PROJECT_NAME_CAPS}_ECBUILD_${_flags}_FLAGS )

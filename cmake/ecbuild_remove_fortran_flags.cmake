@@ -26,14 +26,14 @@
 ##############################################################################
 
 include( CheckFortranCompilerFlag )
-macro( ecbuild_remove_fortran_flags m_flags )
+macro( ecbuild_remove_fortran_flags )
 
-  set( _flags ${m_flags} )
+  set( single_value_args BUILD )
+  set( multi_value_args )
+  cmake_parse_arguments( _PAR "" "${single_value_args}" "${multi_value_args}" ${ARGV} )
+
+  set( _flags ${_PAR_UNPARSED_ARGUMENTS} )
   if( _flags AND CMAKE_Fortran_COMPILER_LOADED )
-
-    set( single_value_args BUILD )
-    set( multi_value_args )
-    cmake_parse_arguments( _PAR "" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
 
     string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_CAPS )
 
@@ -44,15 +44,15 @@ macro( ecbuild_remove_fortran_flags m_flags )
     if( _PAR_BUILD AND (CMAKE_BUILD_TYPE_CAPS MATCHES "${_PAR_BUILD_CAPS}") )
 
       foreach( _flag ${_flags} )
-        string(REGEX REPLACE " *${_flag} *" " " CMAKE_Fortran_FLAGS_${_PAR_BUILD} ${CMAKE_Fortran_FLAGS_${_PAR_BUILD}})
+        string(REGEX REPLACE "(^|[ ]+)${_flag}($|[ ]+)" "\\1" CMAKE_Fortran_FLAGS_${_PAR_BUILD} "${CMAKE_Fortran_FLAGS_${_PAR_BUILD}}")
         ecbuild_debug( "Fortran FLAG [${_flag}] removed from build type ${_PAR_BUILD}" )
       endforeach()
 
     elseif( NOT _PAR_BUILD )
 
       foreach( _flag ${_flags} )
-        string(REGEX REPLACE " *${_flag} *" " " CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS}} )
-        string(REGEX REPLACE " *${_flag} *" " " CMAKE_Fortran_FLAGS ${CMAKE_Fortran_FLAGS} )
+        string(REGEX REPLACE "(^|[ ]+)${_flag}($|[ ]+)" "\\1" CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS} "${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
+        string(REGEX REPLACE "(^|[ ]+)${_flag}($|[ ]+)" "\\1" CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}" )
         ecbuild_debug( "Fortran FLAG [${_flag}] removed" )
       endforeach()
 

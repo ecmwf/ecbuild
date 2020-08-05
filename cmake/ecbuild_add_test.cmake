@@ -452,6 +452,7 @@ function( ecbuild_add_test )
       endif()
 
       # Add lower case project name to custom test labels
+      string( TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWCASE )
       set( _PAR_LABELS ${PROJECT_NAME_LOWCASE} ${_PAR_LABELS} )
       list( REMOVE_DUPLICATES _PAR_LABELS )
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): assign labels ${_PAR_LABELS}")
