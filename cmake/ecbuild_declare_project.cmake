@@ -226,4 +226,6 @@ if( NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR )
     set( ${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} PARENT_SCOPE )
 endif()
 
+include( ecbuild_setup_test_framework )         # setup test framework
+
 endmacro( ecbuild_declare_project )

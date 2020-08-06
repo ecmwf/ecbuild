@@ -72,7 +72,7 @@ if( NOT ECBUILD_LOG_INCLUDED )
 set( ECBUILD_LOG_INCLUDED TRUE )
 
 # Define colour escape sequences (not available on Windows)
-if(NOT (WIN32 OR ECBUILD_NO_COLOUR OR DEFINED ENV{ECBUILD_NO_COLOUR}))
+if(NOT (WIN32 OR EC_OS_NAME MATCHES "windows" OR ECBUILD_NO_COLOUR OR DEFINED ENV{ECBUILD_NO_COLOUR}))
   string(ASCII 27 Esc)
   set(ColourReset "${Esc}[m")
   set(ColourBold  "${Esc}[1m")

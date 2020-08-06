@@ -422,7 +422,7 @@ endif()
 
 ### Windows
 
-if( WIN32 )
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" OR WIN32 ) # its weird, but WIN32 also includes Win64
 
   set( EC_OS_NAME "windows" )
 
