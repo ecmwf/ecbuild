@@ -1,0 +1,9 @@
+if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY )
+  message( "Importing projectB, not QUIET!!!")
+endif()
+
+# projectB requires projectA.
+
+# find_dependency propagates QUIET and REQUIRED keywords from current scope
+include( CMakeFindDependencyMacro )
+find_dependency( projectA )

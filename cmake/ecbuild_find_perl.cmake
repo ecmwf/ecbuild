@@ -48,7 +48,7 @@ macro( ecbuild_find_perl )
     ecbuild_critical("Unknown keywords given to ecbuild_find_perl(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
-  find_package( Perl )
+  find_package( Perl QUIET )
 
   if( NOT PERL_EXECUTABLE AND _p_REQUIRED )
     ecbuild_critical( "Failed to find Perl (REQUIRED)" )

@@ -118,15 +118,6 @@ macro( ecbuild_install_project )
         set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}${${PROJECT_NAME}_VERSION_SUFFIX}")
       endif()
 
-      ecbuild_debug("\n
-      ${PROJECT_NAME}_VERSION : ${${PROJECT_NAME}_VERSION}
-      ${PROJECT_NAME}_VERSION_MAJOR : ${${PROJECT_NAME}_VERSION_MAJOR}
-      ${PROJECT_NAME}_VERSION_MINOR : ${${PROJECT_NAME}_VERSION_MINOR}
-      ${PROJECT_NAME}_VERSION_PATCH : ${${PROJECT_NAME}_VERSION_PATCH}
-      ${PROJECT_NAME}_VERSION_TWEAK : ${${PROJECT_NAME}_VERSION_TWEAK}
-      ${PROJECT_NAME}_VERSION_SUFFIX : ${${PROJECT_NAME}_VERSION_SUFFIX}
-      CPACK_PACKAGE_VERSION = ${CPACK_PACKAGE_VERSION}")
-
     endif()
 
     # Convert "/" to "-" for the case where the version string contains a "/" -- if set externally

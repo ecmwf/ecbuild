@@ -57,7 +57,7 @@
 #   literal string or name of CMake variable containing a message to be
 #   appended to the failure message if the package is not found
 #
-# REQUIRED : optional
+# REQUIRED : optional (equivalent to TYPE REQUIRED, and overrides TYPE argument)
 #   fail if package cannot be found
 #
 # QUIET : optional
@@ -69,13 +69,20 @@
 # The following CMake variables influence the behaviour if set (``<name>`` is
 # the package name as given, ``<NAME>`` is the capitalised version):
 #
-# :<name>_PATH:    install prefix path of the package
-# :<NAME>_PATH:    install prefix path of the package
-# :<name>_DIR:     directory containing the ``<name>-config.cmake`` file
-#                  (usually ``<install-prefix>/lib/cmake/<name>``)
+# :<name>_ROOT:       install prefix path of the package
+# :<name>_PATH:       install prefix path of the package, prefer <name>_ROOT
+# :<NAME>_PATH:       install prefix path of the package, prefer <name>_ROOT
+# :<name>_DIR:        directory containing the ``<name>-config.cmake`` file
+#                     (usually ``<install-prefix>/lib/cmake/<name>``), prefer <name>_ROOT
+# :CMAKE_PREFIX_PATH: Specify this when most packages are installed in same prefix
 #
-# The environment variables ``<name>_PATH``, ``<NAME>_PATH``, ``<name>_DIR``
+# The environment variables ``<name>_ROOT``, ``<name>_PATH``, ``<NAME>_PATH``, ``<name>_DIR``
 # are taken into account only if the corresponding CMake variables are unset.
+#
+# Note, some packages are found via ``Find<name>.cmake`` and may have their own mechanism of
+# finding paths with other variables, e.g. ``<name>_HOME``. See the corresponing
+# ``Find<name>.cmake`` file for datails, or use `cmake --help-module Find<name>` if it is a
+# standard CMake-recognized module.
 #
 # Usage
 # -----
@@ -92,17 +99,27 @@
 #
 #     * search for ``<name>-config.cmake`` in those paths only
 #     * fail if the package was not found in any of those paths
+#     * Search paths are in order from high to low priority:
+#        - ``<name>_DIR``
+#        - ``<name>_ROOT``
+#        - ``<name>_PATH``
+#        - ``<NAME>_PATH``
+#        - ``ENV{<name>_ROOT}``
+#        - ``ENV{<name>_PATH}``
+#        - ``ENV{<NAME>_PATH}``
+#        - ``CMAKE_PREFIX_PATH``
+#        - ``ENV{<name>_DIR}``
+#        - ``ENV{CMAKE_PREFIX_PATH}``
+#        - ``system paths``
+#       See CMake documentation of ``find_package()`` for details on search
 #
-# 4.  Search for ``<name>-config.cmake`` in the ``CMAKE_PREFIX_PATH`` and
-#     system paths.
-#
-# 5.  Fail if the package was not found and is REQUIRED.
+# 4.  Fail if the package was not found and is REQUIRED.
 #
 ##############################################################################
 
 macro( ecbuild_find_package )
 
-  set( options REQUIRED QUIET EXACT )
+  set( options REQUIRED RECOMMENDED QUIET EXACT )
   set( single_value_args NAME VERSION URL DESCRIPTION TYPE PURPOSE FAILURE_MSG )
   set( multi_value_args COMPONENTS )
 
@@ -121,7 +138,7 @@ macro( ecbuild_find_package )
   endif()
 
   if( _PAR_QUIET )
-    set( _find_quiet QUIET )
+    set( _${_PAR_NAME}_find_quiet QUIET )
   endif()
 
   # If the package is required, set TYPE to REQUIRED
@@ -130,38 +147,24 @@ macro( ecbuild_find_package )
     set( _PAR_TYPE REQUIRED )
   endif()
 
-  # ecbuild_debug_var( _PAR_NAME )
+  # As mentioned in documentation above, the default TYPE is OPTIONAL
+  if( NOT _PAR_TYPE )
+    set( _PAR_TYPE OPTIONAL )
+  endif()
 
-  string( TOUPPER ${_PAR_NAME} pkgUPPER )
-  string( TOLOWER ${_PAR_NAME} pkgLOWER )
-
-  set( _${pkgUPPER}_version "" )
+  set( _${_PAR_NAME}_version "" )
   if( _PAR_VERSION )
-    set( _${pkgUPPER}_version ${_PAR_VERSION} )
+    set( _${_PAR_NAME}_version ${_PAR_VERSION} )
     if( _PAR_EXACT )
-      set( _${pkgUPPER}_version ${_PAR_VERSION} EXACT )
+      set( _${_PAR_NAME}_version ${_PAR_VERSION} EXACT )
     endif()
   endif()
 
-  # Read environment variables but ONLY if the corresponding CMake variables are unset
-
-  if( NOT DEFINED ${pkgUPPER}_PATH AND NOT "$ENV{${pkgUPPER}_PATH}" STREQUAL "" )
-    set( ${pkgUPPER}_PATH "$ENV{${pkgUPPER}_PATH}" )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${pkgUPPER}_PATH=${${pkgUPPER}_PATH} from environment")
+  set( _${_PAR_NAME}_components "" )
+  if( DEFINED _PAR_COMPONENTS )
+    set( _${_PAR_NAME}_components COMPONENTS ${_PAR_COMPONENTS} )
   endif()
 
-  if( NOT DEFINED ${_PAR_NAME}_PATH AND NOT "$ENV{${_PAR_NAME}_PATH}" STREQUAL "" )
-    set( ${_PAR_NAME}_PATH "$ENV{${_PAR_NAME}_PATH}" )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH} from environment")
-  endif()
-
-  # XXX: the <package>_DIR variable is handled later, see explanation below
-
-  # Find packages quietly unless LOG_LEVEL is DEBUG
-
-  if( ECBUILD_LOG_LEVEL GREATER ${ECBUILD_DEBUG} )
-    set( _find_quiet QUIET )
-  endif()
 
   if( ECBUILD_2_COMPAT )
     # Disable deprecation warnings until ecbuild_mark_compat, because "<PROJECT>_FOUND" may already have been
@@ -185,10 +188,10 @@ macro( ecbuild_find_package )
     #    <package>_BINARY_DIR is defined by CMake when using project()
 
     if( NOT ${_PAR_NAME}_FOUND )
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 1) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${_PAR_NAME}_BINARY_DIR=${${_PAR_NAME}_BINARY_DIR}")
-      find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} NO_MODULE ${_find_quiet}
-        COMPONENTS ${_PAR_COMPONENTS}
+      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): find_package( ${_PAR_NAME} ${_${_PAR_NAME}_version} ${_${_PAR_NAME}_components} ${_${_PAR_NAME}_find_quiet} )\n"
+                    "                                    using hints ${_PAR_NAME}_BINARY_DIR=${${_PAR_NAME}_BINARY_DIR}" )
+      find_package( ${_PAR_NAME} ${_${_PAR_NAME}_version} ${_${_PAR_NAME}_components} ${_${_PAR_NAME}_find_quiet}
+        NO_MODULE
         HINTS ${${_PAR_NAME}_BINARY_DIR}
         NO_DEFAULT_PATH )
     endif()
@@ -201,84 +204,36 @@ macro( ecbuild_find_package )
       endif()
     endif()
 
-  endif()
+  else()
 
-  # 2) search using a file Find<package>.cmake if it exists
-
-  if( NOT ${_PAR_NAME}_FOUND )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 2) search using a file Find${_PAR_NAME}.cmake if it exists")
-    find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} MODULE ${_find_quiet}
-                  COMPONENTS ${_PAR_COMPONENTS} )
-  endif()
-
-  if( NOT ${_PAR_NAME}_FOUND )
-    # XXX: if set, <package>_DIR short-circuits most of the options one can give
-    # to find_package, do NOT move above the previous find_package
-    if( NOT DEFINED ${_PAR_NAME}_DIR AND NOT "$ENV{${_PAR_NAME}_DIR}" STREQUAL "" )
-      set( ${_PAR_NAME}_DIR "$ENV{${_PAR_NAME}_DIR}" )
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): setting ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR} from environment")
-    endif()
-  endif()
-
-  # search user defined paths
-
-  if( ${_PAR_NAME}_PATH OR ${pkgUPPER}_PATH OR ${_PAR_NAME}_DIR )
-
-    # 3) search using CONFIG mode -- try to locate a configuration file provided by the package (package-config.cmake)
-
-    if( NOT ${_PAR_NAME}_FOUND )
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 3) search using CONFIG mode -- try to locate ${_PAR_NAME}-config.cmake")
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}):    using hints ${pkgUPPER}_PATH=${${pkgUPPER}_PATH}, ${_PAR_NAME}_PATH=${${_PAR_NAME}_PATH}, ${_PAR_NAME}_DIR=${${_PAR_NAME}_DIR}")
-      find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} NO_MODULE ${_find_quiet}
-        COMPONENTS ${_PAR_COMPONENTS}
-        HINTS ${${pkgUPPER}_PATH} ${${_PAR_NAME}_PATH} ${${_PAR_NAME}_DIR}
-        NO_DEFAULT_PATH )
-      set( _cfg_considered_versions ${${_PAR_NAME}_CONSIDERED_VERSIONS} )
-    endif()
-
-    # if <package>_PATH was given and we don't find anything then we FAIL
-
-    if( NOT ${_PAR_NAME}_FOUND )
-      if( _cfg_considered_versions OR ${_PAR_NAME}_CONSIDERED_VERSIONS )
-        if( ${_PAR_NAME}_PATH )
-          ecbuild_critical( "${_PAR_NAME}_PATH was provided by user but no suitable version (or component set) of ${_PAR_NAME} was found at '${${_PAR_NAME}_PATH}'" )
-        endif()
-        if( ${pkgUPPER}_PATH )
-          ecbuild_critical( "${pkgUPPER}_PATH was provided by user but no suitable version (or component set) of ${_PAR_NAME} was found at '${${pkgUPPER}_PATH}'" )
-        endif()
-      else()
-        if( ${_PAR_NAME}_PATH )
-          ecbuild_critical( "${_PAR_NAME}_PATH was provided by user but package ${_PAR_NAME} wasn't found at '${${_PAR_NAME}_PATH}'" )
-        endif()
-        if( ${pkgUPPER}_PATH )
-          ecbuild_critical( "${pkgUPPER}_PATH was provided by user but package ${_PAR_NAME} wasn't found at '${${pkgUPPER}_PATH}'" )
-        endif()
-      endif()
-    endif()
-
-  endif()
-
-  # 4) search developer cache if in DEVELOPER_MODE, otherwise only search
-  #    CMAKE_PREFIX_PATH and system paths, for <package>-config.cmake
-
-  if( NOT ${DEVELOPER_MODE} )
-    ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): Not in DEVELOPER_MODE - do not search package registry")
-    set( NO_DEV_BUILD_DIRS NO_CMAKE_PACKAGE_REGISTRY )
-  endif()
-
-
-  if( NOT ${_PAR_NAME}_FOUND )
-    if (NO_DEV_BUILD_DIRS)
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 4) search CMAKE_PREFIX_PATH and system paths")
+    # If a Find<name>.cmake module is found, use MODULE keyword, otherwise, use CONFIG.
+    # This makes the find_package error message much more consise.
+    find_file( ${_PAR_NAME}_FindModule Find${_PAR_NAME}.cmake  PATHS ${CMAKE_MODULE_PATH} ${CMAKE_ROOT}/Modules )
+    if( ${_PAR_NAME}_FindModule )
+      set( _${_PAR_NAME}_mode MODULE )
     else()
-      ecbuild_debug("ecbuild_find_package(${_PAR_NAME}): 4) search CMAKE_PREFIX_PATH, system paths, and package registry")
+      set( _${_PAR_NAME}_mode CONFIG )
     endif()
 
-    find_package( ${_PAR_NAME} ${_${pkgUPPER}_version} ${_find_quiet} NO_MODULE
-      COMPONENTS ${_PAR_COMPONENTS}
-      ${NO_DEV_BUILD_DIRS} )
+    # Read variables like <name>_PATH and <NAME>_PATH,
+    # and make older versions (CMake < 3.12) forward compatible with <name>_ROOT
+    ecbuild_find_package_search_hints( NAME ${_PAR_NAME} )
+
+    # Disable search in package registry, and save to be restored after find_package()
+    set( CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY_orig ${CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY} )
+    set( CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY ON )
+
+    # The actual find_package()
+    ecbuild_debug ( "ecbuild_find_package(${_PAR_NAME}): find_package( ${_PAR_NAME} ${_${_PAR_NAME}_version} ${_${_PAR_NAME}_find_quiet} ${_${_PAR_NAME}_components} ${_${_PAR_NAME}_mode} )")
+    find_package( ${_PAR_NAME} ${_${_PAR_NAME}_version} ${_${_PAR_NAME}_find_quiet} ${_${_PAR_NAME}_components} ${_${_PAR_NAME}_mode} )
+
+    # Restore setting 
+    set( CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY ${CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY_orig} )
 
   endif()
+
+
+  string( TOUPPER ${_PAR_NAME} pkgUPPER )
 
   if(ECBUILD_2_COMPAT)
     ecbuild_declare_compat(${pkgUPPER}_FOUND ${_PAR_NAME}_FOUND)
@@ -293,14 +248,22 @@ macro( ecbuild_find_package )
   if( ${_PAR_NAME}_FOUND )
 
     if( NOT _PAR_QUIET )
-      ecbuild_info( "[${_PAR_NAME}] (${${_PAR_NAME}_VERSION})" )
-      foreach( var IN ITEMS INCLUDE_DIRS INCLUDE_DIR )
-        if( ${pkgUPPER}_${var} )
-          ecbuild_info( "   ${pkgUPPER}_${var} : [${${pkgUPPER}_${var}}]" )
-          break()
+      if( ${_PAR_NAME}_DIR ) # Defined by find_package if found via CONFIG option
+        ecbuild_info( "${PROJECT_NAME} FOUND ${_PAR_NAME}: ${${_PAR_NAME}_DIR} (found version \"${${_PAR_NAME}_VERSION}\")" )
+      else()
+        if( ${_PAR_NAME}_VERSION )
+          ecbuild_info( "${PROJECT_NAME} FOUND ${_PAR_NAME} (found version \"${${_PAR_NAME}_VERSION}\")" )
+        else()
+          ecbuild_info( "${PROJECT_NAME} FOUND ${_PAR_NAME}" )
         endif()
+      endif()
+      foreach( var IN ITEMS INCLUDE_DIRS INCLUDE_DIR )
         if( ${_PAR_NAME}_${var} )
           ecbuild_info( "   ${_PAR_NAME}_${var} : [${${_PAR_NAME}_${var}}]" )
+          break()
+        endif()
+        if( ${pkgUPPER}_${var} )
+          ecbuild_info( "   ${pkgUPPER}_${var} : [${${pkgUPPER}_${var}}]" )
           break()
         endif()
       endforeach()
@@ -340,24 +303,44 @@ macro( ecbuild_find_package )
 
   else()
 
+    set( _failed_message ${_PAR_FAILURE_MSG} )
     if( DEFINED ${_PAR_FAILURE_MSG} )
-      set( _PAR_FAILURE_MSG ${${_PAR_FAILURE_MSG}} )
+      set( _failed_message "${${_PAR_FAILURE_MSG}}" )
     endif()
-    set( _failed_message
-      "  ${PROJECT_NAME} FAILED to find package ${_PAR_NAME}\n"
-      "    Provide location by defining \"-DCMAKE_PREFIX_PATH= /...\" or with \"-D${pkgUPPER}_PATH=/...\" or \"-D${_PAR_NAME}_DIR=/...\" \n"
-      "    You may also export environment variables ${pkgUPPER}_PATH or ${_PAR_NAME}_DIR\n"
-      "  Values (note CAPITALISATION):\n"
-      "    ${pkgUPPER}_PATH should contain the path to the install prefix (as in <install>/bin <install>/lib <install>/include)\n"
-      "    ${_PAR_NAME}_DIR should be a directory containing a <package>-config.cmake file (usually <install>/lib/cmake/<package>)\n"
-      )
-
-    if( _PAR_REQUIRED )
-      ecbuild_critical( "${_failed_message}!! ${PROJECT_NAME} requires package ${_PAR_NAME} !!\n${_PAR_FAILURE_MSG}" )
+    # Quite verbose message, only to be printed when package is REQUIRED, or ECBUILD_LOG_LEVEL <= DEBUG
+    # When TYPE is RECOMMENDED, we will issue with ecbuild_warn, otherwise ecbuild_info
+    set( _default_failed_message "${PROJECT_NAME} FAILED to find ${_PAR_TYPE} package ${_PAR_NAME}" )
+    if( ${_PAR_NAME}_FindModule )
+      set( _failed_help "find_package(${_PAR_NAME}) used a Find${_PAR_NAME} module to find ${_PAR_NAME}\n"
+      "  Please check file `${${_PAR_NAME}_FindModule}` for help on setting variables to find this package." )
     else()
-      if( NOT _PAR_QUIET )
-        ecbuild_warn( "${_failed_message}\n${_PAR_FAILURE_MSG}" )
+      set( _failed_help "find_package(${_PAR_NAME}) assumed ${_PAR_NAME} is a CMake project.\n"
+        "  Recommended variables that can help detection:\n"
+        "    - ${_PAR_NAME}_ROOT : the install prefix (as in <prefix>/bin <prefix>/lib <prefix>/include)\n"
+        "    - CMAKE_PREFIX_PATH : the install prefix (as ${_PAR_NAME}_ROOT, or its parent directory as in <prefix>/${_PAR_NAME})"
+      )
+    endif()
+    if( NOT _failed_message )
+      if(_PAR_TYPE MATCHES "(RECOMMENDED|REQUIRED)" )
+        set( _failed_message "${_default_failed_message}\n${_failed_help}" )
+      else()
+        set( _failed_message ${_default_failed_message} )
       endif()
+    endif()
+    if( _PAR_REQUIRED )
+      ecbuild_critical( "${_failed_message}" )
+    endif()
+    if( NOT _PAR_QUIET )
+      if( _PAR_TYPE MATCHES "RECOMMENDED" )
+        ecbuild_warn( "${_failed_message}" )
+      else()
+        ecbuild_info( "${_failed_message}" )
+      endif()
+      if( ECBUILD_LOG_LEVEL LESS_EQUAL ${ECBUILD_DEBUG} )
+        ecbuild_debug( "${_failed_help}" )
+      endif()
+    else()
+      ecbuild_debug( "${_failed_message}" )
     endif()
 
   endif()
