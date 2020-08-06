@@ -424,7 +424,7 @@ endif()
 
 ### Windows
 
-if( WIN32 )
+if( WIN32 ) # its weird, but this also includes Win64
 
   set( EC_OS_NAME "windows" )
 

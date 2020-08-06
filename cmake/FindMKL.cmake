@@ -37,8 +37,9 @@ endif()
 
 # Search with priority for MKLROOT, MKL_PATH and MKL_ROOT if set in CMake or env
 find_path(MKL_INCLUDE_DIR mkl.h
-          PATHS ${MKLROOT} ${MKL_PATH} ${MKL_ROOT} ENV MKLROOT ENV MKL_PATH ENV MKL_ROOT
+          PATHS ${MKLROOT} ${MKL_PATH} ${MKL_ROOT} $ENV{MKLROOT} $ENV{MKL_PATH} $ENV{MKL_ROOT}
           PATH_SUFFIXES include NO_DEFAULT_PATH)
+
 find_path(MKL_INCLUDE_DIR mkl.h
           PATH_SUFFIXES include)
 
@@ -47,19 +48,33 @@ if( MKL_INCLUDE_DIR ) # use include dir to find libs
   set( MKL_INCLUDE_DIRS ${MKL_INCLUDE_DIR} )
 
   if( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
-    get_filename_component( MKL_LIB_PATH ${MKL_INCLUDE_DIR}/../lib/intel64 ABSOLUTE )
+    set( __pathsuffix "lib/intel64")
     set( __libsfx _lp64 )
   else()
-    get_filename_component( MKL_LIB_PATH ${MKL_INCLUDE_DIR}/../lib/ia32 ABSOLUTE )
+    set( __pathsuffix "lib/ia32")
     set( __libsfx "" )
   endif()
 
-  find_library( MKL_LIB_INTEL         NAMES mkl_intel${__libsfx} PATHS ${MKL_LIB_PATH} )
-  find_library( ${__mkl_lib_par}      NAMES ${__mkl_lib_name} PATHS ${MKL_LIB_PATH} )
-  find_library( MKL_LIB_CORE          NAMES mkl_core PATHS ${MKL_LIB_PATH} )
+  find_library( MKL_LIB_INTEL
+                PATHS ${MKLROOT} ${MKL_PATH} ${MKL_ROOT} $ENV{MKLROOT} $ENV{MKL_PATH} $ENV{MKL_ROOT}
+                PATH_SUFFIXES lib ${__pathsuffix}
+                NAMES mkl_intel${__libsfx} )
+
+  find_library( ${__mkl_lib_par}
+                PATHS ${MKLROOT} ${MKL_PATH} ${MKL_ROOT} $ENV{MKLROOT} $ENV{MKL_PATH} $ENV{MKL_ROOT}
+                PATH_SUFFIXES lib ${__pathsuffix}
+                NAMES ${__mkl_lib_name} )
+
+  find_library( MKL_LIB_CORE
+                PATHS ${MKLROOT} ${MKL_PATH} ${MKL_ROOT} $ENV{MKLROOT} $ENV{MKL_PATH} $ENV{MKL_ROOT}
+                PATH_SUFFIXES lib ${__pathsuffix}
+                NAMES mkl_core )
 
   if( MKL_PARALLEL )
-    find_library( MKL_LIB_IOMP5  NAMES iomp5 PATHS ${MKL_LIB_PATH} )
+    find_library( MKL_LIB_IOMP5
+                  PATHS ${MKLROOT} ${MKL_PATH} ${MKL_ROOT} $ENV{MKLROOT} $ENV{MKL_PATH} $ENV{MKL_ROOT}
+                  PATH_SUFFIXES lib ${__pathsuffix}
+                  NAMES iomp5 )
   endif()
 
   if( MKL_LIB_INTEL AND ${__mkl_lib_par} AND MKL_LIB_CORE )
