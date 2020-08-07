@@ -290,10 +290,10 @@ endfunction(ecbuild_pkgconfig_include)
 #
 #   This is useful to create customised pkg-config files.
 #
-# URL : optional, defaults to ``${UPPERCASE_PROJECT_NAME}_URL``
+# URL : optional, defaults to ``${PROJECT_NAME}_URL``
 #   url of the package
 #
-# DESCRIPTION : optional, defaults to ``${UPPERCASE_PROJECT_NAME}_DESCRIPTION``
+# DESCRIPTION : optional, defaults to ``${PROJECT_NAME}_DESCRIPTION``
 #   description of the package
 #
 # LIBRARIES : required
@@ -321,18 +321,18 @@ endfunction(ecbuild_pkgconfig_include)
 # ---------------
 #
 # The following CMake variables are used as default values for some of the
-# options listed above, where ``PNAME`` is the project name in upper case:
+# options listed above:
 #
-# :<PNAME>_DESCRIPTION:  package description
-# :<PNAME>_URL:          package URL
-# :<PNAME>_VERSION:      package version
+# :<PROJECT_NAME>_DESCRIPTION:  package description
+# :<PROJECT_NAME>_URL:          package URL
+# :<PROJECT_NAME>_VERSION:      package version
 # :<PROJECT_NAME>_GIT_SHA1:     Git revision
 #
 # Usage
 # -----
 #
 # It is good practice to provide a separate pkg-config file for each library a
-# package exports. This can be achieved as follows: ::
+# package exports. This can be achieved as follows::
 #
 #   foreach( _lib ${${PNAME}_LIBRARIES} )
 #     if( TARGET ${_lib} )
@@ -443,12 +443,30 @@ function( ecbuild_pkgconfig )
     set( _PAR_FILENAME "${PKGCONFIG_NAME}.pc" )
   endif()
 
-  set( PKGCONFIG_DESCRIPTION ${${PNAME}_DESCRIPTION} )
+  if( DEFINED ${PROJECT_NAME}_DESCRIPTION )
+    set( PKGCONFIG_DESCRIPTION ${${PROJECT_NAME}_DESCRIPTION} )
+  elseif( DEFINED ${PNAME}_DESCRIPTION )
+    if(ECBUILD_2_COMPAT)
+      if(ECBUILD_2_COMPAT_DEPRECATE AND NOT _PAR_DESCRIPTION)
+        ecbuild_deprecate("${PNAME}_DESCRIPTION is deprecated. Please set ${PROJECT_NAME}_DESCRIPTION.")
+      endif()
+      set( PKGCONFIG_DESCRIPTION ${${PNAME}_DESCRIPTION} )
+    endif()
+  endif()
   if( _PAR_DESCRIPTION )
     set( PKGCONFIG_DESCRIPTION ${_PAR_DESCRIPTION} )
   endif()
 
-  set( PKGCONFIG_URL ${${PNAME}_URL} )
+  if( DEFINED ${PROJECT_NAME}_URL )
+    set( PKGCONFIG_URL ${${PROJECT_NAME}_URL} )
+  elseif( DEFINED ${PNAME}_URL )
+    if(ECBUILD_2_COMPAT)
+      if(ECBUILD_2_COMPAT_DEPRECATE AND NOT _PAR_URL)
+        ecbuild_deprecate("${PNAME}_URL is deprecated. Please set ${PROJECT_NAME}_URL.")
+      endif()
+      set( PKGCONFIG_URL ${${PNAME}_URL} )
+    endif()
+  endif()
   if( _PAR_URL )
     set( PKGCONFIG_URL ${_PAR_URL} )
   endif()
