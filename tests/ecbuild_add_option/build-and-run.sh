@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE=${CMAKE_CURRENT_BINARY_DIR:-"$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"}
+SOURCE=${CMAKE_CURRENT_SOURCE_DIR:-$HERE}
+
+# Add ecbuild to path
+export PATH=$SOURCE/../../bin:$PATH
+echo $PATH
+echo $SOURCE
+
+run_test() {
+    local tname=$1
+    local exp_sts=$2
+    shift 2
+
+    local bdir=$HERE/build_$tname
+    local logf=$HERE/$tname.log
+
+    mkdir -p $bdir && cd $bdir
+    local sts=0
+    echo "Running test '$tname'"
+    ecbuild -- -Wno-deprecated -DECBUILD_2_COMPAT=OFF $* $SOURCE/test_project >$logf 2>&1 || sts=$?
+
+    if [[ $sts -ne $exp_sts ]] ; then
+        echo "Test '$tname': expected exit code $exp_sts, got $sts"
+        cat $logf
+        exit 1
+    fi
+}
+
+# --------------------- cleanup ------------------------
+$SOURCE/clean.sh
+
+# ---------------------- tests -------------------------
+run_test all_def 0 \
+    -DEXPECT_TEST_A=ON -DEXPECT_TEST_B=ON -DEXPECT_TEST_C=OFF -DEXPECT_TEST_D=ON -DEXPECT_TEST_E=OFF -DEXPECT_TEST_F=ON -DEXPECT_TEST_G=OFF
+run_test all_off 0 \
+    -DENABLE_TEST_A=OFF -DENABLE_TEST_B=OFF -DENABLE_TEST_C=OFF -DENABLE_TEST_D=OFF -DENABLE_TEST_E=OFF -DENABLE_TEST_F=OFF -DENABLE_TEST_G=OFF \
+    -DEXPECT_TEST_A=OFF -DEXPECT_TEST_B=OFF -DEXPECT_TEST_C=OFF -DEXPECT_TEST_D=OFF -DEXPECT_TEST_E=OFF -DEXPECT_TEST_F=OFF -DEXPECT_TEST_G=OFF
+run_test ok_on 0 \
+    -DENABLE_TEST_A=ON -DENABLE_TEST_B=ON -DENABLE_TEST_C=ON -DENABLE_TEST_D=ON -DENABLE_TEST_F=ON \
+    -DEXPECT_TEST_A=ON -DEXPECT_TEST_B=ON -DEXPECT_TEST_C=ON -DEXPECT_TEST_D=ON -DEXPECT_TEST_F=ON -DEXPECT_TEST_E=OFF -DEXPECT_TEST_G=OFF
+run_test fail_pkg 1 -DENABLE_TEST_E=ON
+run_test fail_cond 1 -DENABLE_TEST_G=ON
