@@ -17,21 +17,21 @@ $SOURCE/clean.sh
 
 mkdir -p $HERE/projectA/build && cd $HERE/projectA/build
 pwd
-ecbuild --prefix=../install -- -Wno-deprecated -DECBUILD_2_COMPAT=OFF $SOURCE/projectA
+ecbuild --prefix=../install -- -Wno-deprecated $SOURCE/projectA
 make install
 export projectA_ROOT=$HERE/projectA/install
 
 # ----------------- build projectB ---------------------
 
 mkdir -p $HERE/projectB/build && cd $HERE/projectB/build
-ecbuild --prefix=../install -- -Wno-deprecated -DECBUILD_2_COMPAT=OFF $SOURCE/projectB
+ecbuild --prefix=../install -- -Wno-deprecated $SOURCE/projectB
 make install
 export projectB_ROOT=$HERE/projectB/install
 
 # ----------------- build projectC ---------------------
 
 mkdir -p $HERE/projectC/build && cd $HERE/projectC/build
-ecbuild --prefix=../install -- -Wno-deprecated -DECBUILD_2_COMPAT=OFF $SOURCE/projectC
+ecbuild --prefix=../install -- -Wno-deprecated $SOURCE/projectC
 make install
 
 # ----------------- Run ---------------------

@@ -21,7 +21,7 @@ run_test() {
     mkdir -p $bdir && cd $bdir
     local sts=0
     echo "Running test '$tname'"
-    ecbuild -- -Wno-deprecated -DECBUILD_2_COMPAT=OFF $* $SOURCE/test_project >$logf 2>&1 || sts=$?
+    ecbuild -- -Wno-deprecated $* $SOURCE/test_project >$logf 2>&1 || sts=$?
 
     if [[ $sts -ne $exp_sts ]] ; then
         echo "Test '$tname': expected exit code $exp_sts, got $sts"

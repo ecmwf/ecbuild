@@ -15,7 +15,7 @@ cd $HERE/projectA
 
 mkdir build
 cd build
-ecbuild --prefix=../install -- -Wno-deprecated -DECBUILD_2_COMPAT=OFF ../
+ecbuild --prefix=../install -- -Wno-deprecated ../
 make install
 
 # ----------------- build projectB ---------------------
@@ -25,7 +25,7 @@ mkdir build
 cd build
 ecbuild --prefix=../install -- \
     -DprojectA_DIR=$HERE/projectA/install/lib/cmake/projectA \
-    -Wno-deprecated -DECBUILD_2_COMPAT=OFF ../
+    -Wno-deprecated ../
 make install
 
 # ----------------- build projectC ---------------------
@@ -36,7 +36,7 @@ cd build
 ecbuild --prefix=../install -- \
     -DprojectA_DIR=$HERE/projectA/install/lib/cmake/projectA \
     -DprojectB_DIR=$HERE/projectB/install/lib/cmake/projectB \
-    -Wno-deprecated -DECBUILD_2_COMPAT=OFF ../
+    -Wno-deprecated ../
 make install
 
 # ----------------- Run ---------------------
