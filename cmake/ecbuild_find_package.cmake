@@ -14,8 +14,8 @@
 #
 # Find a package and import its configuration. ::
 #
-#   ecbuild_find_package( NAME <name>
-#                         [ VERSION <version> [ EXACT ] ]
+#   ecbuild_find_package( [ NAME ] <name>
+#                         [ [ VERSION ] <version> [ EXACT ] ]
 #                         [ COMPONENTS <component1> [ <component2> ... ] ]
 #                         [ URL <url> ]
 #                         [ DESCRIPTION <description> ]
@@ -123,8 +123,18 @@ macro( ecbuild_find_package )
   set( single_value_args NAME VERSION URL DESCRIPTION TYPE PURPOSE FAILURE_MSG )
   set( multi_value_args COMPONENTS )
 
-  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+  cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${ARGN} )
 
+  if(_PAR_UNPARSED_ARGUMENTS)
+    if( NOT _PAR_NAME )
+      set( _PAR_NAME ${ARGV0} )
+      list( REMOVE_ITEM _PAR_UNPARSED_ARGUMENTS ${ARGV0} )
+      if( NOT _PAR_VERSION AND "${ARGV1}" MATCHES "^[0-9]+(\\.[0-9]+)*$" )
+          set( _PAR_VERSION ${ARGV1} )
+          list( REMOVE_ITEM _PAR_UNPARSED_ARGUMENTS ${ARGV1} )
+      endif()
+    endif()
+  endif()
   if(_PAR_UNPARSED_ARGUMENTS)
     ecbuild_critical("Unknown keywords given to ecbuild_find_package(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()

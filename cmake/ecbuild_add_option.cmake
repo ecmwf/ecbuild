@@ -190,20 +190,18 @@ macro( ecbuild_add_option )
         ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): searching for dependent package ${pkg}")
 
         string(REPLACE " " ";" pkglist ${pkg}) # string to list
+
         list(GET pkglist 0 pkgfirst)
-        if( pkgfirst STREQUAL "NAME" )
 
-          list(GET pkglist 1 pkgname)
-          ecbuild_find_package(${pkglist})
-
-        elseif( ECBUILD_2_COMPAT )
-
-          if( ECBUILD_2_COMPAT_DEPRECATE )
-            ecbuild_deprecate("Arguments to ecbuild_add_option(REQUIRED_PACKAGES) "
-              "should be valid arguments for ecbuild_find_package")
-          endif()
+        if( ECBUILD_2_COMPAT )
 
           if( pkgfirst STREQUAL "PROJECT" )
+            if( ECBUILD_2_COMPAT_DEPRECATE )
+              ecbuild_deprecate("Arguments to ecbuild_add_option(REQUIRED_PACKAGES) "
+                                "should be valid arguments for ecbuild_find_package")
+            endif()
+            list(GET pkglist 1 pkgname)
+          elseif( pkgfirst STREQUAL "NAME" )
             list(GET pkglist 1 pkgname)
           else()
             set(pkgname ${pkgfirst})
@@ -214,12 +212,15 @@ macro( ecbuild_add_option )
           else()
             set(_no_tpl)
           endif()
+
           ecbuild_compat_require(pkgname ${pkg} ${_no_tpl} FEATURE "${_p_FEATURE}" DESCRIPTION "${_p_DESCRIPTION}")
 
+        elseif( pkgfirst STREQUAL "NAME" )
+          list(GET pkglist 1 pkgname)
+          ecbuild_find_package(${pkglist})
         else()
-
-          ecbuild_critical("ecbuild_add_option(${_p_FEATURE}): invalid package specification: '${pkg}'")
-
+          set(pkgname ${pkgfirst})
+          ecbuild_find_package(${pkglist})
         endif()
 
         # we have feature if all required packages were FOUND
