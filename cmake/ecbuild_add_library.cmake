@@ -340,7 +340,9 @@ function( ecbuild_add_library_impl )
         list(REMOVE_ITEM _p_LIST debug)
         list(REMOVE_ITEM _p_LIST optimized)
       endif()
+
       ecbuild_filter_list(${_p_TYPE} LIST ${_p_LIST} LIST_INCLUDE deps LIST_EXCLUDE skipped_deps)
+
       if( "${_p_INTF}" STREQUAL "LEGACY" )
         if(ECBUILD_2_COMPAT_DEPRECATE)
           ecbuild_deprecate("ecbuild_add_library(${_PAR_TARGET}): the usage of ${_p_TYPE} is deprecated. Use PUBLIC_${_p_TYPE} or PRIVATE_${_p_TYPE}.")
