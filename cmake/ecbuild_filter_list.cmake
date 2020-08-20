@@ -49,7 +49,7 @@ function(ecbuild_filter_list)
     set(__listOut)
     set(__listOutSkip)
 
-    if(ECBUILD_FILTER_DEPS)
+    if(NOT DEFINED ECBUILD_NO_FILTER_DEPS)
       list(REMOVE_DUPLICATES __listIn)
       foreach(lib ${__listIn})
           if(_PAR_INCLUDES AND IS_DIRECTORY "${lib}")
