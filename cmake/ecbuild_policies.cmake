@@ -26,14 +26,13 @@ if( ECBUILD_2_COMPAT )
   cmake_policy( SET CMP0026 OLD )
   # Do not manage VERSION variables in project command
   cmake_policy( SET CMP0048 OLD )
+  # RPATH settings on macOS do not affect "install_name"
+  # FTM, keep old behavior -- need to test if new behavior impacts binaries in build directory
+  cmake_policy( SET CMP0068 OLD )
 endif()
 
 # for macosx use @rpath in a target’s install name (CMP0042)
 set( CMAKE_MACOSX_RPATH ON )
-
-# RPATH settings on macOS do not affect "install_name"
-# FTM, keep old behavior -- need to test if new behavior impacts binaries in build directory
-cmake_policy( SET CMP0068 OLD )
 
 # find packages use <package>_ROOT by default
 if( POLICY CMP0074 )
