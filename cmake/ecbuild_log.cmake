@@ -117,6 +117,10 @@ else()
   set(ECBUILD_LOG_LEVEL ${ECBUILD_WARN})
 endif()
 
+if(DEFINED ENV{ECBUILD_DEBUG}) # environment variable overrides
+  set(ECBUILD_LOG_LEVEL ${ECBUILD_DEBUG})
+endif()
+
 if( NOT DEFINED ECBUILD_LOG_FILE )
   set( ECBUILD_LOG_FILE ${CMAKE_BINARY_DIR}/ecbuild.log )
 endif()
