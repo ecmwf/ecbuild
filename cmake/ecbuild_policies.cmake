@@ -29,12 +29,14 @@ if( ECBUILD_2_COMPAT )
   # RPATH settings on macOS do not affect "install_name"
   # FTM, keep old behavior -- need to test if new behavior impacts binaries in build directory
   cmake_policy( SET CMP0068 OLD )
+else()
+  cmake_policy( SET CMP0068 NEW ) # introduced in cmake 3.9, set to avoid warnings
 endif()
 
 # for macosx use @rpath in a target’s install name (CMP0042)
 set( CMAKE_MACOSX_RPATH ON )
 
-# find packages use <package>_ROOT by default
+# find packages use <package>_ROOT by default, new in version 3.12
 if( POLICY CMP0074 )
     cmake_policy( SET CMP0074 NEW )
 endif()
