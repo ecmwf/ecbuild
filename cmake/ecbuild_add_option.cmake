@@ -176,10 +176,13 @@ macro( ecbuild_add_option )
     set( ENABLE_${_p_FEATURE} ${${PNAME}_ENABLE_${_p_FEATURE}} )
   endif()
 
+
+  set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 0 )
+
   if( ENABLE_${_p_FEATURE} )
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature requested to be enabled")
 
-    set( HAVE_${_p_FEATURE} 1 )
+    set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 1 )
 
     if( _${_p_FEATURE}_condition )
 
@@ -228,18 +231,18 @@ macro( ecbuild_add_option )
           ecbuild_info( "Found package ${pkgname} required for feature ${_p_FEATURE}" )
         else()
           ecbuild_info( "Could NOT find package ${pkgname} required for feature ${_p_FEATURE} -- ${${pkgname}_HELP_MSG}" )
-          set( HAVE_${_p_FEATURE} 0 )
+          set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 0 )
           list( APPEND _failed_to_find_packages ${pkgname} )
         endif()
 
       endforeach()
     else( _${_p_FEATURE}_condition )
-      set( HAVE_${_p_FEATURE} 0 )
+      set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 0 )
     endif( _${_p_FEATURE}_condition )
 
     # FINAL CHECK
 
-    if( HAVE_${_p_FEATURE} )
+    if( ${PROJECT_NAME}_HAVE_${_p_FEATURE} )
 
       ecbuild_enable_feature( ${_p_FEATURE} )
 
@@ -272,7 +275,7 @@ macro( ecbuild_add_option )
   else()
 
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature disabled")
-    set( HAVE_${_p_FEATURE} 0 )
+    set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 0 )
     ecbuild_disable_feature( ${_p_FEATURE} )
 
   endif()
@@ -282,7 +285,7 @@ macro( ecbuild_add_option )
     mark_as_advanced( ENABLE_${_p_FEATURE} )
   endif()
 
-  set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} ${HAVE_${_p_FEATURE}} )
+  set( HAVE_${_p_FEATURE} ${${PROJECT_NAME}_HAVE_${_p_FEATURE}} )
 
   if(ECBUILD_2_COMPAT)
     set(ENABLE_${_p_FEATURE} ${ENABLE_${_p_FEATURE}})
