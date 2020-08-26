@@ -30,7 +30,9 @@ if( ECBUILD_2_COMPAT )
   # FTM, keep old behavior -- need to test if new behavior impacts binaries in build directory
   cmake_policy( SET CMP0068 OLD )
 else()
-  cmake_policy( SET CMP0068 NEW ) # introduced in cmake 3.9, set to avoid warnings
+  # we set these to avoid warnings
+  cmake_policy( SET CMP0048 NEW ) # introduced in cmake 3.0
+  cmake_policy( SET CMP0068 NEW ) # introduced in cmake 3.9
 endif()
 
 # for macosx use @rpath in a target’s install name (CMP0042)
