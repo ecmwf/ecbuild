@@ -30,6 +30,13 @@ function( _ecbuild_library_dependencies_impl dependencies libraries )
       endif()
 
       unset( _deps )
+      get_property( _deps TARGET ${_lib} PROPERTY LINK_LIBRARIES )
+      if( _deps )
+        _ecbuild_library_dependencies_impl( _deps_location _deps )
+        list( APPEND _location ${_deps_location} )
+      endif()
+
+      unset( _deps )
       get_property( _deps TARGET ${_lib} PROPERTY INTERFACE_LINK_LIBRARIES )
       if( _deps )
         _ecbuild_library_dependencies_impl( _deps_location _deps )
