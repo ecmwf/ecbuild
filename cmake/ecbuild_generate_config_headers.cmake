@@ -35,8 +35,8 @@ function( ecbuild_generate_config_headers )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
-  if(_PAR_UNPARSED_ARGUMENTS)
-    ecbuild_critical("Unknown keywords given to ecbuild_generate_config_headers(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+  if(_p_UNPARSED_ARGUMENTS)
+    ecbuild_critical("Unknown keywords given to ecbuild_generate_config_headers(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
   # generate list of compiler flags
