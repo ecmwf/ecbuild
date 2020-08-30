@@ -114,7 +114,7 @@ if( NOT ${PROJECT_NAME}_DECLARED )
   # install dirs for this project
 
   # Use defaults unless values are already present in cache
-  include(GNUInstalDirs)
+  include(GNUInstallDirs)
   if( NOT INSTALL_BIN_DIR )
     set( INSTALL_BIN_DIR bin )
   endif()
