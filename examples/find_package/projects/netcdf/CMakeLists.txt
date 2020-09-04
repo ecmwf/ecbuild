@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 find_package( ecbuild 3.0.0 REQUIRED )
 project( find_netcdf VERSION 0.0.0 LANGUAGES C CXX Fortran )
 
-find_package( NetCDF 4 REQUIRED COMPONENTS C CXX Fortran )
+find_package( NetCDF 4 REQUIRED COMPONENTS C CXX CXX_LEGACY Fortran )
 
 set( suffix using_targets )
 
@@ -22,6 +22,10 @@ ecbuild_add_test( TARGET  test_netcdf_f77_${suffix}
                   SOURCES netcdf_examples/test_netcdf_f77.F
                   LIBS    NetCDF::NetCDF_Fortran )
 
+ecbuild_add_test( TARGET  test_netcdf_cxx_legacy_${suffix}
+                  SOURCES netcdf_examples/test_netcdf_cxx_legacy.cc
+                  LIBS    NetCDF::NetCDF_CXX_LEGACY )
+
 foreach( NETCDF NetCDF NetCDF4 NETCDF NETCDF4 )
 
     if( NOT ${NETCDF}_FOUND )
@@ -36,7 +40,7 @@ foreach( NETCDF NetCDF NetCDF4 NETCDF NETCDF4 )
        ecbuild_error( "${NETCDF}_LIBRARIES not set" )
     endif()
 
-    foreach( component C CXX Fortran FORTRAN )
+    foreach( component C CXX CXX_LEGACY Fortran FORTRAN )
         if( NOT ${NETCDF}_${component}_FOUND )
            ecbuild_error( "${NETCDF}_${component}_FOUND not set" )
         endif()
@@ -80,6 +84,11 @@ foreach( NETCDF NetCDF NetCDF4 NETCDF NETCDF4 )
     ecbuild_add_test( TARGET   test_netcdf_f77_${suffix}_FORTRAN
                       SOURCES  netcdf_examples/test_netcdf_f77.F
                       LIBS     ${${NETCDF}_FORTRAN_LIBRARIES}
+                      INCLUDES ${${NETCDF}_INCLUDE_DIRS} )
+
+    ecbuild_add_test( TARGET   test_netcdf_cxx_legacy_${suffix}
+                      SOURCES  netcdf_examples/test_netcdf_cxx_legacy.cc
+                      LIBS     ${${NETCDF}_CXX_LEGACY_LIBRARIES}
                       INCLUDES ${${NETCDF}_INCLUDE_DIRS} )
 
 endforeach()
