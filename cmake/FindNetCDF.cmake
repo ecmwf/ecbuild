@@ -31,14 +31,14 @@
 #
 # The following paths will be searched in order if set in CMake (first priority) or environment (second priority)
 #
-#   - NETCDF_ROOT                 - root of NetCDF installation
-#   - NETCDF_DIR                  - root of NetCDF installation
-#   - NETCDF_PATH                 - root of NetCDF installation
-#   - NETCDF4_DIR                 - root of NetCDF installation
-#   - NetCDF_ROOT                 - root of NetCDF installation
-#   - NetCDF_DIR                  - root of NetCDF installation
-#   - NetCDF_PATH                 - root of NetCDF installation
-#   - NetCDF4_DIR                 - root of NetCDF installation
+#   - NetCDF_<comp>_ROOT
+#   - NetCDF_<comp>_DIR
+#   - NetCDF_<comp>_PATH
+#   - The same variables with a NETCDF, NetCDF4, or NETCDF4 prefix instead of NetCDF
+#   - NetCDF_ROOT
+#   - NetCDF_DIR
+#   - NetCDF_PATH
+#   - The same variables with a NETCDF, NetCDF4, or NETCDF4 prefix instead of NetCDF
 #
 # Notes:
 #
@@ -56,6 +56,12 @@
 #
 
 list( APPEND _possible_components C CXX Fortran CXX_LEGACY )
+
+## Header names for each component
+set( NetCDF_C_INCLUDE_NAME          netcdf.h )
+set( NetCDF_CXX_INCLUDE_NAME        netcdf )
+set( NetCDF_CXX_LEGACY_INCLUDE_NAME netcdfcpp.h )
+set( NetCDF_Fortran_INCLUDE_NAME    netcdf.mod )
 
 ## Library names for each component
 set( NetCDF_C_LIBRARY_NAME          netcdf )
@@ -83,24 +89,36 @@ if( NOT _search_components )
 endif()
 
 ## Search hints for finding include directories and libraries
-set( _search_hints
-              ${NETCDF_ROOT} ${NETCDF_DIR} ${NETCDF_PATH} ${NETCDF4_DIR}
-              ${NetCDF_ROOT} ${NetCDF_DIR} ${NetCDF_PATH} ${NetCDF4_DIR}
-              ENV NETCDF_ROOT ENV NETCDF_DIR ENV NETCDF_PATH ENV NETCDF4_DIR
-              ENV NetCDF_ROOT ENV NetCDF_DIR ENV NetCDF_PATH ENV NetCDF4_DIR
- )
+foreach( _comp IN ITEMS "" "C" "CXX" "Fortran" "CXX_LEGACY" )
+  set( __comp "_${_comp}" )
+  if( NOT _comp )
+    set( __comp "" )
+  endif()
 
-## Find include directories
-find_path(NetCDF_INCLUDE_DIRS
-  NAMES netcdf.h
-  DOC "netcdf include directories"
-  HINTS ${_search_hints}
-  PATH_SUFFIXES include ../../include
-)
-mark_as_advanced(NetCDF_INCLUDE_DIRS)
+  set( _search_hints${__comp} )
+  foreach( _name IN ITEMS NetCDF NETCDF NetCDF4 NETCDF4 )
+    foreach( _var IN ITEMS ROOT DIR PATH )
+      list( APPEND _search_hints${__comp} ${${_name}${__comp}_${_var}} ENV ${_name}${__comp}_${_var} )
+    endforeach()
+  endforeach()
 
-## Find libraries for each component
+  ## Old-school HPC module env variable names
+  foreach( _name IN ITEMS NetCDF NETCDF NetCDF4 NETCDF4 )
+    list(APPEND _search_hints${__comp} ${${_name}${__comp}} ENV ${_name}${__comp})
+  endforeach()
+endforeach()
+
 foreach( _comp ${_search_components} )
+  ## Find include directories
+  find_path(NetCDF_${_comp}_INCLUDE_DIR
+    NAMES ${NetCDF_${_comp}_INCLUDE_NAME}
+    DOC "netcdf ${_comp} include directory"
+    HINTS ${_search_hints_${_comp}} ${_search_hints}
+    PATH_SUFFIXES include ../../include
+  )
+  mark_as_advanced(NetCDF_${_comp}_INCLUDE_DIR)
+
+  ## Find libraries for each component
   string( TOUPPER "${_comp}" _COMP )
 
   find_library(NetCDF_${_comp}_LIBRARY
@@ -113,28 +131,50 @@ foreach( _comp ${_search_components} )
   if( NetCDF_${_comp}_LIBRARY AND NOT (NetCDF_${_comp}_LIBRARY MATCHES ".a$") )
     set( NetCDF_${_comp}_LIBRARY_SHARED TRUE )
   endif()
-  if( NetCDF_${_comp}_LIBRARY_SHARED AND NetCDF_INCLUDE_DIRS )
+  if( NetCDF_${_comp}_LIBRARY AND NetCDF_${_comp}_INCLUDE_DIR )
     set( ${CMAKE_FIND_PACKAGE_NAME}_${_arg_${_COMP}}_FOUND TRUE )
-    list( APPEND NetCDF_LIBRARIES ${NetCDF_${_comp}_LIBRARY} )      
+    list( APPEND NetCDF_INCLUDE_DIRS ${NetCDF_${_comp}_INCLUDE_DIR} )
+    list( APPEND NetCDF_LIBRARIES ${NetCDF_${_comp}_LIBRARY} )
+    list( APPEND NetCDF_${_comp}_INCLUDE_DIRS ${NetCDF_${_comp}_INCLUDE_DIR} )
     list( APPEND NetCDF_${_comp}_LIBRARIES ${NetCDF_${_comp}_LIBRARY} )
 
     if (NOT TARGET NetCDF::NetCDF_${_comp})
       add_library(NetCDF::NetCDF_${_comp} UNKNOWN IMPORTED)
       set_target_properties(NetCDF::NetCDF_${_comp} PROPERTIES
         IMPORTED_LOCATION "${NetCDF_${_comp}_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${NetCDF_INCLUDE_DIRS}")
+        INTERFACE_INCLUDE_DIRECTORIES "${NetCDF_${_comp}_INCLUDE_DIR}")
     endif()
   endif()
 endforeach()
+if( NetCDF_INCLUDE_DIRS )
+  list( REMOVE_DUPLICATES NetCDF_INCLUDE_DIRS )
+endif()
 
 ## Find version
 if (NetCDF_INCLUDE_DIRS)
+  set( _config_search_hints ${_search_hints} )
+  foreach( _comp ${_search_components} )
+    if( DEFINED _search_hints_${_comp} )
+      list( APPEND _config_search_hints ${_search_hints_${_comp}} )
+    endif()
+  endforeach()
+  if( _config_search_hints )
+    list( REMOVE_DUPLICATES _config_search_hints )
+  endif()
+
   find_program( NETCDF_CONFIG_EXECUTABLE
       NAMES nc-config
-      HINTS ${_search_hints}
+      HINTS ${_config_search_hints}
       PATH_SUFFIXES bin Bin ../../bin
       DOC "NetCDF nc-config helper" )
   mark_as_advanced( NETCDF_CONFIG_EXECUTABLE )
+
+  find_file( NETCDF_META_H
+    NAMES netcdf_meta.h
+    HINTS ${NetCDF_INCLUDE_DIRS}
+    NO_DEFAULT_PATH
+    DOC "NetCDF path to netcdf_meta.h" )
+  mark_as_advanced( NETCDF_META_H )
 
   if( NETCDF_CONFIG_EXECUTABLE )
     execute_process( COMMAND ${NETCDF_CONFIG_EXECUTABLE} --version
@@ -145,9 +185,9 @@ if (NetCDF_INCLUDE_DIRS)
       string(REGEX REPLACE ".* ((([0-9]+)\\.)+([0-9]+)).*" "\\1" NetCDF_VERSION "${_netcdf_config_version}" )
     endif()
 
-  elseif( EXISTS "${NetCDF_INCLUDE_DIRS}/netcdf_meta.h" )
+  elseif( NETCDF_META_H )
 
-    file(STRINGS "${NetCDF_INCLUDE_DIRS}/netcdf_meta.h" _netcdf_version_lines
+    file(STRINGS ${NETCDF_META_H} _netcdf_version_lines
       REGEX "#define[ \t]+NC_VERSION_(MAJOR|MINOR|PATCH|NOTE)")
     string(REGEX REPLACE ".*NC_VERSION_MAJOR *\([0-9]*\).*" "\\1" _netcdf_version_major "${_netcdf_version_lines}")
     string(REGEX REPLACE ".*NC_VERSION_MINOR *\([0-9]*\).*" "\\1" _netcdf_version_minor "${_netcdf_version_lines}")
@@ -186,7 +226,7 @@ foreach( _prefix NetCDF NetCDF4 NETCDF NETCDF4 ${CMAKE_FIND_PACKAGE_NAME} )
   set( ${_prefix}_LIBRARIES    ${NetCDF_LIBRARIES})
   set( ${_prefix}_VERSION      ${NetCDF_VERSION} )
   set( ${_prefix}_FOUND        ${${CMAKE_FIND_PACKAGE_NAME}_FOUND} )
-  
+
   foreach( _comp ${_search_components} )
     string( TOUPPER "${_comp}" _COMP )
     set( _arg_comp ${_arg_${_COMP}} )
