@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-# Try to find NetCDF includes and library, only shared libraries are supported!
+# Try to find NetCDF includes and library
 #
 # This module defines
 #
@@ -39,6 +39,11 @@
 #   - NetCDF_DIR
 #   - NetCDF_PATH
 #   - The same variables with a NETCDF, NetCDF4, or NETCDF4 prefix instead of NetCDF
+#
+# The following variables affect the targets and NetCDF*_LIBRARIES variables:
+#
+#   - NetCDF_<comp>_EXTRA_LIBRARIES    - added to NetCDF::NetCDF_<comp> INTERFACE_LINK_LIBRARIES and NetCDF_<comp>_LIBRARIES
+#   - NetCDF_EXTRA_LIBRARIES           - if set, default value for all NetCDF_<comp>_EXTRA_LIBRARIES ; also added to NetCDF_LIBRARIES
 #
 # Notes:
 #
@@ -137,17 +142,30 @@ foreach( _comp ${_search_components} )
     list( APPEND NetCDF_LIBRARIES ${NetCDF_${_comp}_LIBRARY} )
     list( APPEND NetCDF_${_comp}_INCLUDE_DIRS ${NetCDF_${_comp}_INCLUDE_DIR} )
     list( APPEND NetCDF_${_comp}_LIBRARIES ${NetCDF_${_comp}_LIBRARY} )
+    if( DEFINED NetCDF_${_comp}_EXTRA_LIBRARIES )
+      list( APPEND NetCDF_${_comp}_LIBRARIES ${NetCDF_${_comp}_EXTRA_LIBRARIES})
+    elseif( DEFINED NetCDF_EXTRA_LIBRARIES )
+      list( APPEND NetCDF_${_comp}_LIBRARIES ${NetCDF_EXTRA_LIBRARIES})
+    endif()
 
     if (NOT TARGET NetCDF::NetCDF_${_comp})
       add_library(NetCDF::NetCDF_${_comp} UNKNOWN IMPORTED)
       set_target_properties(NetCDF::NetCDF_${_comp} PROPERTIES
         IMPORTED_LOCATION "${NetCDF_${_comp}_LIBRARY}"
         INTERFACE_INCLUDE_DIRECTORIES "${NetCDF_${_comp}_INCLUDE_DIR}")
+      if( DEFINED NetCDF_${_comp}_EXTRA_LIBRARIES )
+        target_link_libraries(NetCDF::NetCDF_${_comp} INTERFACE ${NetCDF_${_comp}_EXTRA_LIBRARIES})
+      elseif( DEFINED NetCDF_EXTRA_LIBRARIES )
+        target_link_libraries(NetCDF::NetCDF_${_comp} INTERFACE ${NetCDF_EXTRA_LIBRARIES})
+      endif()
     endif()
   endif()
 endforeach()
 if( NetCDF_INCLUDE_DIRS )
   list( REMOVE_DUPLICATES NetCDF_INCLUDE_DIRS )
+endif()
+if( NetCDF_LIBRARIES AND DEFINED NetCDF_EXTRA_LIBRARIES )
+  list( APPEND NetCDF_LIBRARIES ${NetCDF_EXTRA_LIBRARIES} )
 endif()
 
 ## Find version
