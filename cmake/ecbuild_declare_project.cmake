@@ -118,11 +118,12 @@ if( NOT ${PROJECT_NAME}_DECLARED )
   # install dirs for this project
 
   # Use defaults unless values are already present in cache
+  include(GNUInstallDirs)
   if( NOT INSTALL_BIN_DIR )
     set( INSTALL_BIN_DIR bin )
   endif()
   if( NOT INSTALL_LIB_DIR )
-    set( INSTALL_LIB_DIR lib )
+    set( INSTALL_LIB_DIR ${CMAKE_INSTALL_LIBDIR} )
   endif()
   if( NOT INSTALL_INCLUDE_DIR )
     set( INSTALL_INCLUDE_DIR include )
