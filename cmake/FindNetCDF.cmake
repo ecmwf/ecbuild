@@ -29,6 +29,8 @@
 #   - NetCDF_<comp>_INCLUDE_DIRS  - the include directories for specfied component
 #   - NetCDF::NetCDF_<comp>       - target of component to be used with target_link_libraries()
 #
+# Caveat: The targets might not link properly with static libraries, setting NetCDF_<comp>_EXTRA_LIBRARIES may be required.
+#
 # The following paths will be searched in order if set in CMake (first priority) or environment (second priority)
 #
 #   - NetCDF_<comp>_ROOT
@@ -43,7 +45,6 @@
 # The following variables affect the targets and NetCDF*_LIBRARIES variables:
 #
 #   - NetCDF_<comp>_EXTRA_LIBRARIES    - added to NetCDF::NetCDF_<comp> INTERFACE_LINK_LIBRARIES and NetCDF_<comp>_LIBRARIES
-#   - NetCDF_EXTRA_LIBRARIES           - if set, default value for all NetCDF_<comp>_EXTRA_LIBRARIES ; also added to NetCDF_LIBRARIES
 #
 # Notes:
 #
@@ -141,12 +142,10 @@ foreach( _comp ${_search_components} )
     list( APPEND NetCDF_INCLUDE_DIRS ${NetCDF_${_comp}_INCLUDE_DIR} )
     list( APPEND NetCDF_LIBRARIES ${NetCDF_${_comp}_LIBRARY} )
     list( APPEND NetCDF_${_comp}_INCLUDE_DIRS ${NetCDF_${_comp}_INCLUDE_DIR} )
-    list( APPEND NetCDF_${_comp}_LIBRARIES ${NetCDF_${_comp}_LIBRARY} )
     if( DEFINED NetCDF_${_comp}_EXTRA_LIBRARIES )
       list( APPEND NetCDF_${_comp}_LIBRARIES ${NetCDF_${_comp}_EXTRA_LIBRARIES})
-    elseif( DEFINED NetCDF_EXTRA_LIBRARIES )
-      list( APPEND NetCDF_${_comp}_LIBRARIES ${NetCDF_EXTRA_LIBRARIES})
     endif()
+    list( APPEND NetCDF_${_comp}_LIBRARIES ${NetCDF_${_comp}_LIBRARIES} )
 
     if (NOT TARGET NetCDF::NetCDF_${_comp})
       add_library(NetCDF::NetCDF_${_comp} UNKNOWN IMPORTED)
@@ -155,17 +154,12 @@ foreach( _comp ${_search_components} )
         INTERFACE_INCLUDE_DIRECTORIES "${NetCDF_${_comp}_INCLUDE_DIR}")
       if( DEFINED NetCDF_${_comp}_EXTRA_LIBRARIES )
         target_link_libraries(NetCDF::NetCDF_${_comp} INTERFACE ${NetCDF_${_comp}_EXTRA_LIBRARIES})
-      elseif( DEFINED NetCDF_EXTRA_LIBRARIES )
-        target_link_libraries(NetCDF::NetCDF_${_comp} INTERFACE ${NetCDF_EXTRA_LIBRARIES})
       endif()
     endif()
   endif()
 endforeach()
 if( NetCDF_INCLUDE_DIRS )
   list( REMOVE_DUPLICATES NetCDF_INCLUDE_DIRS )
-endif()
-if( NetCDF_LIBRARIES AND DEFINED NetCDF_EXTRA_LIBRARIES )
-  list( APPEND NetCDF_LIBRARIES ${NetCDF_EXTRA_LIBRARIES} )
 endif()
 
 ## Find version
