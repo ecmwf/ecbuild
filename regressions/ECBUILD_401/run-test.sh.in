@@ -19,7 +19,7 @@ cd $HERE/projectA
 
 mkdir build
 cd build
-ecbuild --prefix=../install $SRC_DIR/projectA
+ecbuild --prefix=../install -- -DINSTALL_LIB_DIR=lib $SRC_DIR/projectA
 make install
 
 # ----------------- build projectB ---------------------
@@ -28,7 +28,7 @@ cd $HERE/projectB
 
 mkdir build
 cd build
-ecbuild --prefix=../install -- -DprojectA_DIR=$HERE/projectA/install/lib/cmake/projectA $SRC_DIR/projectB
+ecbuild --prefix=../install -- -DINSTALL_LIB_DIR=lib -DprojectA_DIR=$HERE/projectA/install/lib/cmake/projectA $SRC_DIR/projectB
 make install
 
 # ----------------- run ---------------------
