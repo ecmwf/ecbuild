@@ -17,7 +17,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 
 include( ecbuild )
-project( ecbuild LANGUAGES NONE )
+project( ecbuild LANGUAGES C )
 
 ###############################################################################
 # local project
