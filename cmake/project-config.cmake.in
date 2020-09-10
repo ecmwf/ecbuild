@@ -34,6 +34,17 @@ if(DEFINED ECBUILD_2_COMPAT AND ECBUILD_2_COMPAT)
   set(@PNAME@_IS_BUILD_DIR_EXPORT ${@PROJECT_NAME@_IS_BUILD_DIR_EXPORT})
 endif()
 
+### insert definitions for IMPORTED targets
+if(NOT @PROJECT_NAME@_BINARY_DIR)
+  find_file(@PROJECT_NAME@_TARGETS_FILE
+    NAMES @PROJECT_NAME@-targets.cmake
+    HINTS @PACKAGE_TARGETS_DIRS@
+    NO_DEFAULT_PATH)
+  if(@PROJECT_NAME@_TARGETS_FILE)
+    include(${@PROJECT_NAME@_TARGETS_FILE})
+  endif()
+endif()
+
 ### include the <project>-import.cmake file if there is one
 if(EXISTS ${@PROJECT_NAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@)
   set(@PROJECT_NAME@_IMPORT_FILE "${@PROJECT_NAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@")
@@ -46,17 +57,6 @@ if(DEFINED ECBUILD_2_COMPAT AND ECBUILD_2_COMPAT)
   set(@PNAME@_TPLS              "@CONF_TPLS@" )
 
   include(${CMAKE_CURRENT_LIST_FILE}.tpls OPTIONAL)
-endif()
-
-### insert definitions for IMPORTED targets
-if(NOT @PROJECT_NAME@_BINARY_DIR)
-  find_file(@PROJECT_NAME@_TARGETS_FILE
-    NAMES @PROJECT_NAME@-targets.cmake
-    HINTS @PACKAGE_TARGETS_DIRS@
-    NO_DEFAULT_PATH)
-  if(@PROJECT_NAME@_TARGETS_FILE)
-    include(${@PROJECT_NAME@_TARGETS_FILE})
-  endif()
 endif()
 
 ### publish this file as imported
