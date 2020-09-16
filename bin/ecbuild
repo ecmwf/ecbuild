@@ -160,6 +160,8 @@ EOF
 }
 
 INSTALL_DIR="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+export ecbuild_ROOT="$( cd "$INSTALL_DIR/.." && pwd -P )"
+export ecbuild_DIR=$ecbuild_ROOT # for versions of CMake < 3.12
 ECBUILD_MODULE_PATH=""
 # If there is a directory share/ecbuild/cmake relative to the parent directory
 # (as in an install tree), add it to CMAKE_MODULE_PATH
