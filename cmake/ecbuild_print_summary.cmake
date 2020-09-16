@@ -26,13 +26,20 @@
 
 macro( ecbuild_print_summary )
 
+  set( project_summary_file )
   if( EXISTS ${PROJECT_SOURCE_DIR}/project_summary.cmake )
+    set( project_summary_file ${PROJECT_SOURCE_DIR}/project_summary.cmake )
+  elseif( EXISTS ${PROJECT_SOURCE_DIR}/cmake/project_summary.cmake )
+    set( project_summary_file ${PROJECT_SOURCE_DIR}/cmake/project_summary.cmake )
+  endif()
+
+  if( project_summary_file )
 
     ecbuild_info( "---------------------------------------------------------" )
     ecbuild_info( "Project ${PROJECT_NAME} summary" )
     ecbuild_info( "---------------------------------------------------------" )
 
-    include( ${PROJECT_SOURCE_DIR}/project_summary.cmake )
+    include( ${project_summary_file} )
 
   endif()
 
