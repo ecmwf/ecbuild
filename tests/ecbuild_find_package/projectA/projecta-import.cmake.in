@@ -1,0 +1,4 @@
+
+if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY )
+  message( "Importing projectA, not QUIET!!!")
+endif()

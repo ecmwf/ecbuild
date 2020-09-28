@@ -256,54 +256,52 @@ if( UNIX )
       set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--disable-new-dtags")
     endif()
 
-    if( NOT "${CMAKE_VERSION}" VERSION_LESS "3.6" )
-      # The following option enables a linker check to set ECBUILD_DISABLE_DYNCHECK if needed.
-      option( ECBUILD_DISABLE_RPATH_FIX "Disable the linker fix for relative RPATH" OFF )
-      mark_as_advanced( ECBUILD_DISABLE_RPATH_FIX )
+    # The following option enables a linker check to set ECBUILD_DISABLE_DYNCHECK if needed.
+    option( ECBUILD_DISABLE_RPATH_FIX "Disable the linker fix for relative RPATH" OFF )
+    mark_as_advanced( ECBUILD_DISABLE_RPATH_FIX )
 
-      get_property(HAVE_SHARED_LIBS GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
-      if( HAVE_SHARED_LIBS AND NOT ECBUILD_DISABLE_RPATH_FIX )
-        # GNU ld versions before 2.28 do not expand $ORIGIN at link time.
-        # If this is the case for the current linker, disable checking for dynamic symbols
-        # See https://sourceware.org/bugzilla/show_bug.cgi?id=20535
+    get_property(HAVE_SHARED_LIBS GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+    if( HAVE_SHARED_LIBS AND NOT ECBUILD_DISABLE_RPATH_FIX )
+      # GNU ld versions before 2.28 do not expand $ORIGIN at link time.
+      # If this is the case for the current linker, disable checking for dynamic symbols
+      # See https://sourceware.org/bugzilla/show_bug.cgi?id=20535
 
-        set( _linker_check_srcdir "${ECBUILD_MACROS_DIR}/../check_linker" )
-        if( NOT EXISTS ${_linker_check_srcdir} ) # ecbuild source dir
-          set( _linker_check_srcdir "${ECBUILD_MACROS_DIR}/../share/ecbuild/check_linker" )
-        endif()
-
-        set( _linker_check_bindir "${CMAKE_BINARY_DIR}/ecbuild_tmp/check_linker" )
-
-        # Make sure the build directory does not point to another version
-        if( EXISTS ${_linker_check_bindir}/CMakeCache.txt )
-          file( STRINGS ${_linker_check_bindir}/CMakeCache.txt
-            _linker_check_prev_src
-            REGEX "^CMAKE_HOME_DIRECTORY"
-            LIMIT_COUNT 1 )
-          string( REGEX REPLACE "^.*=(.+)$" "\\1" _linker_check_prev_src "${_linker_check_prev_src}" )
-          string( STRIP _linker_check_prev_src "${_linker_check_prev_src}" )
-          get_filename_component( _linker_check_prev_src "${_linker_check_prev_src}" REALPATH )
-          get_filename_component( _linker_check_curr_src "${_linker_check_srcdir}" REALPATH )
-
-          if( NOT _linker_check_prev_src STREQUAL _linker_check_curr_src )
-            file( REMOVE ${_linker_check_bindir}/CMakeCache.txt )
-          endif()
-        endif()
-
-        try_compile( _linker_understands_origin
-          ${_linker_check_bindir} ${_linker_check_srcdir} test_ld_origin )
-        cmake_policy( PUSH )
-        cmake_policy( SET CMP0012 NEW )
-        if( NOT ${_linker_understands_origin} )
-          ecbuild_warn( "The linker does not support $ORIGIN at link-time, \
-            disabling dynamic symbol check when linking against shared libraries" )
-
-          set(CMAKE_EXE_LINKER_FLAGS     "${CMAKE_EXE_LINKER_FLAGS}    -Wl,--allow-shlib-undefined")
-          set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
-          set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
-        endif()
-        cmake_policy( POP )
+      set( _linker_check_srcdir "${ECBUILD_MACROS_DIR}/../check_linker" )
+      if( NOT EXISTS ${_linker_check_srcdir} ) # ecbuild source dir
+        set( _linker_check_srcdir "${ECBUILD_MACROS_DIR}/../share/ecbuild/check_linker" )
       endif()
+
+      set( _linker_check_bindir "${CMAKE_BINARY_DIR}/ecbuild_tmp/check_linker" )
+
+      # Make sure the build directory does not point to another version
+      if( EXISTS ${_linker_check_bindir}/CMakeCache.txt )
+        file( STRINGS ${_linker_check_bindir}/CMakeCache.txt
+          _linker_check_prev_src
+          REGEX "^CMAKE_HOME_DIRECTORY"
+          LIMIT_COUNT 1 )
+        string( REGEX REPLACE "^.*=(.+)$" "\\1" _linker_check_prev_src "${_linker_check_prev_src}" )
+        string( STRIP _linker_check_prev_src "${_linker_check_prev_src}" )
+        get_filename_component( _linker_check_prev_src "${_linker_check_prev_src}" REALPATH )
+        get_filename_component( _linker_check_curr_src "${_linker_check_srcdir}" REALPATH )
+
+        if( NOT _linker_check_prev_src STREQUAL _linker_check_curr_src )
+          file( REMOVE ${_linker_check_bindir}/CMakeCache.txt )
+        endif()
+      endif()
+
+      try_compile( _linker_understands_origin
+        ${_linker_check_bindir} ${_linker_check_srcdir} test_ld_origin )
+      cmake_policy( PUSH )
+      cmake_policy( SET CMP0012 NEW )
+      if( NOT ${_linker_understands_origin} )
+        ecbuild_warn( "The linker does not support $ORIGIN at link-time, \
+          disabling dynamic symbol check when linking against shared libraries" )
+
+        set(CMAKE_EXE_LINKER_FLAGS     "${CMAKE_EXE_LINKER_FLAGS}    -Wl,--allow-shlib-undefined")
+        set(CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
+        set(CMAKE_MODULE_LINKER_FLAGS  "${CMAKE_MODULE_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
+      endif()
+      cmake_policy( POP )
     endif()
 
   endif()

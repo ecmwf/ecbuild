@@ -7,3 +7,4 @@ CMakeLists.txt.user*
 doc/contrib
 doc/find
 doc/macros
+build

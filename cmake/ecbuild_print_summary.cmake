@@ -26,13 +26,20 @@
 
 macro( ecbuild_print_summary )
 
+  set( project_summary_file )
   if( EXISTS ${PROJECT_SOURCE_DIR}/project_summary.cmake )
+    set( project_summary_file ${PROJECT_SOURCE_DIR}/project_summary.cmake )
+  elseif( EXISTS ${PROJECT_SOURCE_DIR}/cmake/project_summary.cmake )
+    set( project_summary_file ${PROJECT_SOURCE_DIR}/cmake/project_summary.cmake )
+  endif()
+
+  if( project_summary_file )
 
     ecbuild_info( "---------------------------------------------------------" )
     ecbuild_info( "Project ${PROJECT_NAME} summary" )
     ecbuild_info( "---------------------------------------------------------" )
 
-    include( ${PROJECT_SOURCE_DIR}/project_summary.cmake )
+    include( ${project_summary_file} )
 
   endif()
 
@@ -42,11 +49,7 @@ macro( ecbuild_print_summary )
     list( FILTER langs EXCLUDE REGEX NONE )
 
     ecbuild_info( "---------------------------------------------------------" )
-    if( NOT ${DEVELOPER_MODE} )
-      ecbuild_info( "Build summary" )
-    else()
-      ecbuild_info( "Build summary -- ( DEVELOPER_MODE )" )
-    endif()
+    ecbuild_info( "Build summary" )
     ecbuild_info( "---------------------------------------------------------" )
 
     ecbuild_info( "system : [${BUILD_SITE}] [${CMAKE_SYSTEM}] [${EC_OS_NAME}.${EC_OS_BITS}]" )
@@ -98,11 +101,7 @@ macro( ecbuild_print_summary )
     ecbuild_info( "Feature summary" )
     ecbuild_info( "---------------------------------------------------------" )
 
-    if( ${CMAKE_VERSION} VERSION_LESS "2.8.6" )
-      set( __what ALL )
-    else()
-      set( __what ALL INCLUDE_QUIET_PACKAGES )
-    endif()
+    set( __what ALL INCLUDE_QUIET_PACKAGES )
 
     # Print feature summary
     feature_summary( WHAT ${__what} )

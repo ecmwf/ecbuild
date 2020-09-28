@@ -14,4 +14,4 @@ export ecbuild_DIR=@PROJECT_BINARY_DIR@
 
 mkdir build
 cd build
-cmake @bundle_SOURCE_DIR@ -DECBUILD_2_COMPAT=OFF
+cmake @bundle_SOURCE_DIR@

@@ -59,7 +59,7 @@ Fewer lines are now needed to enable ecBuild in a project::
 
   find_package(ecbuild 3.0 REQUIRED) # note: the version requirement is optional
 
-  project(foo VERSION 1.2 LANGUAGES C CXX)
+  project(foo LANGUAGES C CXX)
 
   # define options, targets...
 
@@ -69,18 +69,21 @@ Fewer lines are now needed to enable ecBuild in a project::
 Project version management
 --------------------------
 
-CMake now handles the version number. Instead of having a ``VERSION.cmake``
-file, you should declare the version as a parameter to the ``project``
+Instead of having a ``VERSION.cmake`` file, you should either create a file ``VERSION``
+which contains the version that can contain an additional suffix; e.g. ``1.2-beta``.
+Alternatively you can declare the version (without suffix) as a parameter to the ``project``
 command::
 
   project(foo VERSION 1.2 LANGUAGES C CXX)
 
 This automatically defines the following variables:
 
-* ``foo_VERSION`` (the full version number)
+* ``foo_VERSION_STR`` (the full version number with suffix, as printed in ``VERSION`` file.
+* ``foo_VERSION`` (the full version number, without suffix)
 * ``foo_VERSION_MAJOR``, ``foo_VERSION_MINOR``, ``foo_VERSION_PATCH``, and
   ``foo_VERSION_TWEAK`` for the components of the version number (in this
   order)
+* ``foo_VERSION_SUFFIX`` (the suffix extracted from ``foo_VERSION_STR``)
 
 
 Variable naming conventions
@@ -257,7 +260,7 @@ the package ``bar`` requires ``foo`` as a usage dependency, the
   include(CMakeFindDependencyMacro)
   set(bar_foo_FOUND @foo_FOUND@)
   if(bar_foo_FOUND)
-    find_dependency(foo 1.3 REQUIRED HINTS @foo_DIR@ @foo_BINARY_DIR@)
+    find_dependency(foo 1.3 HINTS @foo_DIR@ )
   endif()
 
 Since the include directories and compile flags can (and should) be associated
