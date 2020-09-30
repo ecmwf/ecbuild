@@ -104,12 +104,12 @@ Available values for "option":
     --get-cmake[=<prefix>]
           Automatically download CMake binaries from version $CMAKE_BUILD_VERSION.
           Requires an internet connection. If no prefix is given, install into
-          $PWD.
+          $PWD/.local/.
 
     --build-cmake[=<prefix>]
           Automatically download and build CMake version $CMAKE_BUILD_VERSION.
           Requires an internet connection and may take a while. If no prefix
-          is given, install into $PWD.
+          is given, install into $PWD/.local/.
 
     --dryrun
           Don't actually execute the cmake call, just print what would have
@@ -390,7 +390,7 @@ src=${srcARG:=""}
 cmake=${cmakebin:=cmake}
 dryrun=${dryrun:=no}
 get_cmake=${get_cmake:=""}
-cmake_prefix=${cmake_prefix:=$PWD}
+cmake_prefix=${cmake_prefix:=$PWD/.local}
 cmake_found=""
 cmake_version_sufficient=""
 
