@@ -101,6 +101,11 @@ Available values for "option":
           that this is only accelerating fresh builds, as cmake internally
           caches also. Therefore this option is *not* recommended.
 
+    --get-cmake[=<prefix>]
+          Automatically download CMake binaries from version $CMAKE_BUILD_VERSION.
+          Requires an internet connection. If no prefix is given, install into
+          $PWD.
+
     --build-cmake[=<prefix>]
           Automatically download and build CMake version $CMAKE_BUILD_VERSION.
           Requires an internet connection and may take a while. If no prefix
@@ -344,8 +349,14 @@ while test $# -gt 0; do
       --cache)
         cache $val
         ;;
+      --get-cmake)
+        get_cmake="bin"
+        if [[ -n $val ]]; then
+          cmake_prefix="$val"
+        fi
+        ;;
       --build-cmake)
-        build_cmake="yes"
+        get_cmake="src"
         if [[ -n $val ]]; then
           cmake_prefix="$val"
         fi
@@ -378,7 +389,7 @@ fi
 src=${srcARG:=""}
 cmake=${cmakebin:=cmake}
 dryrun=${dryrun:=no}
-build_cmake=${build_cmake:=""}
+get_cmake=${get_cmake:=""}
 cmake_prefix=${cmake_prefix:=$PWD}
 cmake_found=""
 cmake_version_sufficient=""
@@ -391,29 +402,56 @@ version_gte() {
   [ "$2" = "$(echo -e "$1\n$2" | sort -t '.' -k 1,1 -k 2,2 -k 3,3 -k 4,4 -g | head -n1)" ]
 }
 
-# Use already built CMake if any
-if [[ -x "${cmake_prefix}/bin/cmake" ]]; then
-  echo "Using already built CMake in ${cmake_prefix}/bin/cmake" >&2
-  cmake="${cmake_prefix}/bin/cmake"
-# Build CMake if requested and no sufficient version found
-elif [[ $build_cmake ]]; then
-  echo "Building CMake version ${CMAKE_BUILD_VERSION} and installing into ${cmake_prefix} ..." >&2
-  tarball=cmake-${CMAKE_BUILD_VERSION}.tar.gz
+# Download a CMake tarball
+# $1: version
+# $2: suffix (optional)
+download_cmake() {
+  tarball=cmake-$1${2:-""}.tar.gz
   if [[ ! -r $tarball ]]; then
-    shortver=$(echo $CMAKE_BUILD_VERSION | cut -d. -f1-2)
+    shortver=$(echo $1 | cut -d. -f1-2)
     url=http://www.cmake.org/files/v$shortver/$tarball
     # -N          Download only if the remote version of the file is newer
     # --continue  Continue an interrupted download
     # -T 60       Time out a download attempt after 60 seconds
     # -t 3        Only make 3 download attempts
     wget -N --continue -T 60 -t 3 $url || {
-      echo "Failed to download CMake release $CMAKE_BUILD_VERSION." >&2
+      echo "Failed to download CMake release $1." >&2
       echo "Please download from $url" >&2
       echo "and place $tarball in $PWD" >&2
       exit 1
     }
   fi
-  tar xzf cmake-${CMAKE_BUILD_VERSION}.tar.gz
+  echo $tarball
+}
+
+# Use already built CMake if any
+if [[ -x "${cmake_prefix}/bin/cmake" ]]; then
+  echo "Using already built CMake in ${cmake_prefix}/bin/cmake" >&2
+  cmake="${cmake_prefix}/bin/cmake"
+# Get a CMake binary if requested and no sufficient version found
+elif [[ $get_cmake = "bin" ]]; then
+  plat=$(uname -s)
+  arch=$(uname -m)
+  if [[ "${plat}" != "Linux" ]] && [[ "${plat}" != "Darwin" ]] ; then
+    echo "Cannot download CMake binaries for this platform." >&2
+    echo "Please use --build-cmake to build from source." >&2
+    exit 1
+  fi
+  if [[ "${arch}" != "x86_64" ]] ; then
+    echo "Cannot download CMake binaries for this architecture." >&2
+    echo "Please use --build-cmake to build from source." >&2
+    exit 1
+  fi
+  echo "Downloading CMake version ${CMAKE_BUILD_VERSION} binaries and installing into ${cmake_prefix} ..." >&2
+  tarball=$(download_cmake "${CMAKE_BUILD_VERSION}" "-${plat}-${arch}")
+  mkdir -p "${cmake_prefix}"
+  tar xzf $tarball -C "${cmake_prefix}" --strip-components=1
+  cmake="${cmake_prefix}/bin/cmake"
+# Build CMake from source if requested and no sufficient version found
+elif [[ $get_cmake = "src" ]]; then
+  echo "Building CMake version ${CMAKE_BUILD_VERSION} and installing into ${cmake_prefix} ..." >&2
+  tarball=$(download_cmake "${CMAKE_BUILD_VERSION}")
+  tar xzf $tarball
   (
     mkdir -p build_cmake
     cd build_cmake
