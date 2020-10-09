@@ -403,7 +403,9 @@ function( ecbuild_add_test )
       endif()
 
       # MPI_ARGS is left for users to define @ configure time e.g. -DMPI_ARGS="--oversubscribe"
-      string(REPLACE " " ";" MPI_ARGS_LIST ${MPI_ARGS})
+      if( MPI_ARGS )
+        string(REPLACE " " ";" MPI_ARGS_LIST ${MPI_ARGS})
+      endif()
       set( _LAUNCH ${MPIEXEC} ${MPI_ARGS_LIST} ${MPIEXEC_TASKS} ${MPIEXEC_THREADS} )
 
       if( NOT _PAR_COMMAND AND _PAR_TARGET )
