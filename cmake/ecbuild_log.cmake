@@ -72,7 +72,7 @@ if( NOT ECBUILD_LOG_INCLUDED )
 set( ECBUILD_LOG_INCLUDED TRUE )
 
 # Define colour escape sequences (not available on Windows)
-if(NOT (WIN32 OR ECBUILD_NO_COLOUR OR DEFINED ENV{ECBUILD_NO_COLOUR}))
+if(NOT (WIN32 OR EC_OS_NAME MATCHES "windows" OR ECBUILD_NO_COLOUR OR DEFINED ENV{ECBUILD_NO_COLOUR}))
   string(ASCII 27 Esc)
   set(ColourReset "${Esc}[m")
   set(ColourBold  "${Esc}[1m")
@@ -115,6 +115,10 @@ elseif( ECBUILD_LOG_LEVEL STREQUAL "CRITICAL" )
 else()
   message(WARNING "Unknown log level ${ECBUILD_LOG_LEVEL} (valid are DEBUG, INFO, WARN, ERROR, CRITICAL) - using WARN")
   set(ECBUILD_LOG_LEVEL ${ECBUILD_WARN})
+endif()
+
+if(DEFINED ENV{ECBUILD_DEBUG}) # environment variable overrides
+  set(ECBUILD_LOG_LEVEL ${ECBUILD_DEBUG})
 endif()
 
 if( NOT DEFINED ECBUILD_LOG_FILE )
@@ -174,17 +178,7 @@ endfunction( ecbuild_error )
 function( ecbuild_deprecate )
   string(REPLACE ";" " " MSG ${ARGV})
   ecbuild_log(DEPRECATION "${MSG}")
-  # DEPRECATION message type was only introduced in CMake 3.0, provide
-  # consistent behaviour for CMake < 3.0
-  if( CMAKE_VERSION VERSION_LESS 3.0 )
-    if( CMAKE_ERROR_DEPRECATED )
-      message(FATAL_ERROR "${BoldRed}DEPRECATION - ${MSG}${ColourReset}")
-    elseif( CMAKE_WARN_DEPRECATED )
-      message(WARNING "${Yellow}DEPRECATION - ${MSG}${ColourReset}")
-    endif()
-  else()
-    message(DEPRECATION "${BoldRed}${MSG}${ColourReset}")
-  endif()
+  message(DEPRECATION "${BoldRed}${MSG}${ColourReset}")
 endfunction( ecbuild_deprecate )
 
 ##############################################################################

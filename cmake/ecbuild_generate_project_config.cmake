@@ -53,7 +53,7 @@ function(ecbuild_generate_project_config template)
   endif()
 
   if(NOT _PAR_FILENAME)
-    set( LNAME ${PROJECT_NAME_LOWCASE} )
+    string( TOLOWER ${PROJECT_NAME} LNAME )
     set(_PAR_FILENAME "${LNAME}-config.cmake")
   endif()
 
@@ -67,7 +67,7 @@ function(ecbuild_generate_project_config template)
 
   configure_package_config_file(${template} ${PROJECT_BINARY_DIR}/${_PAR_FILENAME}
     INSTALL_DESTINATION .
-    PATH_VARS BASE_DIR CMAKE_DIR ${PATH_VARS}
+    PATH_VARS BASE_DIR CMAKE_DIR ${_PAR_PATH_VARS}
     INSTALL_PREFIX ${PROJECT_BINARY_DIR}
   )
 
@@ -79,7 +79,7 @@ function(ecbuild_generate_project_config template)
   configure_package_config_file(${template}
     ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_PAR_FILENAME}
     INSTALL_DESTINATION ${INSTALL_CMAKE_DIR}
-    PATH_VARS BASE_DIR CMAKE_DIR ${PATH_VARS}
+    PATH_VARS BASE_DIR CMAKE_DIR ${_PAR_PATH_VARS}
   )
 install(FILES "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_PAR_FILENAME}" DESTINATION "${INSTALL_CMAKE_DIR}")
 endfunction()

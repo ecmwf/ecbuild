@@ -70,6 +70,8 @@ macro(ecbuild_compat_require out_name pkg)
       ecbuild_debug("ecbuild_compat_require(${pkgname}): no package description found, using provided description '${_p_DESCRIPTION}'")
       list(APPEND pkglist DESCRIPTION "${_p_DESCRIPTION}")
     endif()
+  elseif( pkgname STREQUAL "NAME" )
+    list(GET pkglist 1 pkgname)
   else()                          # else 1st entry is the package name
     set(pkgproject 0)
   endif()
@@ -82,9 +84,7 @@ macro(ecbuild_compat_require out_name pkg)
 
   set(${pkgname}_HELP_MSG "Provide ${pkgname} location with -D${pkgUPPER}_PATH=/...")
   if(${pkgname}_FOUND OR ${pkgUPPER}_FOUND OR ${pkgLOWER}_FOUND)
-
     ecbuild_debug("ecbuild_compat_require(${pkgname}): ${pkgname} has already been found")
-
   else()
 
     if(pkgproject)
@@ -146,8 +146,8 @@ macro(ecbuild_compat_require out_name pkg)
                         either use 'PROJECT ${_pkglist_old}' or '${_pkglist_new}'")
         endif()
 
+        list(REMOVE_ITEM pkglist "NAME")
         find_package(${pkglist})
-
       endif()
 
     endif()
@@ -160,6 +160,7 @@ macro(ecbuild_compat_require out_name pkg)
     # append to list of third-party libraries (to be forward to other packages )
     # unless the NO_TPL option was given
     if(NOT _p_NO_TPL)
+      string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
       ecbuild_debug("ecbuild_compat_require(${pkgname}): appending ${pkgname} to ${PROJECT_NAME_CAPS}_TPLS")
       list(APPEND ${PROJECT_NAME_CAPS}_TPLS ${pkgname})
       list(REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS)

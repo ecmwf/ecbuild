@@ -49,6 +49,13 @@ function( ecbuild_generate_config_headers )
     set( EC_${lang}_FLAGS "${CMAKE_${lang}_FLAGS} ${CMAKE_${lang}_FLAGS_${CMAKE_BUILD_TYPE_CAPS}}" )
   endforeach()
 
+  # ensure EC_HAVE_FORTRAN is defined for the header generation
+  if(EC_HAVE_FORTRAN)
+    set(EC_HAVE_FORTRAN 1)
+  else()
+    set(EC_HAVE_FORTRAN 0)
+  endif()
+
   configure_file( ${ECBUILD_MACROS_DIR}/ecbuild_config.h.in  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_ecbuild_config.h   )
 
   # install ecbuild configuration

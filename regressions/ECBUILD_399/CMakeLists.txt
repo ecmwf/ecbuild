@@ -5,7 +5,7 @@ ecbuild_add_test(
   TARGET     ECBUILD-399-ld-origin
   TYPE       SCRIPT
   COMMAND    ld-origin.sh
-  CONDITION  UNIX AND NOT "${CMAKE_VERSION}" VERSION_LESS 3.6
+  CONDITION  UNIX
 )
 
 #[=[
@@ -21,6 +21,6 @@ ecbuild_add_test(
   TARGET     ECBUILD-399-buildfail
   TYPE       SCRIPT
   COMMAND    buildfail.sh
-  CONDITION  UNIX AND NOT "${CMAKE_VERSION}" VERSION_LESS 3.6
+  CONDITION  UNIX
 )
 

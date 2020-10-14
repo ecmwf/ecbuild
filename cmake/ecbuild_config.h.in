@@ -57,9 +57,9 @@
 #define @PNAME@_DEVELOPER_SRC_DIR "@CMAKE_SOURCE_DIR@"
 #define @PNAME@_DEVELOPER_BIN_DIR "@CMAKE_BINARY_DIR@"
 
-#cmakedefine EC_HAVE_FORTRAN
+/* Fortran support */
 
-#ifdef EC_HAVE_FORTRAN
+#if @EC_HAVE_FORTRAN@
 
 #define @PNAME@_Fortran_COMPILER_ID      "@CMAKE_Fortran_COMPILER_ID@"
 #define @PNAME@_Fortran_COMPILER_VERSION "@CMAKE_Fortran_COMPILER_VERSION@"

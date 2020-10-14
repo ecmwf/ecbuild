@@ -12,4 +12,4 @@ cd $HERE
 
 mkdir build
 cd build
-cmake @mybundle_SOURCE_DIR@ -DECBUILD_2_COMPAT=OFF
+cmake @mybundle_SOURCE_DIR@

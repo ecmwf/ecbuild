@@ -352,6 +352,7 @@ macro( ecbuild_use_package )
 
   if( ECBUILD_2_COMPAT AND ${_p_PROJECT}_FOUND )
     ecbuild_declare_compat(${pkgUPPER}_FOUND ${_p_PROJECT}_FOUND)
+    string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
     list( APPEND ${PROJECT_NAME_CAPS}_TPLS ${_p_PROJECT} )
     list( REMOVE_DUPLICATES ${PROJECT_NAME_CAPS}_TPLS )
   endif()

@@ -403,7 +403,10 @@ function( ecbuild_add_test )
       endif()
 
       # MPI_ARGS is left for users to define @ configure time e.g. -DMPI_ARGS="--oversubscribe"
-      set( _LAUNCH ${MPIEXEC} ${MPI_ARGS} ${MPIEXEC_TASKS} ${MPIEXEC_THREADS} )
+      if( MPI_ARGS )
+        string(REPLACE " " ";" MPI_ARGS_LIST ${MPI_ARGS})
+      endif()
+      set( _LAUNCH ${MPIEXEC} ${MPI_ARGS_LIST} ${MPIEXEC_TASKS} ${MPIEXEC_THREADS} )
 
       if( NOT _PAR_COMMAND AND _PAR_TARGET )
           set( _PAR_COMMAND ${_PAR_TARGET} )
@@ -452,6 +455,7 @@ function( ecbuild_add_test )
       endif()
 
       # Add lower case project name to custom test labels
+      string( TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWCASE )
       set( _PAR_LABELS ${PROJECT_NAME_LOWCASE} ${_PAR_LABELS} )
       list( REMOVE_DUPLICATES _PAR_LABELS )
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): assign labels ${_PAR_LABELS}")

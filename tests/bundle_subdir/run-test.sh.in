@@ -19,7 +19,7 @@ cd $HERE/mylib
 
 mkdir build
 cd build
-ecbuild --prefix=../install -- ..
+ecbuild --prefix=../install -- -DINSTALL_LIB_DIR=lib ..
 make install
 
 export mylib_DIR=$HERE/mylib/install/lib/cmake/mylib

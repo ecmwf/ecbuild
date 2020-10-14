@@ -1,6 +1,6 @@
-# CMake 3.6 is a minimal requirement for ecBuild. However, we strongly
+# CMake 3.11 is a minimal requirement for ecBuild. However, we strongly
 # recommend using CMake 3.12 or higher
-cmake_minimum_required( VERSION 3.6 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.11 FATAL_ERROR )
 
 # If you plan on using cmake directly (rather than the `ecbuild` wrapper
 # script), make sure that ecBuild can be found, by doing at least one of these:
@@ -31,21 +31,23 @@ project( simple VERSION 0.10.0 LANGUAGES C CXX Fortran )
 # It can also be queried via the `simple_MATRIX_FOUND` variable if the
 # component is optional.
 #
-# Common idiom for optional packages: look for the package first, and create an
-# option depending on it. This behaves as follows:
+# The `REQUIRED_PACKAGES` option is a convenience for options that depend on
+# certain packages being available. For each package, it expects a string that
+# represents a valid argument list for `ecbuild_find_package`. This behaves as
+# follows:
 # * If `LAPACK` is found, the option will be enabled, unless the
 #  `ENABLE_MATRIX` variable is set to `OFF`.
 # * If `LAPACK` cannot be found, the behaviour depends on the value of
 #   `ENABLE_MATRIX`:
 #   * If `ON`, ecBuild will abort with a critical error
 #   * If `OFF` or not set, the feature will be disabled
-find_package(LAPACK QUIET)
 ecbuild_add_option( FEATURE MATRIX
                     DESCRIPTION "Use matrix operations"
-                    CONDITION LAPACK_FOUND )
+                    REQUIRED_PACKAGES "NAME LAPACK" )
 
-# Same idiom as before, the `CONDITION` argument can be any expression
-# acceptable in an `if` statement.
+# For more complex requirements, the `CONDITION` argument can be any expression
+# acceptable in an `if` statement. The same behaviour can also be achieved using
+# `CONDITION HAVE_MATRIX` together with `REQUIRED_PACKAGES "NAME GSL"`
 find_package(GSL QUIET)
 ecbuild_add_option( FEATURE BESSEL
                     DESCRIPTION "Compute Bessel function"

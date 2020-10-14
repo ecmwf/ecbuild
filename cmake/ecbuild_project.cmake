@@ -30,7 +30,7 @@ macro( project _project_name )
 
     cmake_parse_arguments( _ecbuild_${_project_name} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-    set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
+    list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
 
     if( _ecbuild_${_project_name}_VERSION )
       ecbuild_parse_version( "${_ecbuild_${_project_name}_VERSION}" PREFIX ${_project_name} )
@@ -91,7 +91,7 @@ macro( project _project_name )
         list(APPEND _args ${arg} )
       endforeach()
 
-      if( VERSION IN_LIST _args )
+      if( "VERSION" IN_LIST _args )
         set(_cmp0048_val NEW)
       else()
         set(_cmp0048_val OLD)

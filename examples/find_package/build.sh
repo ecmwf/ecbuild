@@ -31,7 +31,7 @@ function build() {
 
   set -x
   mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR}
-  cmake ${_CMAKE_FLAGS} -DECBUILD_2_COMPAT=OFF ${HERE}/${_SRC}
+  cmake ${_CMAKE_FLAGS} ${HERE}/${_SRC}
   make ${MAKE_ARGS}
   ctest
 }
