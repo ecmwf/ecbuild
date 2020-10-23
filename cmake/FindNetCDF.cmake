@@ -53,7 +53,7 @@ list( APPEND _possible_components C CXX Fortran CXX_LEGACY )
 set( NetCDF_C_INCLUDE_NAME          netcdf.h )
 set( NetCDF_CXX_INCLUDE_NAME        netcdf )
 set( NetCDF_CXX_LEGACY_INCLUDE_NAME netcdfcpp.h )
-set( NetCDF_Fortran_INCLUDE_NAME    netcdf.mod )
+set( NetCDF_Fortran_INCLUDE_NAME    netcdf.mod NETCDF.mod )
 
 ## Library names for each component
 set( NetCDF_C_LIBRARY_NAME          netcdf )
