@@ -21,92 +21,32 @@
 #
 # The following CMake variables are set on completion:
 #
-# :JEMALLOC_FOUND:      true if JEMALLOC is found on the system
-# :JEMALLOC_LIBRARIES:  full paths to requested JEMALLOC libraries
-# :JEMALLOC_INCLUDES:   JEMALLOC include directory
+# :Jemalloc_FOUND:        true if Jemalloc is found on the system
+# :JEMALLOC_LIBRARIES:    full paths to requested Jemalloc libraries
+# :JEMALLOC_INCLUDE_DIRS: Jemalloc include directory
 #
 # Input variables
 # ---------------
 #
-# The following CMake variables are checked by the function:
+# The following CMake and environment variables are considered:
 #
-# :JEMALLOC_USE_STATIC_LIBS:  if true, only static libraries are found
-# :JEMALLOC_ROOT:             if set, this path is exclusively searched
-# :JEMALLOC_DIR:              equivalent to JEMALLOC_ROOT
-# :JEMALLOC_PATH:             equivalent to JEMALLOC_ROOT
-# :JEMALLOC_LIBRARY:          JEMALLOC library to use
-# :JEMALLOC_INCLUDE_DIR:      JEMALLOC include directory
+# :Jemalloc_ROOT:
 #
 ##############################################################################
 
-if( (NOT JEMALLOC_ROOT) AND EXISTS $ENV{JEMALLOC_ROOT} )
-  set( JEMALLOC_ROOT ${JEMALLOC_ROOT} )
-endif()
-if( NOT JEMALLOC_ROOT AND $JEMALLOC_DIR )
-  set( JEMALLOC_ROOT ${JEMALLOC_DIR} )
-endif()
-if( (NOT JEMALLOC_ROOT) AND EXISTS $ENV{JEMALLOC_DIR} )
-  set( JEMALLOC_ROOT $ENV{JEMALLOC_DIR} )
-endif()
-if( (NOT JEMALLOC_ROOT) AND JEMALLOCDIR )
-  set( JEMALLOC_ROOT ${JEMALLOCDIR} )
-endif()
-if( (NOT JEMALLOC_ROOT) AND EXISTS $ENV{JEMALLOCDIR} )
-  set( JEMALLOC_ROOT $ENV{JEMALLOCDIR} )
-endif()
-if( (NOT JEMALLOC_ROOT) AND JEMALLOC_PATH )
-  set( JEMALLOC_ROOT ${JEMALLOC_PATH} )
-endif()
-if( (NOT JEMALLOC_ROOT) AND EXISTS $ENV{JEMALLOC_PATH})
-  set( JEMALLOC_ROOT $ENV{JEMALLOC_PATH} )
-endif()
-
-#if( NOT JEMALLOC_ROOT )
-#  # Check if we can use PkgConfig
-#  find_package(PkgConfig)
-#  #Determine from PKG
-#  if(PKG_CONFIG_FOUND)
-#    pkg_check_modules( PKG_JEMALLOC QUIET "jemalloc" )
-#  endif()
-#endif()
-
-find_path(JEMALLOC_ROOT NAMES include/jemalloc/jemalloc.h)
-
-find_library(JEMALLOC_LIBRARIES
-    NAMES jemalloc
-    HINTS ${JEMALLOC_ROOT}/lib
-)
-
-find_path(JEMALLOC_INCLUDE_DIR
-    NAMES jemalloc/jemalloc.h
-    HINTS ${JEMALLOC_ROOT}/include
-)
+find_library( JEMALLOC_LIBRARIES NAMES jemalloc )
+find_path( JEMALLOC_INCLUDE_DIRS NAMES jemalloc/jemalloc.h )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Jemalloc DEFAULT_MSG
     JEMALLOC_LIBRARIES
-    JEMALLOC_INCLUDE_DIR
+    JEMALLOC_INCLUDE_DIRS
 )
-
-mark_as_advanced(
-    JEMALLOC_ROOT
-    JEMALLOC_LIBRARIES
-    JEMALLOC_INCLUDE_DIR
-)
-
-
-#Sets:
-# DL_LIBRARIES      = the library to link against (RT etc)
-
-if( DEFINED DL_PATH )
-    find_library(DL_LIBRARIES dl PATHS ${DL_PATH}/lib NO_DEFAULT_PATH )
+if( JEMALLOC_LIBRARIES )
+  get_filename_component( JEMALLOC_LIBRARY_DIR ${JEMALLOC_LIBRARIES} DIRECTORY )
 endif()
-
-find_library(DL_LIBRARIES dl )
-
-include(FindPackageHandleStandardArgs)
-
-# handle the QUIET and REQUIRED arguments and set DL_FOUND to TRUE
-# if all listed variables are TRUE
-# Note: capitalisation of the package name must be the same as in the file name
-find_package_handle_standard_args(Dl DEFAULT_MSG DL_LIBRARIES )
+mark_as_advanced(
+    JEMALLOC_INCLUDE_DIRS
+    JEMALLOC_LIBRARIES
+    JEMALLOC_LIBRARY_DIR
+)
