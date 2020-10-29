@@ -13,7 +13,8 @@ find_path(ecbuild_MACROS_DIR ecbuild.cmake
         cmake
         share/cmake
         share/ecbuild/cmake
-    NO_DEFAULT_PATH)
+    NO_DEFAULT_PATH
+    NO_CMAKE_FIND_ROOT_PATH)
 
 if(ecbuild_MACROS_DIR)
     include(${ecbuild_MACROS_DIR}/ecbuild_parse_version.cmake)
@@ -37,5 +38,6 @@ if(ecbuild_FOUND)
             lib/cmake/ecbuild
             lib64/cmake/ecbuild
             lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/ecbuild
-        NO_DEFAULT_PATH)
+        NO_DEFAULT_PATH
+        NO_CMAKE_FIND_ROOT_PATH)
 endif()
