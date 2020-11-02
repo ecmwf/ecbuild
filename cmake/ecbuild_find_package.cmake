@@ -218,6 +218,7 @@ macro( ecbuild_find_package )
 
     # If a Find<name>.cmake module is found, use MODULE keyword, otherwise, use CONFIG.
     # This makes the find_package error message much more consise.
+    find_file( ${_PAR_NAME}_FindModule Find${_PAR_NAME}.cmake  PATHS ${CMAKE_MODULE_PATH} ${CMAKE_ROOT}/Modules NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
     find_file( ${_PAR_NAME}_FindModule Find${_PAR_NAME}.cmake  PATHS ${CMAKE_MODULE_PATH} ${CMAKE_ROOT}/Modules )
     if( ${_PAR_NAME}_FindModule )
       set( _${_PAR_NAME}_mode MODULE )

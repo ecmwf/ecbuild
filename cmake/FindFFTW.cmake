@@ -59,10 +59,7 @@
 list( APPEND _possible_components double single long_double quad )
 
 if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS )
-  ecbuild_debug( "FindFFTW: no components specified, looking for double precision (fftw3)" )
   set( ${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS double )
-else()
-  ecbuild_debug( "FindFFTW: looking for components: ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS}" )
 endif()
 
 set( ${CMAKE_FIND_PACKAGE_NAME}_double_LIBRARY_NAME fftw3 )
@@ -146,7 +143,7 @@ if( NOT FFTW_INCLUDE_DIRS ) # allow user to override with FFTW_INCLUDES
 
     if( NOT FFTW_INCLUDE_DIRS )
       if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY OR ${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED )
-        ecbuild_warn("FindFFTW: fftw include headers not found")
+        message(WARNING "FindFFTW: fftw include headers not found")
       endif()
     endif()
 
@@ -165,7 +162,7 @@ foreach( _component ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS} )
   )
   if( NOT ${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIB )
     if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY OR ${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED )
-        ecbuild_warn("FindFFTW: ${_component} precision required, but ${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIBRARY_NAME} was not found")
+        message(WARNING "FindFFTW: ${_component} precision required, but ${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIBRARY_NAME} was not found")
     endif()
     set( ${CMAKE_FIND_PACKAGE_NAME}_${_component}_FOUND FALSE )
   else()
@@ -183,10 +180,10 @@ foreach( _component ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS} )
 endforeach()
 
 if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY AND FFTW_LIBRARIES )
-  ecbuild_info( "FFTW targets:" )
+  message( STATUS "FFTW targets:" )
   foreach( _component ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS} )
     set( _target FFTW::${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIBRARY_NAME} )
-    ecbuild_info("    ${_target} (${_component} precision)  [${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIB}]")
+    message( STATUS "    ${_target} (${_component} precision)  [${${CMAKE_FIND_PACKAGE_NAME}_${_component}_LIB}]")
   endforeach()
 endif()
 
