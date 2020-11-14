@@ -39,7 +39,7 @@ if( $base eq "" )
 # no argv[1] passed, take basedir from file
 if( $namespace eq "" )
 {
-    $namespace = "eclib"
+    $namespace = "eckit"
 }
 
 my @c = parser::parse($file);
@@ -360,6 +360,7 @@ sub parse_class {
 				}
 				push @a, make_type(@z) if(@z);
 				$m{const} = 1 if(next_is("const"));
+				$m{override} = 1 if(next_is("override"));
 				$m{args}  = \@a;
 				if(exists $m{static})
 				{
