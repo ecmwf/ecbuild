@@ -393,17 +393,17 @@ function( ecbuild_get_test_multidata )
     cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
     if(_p_UNPARSED_ARGUMENTS)
-      ecbuild_critical("Unknown keywords given to ecbuild_get_test_data(): \"${_p_UNPARSED_ARGUMENTS}\"")
+      ecbuild_critical("Unknown keywords given to ecbuild_get_test_multidata(): \"${_p_UNPARSED_ARGUMENTS}\"")
     endif()
 
     ### check parameters
 
     if( NOT _p_NAMES )
-      ecbuild_critical("ecbuild_get_test_data() expects a NAMES")
+      ecbuild_critical("ecbuild_get_test_multidata() expects a NAMES")
     endif()
 
     if( NOT _p_TARGET )
-      ecbuild_critical("ecbuild_get_test_data() expects a TARGET")
+      ecbuild_critical("ecbuild_get_test_multidata() expects a TARGET")
     endif()
 
     if( NOT _p_DIRLOCAL )
