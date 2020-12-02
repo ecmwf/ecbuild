@@ -81,7 +81,7 @@ if( CMAKE_COMPILER_IS_GNUCXX )
 
     if( ENABLE_WARNINGS )
         ecbuild_add_cxx_flags("-Wall")
-        #    ecbuild_add_cxx_flags("-Wextra")
+        # ecbuild_add_cxx_flags("-Wextra")
     endif()
 
 endif()
