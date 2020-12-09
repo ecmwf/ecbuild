@@ -8,8 +8,6 @@
 
 # general options
 
-option( ENABLE_WARNINGS         "enable compiler warnings"                        OFF )
-
 option( BUILD_SHARED_LIBS       "build shared libraries when possible"            ON  )
 
 option( ENABLE_RPATHS           "when installing insert RPATHS into binaries"     ON  )

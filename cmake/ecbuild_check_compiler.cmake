@@ -61,33 +61,14 @@ if( NOT CMAKE_C_COMPILER_VERSION )
 endif()
 
 ############################################################################################
-# enable warnings
+# improve compilation speed with -pipe
 
 if( CMAKE_COMPILER_IS_GNUCC )
-
     ecbuild_add_c_flags("-pipe") # use pipe for faster compilation
-
-    if( ENABLE_WARNINGS )
-        ecbuild_add_c_flags("-Wall")
-        # ecbuild_add_c_flags("-pedantic")
-        # ecbuild_add_c_flags("-Wextra")
-    endif()
-
 endif()
 
 if( CMAKE_COMPILER_IS_GNUCXX )
-
    ecbuild_add_cxx_flags("-pipe") # use pipe for faster compilation
-
-    if( ENABLE_WARNINGS )
-        ecbuild_add_cxx_flags("-Wall")
-        # ecbuild_add_cxx_flags("-Wextra")
-    endif()
-
-endif()
-
-if( ENABLE_WARNINGS AND CMAKE_Fortran_COMPILER_ID MATCHES "Intel" )
-  ecbuild_add_fortran_flags("-warn all")
 endif()
 
 ############################################################################################
