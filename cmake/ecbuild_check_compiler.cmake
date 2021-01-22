@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-###################################################################################################
+########################################################################################################################
 # enable C to use in system introspection
 
 if( NOT CMAKE_C_COMPILER_LOADED )
@@ -14,7 +14,7 @@ if( NOT CMAKE_C_COMPILER_LOADED )
   ecbuild_compiler_flags( C )
 endif()
 
-############################################################################################
+########################################################################################################################
 # try to get compiler version if cmake did not
 
 if( NOT CMAKE_C_COMPILER_VERSION )
@@ -60,18 +60,19 @@ if( NOT CMAKE_C_COMPILER_VERSION )
 
 endif()
 
-############################################################################################
-# improve compilation speed with -pipe
+########################################################################################################################
+# improve compilation speed with -pipe (use pipes instead of files between compilation processes)
+# measured 5% compilation speedup with Clang (using pipes vs SSD filesystem)
 
 if( CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang" )
-    ecbuild_add_c_flags( "-pipe" NO_FAIL ) # use pipe for faster compilation
+    ecbuild_add_c_flags( "-pipe" NO_FAIL ) # don't fail if for some reason is not accepted
 endif()
 
 if( CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang" )
-   ecbuild_add_cxx_flags( "-pipe" NO_FAIL ) # use pipe for faster compilation
+   ecbuild_add_cxx_flags( "-pipe" NO_FAIL ) # don't fail if for some reason is not accepted
 endif()
 
-############################################################################################
+########################################################################################################################
 # compiler dependent fixes
 
 # For Cray compilers add "-Wl,-Bdynamic" at very end of linker commands, in order to produce dynamic executables by default
@@ -87,14 +88,3 @@ endif()
 if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
   set(CMAKE_Fortran_LINK_EXECUTABLE "<CMAKE_Fortran_COMPILER> <CMAKE_Fortran_LINK_FLAGS> <LINK_FLAGS> <FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES> -Wl,-Bdynamic" )
 endif()
-
-############################################################################################
-# Fortran compiler specific flags
-# if( NOT HAVE_SINGLE_PRECISION )
-#  if(CMAKE_Fortran_COMPILER_ID STREQUAL "PGI")
-#      ecbuild_add_fortran_flags("-r8")
-#  elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
-#      # NOTE that if we add -fdefault-real-8 then we NEED -fdefault-double-8 to avoid quadmath
-#      ecbuild_add_fortran_flags("-fdefault-real-8 -fdefault-double-8")
-#  endif()
-# endif()
