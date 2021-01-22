@@ -77,7 +77,7 @@ function( ecbuild_add_lang_flags _in_flags )
 
     if( _try_add_flag AND NOT _flag_ok )
 
-      ecbuild_info( "var _try_add_flag [${_try_add_flag}]" )
+      # ecbuild_info( "var _try_add_flag [${_try_add_flag}]" )
 
       if( NOT DEFINED N_${_lang}_FLAG )
         set( N_${_lang}_FLAG 0 )
@@ -91,20 +91,20 @@ function( ecbuild_add_lang_flags _in_flags )
       endif()
 
       if(${_lang} STREQUAL "C")
-        ecbuild_info( "check_c_compiler_flag( ${_flags} ${_PAR_NAME} )" )
+        # ecbuild_info( "check_c_compiler_flag( ${_flags} ${_PAR_NAME} )" )
         check_c_compiler_flag( ${_flags} ${_PAR_NAME} )
       endif()
       if(${_lang} STREQUAL "CXX")
-        ecbuild_info( "check_cxx_compiler_flag( ${_flags} ${_PAR_NAME} )" )
+        # ecbuild_info( "check_cxx_compiler_flag( ${_flags} ${_PAR_NAME} )" )
         check_cxx_compiler_flag( ${_flags} ${_PAR_NAME} )
       endif()
       if(${_lang} STREQUAL "Fortran")
-        ecbuild_info( "check_fortran_compiler_flag( ${_flags} ${_PAR_NAME} )" )
+        # ecbuild_info( "check_fortran_compiler_flag( ${_flags} ${_PAR_NAME} )" )
         check_fortran_compiler_flag( ${_flags} ${_PAR_NAME} )
       endif()
 
       set( _flag_ok ${${_PAR_NAME}} )
-      ecbuild_info( "${_lang} flag [${_flags}] check resulted [${_flag_ok}]" )
+      ecbuild_debug( "${_lang} flag [${_flags}] check resulted [${_flag_ok}]" )
 
     endif( _try_add_flag AND NOT _flag_ok )
 
@@ -112,10 +112,10 @@ function( ecbuild_add_lang_flags _in_flags )
 
       if( _PAR_BUILD )
         set( CMAKE_${_lang}_FLAGS_${_PAR_BUILD} "${CMAKE_${_lang}_FLAGS_${_PAR_BUILD}} ${_flags}" PARENT_SCOPE )
-        ecbuild_debug( "${_lang} flag [${_flags}] added for build type ${_PAR_BUILD}" )
+        ecbuild_info( "Added ${_lang} flag [${_flags}] to build type ${_PAR_BUILD}" )
       else()
         set( CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} ${_flags}" PARENT_SCOPE )
-        ecbuild_debug( "${_lang} flag [${_flags}] added" )
+        ecbuild_info( "Added ${_lang} flag [${_flags}]" )
       endif()
 
     elseif( _PAR_NO_FAIL )

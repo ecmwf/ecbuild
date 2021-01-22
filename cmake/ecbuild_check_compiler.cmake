@@ -63,12 +63,12 @@ endif()
 ############################################################################################
 # improve compilation speed with -pipe
 
-if( CMAKE_COMPILER_IS_GNUCC )
-    ecbuild_add_c_flags("-pipe") # use pipe for faster compilation
+if( CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang" )
+    ecbuild_add_c_flags( "-pipe" NO_FAIL ) # use pipe for faster compilation
 endif()
 
-if( CMAKE_COMPILER_IS_GNUCXX )
-   ecbuild_add_cxx_flags("-pipe") # use pipe for faster compilation
+if( CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang" )
+   ecbuild_add_cxx_flags( "-pipe" NO_FAIL ) # use pipe for faster compilation
 endif()
 
 ############################################################################################
