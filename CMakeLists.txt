@@ -54,7 +54,7 @@ if( NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR AND ECBUILD_2_COMPAT )
     # the CMAKE_MODULE_PATH.
     # The `find_package( ecbuild ... )` works for the ecbuild-3-ported packages, as `ecbuild_DIR` gets defined in
     # `ecbuild_declare_project(ecbuild...)` of ecbuild during `add_subdirectory( ecbuild )`
-    
+
     set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE )
 endif()
 
