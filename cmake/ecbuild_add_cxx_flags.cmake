@@ -12,7 +12,7 @@
 # ecbuild_add_cxx_flags
 # =====================
 #
-# Add C++ compiler flags to CMAKE_CXX_FLAGS only if supported by compiler. ::
+# Add C++ compiler flags to CMAKE_${_lang}_FLAGS only if supported by compiler. ::
 #
 #   ecbuild_add_cxx_flags( <flag1> [ <flag2> ... ]
 #                          [ BUILD <build> ]
@@ -33,69 +33,10 @@
 #
 ##############################################################################
 
+include(ecbuild_add_lang_flags)
+
 macro( ecbuild_add_cxx_flags m_cxx_flags )
-
-  set( _flags ${m_cxx_flags} )
-
-  if( _flags AND CMAKE_CXX_COMPILER_LOADED )
-
-    set( options NO_FAIL )
-    set( single_value_args BUILD NAME )
-    set( multi_value_args )
-
-    cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
-
-    set( _try_add_flag TRUE )
-    if( _PAR_BUILD )
-      string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_CAPS )
-      string( TOUPPER ${_PAR_BUILD}  _PAR_BUILD_CAPS )
-      if( NOT CMAKE_BUILD_TYPE_CAPS MATCHES "${_PAR_BUILD_CAPS}" )
-        set( _try_add_flag FALSE )
-      endif()
-    endif()
-
-    if( _try_add_flag )
-
-      if( NOT DEFINED N_CXXFLAG )
-        set( N_CXXFLAG 0 )
-      endif()
-
-      math( EXPR N_CXXFLAG ${N_CXXFLAG}+1 )
-
-      if( ECBUILD_TRUST_FLAGS )
-        set( _flag_ok 1 )
-      else()
-        if( DEFINED _PAR_NAME )
-          check_cxx_compiler_flag( ${_flags} ${_PAR_NAME} )
-          set( _flag_ok ${${_PAR_NAME}} )
-        else()
-          check_cxx_compiler_flag( ${_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
-          set( _flag_ok ${CXX_FLAG_TEST_${N_CXXFLAG}} )
-        endif()
-        ecbuild_debug( "C++ flag [${_flags}] check resulted [${_flag_ok}]" )
-      endif()
-
-      if( _flag_ok )
-        if( _PAR_BUILD )
-          set( CMAKE_CXX_FLAGS_${_PAR_BUILD} "${CMAKE_CXX_FLAGS_${_PAR_BUILD}} ${_flags}" )
-          ecbuild_debug( "C++ FLAG [${_flags}] added for build type ${_PAR_BUILD}" )
-        else()
-          set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_flags}" )
-          ecbuild_debug( "C++ FLAG [${_flags}] added" )
-        endif()
-      elseif( _PAR_NO_FAIL )
-        ecbuild_info( "Unrecognised CXX flag [${_flags}] -- skipping" )
-      else()
-        ecbuild_error( "Unrecognised CXX flag [${_flags}]" )
-      endif()
-    endif()
-
-    unset( _flags )
-    unset( _flag_ok )
-    unset( _try_add_flag )
-
-  endif()
-
+    ecbuild_add_lang_flags( ${m_cxx_flags} LANG CXX )
 endmacro()
 
 macro( cmake_add_cxx_flags m_cxx_flags )
