@@ -58,6 +58,7 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
     endif()
 
     if( _try_add_flag )
+
       if( NOT DEFINED N_FortranFLAG )
         set( N_FortranFLAG 0 )
       endif()
@@ -74,6 +75,7 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
           check_fortran_compiler_flag( ${_flags} Fortran_FLAG_TEST_${N_FortranFLAG} )
           set( _flag_ok ${Fortran_FLAG_TEST_${N_FortranFLAG}} )
         endif()
+        ecbuild_debug( "Fortran flag [${_flags}] check resulted [${_flag_ok}]" )
       endif()
 
       if( _flag_ok )
@@ -94,6 +96,7 @@ macro( ecbuild_add_fortran_flags m_fortran_flags )
     unset( _flags )
     unset( _flag_ok )
     unset( _try_add_flag )
+
   endif()
 
 endmacro()

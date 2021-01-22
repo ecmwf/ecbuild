@@ -38,6 +38,7 @@ macro( ecbuild_add_c_flags m_c_flags )
   set( _flags ${m_c_flags} )
 
   if( _flags AND CMAKE_C_COMPILER_LOADED )
+
     set( options NO_FAIL )
     set( single_value_args BUILD NAME )
     set( multi_value_args )
@@ -52,14 +53,18 @@ macro( ecbuild_add_c_flags m_c_flags )
         set( _try_add_flag FALSE )
       endif()
     endif()
+
     if( _try_add_flag )
+
       if( NOT DEFINED N_CFLAG )
         set( N_CFLAG 0 )
       endif()
 
       math( EXPR N_CFLAG ${N_CFLAG}+1 )
 
-      if( NOT ECBUILD_TRUST_FLAGS )
+      if( ECBUILD_TRUST_FLAGS )
+        set( _flag_ok 1 )
+      else()
         if( DEFINED _PAR_NAME )
           check_c_compiler_flag( ${_flags} ${_PAR_NAME} )
           set( _flag_ok ${${_PAR_NAME}} )
@@ -67,8 +72,7 @@ macro( ecbuild_add_c_flags m_c_flags )
           check_c_compiler_flag( ${_flags} C_FLAG_TEST_${N_CFLAG} )
           set( _flag_ok ${C_FLAG_TEST_${N_CFLAG}} )
         endif()
-      else()
-        set( _flag_ok 1 )
+        ecbuild_debug( "C flag [${_flags}] check resulted [${_flag_ok}]" )
       endif()
 
       if( _flag_ok )
@@ -85,9 +89,11 @@ macro( ecbuild_add_c_flags m_c_flags )
         ecbuild_error( "Unrecognised C flag [${_flags}]" )
       endif()
     endif()
+
     unset( _flags )
     unset( _flag_ok )
     unset( _try_add_flag )
+
   endif()
 
 endmacro()

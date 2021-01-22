@@ -36,7 +36,9 @@
 macro( ecbuild_add_cxx_flags m_cxx_flags )
 
   set( _flags ${m_cxx_flags} )
+
   if( _flags AND CMAKE_CXX_COMPILER_LOADED )
+
     set( options NO_FAIL )
     set( single_value_args BUILD NAME )
     set( multi_value_args )
@@ -51,6 +53,7 @@ macro( ecbuild_add_cxx_flags m_cxx_flags )
         set( _try_add_flag FALSE )
       endif()
     endif()
+
     if( _try_add_flag )
 
       if( NOT DEFINED N_CXXFLAG )
@@ -59,16 +62,17 @@ macro( ecbuild_add_cxx_flags m_cxx_flags )
 
       math( EXPR N_CXXFLAG ${N_CXXFLAG}+1 )
 
-      if( NOT ECBUILD_TRUST_FLAGS )
+      if( ECBUILD_TRUST_FLAGS )
+        set( _flag_ok 1 )
+      else()
         if( DEFINED _PAR_NAME )
           check_cxx_compiler_flag( ${_flags} ${_PAR_NAME} )
           set( _flag_ok ${${_PAR_NAME}} )
         else()
           check_cxx_compiler_flag( ${_flags} CXX_FLAG_TEST_${N_CXXFLAG} )
-          set( _flag_ok CXX_FLAG_TEST_${N_CXXFLAG} )
+          set( _flag_ok ${CXX_FLAG_TEST_${N_CXXFLAG}} )
         endif()
-      else()
-        set( _flag_ok 1 )
+        ecbuild_debug( "C++ flag [${_flags}] check resulted [${_flag_ok}]" )
       endif()
 
       if( _flag_ok )
@@ -85,9 +89,11 @@ macro( ecbuild_add_cxx_flags m_cxx_flags )
         ecbuild_error( "Unrecognised CXX flag [${_flags}]" )
       endif()
     endif()
+
     unset( _flags )
     unset( _flag_ok )
     unset( _try_add_flag )
+
   endif()
 
 endmacro()
