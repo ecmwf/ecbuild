@@ -12,7 +12,7 @@
 # ecbuild_add_cxx_flags
 # =====================
 #
-# Add C++ compiler flags to CMAKE_${_lang}_FLAGS only if supported by compiler. ::
+# Add C++ compiler flags to CMAKE_CXX_FLAGS only if supported by compiler. ::
 #
 #   ecbuild_add_cxx_flags( <flag1> [ <flag2> ... ]
 #                          [ BUILD <build> ]
