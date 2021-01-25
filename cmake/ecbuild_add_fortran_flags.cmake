@@ -39,11 +39,11 @@ include( CheckFortranCompilerFlag )
 
 include(ecbuild_add_lang_flags)
 
-macro( ecbuild_add_fortran_flags m_fortran_flags )
-    ecbuild_add_lang_flags( ${m_fortran_flags} LANG Fortran )
+macro( ecbuild_add_fortran_flags )
+    ecbuild_add_lang_flags( ${ARGV} LANG Fortran )
 endmacro()
 
-macro( cmake_add_fortran_flags m_fortran_flags )
+macro( cmake_add_fortran_flags )
   ecbuild_deprecate( " cmake_add_fortran_flags is deprecated, use ecbuild_add_fortran_flags instead." )
-  ecbuild_add_fortran_flags( ${m_fortran_flags} )
+  ecbuild_add_fortran_flags( ${ARGV} )
 endmacro()

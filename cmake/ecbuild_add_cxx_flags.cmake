@@ -35,11 +35,11 @@
 
 include(ecbuild_add_lang_flags)
 
-macro( ecbuild_add_cxx_flags m_cxx_flags )
-    ecbuild_add_lang_flags( ${m_cxx_flags} LANG CXX )
+macro( ecbuild_add_cxx_flags )
+    ecbuild_add_lang_flags( ${ARGV} LANG CXX )
 endmacro()
 
-macro( cmake_add_cxx_flags m_cxx_flags )
+macro( cmake_add_cxx_flags )
   ecbuild_deprecate( " cmake_add_cxx_flags is deprecated, use ecbuild_add_cxx_flags instead." )
-  ecbuild_add_cxx_flags( ${m_cxx_flags} )
+  ecbuild_add_cxx_flags( ${ARGV} )
 endmacro()

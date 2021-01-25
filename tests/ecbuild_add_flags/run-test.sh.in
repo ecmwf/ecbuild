@@ -10,5 +10,4 @@ rm -rf build # cleanup
 mkdir build
 cd build
 
-@_EXPORTS@
-cmake @_CMDLINE_OPTS@ ..
+cmake -DCMAKE_MODULE_PATH=@ECBUILD_MACROS_DIR@ @_CMDLINE_OPTS@ ..

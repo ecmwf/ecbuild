@@ -44,7 +44,7 @@ function( ecbuild_add_lang_flags _in_flags )
 
   set( _flags ${_in_flags} )
 
-  # ecbuild_info( "calling ecbuild_add_lang_flags() with ${_in_flags}" )
+  ecbuild_debug( "calling ecbuild_  add_lang_flags() with ${ARGV}" )
 
   set( options NO_FAIL )
   set( single_value_args BUILD NAME LANG )
@@ -57,6 +57,8 @@ function( ecbuild_add_lang_flags _in_flags )
   else()
     ecbuild_critical("ecbuild_add_lang_flags() called without LANG parameter")
   endif()
+
+  # message( "CMAKE_${_lang}_COMPILER_LOADED [${CMAKE_${_lang}_COMPILER_LOADED}]" )
 
   if( CMAKE_${_lang}_COMPILER_LOADED )
 
@@ -76,8 +78,6 @@ function( ecbuild_add_lang_flags _in_flags )
     endif()
 
     if( _try_add_flag AND NOT _flag_ok )
-
-      # ecbuild_info( "var _try_add_flag [${_try_add_flag}]" )
 
       if( NOT DEFINED N_${_lang}_FLAG )
         set( N_${_lang}_FLAG 0 )
