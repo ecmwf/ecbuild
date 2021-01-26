@@ -30,7 +30,7 @@
 #   define the language to add the flag too
 #
 # BUILD : optional
-#   add flags to ``CMAKE_CXX_FLAGS_<build>`` instead of ``CMAKE_CXX_FLAGS``
+#   add flags to `CMAKE_${lang}_FLAGS_<build>` instead of `CMAKE_${lang}_FLAGS`
 #
 # NAME : optional
 #   name of the check (if omitted, checks are enumerated)
