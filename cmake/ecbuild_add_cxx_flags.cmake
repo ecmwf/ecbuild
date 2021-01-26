@@ -36,6 +36,7 @@
 include(ecbuild_add_lang_flags)
 
 macro( ecbuild_add_cxx_flags )
+    ecbuild_debug("call ecbuild_add_cxx_flags( ${ARGV} )")
     ecbuild_add_lang_flags( ${ARGV} LANG CXX )
 endmacro()
 

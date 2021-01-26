@@ -40,6 +40,7 @@ include( CheckFortranCompilerFlag )
 include(ecbuild_add_lang_flags)
 
 macro( ecbuild_add_fortran_flags )
+    ecbuild_debug("call ecbuild_add_fortran_flags( ${ARGV} )")
     ecbuild_add_lang_flags( ${ARGV} LANG Fortran )
 endmacro()
 

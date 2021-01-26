@@ -42,9 +42,9 @@
 
 function( ecbuild_add_lang_flags _in_flags )
 
-  set( _flags ${_in_flags} )
+  ecbuild_debug("call ecbuild_add_lang_flags( ${ARGV} )")
 
-  ecbuild_debug( "calling ecbuild_  add_lang_flags() with ${ARGV}" )
+  set( _flags ${_in_flags} )
 
   set( options NO_FAIL )
   set( single_value_args BUILD NAME LANG )
@@ -58,18 +58,9 @@ function( ecbuild_add_lang_flags _in_flags )
     ecbuild_critical("ecbuild_add_lang_flags() called without LANG parameter")
   endif()
 
-  # message( "CMAKE_${_lang}_COMPILER_LOADED [${CMAKE_${_lang}_COMPILER_LOADED}]" )
+  ecbuild_debug( "CMAKE_${_lang}_COMPILER_LOADED [${CMAKE_${_lang}_COMPILER_LOADED}]" )
 
   if( CMAKE_${_lang}_COMPILER_LOADED )
-
-    set( _try_add_flag TRUE )
-    if( _PAR_BUILD )
-      string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_CAPS )
-      string( TOUPPER ${_PAR_BUILD}  _PAR_BUILD_CAPS )
-      if( NOT CMAKE_BUILD_TYPE_CAPS MATCHES "${_PAR_BUILD_CAPS}" )
-        set( _try_add_flag FALSE )
-      endif()
-    endif()
 
     if( ECBUILD_TRUST_FLAGS )
       set( _flag_ok 1 )
@@ -77,7 +68,7 @@ function( ecbuild_add_lang_flags _in_flags )
       set( _flag_ok 0 )
     endif()
 
-    if( _try_add_flag AND NOT _flag_ok )
+    if( NOT _flag_ok )
 
       if( NOT DEFINED N_${_lang}_FLAG )
         set( N_${_lang}_FLAG 0 )
@@ -91,22 +82,22 @@ function( ecbuild_add_lang_flags _in_flags )
       endif()
 
       if(${_lang} STREQUAL "C")
-        # ecbuild_info( "check_c_compiler_flag( ${_flags} ${_PAR_NAME} )" )
+        ecbuild_debug( "check_c_compiler_flag( ${_flags} ${_PAR_NAME} )" )
         check_c_compiler_flag( ${_flags} ${_PAR_NAME} )
       endif()
       if(${_lang} STREQUAL "CXX")
-        # ecbuild_info( "check_cxx_compiler_flag( ${_flags} ${_PAR_NAME} )" )
+        ecbuild_debug( "check_cxx_compiler_flag( ${_flags} ${_PAR_NAME} )" )
         check_cxx_compiler_flag( ${_flags} ${_PAR_NAME} )
       endif()
       if(${_lang} STREQUAL "Fortran")
-        # ecbuild_info( "check_fortran_compiler_flag( ${_flags} ${_PAR_NAME} )" )
+        ecbuild_debug( "check_fortran_compiler_flag( ${_flags} ${_PAR_NAME} )" )
         check_fortran_compiler_flag( ${_flags} ${_PAR_NAME} )
       endif()
 
       set( _flag_ok ${${_PAR_NAME}} )
       ecbuild_debug( "${_lang} flag [${_flags}] check resulted [${_flag_ok}]" )
 
-    endif( _try_add_flag AND NOT _flag_ok )
+    endif( NOT _flag_ok )
 
     if( _flag_ok )
 
