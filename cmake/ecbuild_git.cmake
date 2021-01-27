@@ -62,7 +62,7 @@ endif()
 #
 ##############################################################################
 
-macro( ecbuild_git )
+function( ecbuild_git )
 
   set( options UPDATE NOREMOTE MANUAL RECURSIVE )
   set( single_value_args PROJECT DIR URL TAG BRANCH )
@@ -87,6 +87,12 @@ macro( ecbuild_git )
 
     get_filename_component( ABS_PAR_DIR "${_PAR_DIR}" ABSOLUTE )
     get_filename_component( PARENT_DIR  "${_PAR_DIR}/.." ABSOLUTE )
+
+    ### skip if direcory exists but is not a git repo
+    if( EXISTS "${_PAR_DIR}" AND IS_DIRECTORY "${_PAR_DIR}" AND NOT IS_DIRECTORY "${_PAR_DIR}/.git" )
+      ecbuild_info("Found source directory ${_PAR_DIR}. Not a GIT repo -- skipping git operations")
+      return()
+    endif()
 
     ### clone if no directory
 
@@ -242,4 +248,4 @@ macro( ecbuild_git )
 
   endif( ECBUILD_GIT )
 
-endmacro()
+endfunction()
