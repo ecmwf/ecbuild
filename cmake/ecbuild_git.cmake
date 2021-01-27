@@ -171,7 +171,7 @@ function( ecbuild_git )
                          WORKING_DIRECTORY "${ABS_PAR_DIR}"
                          COMMENT "git pull of branch ${_PAR_BRANCH} on ${_PAR_DIR}" )
 
-      set( git_update_targets "git_update_${_PAR_PROJECT};${git_update_targets}" )
+      set( git_update_targets "git_update_${_PAR_PROJECT};${git_update_targets}" PARENT_SCOPE )
 
     endif()
 
