@@ -68,7 +68,7 @@ if( CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang" )
     ecbuild_add_c_flags( "-pipe" NO_FAIL ) # don't fail if for some reason is not accepted
 endif()
 
-if( CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang" )
+if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
    ecbuild_add_cxx_flags( "-pipe" NO_FAIL ) # don't fail if for some reason is not accepted
 endif()
 
