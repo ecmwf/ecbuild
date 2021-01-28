@@ -14,4 +14,3 @@ foreach(str "bla" "1.2" "a(b)" "a[b]" "x++" "a\\0" "x*" "x?" "a|b" "$v" "^a")
     endif()
     math(EXPR testno "${testno} + 1")
 endforeach()
-
