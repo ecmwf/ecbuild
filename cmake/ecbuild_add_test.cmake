@@ -440,7 +440,7 @@ function( ecbuild_add_test )
       endif()
 
       # Set custom properties
-      if( ${_PAR_PROPERTIES} )
+      if( DEFINED _PAR_PROPERTIES )
         set_target_properties( ${_PAR_TARGET} PROPERTIES ${_PAR_PROPERTIES} )
       endif()
 
