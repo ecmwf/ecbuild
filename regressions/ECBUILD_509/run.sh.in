@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+
+ECBUILD_PATH=@CMAKE_SOURCE_DIR@/bin
+SRC_DIR=@CMAKE_CURRENT_SOURCE_DIR@/proj
+
+# Add ecbuild to path
+export PATH=$ECBUILD_PATH:$PATH
+
+cd $HERE
+
+# ---------------------- cleanup -----------------------
+rm -rf build
+
+# ----------------------- build ------------------------
+mkdir build
+cd build
+ecbuild -- $SRC_DIR
+make

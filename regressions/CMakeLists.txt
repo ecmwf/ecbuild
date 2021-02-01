@@ -4,6 +4,7 @@ add_subdirectory( ECBUILD_407 )
 add_subdirectory( ECBUILD_415 )
 add_subdirectory( ECBUILD_433 )
 add_subdirectory( ECBUILD_495 )
+add_subdirectory( ECBUILD_509 )
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
     add_subdirectory( ECBUILD_399 )
