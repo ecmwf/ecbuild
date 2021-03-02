@@ -56,6 +56,7 @@ ecbuild_add_test(
     TARGET     test_bar
     SOURCES    test.cc
     OBJECTS    zingo
+    PROPERTIES TIMEOUT 60
     LIBS       bar foo
 )
 
