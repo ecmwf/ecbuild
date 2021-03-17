@@ -404,7 +404,8 @@ function( ecbuild_add_test )
 
       # MPI_ARGS is left for users to define @ configure time e.g. -DMPI_ARGS="--oversubscribe"
       if( MPI_ARGS )
-        string(REPLACE " " ";" MPI_ARGS_LIST ${MPI_ARGS})
+        string(REGEX REPLACE "^\"(.*)\"$" "\\1" MPI_ARGS_REMOVED_OUTER_QUOTES ${MPI_ARGS} )
+        string(REPLACE " " ";" MPI_ARGS_LIST ${MPI_ARGS_REMOVED_OUTER_QUOTES})
       endif()
       set( _LAUNCH ${MPIEXEC} ${MPI_ARGS_LIST} ${MPIEXEC_TASKS} ${MPIEXEC_THREADS} )
 
@@ -440,7 +441,7 @@ function( ecbuild_add_test )
       endif()
 
       # Set custom properties
-      if( ${_PAR_PROPERTIES} )
+      if( DEFINED _PAR_PROPERTIES )
         set_target_properties( ${_PAR_TARGET} PROPERTIES ${_PAR_PROPERTIES} )
       endif()
 

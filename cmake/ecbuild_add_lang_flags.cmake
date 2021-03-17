@@ -78,7 +78,7 @@ function( ecbuild_add_lang_flags _in_flags )
       set( N_${_lang}_FLAG ${N_${_lang}_FLAG} PARENT_SCOPE ) # to increment across calls to this function
 
       if( NOT DEFINED _PAR_NAME )
-        set(_PAR_NAME ${_lang}_FLAG_TEST_${N_${_lang}_FLAG})
+        set(_PAR_NAME ${PROJECT_NAME}_${_lang}_FLAG_TEST_${N_${_lang}_FLAG})
       endif()
 
       if(${_lang} STREQUAL "C")
