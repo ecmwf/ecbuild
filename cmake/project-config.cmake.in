@@ -34,6 +34,12 @@ if(DEFINED ECBUILD_2_COMPAT AND ECBUILD_2_COMPAT)
   set(@PNAME@_IS_BUILD_DIR_EXPORT ${@PROJECT_NAME@_IS_BUILD_DIR_EXPORT})
 endif()
 
+### include the <project>-import.cmake file if there is one
+if(EXISTS ${@PROJECT_NAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@)
+  set(@PROJECT_NAME@_IMPORT_FILE "${@PROJECT_NAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@")
+  include(${@PROJECT_NAME@_IMPORT_FILE})
+endif()
+
 ### insert definitions for IMPORTED targets
 if(NOT @PROJECT_NAME@_BINARY_DIR)
   find_file(@PROJECT_NAME@_TARGETS_FILE
@@ -43,12 +49,6 @@ if(NOT @PROJECT_NAME@_BINARY_DIR)
   if(@PROJECT_NAME@_TARGETS_FILE)
     include(${@PROJECT_NAME@_TARGETS_FILE})
   endif()
-endif()
-
-### include the <project>-import.cmake file if there is one
-if(EXISTS ${@PROJECT_NAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@)
-  set(@PROJECT_NAME@_IMPORT_FILE "${@PROJECT_NAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@")
-  include(${@PROJECT_NAME@_IMPORT_FILE})
 endif()
 
 ### handle third-party dependencies
