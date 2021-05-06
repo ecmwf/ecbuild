@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+
+export ecbuild_ROOT=@PROJECT_BINARY_DIR@
+
+# --------------------- cleanup ------------------------
+rm -rf $HERE/projectA/build
+rm -rf $HERE/projectA/install
+rm -rf $HERE/projectB/build
+rm -rf $HERE/projectB/install
+rm -rf $HERE/projectC/build
+rm -rf $HERE/projectC/install
+
+# ------------------ build projectA --------------------
+cd $HERE
+mkdir -p projectA
+cd projectA
+
+projectA_ROOT=$PWD/install
+
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=$projectA_ROOT @projectA_SOURCE_DIR@
+make install
+
+# ------------------ build projectB --------------------
+cd $HERE
+mkdir -p projectB
+cd projectB
+
+projectB_ROOT=$PWD/install
+
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=$projectB_ROOT @projectB_SOURCE_DIR@
+make install
+
+# ------------------ build projectC --------------------
+cd $HERE
+mkdir -p projectC
+cd projectC
+
+mkdir build
+cd build
+cmake @projectC_SOURCE_DIR@

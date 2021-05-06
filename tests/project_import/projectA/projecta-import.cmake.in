@@ -1,0 +1,7 @@
+set(projectA_FOO @projectA_FOO@)
+
+if(TARGET libA)
+  message(FATAL_ERROR "libA should not be defined yet")
+else()
+  message("libA not defined yet, as expected")
+endif()
