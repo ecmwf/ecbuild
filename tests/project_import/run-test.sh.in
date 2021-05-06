@@ -43,6 +43,9 @@ cd $HERE
 mkdir -p projectC
 cd projectC
 
+export projectA_ROOT
+export projectB_ROOT
+
 mkdir build
 cd build
 cmake @projectC_SOURCE_DIR@
