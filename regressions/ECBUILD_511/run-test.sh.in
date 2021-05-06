@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+
+ECBUILD_PATH=@CMAKE_SOURCE_DIR@/bin
+SRC_DIR=@CMAKE_CURRENT_SOURCE_DIR@
+
+# Add ecbuild to path
+export PATH=$ECBUILD_PATH:$PATH
+
+# --------------------- cleanup ------------------------
+$HERE/clean.sh
+
+# ----------------- build projectAB ---------------------
+mkdir -p $HERE/bundleAB
+cd $HERE/bundleAB
+
+mkdir build
+cd build
+ecbuild --prefix=../install -- -DINSTALL_LIB_DIR=lib $SRC_DIR/bundleAB
+make install
+
+cd ..
+rm -rfv build
+
+# ----------------- build projectC ---------------------
+mkdir -p $HERE/projectC
+cd $HERE/projectC
+
+mkdir build
+cd build
+ecbuild --prefix=../install -- -DINSTALL_LIB_DIR=lib \
+    -DprojectA_DIR=$HERE/bundleAB/install/lib/cmake/projectA \
+    -DprojectB_DIR=$HERE/bundleAB/install/lib/cmake/projectB \
+    $SRC_DIR/projectC
+make install
+
+cd ..
+rm -rfv build
+
+# ----------------- run ---------------------
+cd $HERE
+
+projectC/install/bin/main | tee projectC_main.log
+grep -qF "libraryA = 4" projectC_main.log
+grep -qF "libraryB = 5" projectC_main.log
