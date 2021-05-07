@@ -37,15 +37,20 @@
 #
 # :<project>-config.cmake:         default project configuration
 # :<project>-config-version.cmake: project version number
-# :<project>-import.cmake:         extra project configuration (optional)
 # :<project>-targets.cmake:        exported targets
+# :<project>-import.cmake:         extra project configuration (optional)
+# :<project>-post-import.cmake:    extra project configuration (optional)
 #
 # For ``<project>-import.cmake`` to be exported to build and install tree,
 # ``<project>-import.cmake`` or ``<project>-import.cmake.in`` must exist in
-# the source tree. ``<project>-config.cmake.in`` and
-# ``<project>-config-version.cmake.in`` can be provided in the source tree to
-# override the default templates used to generate ``<project>-config.cmake``
-# and ``<project>-config-version.cmake``.
+# the source tree. The same applies for ``<project>-post-import.cmake``. The
+# 'import' file is included before defining the targets (e.g. to call
+# find_dependency), whereas the 'post-import' file is included after (e.g. to
+#
+# define aliases).
+# ``<project>-config.cmake.in`` and ``<project>-config-version.cmake.in`` can
+# be provided in the source tree to override the default templates used to
+# generate ``<project>-config.cmake`` and ``<project>-config-version.cmake``.
 #
 # If the project is added as a subdirectory, the following CMake variables
 # are set in the parent scope:
@@ -265,28 +270,31 @@ macro( ecbuild_install_project )
             set( CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}" )
         endif()
 
-        # Generate <project>-import.cmake (if it exists)
+        # Generate <project>-import.cmake and <project>-post-import.cmake (if they exist)
         set( CONF_IMPORT_FILE "${LNAME}-import.cmake" )
+        set( CONF_POST_IMPORT_FILE "${LNAME}-post-import.cmake" )
         foreach( prefix_ "" "cmake/" )
-            # If <project>-import.cmake.in exist in source tree, configure it to
-            # the build tree and install the configured version
-            if( EXISTS "${PROJECT_SOURCE_DIR}/${prefix_}${CONF_IMPORT_FILE}.in" )
-              ecbuild_debug( "Found ${PROJECT_SOURCE_DIR}/${CONF_IMPORT_FILE}.in - configuring to ${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" )
-              configure_file( "${PROJECT_SOURCE_DIR}/${prefix_}${CONF_IMPORT_FILE}.in"
-                              "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" @ONLY )
-              install( FILES "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}"
-                       DESTINATION "${INSTALL_CMAKE_DIR}" )
-            # Otherwise, if <project>-import.cmake exist in source tree, copy it to
-            # the build tree and install it
-            elseif( EXISTS "${PROJECT_SOURCE_DIR}/${prefix_}${CONF_IMPORT_FILE}" )
-              ecbuild_debug( "Found ${PROJECT_SOURCE_DIR}/${prefix}${CONF_IMPORT_FILE} - copying to ${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" )
-              configure_file( "${PROJECT_SOURCE_DIR}/${prefix_}${CONF_IMPORT_FILE}"
-                              "${PROJECT_BINARY_DIR}/${CONF_IMPORT_FILE}" COPYONLY )
-              install( FILES "${PROJECT_SOURCE_DIR}/${prefix_}${CONF_IMPORT_FILE}"
-                       DESTINATION "${INSTALL_CMAKE_DIR}" )
-            else()
-              ecbuild_debug( "No ${prefix_}${CONF_IMPORT_FILE} found in ${PROJECT_SOURCE_DIR}" )
-            endif()
+            foreach( import_file_ ${CONF_IMPORT_FILE} ${CONF_POST_IMPORT_FILE} )
+                # If <project>-[post-]import.cmake.in exist in source tree, configure it to
+                # the build tree and install the configured version
+                if( EXISTS "${PROJECT_SOURCE_DIR}/${prefix_}${import_file_}.in" )
+                  ecbuild_debug( "Found ${PROJECT_SOURCE_DIR}/${import_file_}.in - configuring to ${PROJECT_BINARY_DIR}/${import_file_}" )
+                  configure_file( "${PROJECT_SOURCE_DIR}/${prefix_}${import_file_}.in"
+                                  "${PROJECT_BINARY_DIR}/${import_file_}" @ONLY )
+                  install( FILES "${PROJECT_BINARY_DIR}/${import_file_}"
+                           DESTINATION "${INSTALL_CMAKE_DIR}" )
+                # Otherwise, if <project>-[post-]import.cmake exist in source tree, copy it to
+                # the build tree and install it
+                elseif( EXISTS "${PROJECT_SOURCE_DIR}/${prefix_}${import_file_}" )
+                  ecbuild_debug( "Found ${PROJECT_SOURCE_DIR}/${prefix}${import_file_} - copying to ${PROJECT_BINARY_DIR}/${import_file_}" )
+                  configure_file( "${PROJECT_SOURCE_DIR}/${prefix_}${import_file_}"
+                                  "${PROJECT_BINARY_DIR}/${import_file_}" COPYONLY )
+                  install( FILES "${PROJECT_SOURCE_DIR}/${prefix_}${import_file_}"
+                           DESTINATION "${INSTALL_CMAKE_DIR}" )
+                else()
+                  ecbuild_debug( "No ${prefix_}${import_file_} found in ${PROJECT_SOURCE_DIR}" )
+                endif()
+            endforeach()
         endforeach()
 
         # Generate the <project>-config.cmake
