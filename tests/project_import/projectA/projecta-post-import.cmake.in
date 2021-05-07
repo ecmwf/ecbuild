@@ -1,0 +1,7 @@
+set(projectA_BAR @projectA_BAR@)
+
+if(NOT TARGET libA)
+  message(FATAL_ERROR "libA not defined")
+else()
+  message("libA defined as expected")
+endif()
