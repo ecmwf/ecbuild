@@ -24,7 +24,7 @@ help()
     cat <<EOF
 USAGE:
 
-  ecbuild [--help] [--version] [--toolchains]
+  ecbuild [--help] [--version]
   ecbuild [option...] [--] [cmake-argument...] <path-to-source>
   ecbuild [option...] [--] [cmake-argument...] <path-to-existing-build>
 
@@ -41,8 +41,6 @@ SYNOPSIS:
 
     --help         Display this help
     --version      Display ecbuild version
-    --toolchains   Display list of pre-installed toolchains (see below)
-
 
 Available values for "option":
 
@@ -89,9 +87,7 @@ Available values for "option":
     --toolchain=<toolchain>
           Use a platform specific toolchain, containing settings such
           as compilation flags, locations of commonly used dependencies.
-          <toolchain> can be the path to a custom toolchain file, or a
-          pre-installed toolchain provided with ecbuild. For a list of
-          pre-installed toolchains, run "ecbuild --toolchains".
+          <toolchain> should be the path to a custom toolchain file.
           Equivalent to cmake argument "-DCMAKE_TOOLCHAIN_FILE=<toolchain-file>"
 
     --cache=<ecbuild-cache-file>    (advanced)
@@ -186,12 +182,6 @@ fi
 
 ADD_ECBUILD_OPTIONS="-DCMAKE_MODULE_PATH=$ECBUILD_MODULE_PATH"
 
-if [ -d $INSTALL_DIR/../share/ecbuild/toolchains ]; then
-  ECBUILD_TOOLCHAIN_DIR="$( cd "$INSTALL_DIR/../share/ecbuild/toolchains" && pwd -P )"
-elif [ -d $INSTALL_DIR/share/ecbuild/toolchains ]; then
-  ECBUILD_TOOLCHAIN_DIR="$( cd "$INSTALL_DIR/share/ecbuild/toolchains" && pwd -P )"
-fi
-
 version()
 {
   ecbuild_version=$(cat ${ECBUILD_MODULE_PATH}/VERSION)
@@ -205,22 +195,6 @@ log()
 {
   log_level=$(tr "[a-z]" "[A-Z]" <<< "$1")
   ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DECBUILD_LOG_LEVEL=${log_level}"
-}
-
-toolchains()
-{
-  if [ -d $ECBUILD_TOOLCHAIN_DIR ]; then
-    cd $ECBUILD_TOOLCHAIN_DIR
-    echo "Available toolchains:"
-    ls | while read fname
-    do
-        echo "  - ${fname%%.*}"
-    done
-    exit 0
-  else
-    echo "No toolchains available."
-    exit 1
-  fi
 }
 
 prefix()
@@ -247,10 +221,6 @@ toolchain()
   arg=${1/#\~\//$HOME/}
   if [ -f $arg ]; then
     toolchain_file=$arg
-  else
-    if [ -f $ECBUILD_TOOLCHAIN_DIR/$arg.cmake ]; then
-      toolchain_file=$ECBUILD_TOOLCHAIN_DIR/$arg.cmake
-    fi
   fi
   if [ -z ${toolchain_file+x} ]; then
     echo "Error:"
@@ -315,9 +285,6 @@ while test $# -gt 0; do
         ;;
       --dryrun)
         dryrun="yes"
-        ;;
-      --toolchains)
-        toolchains
         ;;
       --cmakebin)
         cmakebin="$val"
