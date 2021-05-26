@@ -223,7 +223,7 @@ toolchain()
     toolchain_file=$arg
   fi
   if [ -z ${toolchain_file+x} ]; then
-    echo "Error toolchain $arg.cmake is not valid"
+    echo "Error toolchain $arg is not valid"
     exit 1
   else
     ADD_ECBUILD_OPTIONS="$ADD_ECBUILD_OPTIONS -DCMAKE_TOOLCHAIN_FILE=${toolchain_file}"
