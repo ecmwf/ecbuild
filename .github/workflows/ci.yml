@@ -1,0 +1,99 @@
+##########################################################
+# CI workflow file generated using Cookiecutter          #
+# DO NOT EDIT MANUALLY, ANY CHANGES WILL BE OVERWRITTEN! #
+##########################################################
+
+name: Continuous Integration
+
+# Controls when the action will run
+on:
+
+  # Trigger the workflow on all pushes, except on tag creation
+  push:
+    branches:
+    - '**'
+    tags-ignore:
+    - '**'
+
+  # Trigger the workflow on all pull requests
+  pull_request: ~
+
+  # Allow workflow to be dispatched on demand
+  workflow_dispatch: ~
+
+jobs:
+
+  ci:
+    name: Build & Test
+    strategy:
+      matrix:
+        name:
+        - ubuntu-20.04
+        - ubuntu-18.04
+        - macos-10.15
+        include:
+        - name: ubuntu-20.04
+          os: ubuntu-20.04
+        - name: ubuntu-18.04
+          os: ubuntu-18.04
+        - name: macos-10.15
+          os: macos-10.15
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setup Environment
+      env:
+        OS: ${{ matrix.os }}
+      shell: bash -eux {0}
+      run: |
+        # Get installed CMake version number.
+        CMAKE_VERSION="$( cmake -E capabilities | jq .version.string | tr -d '"' )"
+        echo "CMAKE_VERSION=$CMAKE_VERSION" >> $GITHUB_ENV
+
+        # Linking against system OpenSSL library is not permitted on macOS.
+        #   Instead, we link against Homebrew version.
+        if [[ "${OS}" == "macos-10.15" ]]; then
+            OPENSSL_ROOT_DIR="$(brew --prefix openssl@1.1)"
+            OPENSSL_INCLUDE_DIR="$(brew --prefix openssl@1.1)/include"
+            echo "OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR" >> $GITHUB_ENV
+            echo "OPENSSL_INCLUDE_DIR=$OPENSSL_INCLUDE_DIR" >> $GITHUB_ENV
+        fi
+
+    - name: Build & Test
+      env:
+        LOCAL_PATH: ''
+        INSTALL_DIR: ${{ runner.temp }}/install
+        CC: ${{ matrix.compiler_cc }}
+        CXX: ${{ matrix.compiler_cxx }}
+        FC: ${{ matrix.compiler_fc }}
+      shell: bash -eux {0}
+      run: |
+        export PATH="$LOCAL_PATH:$PATH"
+
+        SRC_DIR=$(pwd)
+        BUILD_DIR=build
+        COMPILER_FLAGS=$(cat .github/.compiler-flags || true)
+
+        rm -rf $BUILD_DIR
+        mkdir $BUILD_DIR
+        cd $BUILD_DIR
+
+        ../bin/ecbuild --prefix=$INSTALL_DIR -- $COMPILER_FLAGS $SRC_DIR
+        make test -j2
+        make install
+
+    - name: Archive Build Artifact
+      env:
+        INSTALL_DIR: ${{ runner.temp }}/install
+        TMP_DIR: ${{ runner.temp }}
+      run: tar -C $INSTALL_DIR -cvf $TMP_DIR/ecbuild-${{ matrix.os }}-cmake-${{ env.CMAKE_VERSION }}.tar .
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v2
+      env:
+        TMP_DIR: ${{ runner.temp }}
+      with:
+        name: ecbuild-${{ matrix.os }}-cmake-${{ env.CMAKE_VERSION }}
+        path: ${{ env.TMP_DIR }}/ecbuild-${{ matrix.os }}-cmake-${{ env.CMAKE_VERSION }}.tar
