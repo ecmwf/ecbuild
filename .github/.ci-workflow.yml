@@ -1,0 +1,17 @@
+# This is a Cookiecutter configuration file, which can be used to re-generate the associated CI workflow:
+#
+#   cookiecutter ssh://git@git.ecmwf.int/~madv/cookiecutters.git --directory ci-workflow --overwrite-if-exists \
+#     --config-file /path/to/ecbuild/.github/.ci-workflow.yml --no-input --output-dir /path/to
+#
+default_context:
+  project_name: 'ecbuild'
+  project_dir: 'ecbuild'
+  branch_name: 'develop'
+  build_dependencies: ' '
+  os_platforms: 'ubuntu-20.04,ubuntu-18.04,macos-10.15'
+  ubuntu-20.04_compilers: ' '
+  ubuntu-18.04_compilers: ' '
+  macos-10.15_compilers: ' '
+  is_python_module: 'n'
+  has_github_release: 'n'
+  notify_maintainers: 'n'
