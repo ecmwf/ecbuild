@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef @PROJECT_NAME@_ecbuild_config_h
-#define @PROJECT_NAME@_ecbuild_config_h
+#ifndef @PNAME@_ecbuild_config_h
+#define @PNAME@_ecbuild_config_h
 
 /* ecbuild info */
 
@@ -69,4 +69,4 @@
 
 #endif
 
-#endif /* @PROJECT_NAME@_ecbuild_config_h */
+#endif /* @PNAME@_ecbuild_config_h */
