@@ -28,7 +28,7 @@
 # 2) Find MKL implementation via FFTW_ENABLE_MKL
 #    --> If FFTW_ENABLE_MKL is explicitely set to ON, only MKL is considered
 #        If FFTW_ENABLE_MKL is explictely set to OFF, MKL will not be considered
-#        If FFTW_ENABLE_MKL is undefined, MKL is preferred
+#        If FFTW_ENABLE_MKL is undefined, MKL is preferred unless ENABLE_MKL is explicitely set to OFF
 #    --> MKLROOT environment variable helps to detect MKL (See FindMKL.cmake)
 #
 # 3) Find official FFTW impelementation
@@ -106,11 +106,13 @@ endforeach()
 FFTW_CHECK_ALL_COMPONENTS()
 if( NOT FFTW_FOUND_ALL_COMPONENTS )
 
-    if( NOT DEFINED FFTW_ENABLE_MKL )
+    if( NOT DEFINED FFTW_ENABLE_MKL AND NOT DEFINED ENABLE_MKL )
         set( FFTW_ENABLE_MKL ON )
         set( FFTW_FindMKL_OPTIONS QUIET )
     elseif( FFTW_ENABLE_MKL )
         set( FFTW_MKL_REQUIRED TRUE )
+    elseif( ENABLE_MKL AND NOT DEFINED FFTW_ENABLE_MKL )
+        set( FFTW_ENABLE_MKL ON )
     endif()
 
     if( FFTW_ENABLE_MKL )
