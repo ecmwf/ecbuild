@@ -41,7 +41,8 @@ function( ecbuild_generate_config_headers )
 
   # generate list of compiler flags
 
-  string( TOUPPER ${PROJECT_NAME} PNAME )
+  string( TOUPPER ${PROJECT_NAME} PNAME_UPPER )
+  string( MAKE_C_IDENTIFIER "${PNAME_UPPER}" PNAME )
 
   get_property( langs GLOBAL PROPERTY ENABLED_LANGUAGES )
 
