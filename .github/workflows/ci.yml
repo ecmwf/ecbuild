@@ -1,6 +1,6 @@
 name: ci
 
-# Controls when the action will run
+# Controls when the workflow will run
 on:
 
   # Trigger the workflow on all pushes, except on tag creation
@@ -17,18 +17,14 @@ on:
   workflow_dispatch: ~
 
 jobs:
+
+  # Calls a reusable CI workflow to build & test the current repository.
+  #   We skip jobs that will result in duplicate artifacts, since the code does not depend on the compiler.
   ci:
     name: ci
-    strategy:
-      matrix:
-        os:
-        - ubuntu-20.04
-        - ubuntu-18.04
-        - macos-10.15
-    runs-on: ${{ matrix.os }}
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
-    - name: Build & Test
-      uses: ecmwf-actions/build-package@v1
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@v1
+    with:
+      skip_matrix_jobs: |
+        clang-12@ubuntu-20.04
+        clang-9@ubuntu-18.04
+        clang-12@macos-10.15
