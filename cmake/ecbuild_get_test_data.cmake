@@ -10,7 +10,7 @@
 
 # function for downloading test data
 
-function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXISTS _p_INSECURE_CURL )
+function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXISTS _p_INSECURE )
 
   # TODO: make that 'at ecmwf'
   #if(1)
@@ -60,28 +60,32 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
 
       add_custom_command( OUTPUT ${_p_NAME}
         COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
-        if( ${_p_INSECURE_CURL} )
-          COMMAND ${CURL_PROGRAM} --insecure --silent --show-error --fail --output ${_p_DIRLOCAL}/${_p_NAME}
-                  --retry ${ECBUILD_DOWNLOAD_RETRIES}
-                  --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
-                  ${_p_DIR_URL}/${_p_NAME} )
+        if( _p_INSECURE )
+          set( INSECURE_CURL "--insecure" )
         else()
-          COMMAND ${CURL_PROGRAM} --silent --show-error --fail --output ${_p_DIRLOCAL}/${_p_NAME}
-                  --retry ${ECBUILD_DOWNLOAD_RETRIES}
-                  --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
-                  ${_p_DIR_URL}/${_p_NAME} )
+          set( INSECURE_CURL "" )
         endif()
+
+        COMMAND ${CURL_PROGRAM} ${INSECURE_CURL} --silent --show-error --fail --output ${_p_DIRLOCAL}/${_p_NAME}
+        --retry ${ECBUILD_DOWNLOAD_RETRIES}
+        --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
+        ${_p_DIR_URL}/${_p_NAME} )
 
   else()
 
       # wget takes the total number of tries, curl the number or retries
       math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
+      if( _p_INSECURE )
+        set( INSECURE_WGET "--no-check-certificate" )
+      else()
+        set( INSECURE_WGET "" )
+      endif()
 
       if( _p_CHECK_FILE_EXISTS )
 
         add_custom_command( OUTPUT ${_p_NAME}
           COMMENT "(wget) downloading ${_p_DIR_URL}/${_p_NAME}"
-          COMMAND ${WGET_PROGRAM} -c -nv -O ${_p_DIRLOCAL}/${_p_NAME}
+          COMMAND ${WGET_PROGRAM} -c -nv -O ${_p_DIRLOCAL}/${_p_NAME} ${INSECURE_WGET}
                   -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
                   ${_p_DIR_URL}/${_p_NAME} )
 
@@ -89,7 +93,7 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
 
         add_custom_command( OUTPUT ${_p_NAME}
           COMMENT "(wget) downloading ${_p_DIR_URL}/${_p_NAME}"
-          COMMAND ${WGET_PROGRAM} -nv -O ${_p_DIRLOCAL}/${_p_NAME}
+          COMMAND ${WGET_PROGRAM} -nv -O ${_p_DIRLOCAL}/${_p_NAME} ${INSECURE_WGET}
                   -t ${ECBUILD_DOWNLOAD_RETRIES} -T ${ECBUILD_DOWNLOAD_TIMEOUT}
                   ${_p_DIR_URL}/${_p_NAME} )
 
@@ -114,7 +118,7 @@ endfunction()
 #                          [ MD5 <hash> ]
 #                          [ EXTRACT ]
 #                          [ NOCHECK ] 
-#                          [ INSECURE_CURL ])
+#                          [ INSECURE ])
 #
 # curl or wget is required (curl is preferred if available).
 #
@@ -143,8 +147,8 @@ endfunction()
 # NOCHECK : optional
 #   do not verify the md5 checksum of the data file
 #
-# INSECURE_CURL : optional
-#   explicitly allows curl to perform "insecure" SSL connections
+# INSECURE : optional
+#   explicitly allows curl and wget to perform "insecure" SSL connections
 #
 # Usage
 # -----
@@ -184,8 +188,8 @@ endfunction()
 
 function( ecbuild_get_test_data )
 
-    set( options NOCHECK EXTRACT INSECURE_CURL)
-    set( single_value_args TARGET NAME DIRNAME DIRLOCAL MD5 SHA1)
+    set( options NOCHECK EXTRACT INSECURE )
+    set( single_value_args TARGET NAME DIRNAME DIRLOCAL MD5 SHA1 )
     set( multi_value_args  )
 
     cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -233,7 +237,7 @@ function( ecbuild_get_test_data )
       set( CHECK_FILE_EXISTS OFF)
     endif()
 
-    if( NOT _p_INSECURE_CURL )
+    if( _p_INSECURE )
       # allow insecure curl SSL connection 
       set( ALLOW_INSECURE_CURL ON)
     else()
@@ -333,7 +337,7 @@ endfunction(ecbuild_get_test_data)
 #                               [ LABELS <label1> [<label2> ...] ]
 #                               [ EXTRACT ]
 #                               [ NOCHECK ] 
-#                               [ INSECURE_CURL ] )
+#                               [ INSECURE ] )
 #
 # curl or wget is required (curl is preferred if available).
 #
@@ -366,8 +370,8 @@ endfunction(ecbuild_get_test_data)
 # NOCHECK : optional
 #   do not verify the md5 checksum of the data file
 #
-# INSECURE_CURL : optional
-#   explicitly allows curl to perform "insecure" SSL connections
+# INSECURE : optional
+#   explicitly allows curl and wget to perform "insecure" SSL connections
 #
 # Usage
 # -----
@@ -409,7 +413,7 @@ endfunction(ecbuild_get_test_data)
 
 function( ecbuild_get_test_multidata )
 
-    set( options EXTRACT NOCHECK INSECURE_CURL)
+    set( options EXTRACT NOCHECK INSECURE )
     set( single_value_args TARGET DIRNAME DIRLOCAL )
     set( multi_value_args  NAMES LABELS )
 
