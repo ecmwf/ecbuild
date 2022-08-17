@@ -156,7 +156,7 @@ endfunction()
 # Download test data from ``<ECBUILD_DOWNLOAD_BASE_URL>/<DIRNAME>/<NAME>``
 #
 # If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
-# ``http://download.ecmwf.org/test-data`` is used.
+# ``https://get.ecmwf.int/repository/test-data`` is used.
 #
 # If the ``DIRNAME`` argument is not given, test data will be downloaded
 # from ``<ECBUILD_DOWNLOAD_BASE_URL>/<project>/<relative path to current dir>/<NAME>``
@@ -218,7 +218,7 @@ function( ecbuild_get_test_data )
 
     # Allow the user to override the base download URL (ECBUILD-447)
     if( NOT DEFINED ECBUILD_DOWNLOAD_BASE_URL )
-      set( ECBUILD_DOWNLOAD_BASE_URL http://download.ecmwf.org/test-data )
+      set( ECBUILD_DOWNLOAD_BASE_URL https://get.ecmwf.int/repository/test-data )
     endif()
 
     # Set download URL
@@ -382,7 +382,7 @@ endfunction(ecbuild_get_test_data)
 # md5 checksum, separated with a ``:`` (the name must not contain spaces).
 #
 # If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
-# ``http://download.ecmwf.org/test-data`` is used.
+# ``https://get.ecmwf.int/repository/test-data`` is used.
 #
 # If the ``DIRNAME`` argument is not given, test data will be downloaded
 # from ``<ECBUILD_DOWNLOAD_BASE_URL>/<project>/<relative path to current dir>/<NAME>``
