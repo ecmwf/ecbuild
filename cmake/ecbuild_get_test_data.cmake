@@ -27,7 +27,11 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
   if( NOT DEFINED ECBUILD_DOWNLOAD_TIMEOUT )
     set( ECBUILD_DOWNLOAD_TIMEOUT 30 )
   endif()
- 
+  # Allow insecure download as a global option
+  if( NOT DEFINED ECBUILD_DOWNLOAD_INSECURE OR NOT ECBUILD_DOWNLOAD_INSECURE )
+    set( ECBUILD_DOWNLOAD_INSECURE _p_INSECURE )
+  endif()
+
   find_program( CURL_PROGRAM curl )
   mark_as_advanced(CURL_PROGRAM)
   find_program( WGET_PROGRAM wget )
@@ -58,7 +62,7 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
 
   if( use_curl )
 
-      if( _p_INSECURE )
+      if( ECBUILD_DOWNLOAD_INSECURE )
         set( INSECURE_CURL "--insecure" )
       else()
         set( INSECURE_CURL "" )
@@ -75,7 +79,7 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
 
       # wget takes the total number of tries, curl the number or retries
       math( EXPR ECBUILD_DOWNLOAD_RETRIES "${ECBUILD_DOWNLOAD_RETRIES} + 1" )
-      if( _p_INSECURE )
+      if( ECBUILD_DOWNLOAD_INSECURE )
         set( INSECURE_WGET "--no-check-certificate" )
       else()
         set( INSECURE_WGET "" )
