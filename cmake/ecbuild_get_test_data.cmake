@@ -58,14 +58,14 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
 
   if( use_curl )
 
+      if( _p_INSECURE )
+        set( INSECURE_CURL "--insecure" )
+      else()
+        set( INSECURE_CURL "" )
+      endif()
+
       add_custom_command( OUTPUT ${_p_NAME}
         COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
-        if( _p_INSECURE )
-          set( INSECURE_CURL "--insecure" )
-        else()
-          set( INSECURE_CURL "" )
-        endif()
-
         COMMAND ${CURL_PROGRAM} ${INSECURE_CURL} --silent --show-error --fail --output ${_p_DIRLOCAL}/${_p_NAME}
         --retry ${ECBUILD_DOWNLOAD_RETRIES}
         --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
@@ -238,16 +238,16 @@ function( ecbuild_get_test_data )
     endif()
 
     if( _p_INSECURE )
-      # allow insecure curl SSL connection 
-      set( ALLOW_INSECURE_CURL ON)
+      # allow insecure SSL connection
+      set( ALLOW_INSECURE ON)
     else()
-      # do not allow insecure curl SSL connection
-      set( ALLOW_INSECURE_CURL OFF)
+      # do not allow insecure SSL connection
+      set( ALLOW_INSECURE OFF)
     endif()
 
     # download the data
 
-    _download_test_data( ${_p_NAME} ${DOWNLOAD_URL} ${_p_DIRLOCAL} ${CHECK_FILE_EXISTS} ${ALLOW_INSECURE_CURL})
+    _download_test_data( ${_p_NAME} ${DOWNLOAD_URL} ${_p_DIRLOCAL} ${CHECK_FILE_EXISTS} ${ALLOW_INSECURE})
 
     # perform the checksum if requested
 
@@ -262,7 +262,7 @@ function( ecbuild_get_test_data )
 		                WORKING_DIRECTORY ${_p_DIRLOCAL}
                                 DEPENDS ${_p_NAME} )
 
-            _download_test_data( ${_p_NAME}.md5 ${DOWNLOAD_URL} ${_p_DIRLOCAL} OFF ${_p_INSECURE_CURL})
+            _download_test_data( ${_p_NAME}.md5 ${DOWNLOAD_URL} ${_p_DIRLOCAL} OFF ${ALLOW_INSECURE})
 
             add_custom_command( OUTPUT ${_p_NAME}.ok
                                 COMMAND ${CMAKE_COMMAND} -E compare_files ${_p_NAME}.md5 ${_p_NAME}.localmd5 &&
@@ -445,8 +445,8 @@ function( ecbuild_get_test_multidata )
       set( _nocheck NOCHECK )
     endif()
 
-    if( _p_INSECURE_CURL )
-      set( _insec_curl INSECURE_CURL )
+    if( _p_INSECURE )
+      set( _insecure INSECURE )
     endif()
 
     ### prepare file
@@ -487,7 +487,7 @@ endfunction()\n\n" )
         ecbuild_get_test_data(
             TARGET __get_data_${_p_TARGET}_${_name}
             DIRLOCAL ${_p_DIRLOCAL}
-            NAME ${_file} ${_DIRNAME} ${_md5} ${_extract} ${_nocheck} ${_insec_curl})
+            NAME ${_file} ${_DIRNAME} ${_md5} ${_extract} ${_nocheck} ${_insecure})
 
         if ( ${CMAKE_GENERATOR} MATCHES Ninja )
           set( _fast "" )
