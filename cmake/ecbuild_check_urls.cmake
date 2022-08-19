@@ -62,7 +62,7 @@ function(ecbuild_check_urls)
 
     # Allow the user to override the download URL (ECBUILD-447)
     if( NOT DEFINED ECBUILD_DOWNLOAD_BASE_URL )
-      set( ECBUILD_DOWNLOAD_BASE_URL http://download.ecmwf.org/test-data )
+      set( ECBUILD_DOWNLOAD_BASE_URL https://get.ecmwf.int/repository/test-data )
     endif()
 
     # Do not retry downloads by default (ECBUILD-307)
