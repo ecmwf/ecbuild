@@ -120,7 +120,7 @@ foreach( _comp ${_search_components} )
   find_library(NetCDF_${_comp}_LIBRARY
     NAMES ${NetCDF_${_comp}_LIBRARY_NAME}
     DOC "netcdf ${_comp} library"
-    HINTS ${_search_hints}
+    HINTS ${_search_hints_${_comp}} ${_search_hints}
     PATH_SUFFIXES lib ../../lib
   )
   mark_as_advanced(NetCDF_${_comp}_LIBRARY)
