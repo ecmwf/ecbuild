@@ -57,7 +57,7 @@ set( NetCDF_Fortran_INCLUDE_NAME    netcdf.mod NETCDF.mod )
 
 ## Library names for each component
 set( NetCDF_C_LIBRARY_NAME          netcdf )
-set( NetCDF_CXX_LIBRARY_NAME        netcdf_c++4 )
+set( NetCDF_CXX_LIBRARY_NAME        netcdf_c++4 netcdf-cxx4 )
 set( NetCDF_CXX_LEGACY_LIBRARY_NAME netcdf_c++ )
 set( NetCDF_Fortran_LIBRARY_NAME    netcdff )
 
