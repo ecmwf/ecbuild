@@ -21,6 +21,7 @@
 #                           [ OBJECTS <obj1> [<obj2> ...] ]
 #                           [ TEMPLATES <template1> [<template2> ...] ]
 #                           [ LIBS <library1> [<library2> ...] ]
+#                           [ NO_AS_NEEDED ]
 #                           [ INCLUDES <path1> [<path2> ...] ]
 #                           [ DEFINITIONS <definition1> [<definition2> ...] ]
 #                           [ PERSISTENT <file1> [<file2> ...] ]
@@ -61,6 +62,9 @@
 #
 # LIBS : optional
 #   list of libraries to link against (CMake targets or external libraries)
+#
+# NO_AS_NEEDED: optional
+#   add --no-as-needed linker flag, to prevent striping libraries that looks like are not used
 #
 # INCLUDES : optional
 #   list of paths to add to include directories
@@ -137,7 +141,7 @@
 
 function( ecbuild_add_executable )
 
-  set( options NOINSTALL AUTO_VERSION )
+  set( options NOINSTALL AUTO_VERSION NO_AS_NEEDED )
   set( single_value_args TARGET COMPONENT LINKER_LANGUAGE VERSION OUTPUT_NAME )
   set( multi_value_args SOURCES SOURCES_GLOB SOURCES_EXCLUDE_REGEX OBJECTS
                         TEMPLATES LIBS INCLUDES DEPENDS PERSISTENT DEFINITIONS
@@ -238,7 +242,11 @@ function( ecbuild_add_executable )
       list(REMOVE_ITEM _PAR_LIBS debug)
       list(REMOVE_ITEM _PAR_LIBS optimized)
       ecbuild_filter_list(LIBS LIST ${_PAR_LIBS} LIST_INCLUDE lib LIST_EXCLUDE skipped_lib)
-      target_link_libraries( ${_PAR_TARGET} ${lib} )
+      if ( _PAR_NO_AS_NEEDED AND CMAKE_SYSTEM_NAME MATCHES "Linux" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
+        target_link_libraries( ${_PAR_TARGET} ${lib} -Wl,--no-as-needed )
+      else()
+        target_link_libraries( ${_PAR_TARGET} ${lib} )
+      endif()
       ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): linking with [${lib}]")
       ecbuild_debug("ecbuild_add_executable(${_PAR_TARGET}): [${skipped_lib}] not found - not linking")
     endif()
