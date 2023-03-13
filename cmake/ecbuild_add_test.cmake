@@ -107,7 +107,7 @@
 #   list of libraries to link against (CMake targets or external libraries)
 #
 # NO_AS_NEEDED: optional
-#   add --no-as-needed linker flag, to prevent striping libraries that looks like are not used
+#   add --no-as-needed linker flag, to prevent stripping libraries that looks like are not used
 #
 # INCLUDES : optional
 #   list of paths to add to include directories
