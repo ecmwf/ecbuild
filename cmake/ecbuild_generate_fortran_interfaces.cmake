@@ -78,9 +78,10 @@ function( ecbuild_generate_fortran_interfaces )
                   PATH_SUFFIXES bin )
   if (NOT FCM_EXECUTABLE)
     include(FetchContent)
+    set(ECBUILD_FCM_VERSION "2019.09.0" CACHE STRING "FCM version used to generate Fortran interfaces")
     FetchContent_Populate(
       fcm
-      URL            https://github.com/metomi/fcm/archive/refs/tags/2019.09.0.tar.gz
+      URL            "https://github.com/metomi/fcm/archive/refs/tags/${ECBUILD_FCM_VERSION}.tar.gz"
       SOURCE_DIR     ${CMAKE_BINARY_DIR}/fcm
       BINARY_DIR     ${CMAKE_BINARY_DIR}/_deps/fcm-build
       SUBBUILD_DIR   ${CMAKE_BINARY_DIR}/_deps/fcm-subbuild
