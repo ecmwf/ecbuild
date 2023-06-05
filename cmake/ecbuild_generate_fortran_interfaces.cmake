@@ -69,7 +69,24 @@
 
 function( ecbuild_generate_fortran_interfaces )
 
-  find_program( FCM_EXECUTABLE fcm REQUIRED DOC "Fortran interface generator" )
+  find_program( FCM_EXECUTABLE fcm DOC "Fortran interface generator"
+                HINTS
+                  ${CMAKE_SOURCE_DIR}/fcm
+                  ${CMAKE_BINARY_DIR}/fcm
+                  ${fcm_ROOT}
+                  ENV fcm_ROOT
+                  PATH_SUFFIXES bin )
+  if (NOT FCM_EXECUTABLE)
+    include(FetchContent)
+    FetchContent_Populate(
+      fcm
+      URL            https://github.com/metomi/fcm/archive/refs/tags/2019.09.0.tar.gz
+      SOURCE_DIR     ${CMAKE_BINARY_DIR}/fcm
+      BINARY_DIR     ${CMAKE_BINARY_DIR}/_deps/fcm-build
+      SUBBUILD_DIR   ${CMAKE_BINARY_DIR}/_deps/fcm-subbuild
+    )
+    set( FCM_EXECUTABLE ${CMAKE_BINARY_DIR}/fcm/bin/fcm )
+  endif()
 
   if( NOT FCM_EXECUTABLE )
     ecbuild_error( "ecbuild_generate_fortran_interfaces: fcm executable not found." )
