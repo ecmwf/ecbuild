@@ -229,4 +229,8 @@ endif()
 
 include( ecbuild_setup_test_framework )         # setup test framework
 
+ecbuild_add_option( FEATURE PKGCONFIG
+                    DEFAULT ON
+                    DESCRIPTION "Enable ecbuild_pkgconfig" )
+
 endmacro( ecbuild_declare_project )

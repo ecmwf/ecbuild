@@ -353,7 +353,7 @@ endfunction(ecbuild_pkgconfig_include)
 ##############################################################################
 
 function( ecbuild_pkgconfig )
-
+if(HAVE_PKGCONFIG)
   set( options REQUIRES NO_PRIVATE_INCLUDE_DIRS )
   set( single_value_args FILENAME NAME TEMPLATE URL DESCRIPTION )
   set( multi_value_args LIBRARIES IGNORE_INCLUDE_DIRS IGNORE_LIBRARIES VARIABLES LANGUAGES )
@@ -503,5 +503,5 @@ function( ecbuild_pkgconfig )
   install( FILES ${PKGCONFIG_DIR}/${_PAR_FILENAME} DESTINATION ${INSTALL_LIB_DIR}/pkgconfig )
 
   ecbuild_info( "pkg-config file to be created during build: ${_PAR_FILENAME}" )
-
+endif()
 endfunction(ecbuild_pkgconfig)
