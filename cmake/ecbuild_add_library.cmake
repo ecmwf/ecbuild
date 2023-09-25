@@ -454,7 +454,7 @@ function( ecbuild_add_library_impl )
       endif()
     endif()
 
-    if( NOT _PAR_TYPE MATCHES "OBJECT" AND ECBUILD_IMPLICIT_LINK_LIBRARIES )
+    if( NOT _PAR_TYPE MATCHES "OBJECT" AND NOT _PAR_TYPE MATCHES "INTERFACE" AND ECBUILD_IMPLICIT_LINK_LIBRARIES )
       target_link_libraries( ${_PAR_TARGET} PRIVATE ${ECBUILD_IMPLICIT_LINK_LIBRARIES} )
     endif()
 
