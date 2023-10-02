@@ -361,6 +361,20 @@ function( ecbuild_add_test )
         ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): adding definitions ${_PAR_DEFINITIONS}")
       endif()
 
+      # set linker language
+      if( DEFINED _PAR_LINKER_LANGUAGE )
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): using linker language ${_PAR_LINKER_LANGUAGE}")
+        set_target_properties( ${_PAR_TARGET} PROPERTIES LINKER_LANGUAGE ${_PAR_LINKER_LANGUAGE} )
+        if( ECBUILD_${_PAR_LINKER_LANGUAGE}_IMPLICIT_LINK_LIBRARIES )
+          target_link_libraries( ${_PAR_TARGET} ${ECBUILD_${_PAR_LINKER_LANGUAGE}_IMPLICIT_LINK_LIBRARIES} )
+        endif()
+      endif()
+
+      if( ECBUILD_IMPLICIT_LINK_LIBRARIES )
+        target_link_libraries( ${_PAR_TARGET} ${ECBUILD_IMPLICIT_LINK_LIBRARIES} )
+      endif()
+
+
       # set build location to local build dir
       # not the project base as defined for libs and execs
       set_target_properties( ${_PAR_TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${_TEST_DIR} )
