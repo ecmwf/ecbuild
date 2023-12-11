@@ -40,10 +40,6 @@ macro( project _project_name )
       ecbuild_critical("Please specify a version for project ${_project_name}")
     endif()
 
-    cmake_policy(PUSH)
-    cmake_minimum_required(VERSION 3.3 FATAL_ERROR) # for using IN_LIST
-    cmake_policy(SET CMP0057 NEW) # for using IN_LIST
-
     unset( _require_LANGUAGES )
     foreach( _lang C CXX Fortran )
       if( ${_lang} IN_LIST _ecbuild_${_project_name}_UNPARSED_ARGUMENTS )
@@ -60,8 +56,6 @@ macro( project _project_name )
       endif()
       list( INSERT _ecbuild_${_project_name}_UNPARSED_ARGUMENTS 0 "LANGUAGES" )
     endif()
-
-    cmake_policy(POP)
 
     if( ${_project_name}_VERSION_STR )
       cmake_policy(SET CMP0048 NEW )
@@ -82,9 +76,6 @@ macro( project _project_name )
     ecbuild_debug( "CMake project(${_project_name}) ")
 
     if(ECBUILD_2_COMPAT)
-      cmake_policy(PUSH)
-      cmake_minimum_required(VERSION 3.3 FATAL_ERROR) # for using IN_LIST
-      cmake_policy(SET CMP0057 NEW) # for using IN_LIST
 
       unset( _args )
       foreach( arg ${ARGN} )
@@ -96,8 +87,6 @@ macro( project _project_name )
       else()
         set(_cmp0048_val OLD)
       endif()
-
-      cmake_policy(POP)
 
       cmake_policy(SET CMP0048 ${_cmp0048_val} )
       unset(_cmp0048_val)
