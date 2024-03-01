@@ -16,7 +16,7 @@
 #
 #   ecbuild_generate_fortran_interfaces( TARGET <name>
 #                                        DESTINATION <path>
-#                                        DIRECTORIES <directory1> [<directory2> ...]
+#                                        { DIRECTORIES <directory1> [<directory2> ...] | FILES <file1> [<file2> ...] }
 #                                        [ PARALLEL <integer> ]
 #                                        [ INCLUDE_DIRS <name> ]
 #                                        [ GENERATED <name> ]
@@ -34,8 +34,9 @@
 # DESTINATION : required
 #   sub-directory of ``CMAKE_CURRENT_BINARY_DIR`` to install target to
 #
-# DIRECTORIES : required
-#   list of directories in ``SOURCE_DIR`` in which to search for Fortran files to be processed
+# DIRECTORIES | FILES : required
+#  |  list of directories in ``SOURCE_DIR`` in which to search for Fortran files to be processed, *or*
+#  |  list of Fortran files in ``SOURCE_DIR`` to be processed
 #
 # PARALLEL : optional, defaults to 1
 #   number of processes to use (always 1 on Darwin systems)
@@ -47,7 +48,7 @@
 #   name of CMake variable to store the list of generated interface files, including the full path to each
 #
 # SOURCE_DIR : optional, defaults to ``CMAKE_CURRENT_SOURCE_DIR``
-#   directory in which to look for the sub-directories given as arguments to ``DIRECTORIES``
+#   directory in which to look for the sub-directories or source files given as arguments to ``DIRECTORIES`` or ``FILES``
 #
 # SUFFIX : optional, defaults to ".intfb.h"
 #   suffix to apply to name of each interface file
@@ -58,12 +59,15 @@
 # Usage
 # _____
 #
-# The listed directories will be recursively searched for Fortran files of the
-# form ``<fname>.[fF]``, ``<fname>.[fF]90``, ``<fname>.[fF]03`` or
-# ``<fname>.[fF]08``. For each matching file, a file ``<fname><suffix>`` will be
-# created containing the interface blocks for all external subprograms within
-# it, where ``<suffix>`` is the value given to the ``SUFFIX`` option. If a file
-# contains no such subprograms, no interface file will be generated for it.
+# Given a list of directories, they will be recursively searched for Fortran
+# files of the form ``<fname>.[fF]``, ``<fname>.[fF]90``, ``<fname>.[fF]03`` or
+# ``<fname>.[fF]08``. Given a list of files, these must be an exact match and
+# contained within ``SOURCE_DIR``. Either ``DIRECTORIES`` or ``FILES`` (or
+# both) must be provided. For each matching file, a file ``<fname><suffix>``
+# will be created containing the interface blocks for all external subprograms
+# within it, where ``<suffix>`` is the value given to the ``SUFFIX`` option. If
+# a file contains no such subprograms, no interface file will be generated for
+# it.
 #
 ##############################################################################
 
@@ -95,7 +99,7 @@ function( ecbuild_generate_fortran_interfaces )
 
   set( options )
   set( single_value_args TARGET DESTINATION PARALLEL INCLUDE_DIRS GENERATED SOURCE_DIR SUFFIX FCM_CONFIG_FILE )
-  set( multi_value_args DIRECTORIES )
+  set( multi_value_args DIRECTORIES FILES )
 
   cmake_parse_arguments( P "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -107,8 +111,8 @@ function( ecbuild_generate_fortran_interfaces )
     ecbuild_error( "ecbuild_generate_fortran_interfaces: DESTINATION argument missing" )
   endif()
 
-  if( NOT DEFINED P_DIRECTORIES )
-    ecbuild_error( "ecbuild_generate_fortran_interfaces: DIRECTORIES argument missing" )
+  if( NOT DEFINED P_DIRECTORIES AND NOT DEFINED P_FILES )
+    ecbuild_error( "ecbuild_generate_fortran_interfaces: Neither DIRECTORIES nor FILES argument provided" )
   endif()
 
   if( NOT DEFINED P_PARALLEL OR (${CMAKE_SYSTEM_NAME} MATCHES "Darwin") )
@@ -151,15 +155,28 @@ function( ecbuild_generate_fortran_interfaces )
     ecbuild_error( "ecbuild_generate_fortran_interfaces: needs fcm configuration in ${FCM_CONFIG_FILE}" )
   endif()
 
-  foreach( _srcdir ${P_DIRECTORIES} )
-    if( _srcdir MATCHES "/$" )
-      ecbuild_critical("ecbuild_generate_fortran_interfaces: directory ${_srcdir} must not end with /")
-    endif()
-    ecbuild_list_add_pattern( LIST fortran_files SOURCE_DIR ${P_SOURCE_DIR}
-      GLOB ${_srcdir}/*.[fF] ${_srcdir}/*.[fF]90 ${_srcdir}/*.[fF]03 ${_srcdir}/*.[fF]08 QUIET )
-  endforeach()
+  if( DEFINED P_DIRECTORIES )
+    foreach( _srcdir ${P_DIRECTORIES} )
+      if( _srcdir MATCHES "/$" )
+        ecbuild_critical("ecbuild_generate_fortran_interfaces: directory ${_srcdir} must not end with /")
+      endif()
+      ecbuild_list_add_pattern( LIST fortran_files SOURCE_DIR ${P_SOURCE_DIR}
+        GLOB ${_srcdir}/*.[fF] ${_srcdir}/*.[fF]90 ${_srcdir}/*.[fF]03 ${_srcdir}/*.[fF]08 QUIET )
+    endforeach()
 
-  string( REPLACE ";" " " _srcdirs "${P_DIRECTORIES}" )
+    string( REPLACE ";" " " _srcdirs "${P_DIRECTORIES}" )
+  endif()
+
+  if( DEFINED P_FILES )
+    foreach( _srcfile ${P_FILES} )
+      ecbuild_list_add_pattern( LIST fortran_files SOURCE_DIR ${P_SOURCE_DIR}
+        GLOB ${_srcfile} QUIET )
+    endforeach()
+
+    string( REPLACE ";" " " _srcfiles "${P_FILES}" )
+  endif()
+
+  string(JOIN " " _srcs "${_srcdirs}" "${_srcfiles}")
 
   set( _cnt 0 )
   set( interface_files "" )
@@ -190,7 +207,7 @@ function( ecbuild_generate_fortran_interfaces )
   add_custom_command(
     OUTPUT  ${_timestamp}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${_fcm_lock}
-    COMMAND ${FCM_EXECUTABLE} make -j ${P_PARALLEL} --config-file=${FCM_CONFIG_FILE} interfaces.ns-incl=${_srcdirs} interfaces.source=${P_SOURCE_DIR}
+    COMMAND ${FCM_EXECUTABLE} make -j ${P_PARALLEL} --config-file=${FCM_CONFIG_FILE} interfaces.ns-incl=${_srcs} interfaces.source=${P_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} -E touch ${_timestamp}
     DEPENDS ${fortran_files}
     COMMENT "[fcm] Generating ${_cnt} Fortran interface files for target ${P_TARGET} in ${CMAKE_CURRENT_BINARY_DIR}/${P_DESTINATION}/interfaces/include"
