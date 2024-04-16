@@ -71,6 +71,12 @@ macro( project _project_name )
 
     ecbuild_declare_project()
 
+    ### override BUILD_SHARED_LIBS property
+    if( DEFINED ${PNAME}_SHARED_LIBS )
+       set( BUILD_SHARED_LIBS ${${PNAME}_SHARED_LIBS} )
+       ecbuild_debug( "ecbuild_project(${_project_name}): static libraries set as default for project" )
+    endif()
+
   else() # ecbuild 2 or pure CMake
 
     ecbuild_debug( "CMake project(${_project_name}) ")
