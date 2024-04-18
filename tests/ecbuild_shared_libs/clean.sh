@@ -7,3 +7,4 @@ HERE=${CMAKE_CURRENT_BINARY_DIR:-"$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd 
 # --------------------- cleanup ------------------------
 echo "cleaning $HERE"
 rm -rf $HERE/build
+rm -f $HERE/*.log
