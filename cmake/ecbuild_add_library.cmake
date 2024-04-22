@@ -228,6 +228,12 @@ function( ecbuild_add_library_impl )
     ecbuild_critical("The call to ecbuild_add_library() doesn't specify the TARGET.")
   endif()
 
+  ### optional override for target type
+  if( NOT DEFINED _PAR_TYPE AND DEFINED ECBUILD_TARGET_${_PAR_TARGET}_TYPE )
+    set( _PAR_TYPE ${ECBUILD_TARGET_${_PAR_TARGET}_TYPE} )
+    ecbuild_debug( "ecbuild_add_libary(${_PAR_TARGET}): library type overriden to ${_PAR_TYPE}" )
+  endif()
+
   if( NOT _PAR_TYPE MATCHES "INTERFACE" )
     if( NOT _PAR_SOURCES AND NOT _PAR_OBJECTS AND NOT _PAR_SOURCES_GLOB )
       ecbuild_critical("The call to ecbuild_add_library() specifies neither SOURCES nor OBJECTS nor SOURCES_GLOB")
