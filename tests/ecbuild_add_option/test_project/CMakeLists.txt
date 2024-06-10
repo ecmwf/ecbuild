@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 find_package( ecbuild REQUIRED )
 project( test_add_option VERSION 0.1.0 LANGUAGES NONE )
 
-list(INSERT 0 CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
 ecbuild_add_option(FEATURE TEST_A) # should default to ON
 ecbuild_add_option(FEATURE TEST_B DEFAULT ON)
 ecbuild_add_option(FEATURE TEST_C DEFAULT OFF)

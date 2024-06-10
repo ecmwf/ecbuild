@@ -43,4 +43,9 @@ if( POLICY CMP0074 )
     cmake_policy( SET CMP0074 NEW )
 endif()
 
+# Detect invalid indices in the ``list()`` command, new in version 3.21
+if( POLICY CMP0121 )
+    cmake_policy( SET CMP0121 NEW )
+endif()
+
 endif()
