@@ -53,14 +53,18 @@ function AnimalType__ctor(animaltype_) result(self)
   type(AnimalType) :: self
   character(len=*) :: animaltype_
   self%m_kind = animaltype_
+#ifndef NAGFOR
   write(0,'(3A,I0)') "Constructing animal ",self%m_kind, " -- address = ",loc(self)
+#endif
   self%constructed = .true.
 end function
 
 subroutine AnimalType__assignment(animal_out,animal_in)
   type(AnimalType), intent(out) :: animal_out
   class(AnimalType), intent(in) :: animal_in
+#ifndef NAGFOR
   write(0,'(3A,I0,A,I0)') '   Copying ',animal_in%m_kind, " -- from address ", loc(animal_in), " to address ", loc(animal_out)
+#endif
   animal_out%m_kind = animal_in%m_kind
   animal_out%constructed = animal_in%constructed
 end subroutine
