@@ -116,7 +116,7 @@ macro(_figure_out_fortran_feature current_feature)
   # Find set of files that match current_feature, excepting _fail and _fail_compile.
   file(GLOB ALL_FEATURE_FILES "${Fortran_FEATURE_CHECK_DIR}/${current_feature}*.F90")
   foreach(filename ${ALL_FEATURE_FILES})
-    if(filename MATCHES "_fail")
+    if(filename MATCHES "(_fail|_fail_compile).F90$")
       list(REMOVE_ITEM ALL_FEATURE_FILES ${filename})
     endif()
   endforeach()
