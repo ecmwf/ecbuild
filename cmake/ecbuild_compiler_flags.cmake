@@ -111,6 +111,42 @@ macro( ecbuild_purge_compiler_flags _lang )
 
 endmacro()
 
+macro( ecbuild_init_overrideable_compiler_flags )
+
+    set( options CAPTURE_BUNDLE_FLAGS )
+    set( oneValueArgs SOURCE_FLAGS COMPILE_FLAGS )
+    set( multiValueArgs LANGUAGES )
+
+    cmake_parse_arguments( _PAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    foreach(_lang ${_PAR_LANGUAGES} )
+       ecbuild_purge_compiler_flags( ${_lang} WARN )
+    endforeach()
+
+    if( ${_PAR_CAPTURE_BUNDLE_FLAGS} )
+       foreach(_lang ${_PAR_LANGUAGES} )
+         set( ${PNAME}_${_lang}_FLAGS "${${PNAME}_${_lang}_FLAGS} ${ECBUILD_${_lang}_FLAGS}" )
+         foreach(_btype ALL RELEASE RELWITHDEBINFO PRODUCTION BIT DEBUG)
+            set( ${PNAME}_${_lang}_FLAGS_${_btype} "${${PNAME}_${_lang}_FLAGS_${_btype}} ${ECBUILD_${_lang}_FLAGS_${_btype}}" )
+         endforeach()
+       endforeach()
+    endif()
+
+    if( DEFINED _PAR_COMPILE_FLAGS )
+       if( DEFINED ECBUILD_COMPILE_FLAGS)
+         ecbuild_debug( "Override ECBUILD_COMPILE_FLAGS (${ECBUILD_COMPILE_FLAGS}) with ${_PAR_COMPILE_FLAGS}" )
+       endif()
+       set( ECBUILD_COMPILE_FLAGS ${_PAR_COMPILE_FLAGS} )
+       include( ${ECBUILD_COMPILE_FLAGS} )
+    elseif( DEFINED _PAR_SOURCE_FLAGS )
+       if( DEFINED ECBUILD_SOURCE_FLAGS)
+         ecbuild_debug( "Override ECBUILD_SOURCE_FLAGS (${ECBUILD_SOURCE_FLAGS}) with ${_PAR_SOURCE_FLAGS}" )
+       endif()
+       set( ECBUILD_SOURCE_FLAGS ${_PAR_SOURCE_FLAGS} )
+    endif()
+
+endmacro()
+
 ##############################################################################
 #.rst:
 #
