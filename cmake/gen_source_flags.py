@@ -16,11 +16,12 @@ from fnmatch import fnmatch
 import logging
 from json import JSONDecoder
 from os import path
+from collections import defaultdict
 
 log = logging.getLogger('gen_source_flags')
 
 
-def match(source, pattern, op, flags, indent=0):
+def match(source, pattern, op, flags, indent=0, btype='all'):
     if fnmatch(source, pattern):
 
         suff = '' if op[0] in ('+', '=', '/') else ' (nested pattern)'
@@ -28,22 +29,26 @@ def match(source, pattern, op, flags, indent=0):
                   ' ' * (indent + 1), pattern, source, suff)
 
         if op[0] == "+":
-            flags += [flag for flag in op[1:] if flag not in flags]
-            log.debug('%sappending %s --> flags: %s', ' ' * (indent + 2), op[1:], flags)
+            flags[btype] += [flag for flag in op[1:] if flag not in flags[btype]]
+            log.debug('%sappending %s --> flags: %s', ' ' * (indent + 2), op[1:], flags[btype])
 
         elif op[0] == "=":
-            flags = op[1:]
-            log.debug('%ssetting %s --> flags: %s', ' ' * (indent + 2), op[1:], flags)
+            flags[btype] = op[1:]
+            log.debug('%ssetting %s --> flags: %s', ' ' * (indent + 2), op[1:], flags[btype])
 
         elif op[0] == "/":
-            flags = [flag for flag in flags if flag not in op[1:]]
-            log.debug('%sremoving %s --> flags: %s', ' ' * (indent + 2), op[1:], flags)
+            flags[btype] = [flag for flag in flags[btype] if flag not in op[1:]]
+            log.debug('%sremoving %s --> flags: %s', ' ' * (indent + 2), op[1:], flags[btype])
 
         else:  # Nested rule
             log.debug('%sapplying nested rules for "%s" (flags: %s)',
-                      ' ' * (indent + 2), pattern, flags)
+                      ' ' * (indent + 2), pattern, flags[btype])
             for nested_pattern, nested_op in op:
-                flags = match(source, nested_pattern, nested_op, flags, indent + 2)
+                flags = match(source, nested_pattern, nested_op, flags, indent=indent + 2, btype=btype)
+
+    elif pattern.lower() in ['none', 'debug', 'bit', 'production', 'release', 'relwithdebinfo']:
+         for _rule in op:
+             flags = match(source, _rule[0], _rule[1], flags, indent=indent + 2, btype=pattern.lower())
 
     return flags
 
@@ -58,14 +63,24 @@ def generate(rules, out, default_flags, sources, debug=False):
     with open(path.expanduser(out), 'w') as f:
         for source in sources:
             log.debug('%s (default flags: "%s")', source, default_flags)
-            flags = default_flags.split()
+
+            flags = defaultdict(list)
+            flags['all'] +=  default_flags.split()
             for pattern, op in rules:
                 flags = match(source, pattern, op, flags)
 
             if flags:
-                log.debug(' ==> setting flags for %s to %s', source, ' '.join(flags))
-                f.write('set_source_files_properties(%s PROPERTIES COMPILE_FLAGS "%s")\n'
-                        % (source, ' '.join(flags)))
+                for btype in ['all', 'debug', 'bit', 'production', 'release', 'relwithdebinfo']:
+                    flags_list = ';'.join(flags[btype])
+                    if btype == 'all':
+                        log.debug(' ==> setting flags for %s to %s', source, flags_list)
+                        f.write('set_source_files_properties(%s PROPERTIES COMPILE_OPTIONS "%s")\n'
+                                % (source, flags_list))
+                    else:
+                        if flags[btype]:
+                            log.debug(' ==> setting flags for %s to %s for build-type %s', source, flags_list, btype)
+                            f.write('set_source_files_properties(%s PROPERTIES COMPILE_OPTIONS $<$<CONFIG:%s>:"%s">)\n'
+                                    % (source, btype.upper(), flags_list))
             else:
                 log.debug(' ==> flags for %s empty', source)
 
