@@ -22,9 +22,7 @@ jobs:
   #   We skip jobs that will result in duplicate artifacts, since the code does not depend on the compiler.
   ci:
     name: ci
-    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@v1
+    uses: ecmwf-actions/reusable-workflows/.github/workflows/ci.yml@v2
     with:
       skip_matrix_jobs: |
-        clang-12@ubuntu-20.04
-        clang-9@ubuntu-18.04
-        clang-12@macos-10.15
+        clang@rocky-8.6
