@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+
+HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
+
+cd $HERE
+
+rm -rf build # cleanup
+mkdir build
+cd build
+
+cmake -DCMAKE_MODULE_PATH=@ECBUILD_MACROS_DIR@ -DECBUILD_LOG_LEVEL=DEBUG -DCMAKE_BUILD_TYPE=BIT -DECBUILD_SOURCE_FLAGS=@CMAKE_CURRENT_SOURCE_DIR@/flags-sourceflags.json ..
+
+cd ..
+
+rm -rf build # cleanup
+mkdir build
+cd build
+
+cmake -DCMAKE_MODULE_PATH=@ECBUILD_MACROS_DIR@ -DECBUILD_LOG_LEVEL=DEBUG -DCMAKE_BUILD_TYPE=DEBUG -DECBUILD_SOURCE_FLAGS=@CMAKE_CURRENT_SOURCE_DIR@/flags-sourceflags.json ..
+
