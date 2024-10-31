@@ -1,0 +1,5 @@
+build:
+  modules:
+    - ninja
+  parallel: 64
+
