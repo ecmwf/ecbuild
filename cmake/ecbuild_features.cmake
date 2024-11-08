@@ -55,3 +55,11 @@ function( ecbuild_disable_feature _name )
   set_property(GLOBAL PROPERTY DISABLED_FEATURES "${_disabled_features}" )
 
 endfunction()
+
+# Disable the feature ${_name} globally (if it has not been enabled in any subproject)
+function( ecbuild_disable_unused_feature _name )
+  get_property( _enabled GLOBAL PROPERTY ENABLED_FEATURES )
+  if ( NOT _name IN_LIST _enabled ) # if not already disabled
+    ecbuild_disable_feature( ${_name} )
+  endif()
+endfunction()

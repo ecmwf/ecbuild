@@ -109,7 +109,7 @@ macro( ecbuild_add_option )
     set( _p_DEFAULT ON )
   else()
     if( NOT _p_DEFAULT MATCHES "[Oo][Nn]" AND NOT _p_DEFAULT MATCHES "[Oo][Ff][Ff]" )
-      ecbuild_critical("In macro ecbuild_add_option(), DEFAULT is either ON or OFF: \"${_p_DEFAULT}\"")
+      ecbuild_critical("In macro ecbuild_add_option(), DEFAULT must be either ON or OFF, but found: \"${_p_DEFAULT}\"")
     endif()
   endif()
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defaults to ${_p_DEFAULT}")
@@ -153,12 +153,6 @@ macro( ecbuild_add_option )
   # define the option -- for cmake GUI
 
   option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
-  get_property( _feature_desc GLOBAL PROPERTY _CMAKE_${_p_FEATURE}_DESCRIPTION )
-  if( _feature_desc )
-    add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_feature_desc}, ${PROJECT_NAME}: ${_p_DESCRIPTION}" )
-  else()
-    add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${PROJECT_NAME}: ${_p_DESCRIPTION}" )
-  endif()
 
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defining option ENABLE_${_p_FEATURE} '${_p_DESCRIPTION}' ${_p_DEFAULT}")
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
@@ -176,6 +170,26 @@ macro( ecbuild_add_option )
     set( ENABLE_${_p_FEATURE} ${${PNAME}_ENABLE_${_p_FEATURE}} )
   endif()
 
+  ## Update the description of the feature summary
+  # Choose the correct tick
+  if (ENABLE_${_p_FEATURE})
+    set ( _tick "✔")
+  else()
+    set ( _tick "✘")
+  endif()
+  set(_enabled "${ENABLE_${_p_FEATURE}}")
+  get_property( _enabled_features GLOBAL PROPERTY ENABLED_FEATURES )
+  if( "${_p_FEATURE}" IN_LIST _enabled_features )
+    set(_enabled ON)
+  endif()
+  # Retrieve any existing description (n.b. occurs when the same feature is added at multiple projects)
+  get_property( _feature_desc GLOBAL PROPERTY _CMAKE_${_p_FEATURE}_DESCRIPTION )
+  # Append the new description
+  if( _feature_desc )
+    add_feature_info( ${_p_FEATURE} ${_enabled} "${_feature_desc}, ${PROJECT_NAME}(${_tick}): '${_p_DESCRIPTION}'" )
+  else()
+    add_feature_info( ${_p_FEATURE} ${_enabled} "${PROJECT_NAME}(${_tick}): '${_p_DESCRIPTION}'" )
+  endif()
 
   set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 0 )
 
@@ -250,7 +264,7 @@ macro( ecbuild_add_option )
 
     else() # if user provided input and we cannot satisfy FAIL otherwise WARN
 
-      ecbuild_disable_feature( ${_p_FEATURE} )
+      ecbuild_disable_unused_feature( ${_p_FEATURE} )
 
       if( ${_p_FEATURE}_user_provided_input )
         if( NOT _${_p_FEATURE}_condition )
@@ -267,16 +281,16 @@ macro( ecbuild_add_option )
           ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
         endif()
         set( ENABLE_${_p_FEATURE} OFF )
-        ecbuild_disable_feature( ${_p_FEATURE} )
+        ecbuild_disable_unused_feature( ${_p_FEATURE} )
       endif()
 
     endif()
 
   else()
 
-    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature disabled")
+    ecbuild_info( "Feature ${_p_FEATURE} disabled" )
     set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 0 )
-    ecbuild_disable_feature( ${_p_FEATURE} )
+    ecbuild_disable_unused_feature( ${_p_FEATURE} )
 
   endif()
 
