@@ -10,6 +10,7 @@ on:
       - "**"
     paths-ignore:
       - "docs/**"
+      - "bamboo/**"
       - "README.rst"
 
   # Trigger the workflow on pull request
@@ -27,7 +28,7 @@ jobs:
   downstream-ci:
     name: downstream-ci
     if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
-    uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci.yml@add-ecbuild
+    uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci.yml@main
     with:
       ecbuild: ecmwf/ecbuild@${{ github.event.pull_request.head.sha || github.sha }}
       codecov_upload: true
@@ -55,7 +56,7 @@ jobs:
   downstream-ci-hpc:
     name: downstream-ci-hpc
     if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
-    uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci-hpc.yml@add-ecbuild
+    uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci-hpc.yml@main
     with:
       ecbuild: ecmwf/ecbuild@${{ github.event.pull_request.head.sha || github.sha }}
     secrets: inherit
