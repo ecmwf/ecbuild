@@ -31,7 +31,7 @@ jobs:
     uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci.yml@main
     with:
       ecbuild: ecmwf/ecbuild@${{ github.event.pull_request.head.sha || github.sha }}
-      codecov_upload: true
+      codecov_upload: false
     secrets: inherit
 
   # Run CI of private downstream packages on self-hosted runners
