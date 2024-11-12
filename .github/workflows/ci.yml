@@ -80,17 +80,18 @@ jobs:
           event_type: downstream-ci-hpc
           payload: '{"ecbuild": "ecmwf/ecbuild@${{ github.event.pull_request.head.sha || github.sha }}","skip_matrix_jobs": "nvidia-22.11"}'
 
-  notify:
-    runs-on: ubuntu-latest
-    needs:
-      - downstream-ci
-      - private-downstream-ci
-      - downstream-ci-hpc
-      - private-downstream-ci-hpc
-    if: ${{ always() && !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
-    steps:
-      - name: Trigger Teams notification
-        uses: ecmwf-actions/notify-teams@v1
-        with:
-          incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
-          needs_context: ${{ toJSON(needs) }}
+# DISABLED FOR NOW UNTIL REPO IS SET UP FOR THIS
+#  notify:
+#    runs-on: ubuntu-latest
+#    needs:
+#      - downstream-ci
+#      - private-downstream-ci
+#      - downstream-ci-hpc
+#      - private-downstream-ci-hpc
+#    if: ${{ always() && !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
+#    steps:
+#      - name: Trigger Teams notification
+#        uses: ecmwf-actions/notify-teams@v1
+#        with:
+#          incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
+#          needs_context: ${{ toJSON(needs) }}
