@@ -173,9 +173,9 @@ macro( ecbuild_add_option )
   ## Update the description of the feature summary
   # Choose the correct tick
   if (ENABLE_${_p_FEATURE})
-    set ( _tick "✔")
+    set ( _tick "ON")
   else()
-    set ( _tick "✘")
+    set ( _tick "OFF")
   endif()
   set(_enabled "${ENABLE_${_p_FEATURE}}")
   get_property( _enabled_features GLOBAL PROPERTY ENABLED_FEATURES )
