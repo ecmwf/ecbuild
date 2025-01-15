@@ -134,6 +134,9 @@
 # PROPERTIES : optional
 #   custom properties to set on the target
 #
+# TEST_PROPERTIES : optional
+#   custom properties to set on the test
+#
 # ENVIRONMENT : optional
 #   list of environment variables to set in the test environment
 #
@@ -185,7 +188,7 @@ function( ecbuild_add_test )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI OMP WORKING_DIRECTORY )
   set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS LABELS ARGS
                          PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS
-                         CXXFLAGS FFLAGS GENERATED CONDITION PROPERTIES ENVIRONMENT )
+                         CXXFLAGS FFLAGS GENERATED CONDITION TEST_PROPERTIES PROPERTIES ENVIRONMENT )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -465,6 +468,10 @@ function( ecbuild_add_test )
       # Set custom properties
       if( DEFINED _PAR_PROPERTIES )
         set_target_properties( ${_PAR_TARGET} PROPERTIES ${_PAR_PROPERTIES} )
+      endif()
+
+      if( DEFINED _PAR_TEST_PROPERTIES )
+        set_tests_properties( ${_PAR_TARGET} PROPERTIES ${_PAR_TEST_PROPERTIES} )
       endif()
 
       # get test data
