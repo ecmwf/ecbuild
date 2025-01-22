@@ -36,6 +36,7 @@
 #                     [ TEST_DEPENDS <target1> [<target2> ...] ]
 #                     [ CONDITION <condition> ]
 #                     [ PROPERTIES <prop1> <val1> [<prop2> <val2> ...] ]
+#                     [ TEST_PROPERTIES <prop1> <val1> [<prop2> <val2> ...] ]
 #                     [ ENVIRONMENT <variable1> [<variable2> ...] ]
 #                     [ WORKING_DIRECTORY <path> ]
 #                     [ CFLAGS <flag1> [<flag2> ...] ]
