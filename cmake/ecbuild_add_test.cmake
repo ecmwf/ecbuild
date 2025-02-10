@@ -34,8 +34,10 @@
 #                     [ GENERATED <file1> [<file2> ...] ]
 #                     [ DEPENDS <target1> [<target2> ...] ]
 #                     [ TEST_DEPENDS <target1> [<target2> ...] ]
+#                     [ TEST_REQUIRES <target1> [<target2> ...] ]
 #                     [ CONDITION <condition> ]
 #                     [ PROPERTIES <prop1> <val1> [<prop2> <val2> ...] ]
+#                     [ TEST_PROPERTIES <prop1> <val1> [<prop2> <val2> ...] ]
 #                     [ ENVIRONMENT <variable1> [<variable2> ...] ]
 #                     [ WORKING_DIRECTORY <path> ]
 #                     [ CFLAGS <flag1> [<flag2> ...] ]
@@ -127,12 +129,18 @@
 # TEST_DEPENDS : optional
 #   list of tests to be run before this one
 #
+# TEST_REQUIRES : optional
+#   list of tests that will automatically run before this one
+#
 # CONDITION : optional
 #   conditional expression which must evaluate to true for this target to be
 #   built (must be valid in a CMake ``if`` statement)
 #
 # PROPERTIES : optional
 #   custom properties to set on the target
+#
+# TEST_PROPERTIES : optional
+#   custom properties to set on the test
 #
 # ENVIRONMENT : optional
 #   list of environment variables to set in the test environment
@@ -183,9 +191,9 @@ function( ecbuild_add_test )
 
   set( options           NO_AS_NEEDED )
   set( single_value_args TARGET ENABLED COMMAND TYPE LINKER_LANGUAGE MPI OMP WORKING_DIRECTORY )
-  set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS LABELS ARGS
+  set( multi_value_args  SOURCES OBJECTS LIBS INCLUDES TEST_DEPENDS DEPENDS TEST_REQUIRES LABELS ARGS
                          PERSISTENT DEFINITIONS RESOURCES TEST_DATA CFLAGS
-                         CXXFLAGS FFLAGS GENERATED CONDITION PROPERTIES ENVIRONMENT )
+                         CXXFLAGS FFLAGS GENERATED CONDITION TEST_PROPERTIES PROPERTIES ENVIRONMENT )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -465,6 +473,19 @@ function( ecbuild_add_test )
       # Set custom properties
       if( DEFINED _PAR_PROPERTIES )
         set_target_properties( ${_PAR_TARGET} PROPERTIES ${_PAR_PROPERTIES} )
+      endif()
+
+      if( DEFINED _PAR_TEST_PROPERTIES )
+        set_tests_properties( ${_PAR_TARGET} PROPERTIES ${_PAR_TEST_PROPERTIES} )
+      endif()
+
+      # Set the fictures properties if test requires another test to run before
+      if ( DEFINED _PAR_TEST_REQUIRES )
+        ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): set test requirements to ${_PAR_TEST_REQUIRES}")
+        foreach(_requirement ${_PAR_TEST_REQUIRES} )
+          set_tests_properties( ${_requirement} PROPERTIES FIXTURES_SETUP ${_requirement} )
+        endforeach()
+        set_tests_properties( ${_PAR_TARGET} PROPERTIES FIXTURES_REQUIRED "${_PAR_TEST_REQUIRES}" )
       endif()
 
       # get test data
