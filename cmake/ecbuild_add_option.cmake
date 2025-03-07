@@ -159,6 +159,7 @@ macro( ecbuild_add_option )
 
   # Allow override of ENABLE_<FEATURE> with <PNAME>_ENABLE_<FEATURE> (see ECBUILD-486)
   if( DEFINED ${PNAME}_ENABLE_${_p_FEATURE} )
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): found ${PNAME}_ENABLE_${_p_FEATURE}=${${PNAME}_ENABLE_${_p_FEATURE}}")
     # Cache it for future reconfiguration
     set( ${PNAME}_ENABLE_${_p_FEATURE} ${${PNAME}_ENABLE_${_p_FEATURE}} CACHE BOOL "Override for ENABLE_${_p_FEATURE}" )
     # Warn when user provides both ENABLE_<FEATURE> and <PNAME>_ENABLE_<FEATURE>, and explain precedence
@@ -168,6 +169,8 @@ macro( ecbuild_add_option )
     endif()
     # Non-cache (hard) override of ENABLE_<FEATURE> within this project scope only
     set( ENABLE_${_p_FEATURE} ${${PNAME}_ENABLE_${_p_FEATURE}} )
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): set ENABLE_${_p_FEATURE} from ${PNAME}_ENABLE_${_p_FEATURE}")
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
   endif()
 
   ## Update the description of the feature summary
