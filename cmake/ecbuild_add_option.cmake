@@ -269,7 +269,13 @@ macro( ecbuild_add_option )
 
       ecbuild_disable_unused_feature( ${_p_FEATURE} )
 
-      if( ${_p_FEATURE}_user_provided_input )
+      # Determine if a project-specific feature was requested
+      set ( _project_specific_feature_requested OFF )
+      if (DEFINED ${PNAME}_ENABLE_${_p_FEATURE} AND ${PNAME}_ENABLE_${_p_FEATURE} MATCHES "[Oo][Nn]")
+        set ( _project_specific_feature_requested ON )
+      endif()
+
+      if( ${_p_FEATURE}_user_provided_input OR _project_specific_feature_requested )
         if( NOT _${_p_FEATURE}_condition )
           string(REPLACE ";" " " _condition_msg "${_p_CONDITION}")
           ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following condition was not met: ${_condition_msg}" )
