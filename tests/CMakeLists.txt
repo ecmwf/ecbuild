@@ -5,6 +5,7 @@ add_subdirectory( ecbuild_regex_escape )
 add_subdirectory( ecbuild_remove_fortran_flags ) # ECBUILD-484
 add_subdirectory( ecbuild_find_package )
 add_subdirectory( ecbuild_add_option )
+add_subdirectory( ecbuild_add_option_multiproject_defaults )
 add_subdirectory( ecbuild_add_flags )
 add_subdirectory( find_ecbuild )
 add_subdirectory( ecbuild_shared_libs )
