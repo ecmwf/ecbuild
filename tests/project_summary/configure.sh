@@ -27,6 +27,15 @@ $SOURCE/clean.sh
 
 # ----------------- configure project ---------------------
 
+# Options: (defaults)
+ 
+mkdir -p $HERE/build_0
+ecbuild $SOURCE/test_project -B $HERE/build_0 | tee $HERE/build_0.log
+EXPECT_ONE_OF $HERE/build_0.log "* FEATURE_A, proja(ON): '', projb(OFF): ''"
+EXPECT_ONE_OF $HERE/build_0.log "* FEATURE_B, projb(OFF): ''"
+EXPECT_ONE_OF $HERE/build_0.log "* FEATURE_C, projc(OFF): ''"
+EXPECT_ONE_OF $HERE/build_0.log "Build files have been written"
+
 # Options: -DENABLE_FEATURE_A=ON
 
 mkdir -p $HERE/build_1
