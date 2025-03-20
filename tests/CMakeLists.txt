@@ -1,3 +1,4 @@
+add_subdirectory( bundle_options )
 add_subdirectory( bundle_subdir )
 add_subdirectory( bundle_subproj ) # ECBUILD-460
 add_subdirectory( bundle_override_features ) # ECBUILD-486
