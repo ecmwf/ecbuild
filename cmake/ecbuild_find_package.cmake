@@ -111,7 +111,8 @@
 #        - ``ENV{<name>_DIR}``
 #        - ``ENV{CMAKE_PREFIX_PATH}``
 #        - ``system paths``
-#       See CMake documentation of ``find_package()`` for details on search
+#
+#       See CMake documentation of ``find_package()`` for details.
 #
 # 4.  Fail if the package was not found and is REQUIRED.
 #
