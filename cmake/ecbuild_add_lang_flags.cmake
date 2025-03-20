@@ -10,7 +10,7 @@
 #.rst:
 #
 # ecbuild_add_lang_flags
-# =====================
+# ======================
 #
 # This is mostly an internal function of ecbuild, wrapped by the macros ecbuild_add_c_flags,
 # ecbuild_add_cxx_flags and ecbuild_add_fortran_flags.
