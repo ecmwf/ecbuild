@@ -153,6 +153,14 @@ macro( ecbuild_add_option )
   # define the option -- for cmake GUI
 
   option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
+  # Important: Creating the option, as above, is not enough in multi-project scenarios,
+  # as the variable is not set in case it is already available in the cache.
+  # When the user does not provide an overriding (<project>_)ENABLE_<FEATURE> option,
+  # we must use the provided default value to set ENABLE_<FEATURE>.
+  # This is done without changing any cached value, as it is applicable to the current project only.
+  if ( NOT ${_p_FEATURE}_user_provided_input AND NOT (DEFINED ${PNAME}_ENABLE_${_p_FEATURE}) )
+    set( ENABLE_${_p_FEATURE} ${_p_DEFAULT} )
+  endif()
 
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defining option ENABLE_${_p_FEATURE} '${_p_DESCRIPTION}' ${_p_DEFAULT}")
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
