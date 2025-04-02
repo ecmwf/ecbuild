@@ -226,6 +226,8 @@ if( NOT ECBUILD_SYSTEM_INITIALISED )
     include( ecbuild_cache )
     include( ecbuild_remove_fortran_flags )
     include( ecbuild_configure_file )
+    include( ecbuild_set_fortran_real4_double8_flags )
+    include( ecbuild_set_fortran_real8_double8_flags )
 
     if( NOT (PROJECT_NAME STREQUAL ecbuild) )
         include( ecbuild_bundle )
