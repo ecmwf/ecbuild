@@ -53,6 +53,55 @@
 
 set( __test_python ${CMAKE_CURRENT_LIST_DIR}/pymain.c )
 
+function( __find_python_interpreter )
+
+    set( options REQUIRED )
+    set( single_value_args VERSION )
+    set( multi_value_args  )
+
+    cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
+
+    if( _p_REQUIRED )
+      set( _p_REQUIRED REQUIRED )
+    else()
+      unset( _p_REQUIRED )
+    endif()
+
+    #
+    # CMake 3.12 deprecated FindPythonInterp and FindPythonLibs, which where replaced by FindPython.
+    # Since both versions of CMake are supported, so we need to use find Python differently depending on which version we are using.
+    #
+    if (CMAKE_VERSION VERSION_LESS "3.12")
+      if ( _p_VERSION )
+        find_package( PythonInterp VERSION ${_p_VERSION} ${_p_REQUIRED} )
+      else()
+        find_package( PythonInterp ${_p_REQUIRED})
+      endif()
+
+      set( PYTHONINTERP_FOUND    ${PYTHONINTERP_FOUND} PARENT_SCOPE )
+      set( PythonInterp_FOUND    ${PythonInterp_FOUND} PARENT_SCOPE )
+      set( PYTHON_EXECUTABLE     ${PYTHON_EXECUTABLE} PARENT_SCOPE )
+      set( PYTHON_VERSION_MAJOR  ${PYTHON_VERSION_MAJOR} PARENT_SCOPE )
+      set( PYTHON_VERSION_MINOR  ${PYTHON_VERSION_MINOR} PARENT_SCOPE )
+      set( PYTHON_VERSION_PATCH  ${PYTHON_VERSION_PATCH} PARENT_SCOPE )
+      set( PYTHON_VERSION_STRING ${PYTHON_VERSION_STRING} PARENT_SCOPE )
+    else()
+      if ( _p_VERSION )
+        find_package( Python VERSION ${_p_VERSION} ${_p_REQUIRED})
+      else()
+        find_package( Python ${_p_REQUIRED})
+      endif()
+
+      set( PYTHONINTERP_FOUND    ${Python_Interpreter_FOUND} PARENT_SCOPE )
+      set( PythonInterp_FOUND    ${Python_Interpreter_FOUND} PARENT_SCOPE )
+      set( PYTHON_EXECUTABLE     ${Python_EXECUTABLE} PARENT_SCOPE )
+      set( PYTHON_VERSION_MAJOR  ${Python_VERSION_MAJOR} PARENT_SCOPE )
+      set( PYTHON_VERSION_MINOR  ${Python_VERSION_MINOR} PARENT_SCOPE )
+      set( PYTHON_VERSION_PATCH  ${Python_VERSION_PATCH} PARENT_SCOPE )
+      set( PYTHON_VERSION_STRING "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}" PARENT_SCOPE )
+    endif()
+endfunction()
+
 function( ecbuild_find_python )
 
     # parse parameters
@@ -78,7 +127,7 @@ function( ecbuild_find_python )
 
     # Search first without specifying the version, since doing so gives preference to the specified
     # version even though a never version of the interpreter may be available
-    find_package( PythonInterp ${_p_REQUIRED} )
+    __find_python_interpreter( ${_p_REQUIRED} )
 
     # If no suitable version was found, search again with the version specified
     if( PYTHONINTERP_FOUND AND _p_VERSION )
@@ -91,7 +140,7 @@ function( ecbuild_find_python )
         unset( PYTHON_VERSION_MINOR )
         unset( PYTHON_VERSION_PATCH )
         unset( PYTHON_VERSION_STRING )
-        find_package( PythonInterp "${_p_VERSION}" ${_p_REQUIRED} )
+        __find_package_python(VERSION "${_p_VERSION}" ${_p_REQUIRED} )
       endif()
     endif()
 
