@@ -153,12 +153,21 @@ macro( ecbuild_add_option )
   # define the option -- for cmake GUI
 
   option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
+  # Important: Creating the option, as above, is not enough in multi-project scenarios,
+  # as the variable is not set in case it is already available in the cache.
+  # When the user does not provide an overriding (<project>_)ENABLE_<FEATURE> option,
+  # we must use the provided default value to set ENABLE_<FEATURE>.
+  # This is done without changing any cached value, as it is applicable to the current project only.
+  if ( NOT ${_p_FEATURE}_user_provided_input AND NOT (DEFINED ${PNAME}_ENABLE_${_p_FEATURE}) )
+    set( ENABLE_${_p_FEATURE} ${_p_DEFAULT} )
+  endif()
 
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defining option ENABLE_${_p_FEATURE} '${_p_DESCRIPTION}' ${_p_DEFAULT}")
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
 
   # Allow override of ENABLE_<FEATURE> with <PNAME>_ENABLE_<FEATURE> (see ECBUILD-486)
   if( DEFINED ${PNAME}_ENABLE_${_p_FEATURE} )
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): found ${PNAME}_ENABLE_${_p_FEATURE}=${${PNAME}_ENABLE_${_p_FEATURE}}")
     # Cache it for future reconfiguration
     set( ${PNAME}_ENABLE_${_p_FEATURE} ${${PNAME}_ENABLE_${_p_FEATURE}} CACHE BOOL "Override for ENABLE_${_p_FEATURE}" )
     # Warn when user provides both ENABLE_<FEATURE> and <PNAME>_ENABLE_<FEATURE>, and explain precedence
@@ -168,6 +177,8 @@ macro( ecbuild_add_option )
     endif()
     # Non-cache (hard) override of ENABLE_<FEATURE> within this project scope only
     set( ENABLE_${_p_FEATURE} ${${PNAME}_ENABLE_${_p_FEATURE}} )
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): set ENABLE_${_p_FEATURE} from ${PNAME}_ENABLE_${_p_FEATURE}")
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
   endif()
 
   ## Update the description of the feature summary
@@ -181,14 +192,6 @@ macro( ecbuild_add_option )
   get_property( _enabled_features GLOBAL PROPERTY ENABLED_FEATURES )
   if( "${_p_FEATURE}" IN_LIST _enabled_features )
     set(_enabled ON)
-  endif()
-  # Retrieve any existing description (n.b. occurs when the same feature is added at multiple projects)
-  get_property( _feature_desc GLOBAL PROPERTY _CMAKE_${_p_FEATURE}_DESCRIPTION )
-  # Append the new description
-  if( _feature_desc )
-    add_feature_info( ${_p_FEATURE} ${_enabled} "${_feature_desc}, ${PROJECT_NAME}(${_tick}): '${_p_DESCRIPTION}'" )
-  else()
-    add_feature_info( ${_p_FEATURE} ${_enabled} "${PROJECT_NAME}(${_tick}): '${_p_DESCRIPTION}'" )
   endif()
 
   set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 0 )
@@ -266,19 +269,29 @@ macro( ecbuild_add_option )
 
       ecbuild_disable_unused_feature( ${_p_FEATURE} )
 
-      if( ${_p_FEATURE}_user_provided_input )
+      # Determine if a project-specific feature was requested
+      set ( _project_specific_feature_requested OFF )
+      if (DEFINED ${PNAME}_ENABLE_${_p_FEATURE} AND ${PNAME}_ENABLE_${_p_FEATURE} MATCHES "[Oo][Nn]")
+        set ( _project_specific_feature_requested ON )
+      endif()
+
+      if( ${_p_FEATURE}_user_provided_input OR _project_specific_feature_requested )
         if( NOT _${_p_FEATURE}_condition )
           string(REPLACE ";" " " _condition_msg "${_p_CONDITION}")
           ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following condition was not met: ${_condition_msg}" )
+          set ( _tick "OFF")
         else()
           ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
+          set ( _tick "OFF")
         endif()
       else()
         if( NOT _${_p_FEATURE}_condition )
           string(REPLACE ";" " " _condition_msg "${_p_CONDITION}")
           ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following condition was not met: ${_condition_msg}" )
+          set ( _tick "OFF")
         else()
           ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
+          set ( _tick "OFF")
         endif()
         set( ENABLE_${_p_FEATURE} OFF )
         ecbuild_disable_unused_feature( ${_p_FEATURE} )
@@ -294,6 +307,15 @@ macro( ecbuild_add_option )
 
   endif()
 
+  # Retrieve any existing description (n.b. occurs when the same feature is added at multiple projects)
+  set(_enabled "${ENABLE_${_p_FEATURE}}")
+  get_property( _feature_desc GLOBAL PROPERTY _CMAKE_${_p_FEATURE}_DESCRIPTION )
+  # Append the new description
+  if( _feature_desc )
+    add_feature_info( ${_p_FEATURE} ${_enabled} "${_feature_desc}, ${PROJECT_NAME}(${_tick}): '${_p_DESCRIPTION}'" )
+  else()
+    add_feature_info( ${_p_FEATURE} ${_enabled} "${PROJECT_NAME}(${_tick}): '${_p_DESCRIPTION}'" )
+  endif()
 
   if( ${_p_ADVANCED} )
     mark_as_advanced( ENABLE_${_p_FEATURE} )

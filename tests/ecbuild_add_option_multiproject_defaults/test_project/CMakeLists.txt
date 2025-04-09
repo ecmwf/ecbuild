@@ -13,9 +13,11 @@ ecbuild_add_option(
     DEFAULT OFF
 )
 
+project( projc LANGUAGES NONE VERSION 0.3 )
 ecbuild_add_option(
-    FEATURE FEATURE_B
-    CONDITION SOME_PACKAGE_FOUND
+    FEATURE FEATURE_A
+    DEFAULT ON
+    REQUIRED_PACKAGES nonexistent       
 )
 
 ecbuild_print_summary()

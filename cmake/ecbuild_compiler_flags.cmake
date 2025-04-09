@@ -76,7 +76,7 @@ endmacro()
 #.rst:
 #
 # ecbuild_purge_compiler_flags
-# ======================
+# ============================
 #
 # Purge compiler flags for a given language ::
 #
@@ -156,7 +156,7 @@ endmacro()
 #.rst:
 #
 # ecbuild_override_compiler_flags
-# ======================
+# ===============================
 #
 # Purge existing CMAKE_<lang>_FLAGS flags and trigger the use of per source
 # file overrideable flags (see ``Using custom compilation flags`` for an

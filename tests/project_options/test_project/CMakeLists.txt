@@ -3,19 +3,12 @@ find_package( ecbuild 3.4 REQUIRED )
 
 project( proja LANGUAGES NONE VERSION 0.2 )
 ecbuild_add_option(
-    FEATURE FEATURE_A
+    FEATURE FEATUREON
     DEFAULT ON
+    CONDITION DEFINED FEATUREON_CONDITION
 )
-
-project( projb LANGUAGES NONE VERSION 0.1 )
 ecbuild_add_option(
-    FEATURE FEATURE_A
+    FEATURE FEATUREOFF
     DEFAULT OFF
+    CONDITION DEFINED FEATUREOFF_CONDITION
 )
-
-ecbuild_add_option(
-    FEATURE FEATURE_B
-    CONDITION SOME_PACKAGE_FOUND
-)
-
-ecbuild_print_summary()

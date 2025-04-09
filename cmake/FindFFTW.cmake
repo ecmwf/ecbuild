@@ -22,17 +22,20 @@
 # Search procedure
 # ----------------
 #
-# 1) FFTW_LIBRARIES and FFTW_INCLUDE_DIRS set by user
-#    --> Nothing is searched and these variables are used instead
+# * FFTW_LIBRARIES and FFTW_INCLUDE_DIRS set by user
+#   
+#   * Nothing is searched and these variables are used instead
 #
-# 2) Find MKL implementation via FFTW_ENABLE_MKL
-#    --> If FFTW_ENABLE_MKL is explicitely set to ON, only MKL is considered
-#        If FFTW_ENABLE_MKL is explictely set to OFF, MKL will not be considered
-#        If FFTW_ENABLE_MKL is undefined, MKL is preferred unless ENABLE_MKL is explicitely set to OFF
-#    --> MKLROOT environment variable helps to detect MKL (See FindMKL.cmake)
+# * Find MKL implementation via FFTW_ENABLE_MKL
 #
-# 3) Find official FFTW impelementation
-#    --> FFTW_ROOT variable / environment variable helps to detect FFTW
+#   * If FFTW_ENABLE_MKL is explicitely set to ON, only MKL is considered
+#   * If FFTW_ENABLE_MKL is explictely set to OFF, MKL will not be considered
+#   * If FFTW_ENABLE_MKL is undefined, MKL is preferred unless ENABLE_MKL is explicitely set to OFF
+#   * Note: MKLROOT environment variable helps to detect MKL (See FindMKL.cmake)
+#
+# * Find official FFTW impelementation
+#
+#   * FFTW_ROOT variable / environment variable helps to detect FFTW
 #
 # Components
 # ----------
