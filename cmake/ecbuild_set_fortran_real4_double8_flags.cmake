@@ -20,7 +20,6 @@
 
 include(CheckFortranCompilerFlag)
 include(ecbuild_add_fortran_flags)
-include(ecbuild_remove_fortran_flags)
 
 macro( ecbuild_set_fortran_real4_double8_flags )
 	ecbuild_debug("call ecbuild_set_fortran_real4_double8_flags()")
@@ -29,19 +28,9 @@ macro( ecbuild_set_fortran_real4_double8_flags )
 		# specific to the NEC compiler exists to deduce which compiler it is
 		check_fortran_compiler_flag("-fdefault-real=4" IS_NEC)
 		if(IS_NEC) #NEC
-			ecbuild_remove_fortran_flags( "-fdefault-real=8" )
 			ecbuild_add_fortran_flags( "-fdefault-real=4" )
-		else() #GNU
-			ecbuild_remove_fortran_flags( "-fdefault-real-8" )
-			ecbuild_remove_fortran_flags( "-fdefault-real-10" )
-			ecbuild_remove_fortran_flags( "-fdefault-real-16" )
 		endif()
-	elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
-		ecbuild_remove_fortran_flags( "-r8" )
-	elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
-		ecbuild_remove_fortran_flags( "-r8" )
 	elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "NVHPC")
-		ecbuild_remove_fortran_flags( "-r8" )
 		ecbuild_add_fortran_flags( "-r4" )
 	else()
 		message(WARNING "Unknown Fortran compiler. Real might not be 4 bytes.")
