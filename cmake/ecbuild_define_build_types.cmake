@@ -9,7 +9,7 @@
 ############################################################################################
 # define default build type
 
-set( _BUILD_TYPE_MSG "Defined build type options are: [ None | Debug | Bit | Production | Release | RelWithDebInfo ]" )
+set( _BUILD_TYPE_MSG "Build type options defined by ecbuild are: [ None | Debug | Bit | Production | Release | RelWithDebInfo ]" )
 
 if( NOT ECBUILD_DEFAULT_BUILD_TYPE )
     set( ECBUILD_DEFAULT_BUILD_TYPE "RelWithDebInfo" )
@@ -55,5 +55,5 @@ if( NOT CMAKE_BUILD_TYPE MATCHES "None"  AND
     NOT CMAKE_BUILD_TYPE MATCHES "Production" AND
     NOT CMAKE_BUILD_TYPE MATCHES "Release"  AND
     NOT CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" )
-    ecbuild_warn( "CMAKE_BUILD_TYPE is not recognized. ${_BUILD_TYPE_MSG}" )
+  ecbuild_warn( "CMAKE_BUILD_TYPE is not recognized. ${_BUILD_TYPE_MSG}. Please make sure your build system correctly handles CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}.")
 endif()
