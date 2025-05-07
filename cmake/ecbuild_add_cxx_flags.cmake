@@ -37,7 +37,7 @@ include(ecbuild_add_lang_flags)
 
 macro( ecbuild_add_cxx_flags )
     ecbuild_debug("call ecbuild_add_cxx_flags( ${ARGV} )")
-    ecbuild_add_lang_flags( ${ARGV} LANG CXX )
+    ecbuild_add_lang_flags( FLAGS ${ARGV} LANG CXX )
 endmacro()
 
 macro( cmake_add_cxx_flags )
