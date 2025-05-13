@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package(ecbuild HINTS ${CMAKE_CURRENT_SOURCE_DIR}/../.. )
 

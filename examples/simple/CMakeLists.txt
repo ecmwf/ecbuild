@@ -1,6 +1,4 @@
-# CMake 3.11 is a minimal requirement for ecBuild. However, we strongly
-# recommend using CMake 3.12 or higher
-cmake_minimum_required( VERSION 3.11 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 # If you plan on using cmake directly (rather than the `ecbuild` wrapper
 # script), make sure that ecBuild can be found, by doing at least one of these:

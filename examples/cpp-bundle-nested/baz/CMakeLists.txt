@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.11 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild REQUIRED )
 project( baz VERSION 1.0.0 LANGUAGES C CXX )

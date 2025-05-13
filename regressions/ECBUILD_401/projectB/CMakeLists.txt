@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package(ecbuild QUIET)
-
 project( projectB VERSION 0.1.0 LANGUAGES CXX )
 
 include( ecbuild_system NO_POLICY_SCOPE )

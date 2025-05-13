@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 #[=[
 From https://sourceware.org/bugzilla/show_bug.cgi?id=20535

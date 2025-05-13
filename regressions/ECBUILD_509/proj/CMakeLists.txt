@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package(ecbuild 3.6 QUIET)
-
 project(myproj VERSION 0.1.0 LANGUAGES C)
 
 ecbuild_add_library(TARGET mylib SOURCES mylib.c)

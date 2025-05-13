@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild REQUIRED )
 project( projectB VERSION 0.1.0 LANGUAGES CXX )
-
 
 ecbuild_find_package( NAME projectA REQUIRED QUIET )
 
