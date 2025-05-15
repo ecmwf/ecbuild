@@ -9,7 +9,7 @@
 function( ecbuild_define_compile_options )
   set( supported_compiler_ids GNU NEC NVHPC Intel IntelLLVM Cray Flang )
 
-  set( options )
+  set( options REQUIRED )
   set( single_value_args NAME DESCRIPTION LANGUAGE )
   set( multi_value_args  ${supported_compiler_ids} )
 
@@ -34,6 +34,14 @@ function( ecbuild_define_compile_options )
         ecbuild_debug("${_p_NAME}: ${${_p_NAME}}")
       endif()
     endforeach()
+    if(_p_REQUIRED)
+      if( NOT DEFINED ${_p_NAME} )
+        list(FIND ARGV ${${lang}_COMPILER_ID} ARG_FOUND)
+        if( ARG_FOUND  STREQUAL -1 )
+          ecbuild_critical("Variable '${_p_NAME}' must be defined for compiler with ID ${${lang}_COMPILER_ID}")
+        endif()
+      endif()
+    endif()
   endif()
 endfunction()
 
@@ -43,8 +51,14 @@ ecbuild_define_compile_options(
   NAME        ECBUILD_Fortran_COMPILE_OPTIONS_REAL4
   DESCRIPTION "Compile options to convert all unqualified reals to 32 bit (single precision)"
   LANGUAGE    Fortran
+  REQUIRED
   NEC         -fdefault-real=4
   NVHPC       -r4
+  GNU         # empty (default)
+  Intel       # empty (default)
+  IntelLLVM   # empty (default)
+  Cray        # empty (default)
+  Flang       # empty (default)
 )
 
 ### ECBUILD_Fortran_COMPILE_OPTIONS_REAL8
@@ -53,6 +67,7 @@ ecbuild_define_compile_options(
   NAME        ECBUILD_Fortran_COMPILE_OPTIONS_REAL8
   DESCRIPTION "Compile options to convert all unqualified reals and doubles to 64 bit (double precision)"
   LANGUAGE    Fortran
+  REQUIRED
   GNU         -fdefault-real-8 -fdefault-double-8
   NEC         -fdefault-real=8 -fdefault-double=8
   NVHPC       -r8
@@ -83,7 +98,6 @@ ecbuild_define_compile_options(
   DESCRIPTION "Compile options to initiaize REAL's with signaling NaN"
   LANGUAGE    Fortran
   GNU         -finit-real=snan
-  NEC         -finit-real=snan
   Intel       -init=snan
   IntelLLVM   -init=snan
   Cray        -ei
@@ -96,7 +110,6 @@ ecbuild_define_compile_options(
   DESCRIPTION "Compile options to trap floating-point-exceptions"
   LANGUAGE    Fortran
   GNU         -ffpe-trap=invalid,zero,overflow
-  NEC         -ffpe-trap=invalid,zero,overflow
   Intel       -fpe0
   IntelLLVM   -fpe0
   NVHPC       -Ktrap=fp
