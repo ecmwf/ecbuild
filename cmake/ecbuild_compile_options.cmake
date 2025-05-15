@@ -38,7 +38,11 @@ function( ecbuild_define_compile_options )
       if( NOT DEFINED ${_p_NAME} )
         list(FIND ARGV ${${lang}_COMPILER_ID} ARG_FOUND)
         if( ARG_FOUND  STREQUAL -1 )
-          ecbuild_critical("Variable '${_p_NAME}' must be defined for compiler with ID ${${lang}_COMPILER_ID}")
+          ecbuild_critical(
+            " Variable '${_p_NAME}' must be defined for compiler with ID ${${lang}_COMPILER_ID}.\n"
+            " Description:\n"
+            "   ${_p_DESCRIPTION}\n"
+            " Please submit a patch. In the mean time you can provide the variable to the CMake configuration.")
         endif()
       endif()
     endif()
