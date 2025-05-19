@@ -18,4 +18,11 @@ ecbuild_add_option(
     CONDITION SOME_PACKAGE_FOUND
 )
 
+project( projc LANGUAGES NONE VERSION 0.3 )
+ecbuild_add_option(
+    FEATURE FEATURE_C
+    DEFAULT ON
+    REQUIRED_PACKAGES NONEXISTENT
+)
+
 ecbuild_print_summary()
