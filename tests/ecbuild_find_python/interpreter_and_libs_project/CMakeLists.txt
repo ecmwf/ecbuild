@@ -1,0 +1,32 @@
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
+find_package( ecbuild 3.4 REQUIRED )
+
+project( project LANGUAGES NONE VERSION 0.2 )
+
+ecbuild_find_python( VERSION 3.8 )
+
+include(${CMAKE_SOURCE_DIR}/../cmake/expecting.cmake)
+
+expecting_true( CONDITION PYTHON_FOUND )
+expecting_true( CONDITION PYTHON_Interpreter_FOUND )
+expecting_true( CONDITION PYTHON_Development_FOUND )
+expecting_nonempty( CONDITION PYTHON_EXECUTABLE)
+expecting_nonempty( CONDITION PYTHON_VERSION_MAJOR )
+expecting_nonempty( CONDITION PYTHON_VERSION_MINOR )
+expecting_nonempty( CONDITION PYTHON_VERSION_PATCH )
+expecting_nonempty( CONDITION PYTHON_VERSION )
+expecting_nonempty( CONDITION PYTHON_INCLUDE_DIRS )
+expecting_nonempty( CONDITION PYTHON_LIBRARIES )
+expecting_nonempty( CONDITION PYTHON_SITE_PACKAGES )
+
+expecting_true( CONDITION Python_FOUND )
+expecting_true( CONDITION Python_Interpreter_FOUND )
+expecting_true( CONDITION Python_Development_FOUND )
+expecting_nonempty( CONDITION Python_EXECUTABLE )
+expecting_nonempty( CONDITION Python_VERSION_MAJOR )
+expecting_nonempty( CONDITION Python_VERSION_MINOR )
+expecting_nonempty( CONDITION Python_VERSION_PATCH )
+expecting_nonempty( CONDITION Python_VERSION )
+expecting_nonempty( CONDITION Python_INCLUDE_DIRS )
+expecting_nonempty( CONDITION Python_LIBRARIES )
+expecting_nonempty( CONDITION Python_SITELIB )
