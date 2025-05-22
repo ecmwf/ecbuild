@@ -7,16 +7,10 @@ set( PROJECT_A_ENABLE_TESTS OFF CACHE BOOL "" )
 
 set( PROJECT_B_ENABLE_X OFF CACHE BOOL "" )
 
-project( bundle VERSION 0.0.0 LANGUAGES C )
+set(ENABLE_Y ON CACHE BOOL "" )
+set(ENABLE_Z OFF CACHE BOOL "" )
 
-ecbuild_add_option( 
-    FEATURE Y 
-    DESCRIPTION "Description Y"
-    DEFAULT ON )
-ecbuild_add_option(
-    FEATURE Z 
-    DESCRIPTION "Description Z"
-    DEFAULT OFF )
+project( bundle VERSION 0.0.0 LANGUAGES C )
 
 add_subdirectory( project_a )
 add_subdirectory( project_b )
