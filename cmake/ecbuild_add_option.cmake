@@ -156,18 +156,18 @@ macro( ecbuild_add_option )
     if ( DEFINED ENABLE_${_p_FEATURE} )
       # When the user provides a value for ENABLE_<FEATURE>, we cache it
       # in a new variable <PROJECT_NAME>_ENABLE_<FEATURE>_defined_value
-      set ( ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value ${ENABLE_${_p_FEATURE}} CACHE BOOL "" FORCE )
+      set ( ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value ${ENABLE_${_p_FEATURE}} CACHE INTERNAL "" FORCE )
     else()
       # When the user does not provide a value for ENABLE_<FEATURE>,
       # we set the default value of ENABLE_<FEATURE> to the default value
       # of the feature.
-      set ( ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value ${_p_DEFAULT} CACHE BOOL "" FORCE )
+      set ( ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value ${_p_DEFAULT} CACHE INTERNAL "" FORCE )
     endif()
   else()
     if ( DEFINED ENABLE_${_p_FEATURE} )
       # When the user provides a value for ENABLE_<FEATURE>, we cache it
       # in a new variable <PROJECT_NAME>_ENABLE_<FEATURE>_defined_value.
-      set ( ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value ${ENABLE_${_p_FEATURE}} CACHE BOOL "" FORCE )
+      set ( ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value ${ENABLE_${_p_FEATURE}} CACHE INTERNAL "" FORCE )
     endif()
   endif()
 
@@ -183,7 +183,7 @@ macro( ecbuild_add_option )
 
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was required")
     set( ENABLE_${_p_FEATURE} ON CACHE BOOL "" FORCE )
-    set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" FORCE )
+    set( ${_p_FEATURE}_user_provided_input 1 CACHE INTERNAL "" FORCE )
 
   elseif( NOT ENABLE_${_p_FEATURE} STREQUAL "" AND _in_cache )
 
@@ -194,7 +194,7 @@ macro( ecbuild_add_option )
   
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was found in cache, updating to ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
     set( ENABLE_${_p_FEATURE} ${ENABLE_${_p_FEATURE}} CACHE BOOL "" FORCE )
-    set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" FORCE )
+    set( ${_p_FEATURE}_user_provided_input 1 CACHE INTERNAL "" FORCE )
 
   else()
 
@@ -203,11 +203,9 @@ macro( ecbuild_add_option )
     #
 
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} not found in cache")
-    set( ${_p_FEATURE}_user_provided_input 0 CACHE BOOL "" )
+    set( ${_p_FEATURE}_user_provided_input 0 CACHE INTERNAL "" )
 
   endif()
-
-  mark_as_advanced( ${_p_FEATURE}_user_provided_input )
 
   # define the option -- for cmake GUI
   option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${ENABLE_${_p_FEATURE}} )

@@ -36,8 +36,8 @@ EXPECT_ONE_OF $HERE/build_1.a.log "Feature FEATUREA disabled"
 EXPECT_ONE_OF $HERE/build_1.a.log "Feature FEATUREB enabled"
 EXPECT_ONE_OF $HERE/build_1.a.log "Build files have been written"
 # Ensure the option values are correct in CMakeCache
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:BOOL=OFF"
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:BOOL=ON"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:INTERNAL=OFF"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:INTERNAL=ON"
 
 ecbuild $SOURCE/test_project -B $HERE/build_1 -DENABLE_FEATUREA=ON -DENABLE_FEATUREB=OFF -DECBUILD_LOG_LEVEL=DEBUG | tee $HERE/build_1.b.log
 # Ensure the option values are correct in CMake output
@@ -45,8 +45,8 @@ EXPECT_ONE_OF $HERE/build_1.b.log "Feature FEATUREA enabled"
 EXPECT_ONE_OF $HERE/build_1.b.log "Feature FEATUREB disabled"
 EXPECT_ONE_OF $HERE/build_1.b.log "Build files have been written"
 # Ensure the option values are correct in CMakeCache
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:BOOL=ON"
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:BOOL=OFF"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:INTERNAL=ON"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:INTERNAL=OFF"
 
 ecbuild $SOURCE/test_project -B $HERE/build_1 -DECBUILD_LOG_LEVEL=DEBUG | tee $HERE/build_1.c.log
 # Ensure the option values are correct in CMake output
@@ -54,8 +54,8 @@ EXPECT_ONE_OF $HERE/build_1.c.log "Feature FEATUREA enabled"
 EXPECT_ONE_OF $HERE/build_1.c.log "Feature FEATUREB disabled"
 EXPECT_ONE_OF $HERE/build_1.c.log "Build files have been written"
 # Ensure the option values are correct in CMakeCache
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:BOOL=ON"
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:BOOL=OFF"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:INTERNAL=ON"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:INTERNAL=OFF"
 
 ecbuild $SOURCE/test_project -B $HERE/build_1 -DENABLE_FEATUREA=OFF -DENABLE_FEATUREB=ON -DECBUILD_LOG_LEVEL=DEBUG | tee $HERE/build_1.d.log
 # Ensure the option values are correct in CMake output
@@ -63,13 +63,13 @@ EXPECT_ONE_OF $HERE/build_1.d.log "Feature FEATUREA disabled"
 EXPECT_ONE_OF $HERE/build_1.d.log "Feature FEATUREB enabled"
 EXPECT_ONE_OF $HERE/build_1.d.log "Build files have been written"
 # Ensure the option values are correct in CMakeCache
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:BOOL=OFF"
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:BOOL=ON"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:INTERNAL=OFF"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:INTERNAL=ON"
 
 ecbuild $SOURCE/test_project -B $HERE/build_1 -DECBUILD_LOG_LEVEL=DEBUG | tee $HERE/build_1.e.log
 EXPECT_ONE_OF $HERE/build_1.e.log "Feature FEATUREA disabled"
 EXPECT_ONE_OF $HERE/build_1.e.log "Feature FEATUREB enabled"
 EXPECT_ONE_OF $HERE/build_1.e.log "Build files have been written"
 # Ensure the option values are correct in CMakeCache
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:BOOL=OFF"
-EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:BOOL=ON"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREA_defined_value:INTERNAL=OFF"
+EXPECT_ONE_OF $HERE/build_1/CMakeCache.txt "project_ENABLE_FEATUREB_defined_value:INTERNAL=ON"
