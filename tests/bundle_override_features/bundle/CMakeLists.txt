@@ -9,6 +9,15 @@ set( PROJECT_B_ENABLE_X OFF CACHE BOOL "" )
 
 project( bundle VERSION 0.0.0 LANGUAGES C )
 
+ecbuild_add_option( 
+    FEATURE Y 
+    DESCRIPTION "Description Y"
+    DEFAULT ON )
+ecbuild_add_option(
+    FEATURE Z 
+    DESCRIPTION "Description Z"
+    DEFAULT OFF )
+
 add_subdirectory( project_a )
 add_subdirectory( project_b )
 

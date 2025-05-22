@@ -21,3 +21,15 @@ ecbuild_add_option( FEATURE X DEFAULT ON )
 if( NOT HAVE_X )
     ecbuild_error( "Feature X should be default-enabled as ENABLE_X is undefined" )
 endif()
+
+ecbuild_add_option( FEATURE Y DEFAULT ON )
+
+if( NOT HAVE_Y )
+    ecbuild_error( "Feature Y should be enabled, with ENABLE_Y=${ENABLE_Y} as set at bundle level" )
+endif()
+
+ecbuild_add_option( FEATURE Z DEFAULT OFF )
+
+if( HAVE_Z )
+    ecbuild_error( "Feature Y should be disabled, with ENABLE_Z=${ENABLE_Z} as set at bundle level" )
+endif()
