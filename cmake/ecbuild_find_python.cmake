@@ -96,39 +96,15 @@ function( ecbuild_find_python )
     # Search first without specifying the version, since doing so gives preference to the specified
     # version even though a never version of the interpreter may be available
     if ( _p_NO_LIBS )
-      find_package( Python COMPONENTS Interpreter ${_p_REQUIRED} )
+      find_package( Python ${_p_VERSION} COMPONENTS Interpreter ${_p_REQUIRED} )
       set( __required_vars Python_FOUND Python_Interpreter_FOUND )
     else()
-      find_package( Python COMPONENTS Interpreter Development ${_p_REQUIRED} )
+      find_package( Python  ${_p_VERSION} COMPONENTS Interpreter Development ${_p_REQUIRED} )
       set( __required_vars Python_FOUND Python_Interpreter_FOUND Python_Development_FOUND )
     endif()
 
-    # If no suitable version was found, search again with the version specified
-    if( Python_FOUND AND DEFINED _p_VERSION )
-      if( ${_p_VERSION} VERSION_GREATER "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}" )
-        ecbuild_debug( "ecbuild_find_python: Found Python interpreter version '${Python_VERSION}' at '${Python_EXECUTABLE}', however version '${_p_VERSION}' is required. Searching again..." )
-        unset( Python_Interpreter_FOUND )
-        unset( Python_EXECUTABLE )
-        unset( Python_EXECUTABLE CACHE )
-        unset( Python_VERSION_MAJOR )
-        unset( Python_VERSION_MINOR )
-        unset( Python_VERSION_PATCH )
-        unset( Python_VERSION )
-
-        if ( _p_NO_LIBS )
-          find_package( Python "${_p_VERSION}" COMPONENTS Interpreter ${_p_REQUIRED} )
-        else()
-          find_package( Python "${_p_VERSION}" COMPONENTS Interpreter Development ${_p_REQUIRED} )
-        endif()
-
-        endif()
-    endif()
-
-    set( __required_vars Python_Interpreter_FOUND )
-
     if( Python_Interpreter_FOUND )
         ecbuild_debug( "ecbuild_find_python: Found Python interpreter version '${Python_VERSION}' at '${Python_EXECUTABLE}'" )
-
         # python site-packages are located at...
         ecbuild_debug( "ecbuild_find_python: Python_SITELIB=${Python_SITELIB}" )
     else()
