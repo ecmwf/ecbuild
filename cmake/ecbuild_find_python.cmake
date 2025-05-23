@@ -104,8 +104,8 @@ function( ecbuild_find_python )
     endif()
 
     # If no suitable version was found, search again with the version specified
-    if( Python_FOUND AND _p_VERSION )
-      if( _p_VERSION VERSION_GREATER "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}" )
+    if( Python_FOUND AND DEFINED _p_VERSION )
+      if( ${_p_VERSION} VERSION_GREATER "${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}.${Python_VERSION_PATCH}" )
         ecbuild_debug( "ecbuild_find_python: Found Python interpreter version '${Python_VERSION}' at '${Python_EXECUTABLE}', however version '${_p_VERSION}' is required. Searching again..." )
         unset( Python_Interpreter_FOUND )
         unset( Python_EXECUTABLE )
@@ -116,9 +116,9 @@ function( ecbuild_find_python )
         unset( Python_VERSION )
 
         if ( _p_NO_LIBS )
-          find_package( Python COMPONENTS Interpreter VERSION "${_p_VERSION}" ${_p_REQUIRED} )
+          find_package( Python "${_p_VERSION}" COMPONENTS Interpreter ${_p_REQUIRED} )
         else()
-          find_package( Python COMPONENTS Interpreter Development VERSION "${_p_VERSION}" ${_p_REQUIRED} )
+          find_package( Python "${_p_VERSION}" COMPONENTS Interpreter Development ${_p_REQUIRED} )
         endif()
 
         endif()

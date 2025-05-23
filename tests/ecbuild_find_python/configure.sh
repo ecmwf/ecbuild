@@ -28,7 +28,7 @@ $SOURCE/clean.sh
 # ----------------- configure project ---------------------
 
 mkdir -p $HERE/build_1
-ecbuild $SOURCE/interpreter_and_libs_project -B $HERE/build_1| tee $HERE/build_1.log
+ecbuild $SOURCE/interpreter_and_libs_project -B $HERE/build_1 | tee $HERE/build_1.log
 EXPECT_ONE_OF $HERE/build_1.log "Build files have been written"
 
 mkdir -p $HERE/build_2
