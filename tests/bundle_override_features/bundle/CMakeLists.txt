@@ -7,6 +7,9 @@ set( PROJECT_A_ENABLE_TESTS OFF CACHE BOOL "" )
 
 set( PROJECT_B_ENABLE_X OFF CACHE BOOL "" )
 
+set(ENABLE_Y ON CACHE BOOL "" )
+set(ENABLE_Z OFF CACHE BOOL "" )
+
 project( bundle VERSION 0.0.0 LANGUAGES C )
 
 add_subdirectory( project_a )
