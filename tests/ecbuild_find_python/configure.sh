@@ -27,14 +27,27 @@ $SOURCE/clean.sh
 
 # ----------------- configure project ---------------------
 
-mkdir -p $HERE/build_1
-ecbuild $SOURCE/interpreter_and_libs_project -B $HERE/build_1 | tee $HERE/build_1.log
-EXPECT_ONE_OF $HERE/build_1.log "Build files have been written"
+TC=1
+mkdir -p $HERE/build_${TC}
+ecbuild $SOURCE/interpreter_and_libs_project -B $HERE/build_${TC} | tee $HERE/build_${TC}.log
+EXPECT_ONE_OF $HERE/build_${TC}.log "Build files have been written"
 
-mkdir -p $HERE/build_2
-ecbuild $SOURCE/interpreter_only_project -B $HERE/build_2 | tee $HERE/build_2.log
-EXPECT_ONE_OF $HERE/build_2.log "Build files have been written"
+TC=2
+mkdir -p $HERE/build_${TC}
+ecbuild $SOURCE/interpreter_and_libs_with_version_project -B $HERE/build_${TC} | tee $HERE/build_${TC}.log
+EXPECT_ONE_OF $HERE/build_${TC}.log "Build files have been written"
 
-mkdir -p $HERE/build_3
-ecbuild $SOURCE/nonexistent_version_project -B $HERE/build_3 | tee $HERE/build_3.log
-EXPECT_ONE_OF $HERE/build_3.log "Build files have been written"
+TC=3
+mkdir -p $HERE/build_${TC}
+ecbuild $SOURCE/interpreter_only_project -B $HERE/build_${TC} | tee $HERE/build_${TC}.log
+EXPECT_ONE_OF $HERE/build_${TC}.log "Build files have been written"
+
+TC=4
+mkdir -p $HERE/build_${TC}
+ecbuild $SOURCE/interpreter_only_with_version_project -B $HERE/build_${TC} | tee $HERE/build_${TC}.log
+EXPECT_ONE_OF $HERE/build_${TC}.log "Build files have been written"
+
+TC=5
+mkdir -p $HERE/build_${TC}
+ecbuild $SOURCE/nonexistent_version_project -B $HERE/build_${TC} | tee $HERE/build_${TC}.log
+EXPECT_ONE_OF $HERE/build_${TC}.log "Build files have been written"

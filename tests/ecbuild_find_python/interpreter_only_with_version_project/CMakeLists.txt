@@ -3,7 +3,7 @@ find_package( ecbuild 3.4 REQUIRED )
 
 project( project LANGUAGES NONE VERSION 0.2 )
 
-ecbuild_find_python( NO_LIBS )
+ecbuild_find_python( VERSION 3.6 NO_LIBS)
 
 include(${CMAKE_SOURCE_DIR}/../cmake/expecting.cmake)
 
