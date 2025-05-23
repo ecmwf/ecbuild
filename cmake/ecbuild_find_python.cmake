@@ -49,9 +49,22 @@
 # :Python_LIBRARIES:         Python libraries
 # :Python_SITELIB:           Python site packages directory
 #
-# The variables with prefix ``PYTHON_`` are now *DEPRECATED* and will be removed
-# in a future version. The new variables with prefix ``Python_`` should be used
-# instead. The old variables are still set for backwards compatibility.
+# The following variables with prefix ``PYTHON_`` are now *DEPRECATED* and
+# will be removed in a future version; these variables are still set for
+# backwards compatibility. The new variables with prefix ``Python_``
+# should be used instead. 
+# 
+# :PYTHONINTERP_FOUND:    Python interpreter was found
+# :PYTHONLIBS_FOUND:      Python libraries were found
+# :PYTHON_FOUND:          Python was found (both interpreter and libraries)
+# :PYTHON_EXECUTABLE:     Python executable
+# :PYTHON_VERSION_MAJOR:  major version number
+# :PYTHON_VERSION_MINOR:  minor version number
+# :PYTHON_VERSION_PATCH:  patch version number
+# :PYTHON_VERSION_STRING: Python version
+# :PYTHON_INCLUDE_DIRS:   Python include directories
+# :PYTHON_LIBRARIES:      Python libraries
+# :PYTHON_SITE_PACKAGES:  Python site packages directory
 # 
 ##############################################################################
 
@@ -111,10 +124,6 @@ function( ecbuild_find_python )
         endif()
     endif()
 
-    set_package_properties( PythonInterp PROPERTIES
-                            URL http://python.org
-                            DESCRIPTION "Python interpreter" )
-
     set( __required_vars Python_Interpreter_FOUND )
 
     if( Python_Interpreter_FOUND )
@@ -143,13 +152,13 @@ function( ecbuild_find_python )
     # To keep backwards compatibility, the old variable names (PYTHON_*) are set as well
 
     set( PYTHON_FOUND             "${Python_FOUND}" PARENT_SCOPE )
-    set( PYTHON_Interpreter_FOUND "${Python_Interpreter_FOUND}" PARENT_SCOPE )
-    set( PYTHON_Development_FOUND "${Python_Development_FOUND}" PARENT_SCOPE )
+    set( PYTHONINTERP_FOUND       "${Python_Interpreter_FOUND}" PARENT_SCOPE )
+    set( PYTHONLIBS_FOUND         "${Python_Development_FOUND}" PARENT_SCOPE )
     set( PYTHON_EXECUTABLE        "${Python_EXECUTABLE}" PARENT_SCOPE )
     set( PYTHON_VERSION_MAJOR     "${Python_VERSION_MAJOR}" PARENT_SCOPE )
     set( PYTHON_VERSION_MINOR     "${Python_VERSION_MINOR}" PARENT_SCOPE )
     set( PYTHON_VERSION_PATCH     "${Python_VERSION_PATCH}" PARENT_SCOPE )
-    set( PYTHON_VERSION           "${Python_VERSION}" PARENT_SCOPE )
+    set( PYTHON_VERSION_STRING    "${Python_VERSION}" PARENT_SCOPE )
     set( PYTHON_INCLUDE_DIRS      "${Python_INCLUDE_DIRS}" PARENT_SCOPE )
     set( PYTHON_LIBRARIES         "${Python_LIBRARIES}" PARENT_SCOPE )
     set( PYTHON_SITE_PACKAGES     "${Python_SITELIB}" PARENT_SCOPE )

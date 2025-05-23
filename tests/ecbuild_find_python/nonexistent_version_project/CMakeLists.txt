@@ -8,9 +8,9 @@ ecbuild_find_python( VERSION 3.999)
 include(${CMAKE_SOURCE_DIR}/../cmake/expecting.cmake)
 
 expecting_false( CONDITION PYTHON_FOUND )
-expecting_false( CONDITION PYTHON_Interpreter_FOUND )
-expecting_false( CONDITION PYTHON_Development_FOUND )
+expecting_false( CONDITION PYTHONINTERP_FOUND )
+expecting_false( CONDITION PYTHONLIBS_FOUND )
 
 expecting_false( CONDITION Python_FOUND )
-expecting_false( CONDITION Python_Interpreter_FOUND )
-expecting_false( CONDITION Python_Development_FOUND )
+expecting_false( CONDITION PYTHONINTERP_FOUND )
+expecting_false( CONDITION PYTHONLIBS_FOUND )
