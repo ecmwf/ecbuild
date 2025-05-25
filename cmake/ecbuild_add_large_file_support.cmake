@@ -17,7 +17,7 @@ macro(ecbuild_add_large_file_support)
 
   if( EC_SIZEOF_OFF_T LESS "8" )
 
-    if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} STREQUAL "GNU" )
       add_definitions( -D_FILE_OFFSET_BITS=64 )
     elseif( ${CMAKE_SYSTEM_NAME} MATCHES "AIX" )
       add_definitions( -D_LARGE_FILES=64 )
