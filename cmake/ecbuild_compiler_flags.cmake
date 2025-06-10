@@ -296,6 +296,24 @@ endmacro()
 #
 ##############################################################################
 
+# We need to detect if the Fortran compiler is NEC, as it identifies as GNU
+# and some compiler flags are different than for GNU.
+# The resulting compiler ID "NEC" is then stored in ECBUILD_Fortran_COMPILER_ID
+# without modifying CMAKE_Fortran_COMPILER_ID.
+
+if( CMAKE_Fortran_COMPILER_LOADED )
+  set( _compiler_id ${CMAKE_Fortran_COMPILER_ID} )
+  if( NOT DEFINED ECBUILD_Fortran_COMPILER_ID AND CMAKE_Fortran_COMPILER_ID STREQUAL "GNU" )
+    try_compile( _is_nec ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_LIST_DIR}/determine-nec.F90 )
+    if( _is_nec )
+      ecbuild_info("NEC Fortran compiler detected")
+      set( _compiler_id NEC )
+    endif()
+  endif()
+  set(ECBUILD_Fortran_COMPILER_ID ${_compiler_id} CACHE STRING "CMAKE_Fortran_COMPILER_ID")
+endif()
+include(ecbuild_compile_options)
+
 string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
 
 # Custom (project specific) compilation flags enabled?
