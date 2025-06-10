@@ -10,29 +10,7 @@ export PATH=$SOURCE/../../bin:$PATH
 echo $PATH
 echo $SOURCE
 
-run_test_ECBUILD_2_COMPAT() {
-    local tname=ECBUILD_2_COMPAT__$1
-    local exp_sts=$2
-    shift 2
-
-    local bdir=$HERE/build_$tname
-    local logf=$HERE/$tname.log
-
-    mkdir -p $bdir && cd $bdir
-    local sts=0
-    echo "Running test '$tname'"
-    ecbuild -- -DECBUILD_2_COMPAT=ON -Wno-deprecated $* $SOURCE/test_project >$logf 2>&1 || sts=$?
-
-    if [[ $sts -ne $exp_sts ]] ; then
-        echo "Test '$tname': expected exit code $exp_sts, got $sts"
-        cat $logf
-        exit 1
-    fi
-}
-
 run_test() {
-
-    run_test_ECBUILD_2_COMPAT "$@"
 
     local tname=$1
     local exp_sts=$2
