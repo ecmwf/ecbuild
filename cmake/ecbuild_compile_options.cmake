@@ -6,6 +6,94 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+##############################################################################
+#.rst:
+#
+# ecbuild_compile_options
+# =======================
+#
+# Defined variables describing compiler options for the current compiler. ::
+#
+# Fortran:
+#   - ``ECBUILD_Fortran_COMPILE_OPTIONS_REAL4`` : Convert all unqualified REALs to 32 bit (single precision)
+#   - ``ECBUILD_Fortran_COMPILE_OPTIONS_REAL8`` : Convert all unqualified REALs to 64 bit (double precision)
+#   - ``ECBUILD_Fortran_COMPILE_OPTIONS_CHECK_BOUNDS`` : Bounds checking compile options
+#   - ``ECBUILD_Fortran_COMPILE_OPTIONS_INIT_SNAN`` : Compile options to initiaize REAL's with signaling NaN
+#   - ``ECBUILD_Fortran_COMPILE_OPTIONS_FPE_TRAP`` : Compile options to trap floating-point-exceptions
+#
+# Example use:
+#
+# 1.  Application to entire scope
+#
+#         ecbuild_add_fortran_flags( ${ECBUILD_Fortran_COMPILE_OPTIONS_REAL8} )
+#
+# 2.  Application to a target with mixed language source files
+#
+#         target_compile_options(my_target PUBLIC
+#             $<$<COMPILE_LANGUAGE:Fortran>:${ECBUILD_Fortran_COMPILE_OPTIONS_REAL8}>)
+#         # A generator expression is required here to only apply the flags to Fortran files in the target.
+#         # This is only needed if it is a mixed-language target.
+#
+# 3. On a per source file basis
+#
+#        set_property(SOURCE my_source.F90
+#            APPEND PROPERTY COMPILE_OPTIONS ${ECBUILD_Fortran_COMPILE_OPTIONS_REAL8})
+#
+##############################################################################
+
+
+##############################################################################
+#.rst:
+#
+# ecbuild_define_compile_options
+# ==============================
+#
+# Define a compile_option for a given compiler ID and language ::
+#
+#   ecbuild_define_compile_options( NAME <name> DESCRIPTION <description> LANGUAGE <language> [ REQUIRED ]
+#                                   [ GNU <values> ] [ NEC <values> ] [ NVHPC <values> ] [ Intel <values> ]
+#                                   [ IntelLLVM <values> ] [ Cray <values> ] [ Flang <values> ] )
+#
+# Options
+# -------
+#
+# NAME <name> :
+#   The name given to compile_option
+#
+# DESCRIPTION <description> :
+#   The description of compile_option
+#
+# LANGUAGE <language> :
+#   The compiler language the compile_options apply to
+#
+# GNU <values> : optional
+#   The values for the compile option for GNU compiler and given LANGUAGE
+#
+# NEC <values> : optional
+#   The values for the compile option for NEC compiler and given LANGUAGE
+#
+# NVHPC <values> : optional
+#   The values for the compile option for NVHPC compiler and given LANGUAGE
+#
+# Intel <values> : optional
+#   The values for the compile option for Intel compiler and given LANGUAGE
+#
+# IntelLLVM <values> : optional
+#   The values for the compile option for IntelLLVM compiler and given LANGUAGE
+#
+# Cray <values> : optional
+#   The values for the compile option for Cray compiler and given LANGUAGE
+#
+# Flang <values> : optional
+#   The values for the compile option for Flang compiler and given LANGUAGE
+#
+# REQUIRED : optional
+#   fail if the compile_options for the current compiler are not implemented,
+#   to avoid nasty surpises
+#
+##############################################################################
+
+
 function( ecbuild_define_compile_options )
   set( supported_compiler_ids GNU NEC NVHPC Intel IntelLLVM Cray Flang )
 
@@ -48,6 +136,8 @@ function( ecbuild_define_compile_options )
     endif()
   endif()
 endfunction()
+
+##############################################################################
 
 ### ECBUILD_Fortran_COMPILE_OPTIONS_REAL4
 
