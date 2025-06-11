@@ -153,6 +153,7 @@ ecbuild_define_compile_options(
   IntelLLVM   # empty (default)
   Cray        # empty (default)
   Flang       # empty (default)
+  NAG         # empty (default)
 )
 
 ### ECBUILD_Fortran_COMPILE_OPTIONS_REAL8
@@ -169,6 +170,7 @@ ecbuild_define_compile_options(
   IntelLLVM   -r8
   Cray        -sreal64
   Flang       -fdefault-real-8
+  NAG         -double
 )
 
 ### ECBUILD_Fortran_COMPILE_OPTIONS_CHECK_BOUNDS
