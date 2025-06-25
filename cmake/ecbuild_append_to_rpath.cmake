@@ -49,6 +49,9 @@ function( _make_relative_rpath_entry entry var )
     elseif( EC_OS_NAME STREQUAL "aix" ) # always relative to executable path
         set( ${var} "${entry}" PARENT_SCOPE )
 
+    elseif( EC_OS_NAME STREQUAL "hurd" )
+        set( ${var} "$ORIGIN/${entry}" PARENT_SCOPE )
+
     else()
         set( ${var} "${CMAKE_INSTALL_PREFIX}/${entry}" PARENT_SCOPE )
 

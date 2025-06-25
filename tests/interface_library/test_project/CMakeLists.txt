@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild REQUIRED )
 project( test_interface_library VERSION 0.1.0 LANGUAGES C )

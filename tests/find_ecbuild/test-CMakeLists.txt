@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package(ecbuild 3.0 REQUIRED)
 project(dummy VERSION 0.1 LANGUAGES NONE)

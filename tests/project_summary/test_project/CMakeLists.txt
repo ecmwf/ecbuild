@@ -1,21 +1,10 @@
-cmake_minimum_required( VERSION 3.18.4 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 find_package( ecbuild 3.4 REQUIRED )
 
-project( proja LANGUAGES NONE VERSION 0.2 )
-ecbuild_add_option(
-    FEATURE FEATURE_A
-    DEFAULT ON
-)
+project( main LANGUAGES NONE VERSION 0.1 )
 
-project( projb LANGUAGES NONE VERSION 0.1 )
-ecbuild_add_option(
-    FEATURE FEATURE_A
-    DEFAULT OFF
-)
-
-ecbuild_add_option(
-    FEATURE FEATURE_B
-    CONDITION SOME_PACKAGE_FOUND
-)
+add_subdirectory( proja )
+add_subdirectory( projb )
+add_subdirectory( projc )
 
 ecbuild_print_summary()
