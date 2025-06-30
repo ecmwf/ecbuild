@@ -22,6 +22,14 @@ export PATH=$SOURCE/../../bin:$PATH
 echo $PATH
 echo $SOURCE
 
+# Ensure Python 3.x is available
+if [[ "$(type -t module)" == "function" ]];
+then
+  # "module()" is available when running on HPC
+  module load python3
+  python3 --version
+fi
+
 # --------------------- cleanup ------------------------
 $SOURCE/clean.sh
 
