@@ -18,7 +18,7 @@
 #   - ``ECBUILD_Fortran_COMPILE_OPTIONS_REAL4`` : Convert all unqualified REALs to 32 bit (single precision)
 #   - ``ECBUILD_Fortran_COMPILE_OPTIONS_REAL8`` : Convert all unqualified REALs to 64 bit (double precision)
 #   - ``ECBUILD_Fortran_COMPILE_OPTIONS_CHECK_BOUNDS`` : Bounds checking compile options
-#   - ``ECBUILD_Fortran_COMPILE_OPTIONS_INIT_SNAN`` : Compile options to initiaize REAL's with signaling NaN
+#   - ``ECBUILD_Fortran_COMPILE_OPTIONS_INIT_SNAN`` : Compile options to initialize REAL's with signaling NaN
 #   - ``ECBUILD_Fortran_COMPILE_OPTIONS_FPE_TRAP`` : Compile options to trap floating-point-exceptions
 #
 # Example use:
@@ -200,7 +200,7 @@ ecbuild_define_compile_options(
 
 ecbuild_define_compile_options(
   NAME        ECBUILD_Fortran_COMPILE_OPTIONS_INIT_SNAN
-  DESCRIPTION "Compile options to initiaize REAL's with signaling NaN"
+  DESCRIPTION "Compile options to initialize REAL's with signaling NaN"
   LANGUAGE    Fortran
   GNU         -finit-real=snan
   Intel       -init=snan
