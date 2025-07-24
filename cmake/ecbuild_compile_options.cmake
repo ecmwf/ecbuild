@@ -52,7 +52,8 @@
 #
 #   ecbuild_define_compile_options( NAME <name> DESCRIPTION <description> LANGUAGE <language> [ REQUIRED ]
 #                                   [ GNU <values> ] [ NEC <values> ] [ NVHPC <values> ] [ Intel <values> ]
-#                                   [ IntelLLVM <values> ] [ Cray <values> ] [ Flang <values> ] [ NAG <values> ] )
+#                                   [ IntelLLVM <values> ] [ Cray <values> ] [ Flang <values> ] [ NAG <values> ] 
+#                                   [ LLVMFlang <values> ] )
 #
 # Options
 # -------
@@ -90,6 +91,9 @@
 # NAG <values> : optional
 #   The values for the compile option for NAG compiler and given LANGUAGE
 #
+# LLVMFlang <values> : optional
+#   The values for the compile option for LLVM Flang compiler and given LANGUAGE
+#
 # REQUIRED : optional
 #   fail if the compile_options for the current compiler are not implemented,
 #   to avoid nasty surpises
@@ -98,7 +102,7 @@
 
 
 function( ecbuild_define_compile_options )
-  set( supported_compiler_ids GNU NEC NVHPC Intel IntelLLVM Cray Flang NAG )
+  set( supported_compiler_ids GNU NEC NVHPC Intel IntelLLVM Cray Flang NAG LLVMFlang )
 
   set( options REQUIRED )
   set( single_value_args NAME DESCRIPTION LANGUAGE )
@@ -157,6 +161,7 @@ ecbuild_define_compile_options(
   Cray        # empty (default)
   Flang       # empty (default)
   NAG         # empty (default)
+  LLVMFlang   # empty (default)
 )
 
 ### ECBUILD_Fortran_COMPILE_OPTIONS_REAL8
@@ -174,6 +179,7 @@ ecbuild_define_compile_options(
   Cray        -sreal64
   Flang       -fdefault-real-8
   NAG         -double
+  LLVMFlang   -fdefault-real-8
 )
 
 ### ECBUILD_Fortran_COMPILE_OPTIONS_CHECK_BOUNDS
