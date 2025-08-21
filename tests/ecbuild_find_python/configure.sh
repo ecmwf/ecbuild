@@ -26,7 +26,6 @@ echo $SOURCE
 if [[ "$(type -t module)" == "function" ]];
 then
   # "module()" is available when running on HPC
-  module load python3
   python3 --version
 fi
 
