@@ -41,9 +41,15 @@ macro( ecbuild_compiler_flags _lang )
     include( ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake OPTIONAL )
   endif()
 
+  set (_btypelist NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO)
+
+  if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
+    list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
+  endif ()
+
   # Apply user or toolchain specified compilation flag overrides (NOT written to cache)
 
-  foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+  foreach( _btype IN LISTS _btypelist)
     if( DEFINED ECBUILD_${_lang}_FLAGS_${_btype} )
       ecbuild_debug( "ecbuild_compiler_flags(${_lang}): overriding CMAKE_${_lang}_FLAGS_${_btype} with ${ECBUILD_${_lang}_FLAGS_${_btype}}")
       set( CMAKE_${_lang}_FLAGS_${_btype} ${ECBUILD_${_lang}_FLAGS_${_btype}} )
@@ -66,7 +72,7 @@ macro( ecbuild_compiler_flags _lang )
   mark_as_advanced( CMAKE_${_lang}_LINK_FLAGS )
 
   ecbuild_debug_var( CMAKE_${_lang}_FLAGS )
-  foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+  foreach( _btype IN LISTS _btypelist)
     ecbuild_debug_var( CMAKE_${_lang}_FLAGS_${_btype} )
   endforeach()
 
@@ -90,6 +96,12 @@ macro( ecbuild_purge_compiler_flags _lang )
     set( oneValueArgs "" )
     set( multiValueArgs "" )
 
+    set (_btypelist ALL DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO)
+
+    if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
+      list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
+    endif ()
+
     cmake_parse_arguments( _PAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
     if( CMAKE_${_lang}_COMPILER_LOADED )
@@ -98,7 +110,7 @@ macro( ecbuild_purge_compiler_flags _lang )
       # when using custom compilation flags
       if( ECBUILD_SOURCE_FLAGS OR ECBUILD_COMPILE_FLAGS )
         set(CMAKE_${_lang}_FLAGS "")
-        foreach(_btype ALL RELEASE RELWITHDEBINFO PRODUCTION BIT DEBUG)
+        foreach( _btype IN LISTS _btypelist)
           set(CMAKE_${_lang}_FLAGS_${_btype} "")
         endforeach()
       endif()
@@ -141,7 +153,13 @@ macro( ecbuild_linker_flags )
     endif()
   endforeach()
   
-  foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+  set (_btypelist NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO)
+
+  if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
+    list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
+  endif ()
+
+  foreach( _btype IN LISTS _btypelist)
   
     foreach( _obj EXE SHARED MODULE )
       if( ECBUILD_${_obj}_LINKER_FLAGS_${_btype} )
