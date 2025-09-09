@@ -8,7 +8,10 @@ add_subdirectory( ecbuild_add_option )
 add_subdirectory( ecbuild_add_option_multiproject_defaults )
 add_subdirectory( ecbuild_add_flags )
 add_subdirectory( ecbuild_find_package )
-add_subdirectory( ecbuild_find_python )
+# add_subdirectory( ecbuild_find_python ) 
+#
+#  Important: The test above is disabled due to CMake's inability to find the system Python (3.6.8) on the HPC.
+#    
 add_subdirectory( find_ecbuild )
 add_subdirectory( ecbuild_shared_libs )
 add_subdirectory( interface_library )
