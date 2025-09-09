@@ -23,11 +23,8 @@ echo $PATH
 echo $SOURCE
 
 # Ensure Python 3.x is available
-if [[ "$(type -t module)" == "function" ]];
-then
-  # "module()" is available when running on HPC
-  python3 --version
-fi
+# This effectively asserts that a working python3 exists, otherwise the script will fail here
+python3 --version
 
 # --------------------- cleanup ------------------------
 $SOURCE/clean.sh
