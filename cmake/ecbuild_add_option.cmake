@@ -93,6 +93,12 @@ macro( ecbuild_add_option )
 
   cmake_parse_arguments( _p "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
+  #
+  # Policy CMP0077 set to NEW, to avoid warning and allow disregarding
+  # the cache variable ENABLE_<FEATURE> if it is not set by the user
+  #
+  cmake_policy(SET CMP0077 NEW)
+
   if( _p_UNPARSED_ARGUMENTS )
     ecbuild_critical("Unknown keywords given to ecbuild_add_option(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
@@ -109,7 +115,7 @@ macro( ecbuild_add_option )
     set( _p_DEFAULT ON )
   else()
     if( NOT _p_DEFAULT MATCHES "[Oo][Nn]" AND NOT _p_DEFAULT MATCHES "[Oo][Ff][Ff]" )
-      ecbuild_critical("In macro ecbuild_add_option(), DEFAULT is either ON or OFF: \"${_p_DEFAULT}\"")
+      ecbuild_critical("In macro ecbuild_add_option(), DEFAULT must be either ON or OFF, but found: \"${_p_DEFAULT}\"")
     endif()
   endif()
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defaults to ${_p_DEFAULT}")
@@ -134,37 +140,82 @@ macro( ecbuild_add_option )
   # Check if user explicitly enabled/disabled the feature in cache
   get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE SET )
 
-  # A feature set to REQUIRE is always treated as explicitly enabled
-  if( ENABLE_${_p_FEATURE} MATCHES "REQUIRE" )
-    set( ENABLE_${_p_FEATURE} ON CACHE BOOL "" FORCE )
-    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was required")
-    set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" FORCE )
-  elseif( NOT ENABLE_${_p_FEATURE} STREQUAL "" AND _in_cache )
-    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}} was found in cache")
-    set( ${_p_FEATURE}_user_provided_input 1 CACHE BOOL "" )
+  # ***Important***
+  # 
+  # In order to support options in multi-project scenarios, and allow the user to 
+  # reconfigure the project with a different set of options, we need to precompute
+  # and store the value of the user provided option.
+  #
+  # This is done by creating a new variable <PROJECT_NAME>_ENABLE_<FEATURE>_defined_value.
+  # This variable is used to store the value of ENABLE_<FEATURE> when the user provides it.
+  # This is done to avoid overwriting the cache value of ENABLE_<FEATURE> when the user
+  # provides a different value for the same option in a different project.
+  #
+
+  if ( NOT DEFINED ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value )
+    if ( DEFINED ENABLE_${_p_FEATURE} )
+      # When the user provides a value for ENABLE_<FEATURE>, we cache it
+      # in a new variable <PROJECT_NAME>_ENABLE_<FEATURE>_defined_value
+      set ( ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value ${ENABLE_${_p_FEATURE}} CACHE INTERNAL "" FORCE )
+    else()
+      # When the user does not provide a value for ENABLE_<FEATURE>,
+      # we set the default value of ENABLE_<FEATURE> to the default value
+      # of the feature.
+      set ( ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value ${_p_DEFAULT} CACHE INTERNAL "" FORCE )
+    endif()
   else()
-    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} not found in cache")
-    set( ${_p_FEATURE}_user_provided_input 0 CACHE BOOL "" )
+    if ( DEFINED ENABLE_${_p_FEATURE} )
+      # When the user provides a value for ENABLE_<FEATURE>, we cache it
+      # in a new variable <PROJECT_NAME>_ENABLE_<FEATURE>_defined_value.
+      set ( ${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value ${ENABLE_${_p_FEATURE}} CACHE INTERNAL "" FORCE )
+    endif()
   endif()
 
-  mark_as_advanced( ${_p_FEATURE}_user_provided_input )
+  # The project/user-provided specific of the feature value is used to set the value of
+  # ENABLE_<FEATURE> in the current project.
+  set ( ENABLE_${_p_FEATURE} ${${PROJECT_NAME}_ENABLE_${_p_FEATURE}_defined_value} )
 
+  if( ENABLE_${_p_FEATURE} MATCHES "REQUIRE" )
+
+    #
+    # User explicitly marked the feature as REQUIREd
+    #
+
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was required")
+    set( ENABLE_${_p_FEATURE} ON CACHE BOOL "" FORCE )
+    set( ${_p_FEATURE}_user_provided_input 1 CACHE INTERNAL "" FORCE )
+
+  elseif( NOT ENABLE_${_p_FEATURE} STREQUAL "" AND _in_cache )
+
+    #
+    # User explicitly defined the value of the feature 
+    # The user can set feature to either ON or OFF; and this is cached so it doesn't revert back to the default
+    #
+  
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was found in cache, updating to ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
+    set( ENABLE_${_p_FEATURE} ${ENABLE_${_p_FEATURE}} CACHE BOOL "" FORCE )
+    set( ${_p_FEATURE}_user_provided_input 1 CACHE INTERNAL "" FORCE )
+
+  else()
+
+    #
+    # No user explicit value provided; the default value is used
+    #
+
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} not found in cache")
+    set( ${_p_FEATURE}_user_provided_input 0 CACHE INTERNAL "" )
+
+  endif()
 
   # define the option -- for cmake GUI
-
-  option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${_p_DEFAULT} )
-  get_property( _feature_desc GLOBAL PROPERTY _CMAKE_${_p_FEATURE}_DESCRIPTION )
-  if( _feature_desc )
-    add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${_feature_desc}, ${PROJECT_NAME}: ${_p_DESCRIPTION}" )
-  else()
-    add_feature_info( ${_p_FEATURE} ENABLE_${_p_FEATURE} "${PROJECT_NAME}: ${_p_DESCRIPTION}" )
-  endif()
+  option( ENABLE_${_p_FEATURE} "${_p_DESCRIPTION}" ${ENABLE_${_p_FEATURE}} )
 
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): defining option ENABLE_${_p_FEATURE} '${_p_DESCRIPTION}' ${_p_DEFAULT}")
   ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
 
   # Allow override of ENABLE_<FEATURE> with <PNAME>_ENABLE_<FEATURE> (see ECBUILD-486)
   if( DEFINED ${PNAME}_ENABLE_${_p_FEATURE} )
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): found ${PNAME}_ENABLE_${_p_FEATURE}=${${PNAME}_ENABLE_${_p_FEATURE}}")
     # Cache it for future reconfiguration
     set( ${PNAME}_ENABLE_${_p_FEATURE} ${${PNAME}_ENABLE_${_p_FEATURE}} CACHE BOOL "Override for ENABLE_${_p_FEATURE}" )
     # Warn when user provides both ENABLE_<FEATURE> and <PNAME>_ENABLE_<FEATURE>, and explain precedence
@@ -174,8 +225,22 @@ macro( ecbuild_add_option )
     endif()
     # Non-cache (hard) override of ENABLE_<FEATURE> within this project scope only
     set( ENABLE_${_p_FEATURE} ${${PNAME}_ENABLE_${_p_FEATURE}} )
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): set ENABLE_${_p_FEATURE} from ${PNAME}_ENABLE_${_p_FEATURE}")
+    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
   endif()
 
+  ## Update the description of the feature summary
+  # Choose the correct tick
+  if (ENABLE_${_p_FEATURE})
+    set ( _tick "ON")
+  else()
+    set ( _tick "OFF")
+  endif()
+  set(_enabled "${ENABLE_${_p_FEATURE}}")
+  get_property( _enabled_features GLOBAL PROPERTY ENABLED_FEATURES )
+  if( "${_p_FEATURE}" IN_LIST _enabled_features )
+    set(_enabled ON)
+  endif()
 
   set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 0 )
 
@@ -250,36 +315,55 @@ macro( ecbuild_add_option )
 
     else() # if user provided input and we cannot satisfy FAIL otherwise WARN
 
-      ecbuild_disable_feature( ${_p_FEATURE} )
+      ecbuild_disable_unused_feature( ${_p_FEATURE} )
 
-      if( ${_p_FEATURE}_user_provided_input )
+      # Determine if a project-specific feature was requested
+      set ( _project_specific_feature_requested OFF )
+      if (DEFINED ${PNAME}_ENABLE_${_p_FEATURE} AND ${PNAME}_ENABLE_${_p_FEATURE} MATCHES "[Oo][Nn]")
+        set ( _project_specific_feature_requested ON )
+      endif()
+
+      if( ${_p_FEATURE}_user_provided_input OR _project_specific_feature_requested )
         if( NOT _${_p_FEATURE}_condition )
           string(REPLACE ";" " " _condition_msg "${_p_CONDITION}")
           ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following condition was not met: ${_condition_msg}" )
+          set ( _tick "OFF")
         else()
           ecbuild_critical( "Feature ${_p_FEATURE} cannot be enabled -- following required packages weren't found: ${_failed_to_find_packages}" )
+          set ( _tick "OFF")
         endif()
       else()
         if( NOT _${_p_FEATURE}_condition )
           string(REPLACE ";" " " _condition_msg "${_p_CONDITION}")
           ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following condition was not met: ${_condition_msg}" )
+          set ( _tick "OFF")
         else()
           ecbuild_info( "Feature ${_p_FEATURE} was not enabled (also not requested) -- following required packages weren't found: ${_failed_to_find_packages}" )
+          set ( _tick "OFF")
         endif()
         set( ENABLE_${_p_FEATURE} OFF )
-        ecbuild_disable_feature( ${_p_FEATURE} )
+        ecbuild_disable_unused_feature( ${_p_FEATURE} )
       endif()
 
     endif()
 
   else()
 
-    ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): feature disabled")
+    ecbuild_info( "Feature ${_p_FEATURE} disabled" )
     set( ${PROJECT_NAME}_HAVE_${_p_FEATURE} 0 )
-    ecbuild_disable_feature( ${_p_FEATURE} )
+    ecbuild_disable_unused_feature( ${_p_FEATURE} )
 
   endif()
 
+  # Retrieve any existing description (n.b. occurs when the same feature is added at multiple projects)
+  set(_enabled "${ENABLE_${_p_FEATURE}}")
+  get_property( _feature_desc GLOBAL PROPERTY _CMAKE_${_p_FEATURE}_DESCRIPTION )
+  # Append the new description
+  if( _feature_desc )
+    add_feature_info( ${_p_FEATURE} ${_enabled} "${_feature_desc}, ${PROJECT_NAME}(${_tick}): '${_p_DESCRIPTION}'" )
+  else()
+    add_feature_info( ${_p_FEATURE} ${_enabled} "${PROJECT_NAME}(${_tick}): '${_p_DESCRIPTION}'" )
+  endif()
 
   if( ${_p_ADVANCED} )
     mark_as_advanced( ENABLE_${_p_FEATURE} )

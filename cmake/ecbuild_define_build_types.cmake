@@ -9,7 +9,7 @@
 ############################################################################################
 # define default build type
 
-set( _BUILD_TYPE_MSG "Build type options are: [ None | Debug | Bit | Production | Release | RelWithDebInfo ]" )
+set( _BUILD_TYPE_MSG "Build type options defined by ecbuild are: [ None | Debug | Bit | Production | Release | RelWithDebInfo ]" )
 
 if( NOT ECBUILD_DEFAULT_BUILD_TYPE )
     set( ECBUILD_DEFAULT_BUILD_TYPE "RelWithDebInfo" )
@@ -22,7 +22,7 @@ endif()
 # capitalize the build type for easy use with conditionals
 string( TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_CAPS )
 
-# correct capitatlization of the build type
+# correct capitalization of the build type
 
 if( CMAKE_BUILD_TYPE_CAPS STREQUAL "NONE" )
   set(CMAKE_BUILD_TYPE None CACHE STRING ${_BUILD_TYPE_MSG} FORCE )
@@ -48,12 +48,13 @@ if( CMAKE_BUILD_TYPE_CAPS STREQUAL "RELWITHDEBINFO" )
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING ${_BUILD_TYPE_MSG} FORCE )
 endif()
 
-# fail if build type is not one of the defined ones
+# warn if build type is not one of the defined ones
 if( NOT CMAKE_BUILD_TYPE MATCHES "None"  AND
-      NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND
-      NOT CMAKE_BUILD_TYPE MATCHES "Bit" AND
-      NOT CMAKE_BUILD_TYPE MATCHES "Production" AND
+    NOT CMAKE_BUILD_TYPE MATCHES "Debug" AND
+    NOT CMAKE_BUILD_TYPE MATCHES "Bit" AND
+    NOT CMAKE_BUILD_TYPE MATCHES "Production" AND
     NOT CMAKE_BUILD_TYPE MATCHES "Release"  AND
     NOT CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" )
-    ecbuild_critical( "CMAKE_BUILD_TYPE is not recognized. ${_BUILD_TYPE_MSG}" )
+  ecbuild_warn( "CMAKE_BUILD_TYPE has an unusual value (\"${CMAKE_BUILD_TYPE_CAPS}\"). ${_BUILD_TYPE_MSG}. Please make sure your build system correctly handles CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}.")
 endif()
+

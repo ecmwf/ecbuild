@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild 3.6 REQUIRED )
 
@@ -46,7 +46,7 @@ endif()
 if( CMAKE_C_FLAGS MATCHES "-fooxxx" )
   message(FATAL_ERROR "Flag -fooxxx wrongly added" )
 else()
-  message("Successfully skiped addition of fake C flag -fooxxx")
+  message("Successfully skipped addition of fake C flag -fooxxx")
 endif()
 
 if( CMAKE_CXX_FLAGS MATCHES "-O1" )
@@ -55,8 +55,8 @@ else()
   message(FATAL_ERROR "Failed to add CXX flag -O1" )
 endif()
 
-if( CMAKE_CXX_FLAGS MATCHES "-barxxx" )
-  message(FATAL_ERROR "Flag -barxxx wrongly added" )
+if( CMAKE_CXX_FLAGS MATCHES "-fantasyflag" )
+  message(FATAL_ERROR "Flag -fantasyflag wrongly added" )
 else()
-  message("Successfully skiped addition of fake CXX flag -barxxx")
+  message("Successfully skipped addition of fake CXX flag -fantasyflag")
 endif()

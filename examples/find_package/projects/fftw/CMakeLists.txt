@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
+
 find_package( ecbuild 3.4 REQUIRED )
 project( find_fftw VERSION 0.0.0 LANGUAGES CXX )
 

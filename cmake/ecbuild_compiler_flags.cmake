@@ -41,9 +41,15 @@ macro( ecbuild_compiler_flags _lang )
     include( ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake OPTIONAL )
   endif()
 
+  set (_btypelist NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO)
+
+  if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
+    list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
+  endif ()
+
   # Apply user or toolchain specified compilation flag overrides (NOT written to cache)
 
-  foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+  foreach( _btype IN LISTS _btypelist)
     if( DEFINED ECBUILD_${_lang}_FLAGS_${_btype} )
       ecbuild_debug( "ecbuild_compiler_flags(${_lang}): overriding CMAKE_${_lang}_FLAGS_${_btype} with ${ECBUILD_${_lang}_FLAGS_${_btype}}")
       set( CMAKE_${_lang}_FLAGS_${_btype} ${ECBUILD_${_lang}_FLAGS_${_btype}} )
@@ -66,9 +72,157 @@ macro( ecbuild_compiler_flags _lang )
   mark_as_advanced( CMAKE_${_lang}_LINK_FLAGS )
 
   ecbuild_debug_var( CMAKE_${_lang}_FLAGS )
-  foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+  foreach( _btype IN LISTS _btypelist)
     ecbuild_debug_var( CMAKE_${_lang}_FLAGS_${_btype} )
   endforeach()
+
+endmacro()
+
+##############################################################################
+#.rst:
+#
+# ecbuild_purge_compiler_flags
+# ============================
+#
+# Purge compiler flags for a given language ::
+#
+#   ecbuild_purge_compiler_flags( <lang> )
+#
+##############################################################################
+
+macro( ecbuild_purge_compiler_flags _lang )
+
+    set( options WARN )
+    set( oneValueArgs "" )
+    set( multiValueArgs "" )
+
+    set (_btypelist ALL DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO)
+
+    if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
+      list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
+    endif ()
+
+    cmake_parse_arguments( _PAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    if( CMAKE_${_lang}_COMPILER_LOADED )
+
+      # Clear default compilation flags potentially inherited from parent scope
+      # when using custom compilation flags
+      if( ECBUILD_SOURCE_FLAGS OR ECBUILD_COMPILE_FLAGS )
+        set(CMAKE_${_lang}_FLAGS "")
+        foreach( _btype IN LISTS _btypelist)
+          set(CMAKE_${_lang}_FLAGS_${_btype} "")
+        endforeach()
+      endif()
+
+    endif()
+
+    if( ${_PAR_WARN} )
+      ecbuild_warn( "Purging compiler flags set for ${_lang}" )
+    endif()
+
+endmacro()
+
+##############################################################################
+#.rst:
+#
+# ecbuild_linker_flags
+# ====================
+#
+# Apply user or toolchain specified linker flag overrides per object type (NOT written to cache)
+#
+#   ecbuild_linker_flags()
+#
+##############################################################################
+
+macro( ecbuild_linker_flags )
+  foreach( _obj EXE SHARED MODULE )
+    if( ECBUILD_${_obj}_LINKER_FLAGS )
+      set( CMAKE_${_obj}_LINKER_FLAGS ${ECBUILD_${_obj}_LINKER_FLAGS} )
+    endif()
+  
+    if( NOT "$ENV{LD_RUN_PATH}" EQUAL "" )
+      set( LD_RUN_PATH "$ENV{LD_RUN_PATH}" )
+      string( REPLACE ":" ";" LD_RUN_PATH "$ENV{LD_RUN_PATH}" )
+      foreach( rpath ${LD_RUN_PATH} )
+        ecbuild_regex_escape( "${rpath}" rpath_escaped )
+        if( NOT CMAKE_${_obj}_LINKER_FLAGS MATCHES ".*-Wl,-rpath,${rpath_escaped}.*")
+          set( CMAKE_${_obj}_LINKER_FLAGS "${CMAKE_${_obj}_LINKER_FLAGS} -Wl,-rpath,${rpath}" )
+        endif()
+      endforeach()
+    endif()
+  endforeach()
+  
+  set (_btypelist NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO)
+
+  if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
+    list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
+  endif ()
+
+  foreach( _btype IN LISTS _btypelist)
+  
+    foreach( _obj EXE SHARED MODULE )
+      if( ECBUILD_${_obj}_LINKER_FLAGS_${_btype} )
+        set( CMAKE_${_obj}_LINKER_FLAGS_${_btype} ${ECBUILD_${_obj}_LINKER_FLAGS_${_btype}} )
+      endif()
+    endforeach()
+  
+  endforeach()
+endmacro()
+
+##############################################################################
+#.rst:
+#
+# ecbuild_override_compiler_flags
+# ===============================
+#
+# Purge existing CMAKE_<lang>_FLAGS flags and trigger the use of per source
+# file overrideable flags (see ``Using custom compilation flags`` for an
+# explanation).
+#
+#   ecbuild_override_compiler_flags()
+#
+##############################################################################
+
+macro( ecbuild_override_compiler_flags )
+
+    set( options "" )
+    set( oneValueArgs SOURCE_FLAGS COMPILE_FLAGS )
+    set( multiValueArgs "" )
+
+    cmake_parse_arguments( _PAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+
+    # Ensure COMPILE/SOURCE_FLAGS is a valid file path
+    if( DEFINED _PAR_COMPILE_FLAGS AND NOT EXISTS ${_PAR_COMPILE_FLAGS} )
+      ecbuild_warn( "COMPILE_FLAGS points to non-existent file ${_PAR_COMPILE_FLAGS} and will be ignored" )
+      unset( ECBUILD_COMPILE_FLAGS )
+      unset( ECBUILD_COMPILE_FLAGS CACHE )
+    elseif( DEFINED _PAR_SOURCE_FLAGS AND NOT EXISTS ${_PAR_SOURCE_FLAGS} )
+      ecbuild_warn( "SOURCE_FLAGS points to non-existent file ${_PAR_SOURCE_FLAGS} and will be ignored" )
+      unset( ECBUILD_SOURCE_FLAGS )
+      unset( ECBUILD_SOURCE_FLAGS CACHE )
+    elseif( DEFINED _PAR_SOURCE_FLAGS OR DEFINED _PAR_COMPILE_FLAGS )
+       foreach( _lang C CXX Fortran )
+         if( CMAKE_${_lang}_COMPILER_LOADED )
+          ecbuild_purge_compiler_flags( ${_lang} WARN )
+         endif()
+       endforeach()
+   
+       if( DEFINED _PAR_COMPILE_FLAGS )
+          if( DEFINED ECBUILD_COMPILE_FLAGS)
+            ecbuild_debug( "Override ECBUILD_COMPILE_FLAGS (${ECBUILD_COMPILE_FLAGS}) with ${_PAR_COMPILE_FLAGS}" )
+          endif()
+          set( ECBUILD_COMPILE_FLAGS ${_PAR_COMPILE_FLAGS} )
+          include( ${ECBUILD_COMPILE_FLAGS} )
+       elseif( DEFINED _PAR_SOURCE_FLAGS )
+          if( DEFINED ECBUILD_SOURCE_FLAGS)
+            ecbuild_debug( "Override ECBUILD_SOURCE_FLAGS (${ECBUILD_SOURCE_FLAGS}) with ${_PAR_SOURCE_FLAGS}" )
+          endif()
+          set( ECBUILD_SOURCE_FLAGS ${_PAR_SOURCE_FLAGS} )
+       endif()
+   
+       ecbuild_linker_flags()
+    endif()
 
 endmacro()
 
@@ -160,6 +314,24 @@ endmacro()
 #
 ##############################################################################
 
+# We need to detect if the Fortran compiler is NEC, as it identifies as GNU
+# and some compiler flags are different than for GNU.
+# The resulting compiler ID "NEC" is then stored in ECBUILD_Fortran_COMPILER_ID
+# without modifying CMAKE_Fortran_COMPILER_ID.
+
+if( CMAKE_Fortran_COMPILER_LOADED )
+  set( _compiler_id ${CMAKE_Fortran_COMPILER_ID} )
+  if( NOT DEFINED ECBUILD_Fortran_COMPILER_ID AND CMAKE_Fortran_COMPILER_ID STREQUAL "GNU" )
+    try_compile( _is_nec ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_LIST_DIR}/determine-nec.F90 )
+    if( _is_nec )
+      ecbuild_info("NEC Fortran compiler detected")
+      set( _compiler_id NEC )
+    endif()
+  endif()
+  set(ECBUILD_Fortran_COMPILER_ID ${_compiler_id} CACHE STRING "CMAKE_Fortran_COMPILER_ID")
+endif()
+include(ecbuild_compile_options)
+
 string( TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAPS )
 
 # Custom (project specific) compilation flags enabled?
@@ -172,59 +344,25 @@ foreach( _flags COMPILE SOURCE )
     endif()
     set( ECBUILD_${_flags}_FLAGS ${${PROJECT_NAME_CAPS}_ECBUILD_${_flags}_FLAGS} )
   endif()
-  # Ensure ECBUILD_${_flags}_FLAGS is a valid file path
-  if( DEFINED ECBUILD_${_flags}_FLAGS AND NOT EXISTS ${ECBUILD_${_flags}_FLAGS} )
-    ecbuild_warn( "ECBUILD_${_flags}_FLAGS points to non-existent file ${ECBUILD_${_flags}_FLAGS} and will be ignored" )
-    unset( ECBUILD_${_flags}_FLAGS )
-    unset( ECBUILD_${_flags}_FLAGS CACHE )
-  endif()
 endforeach()
-if( ECBUILD_COMPILE_FLAGS )
-  include( "${ECBUILD_COMPILE_FLAGS}" )
+if( DEFINED ECBUILD_COMPILE_FLAGS )
+  ecbuild_override_compiler_flags( COMPILE_FLAGS ${ECBUILD_COMPILE_FLAGS} )
+elseif( DEFINED ECBUILD_SOURCE_FLAGS )
+  ecbuild_override_compiler_flags( SOURCE_FLAGS ${ECBUILD_SOURCE_FLAGS} )
 endif()
 
 foreach( _lang C CXX Fortran )
   if( CMAKE_${_lang}_COMPILER_LOADED )
 
-    # Clear default compilation flags potentially inherited from parent scope
-    # when using custom compilation flags
-    if( ECBUILD_SOURCE_FLAGS OR ECBUILD_COMPILE_FLAGS )
-      set(CMAKE_${_lang}_FLAGS "")
-      foreach(_btype ALL RELEASE RELWITHDEBINFO PRODUCTION BIT DEBUG)
-        set(CMAKE_${_lang}_FLAGS_${_btype} "")
-      endforeach()
     # Load default compilation flags only if custom compilation flags not enabled
-    else()
+    if( NOT (DEFINED ECBUILD_SOURCE_FLAGS OR DEFINED ECBUILD_COMPILE_FLAGS) )
       ecbuild_compiler_flags( ${_lang} )
     endif()
 
   endif()
 endforeach()
 
-# Apply user or toolchain specified linker flag overrides per object type (NOT written to cache)
-foreach( _obj EXE SHARED MODULE )
-  if( ECBUILD_${_obj}_LINKER_FLAGS )
-    set( CMAKE_${_obj}_LINKER_FLAGS ${ECBUILD_${_obj}_LINKER_FLAGS} )
-  endif()
+if( NOT DEFINED ECBUILD_COMPILE_FLAGS AND NOT DEFINED ECBUILD_SOURCE_FLAGS )
+   ecbuild_linker_flags()
+endif()
 
-  if( NOT "$ENV{LD_RUN_PATH}" EQUAL "" )
-    set( LD_RUN_PATH "$ENV{LD_RUN_PATH}" )
-    string( REPLACE ":" ";" LD_RUN_PATH "$ENV{LD_RUN_PATH}" )
-    foreach( rpath ${LD_RUN_PATH} )
-      ecbuild_regex_escape( "${rpath}" rpath_escaped )
-      if( NOT CMAKE_${_obj}_LINKER_FLAGS MATCHES ".*-Wl,-rpath,${rpath_escaped}.*")
-        set( CMAKE_${_obj}_LINKER_FLAGS "${CMAKE_${_obj}_LINKER_FLAGS} -Wl,-rpath,${rpath}" )
-      endif()
-    endforeach()
-  endif()
-endforeach()
-
-foreach( _btype NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
-
-  foreach( _obj EXE SHARED MODULE )
-    if( ECBUILD_${_obj}_LINKER_FLAGS_${_btype} )
-      set( CMAKE_${_obj}_LINKER_FLAGS_${_btype} ${ECBUILD_${_obj}_LINKER_FLAGS_${_btype}} )
-    endif()
-  endforeach()
-
-endforeach()

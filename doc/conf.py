@@ -42,14 +42,11 @@ nitpicky = True
 
 html_show_sourcelink = True
 html_static_path = [os.path.join(here, 'static')]
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 html_title = 'ecBuild %s Documentation' % release
 html_short_title = '%s Documentation' % release
 html_favicon = os.path.join(here, 'static', 'ecbuild.ico')
-# Not supported yet by sphinx:
-# https://bitbucket.org/birkenfeld/sphinx/issue/1448/make-qthelp-more-configurable
-# qthelp_namespace = "org.cmake"
-# qthelp_qch_name = "CMake-300.qch"
+
 
 # Extract the docs from the .cmake files
 from generate import generate

@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 project(test_ld_origin VERSION 1.0 LANGUAGES C)
-
 include(ecbuild_system NO_POLICY_SCOPE)
 
 ecbuild_requires_macro_version( 2.9 )

@@ -409,6 +409,12 @@ if( UNIX )
 
   endif()
 
+  ### GNU/Hurd ###
+
+  if( ${CMAKE_SYSTEM_NAME} STREQUAL "GNU" )
+    set( EC_OS_NAME "hurd" )
+  endif()
+
 endif()
 
 ### Cygwin

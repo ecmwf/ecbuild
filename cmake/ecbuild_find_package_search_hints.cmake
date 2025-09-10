@@ -41,6 +41,7 @@
 #      If CMake version < 3.12:
 #        If <name>_DIR not defined in scope or environment, but <name>_ROOT IS defined in scope or environment
 #           Try setting <name>_DIR to a valid cmake-dir deduced from <name>_ROOT.
+#
 #           Warning: Deduction is not feature-complete (it could be improved, but should now cover 99% of cases)
 #                    It is advised to use CMake 3.12 instead.
 #

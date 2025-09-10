@@ -1,9 +1,7 @@
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild REQUIRED )
 project( test_add_option VERSION 0.1.0 LANGUAGES NONE )
-
-list(INSERT 0 CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 ecbuild_add_option(FEATURE TEST_A) # should default to ON
 ecbuild_add_option(FEATURE TEST_B DEFAULT ON)
@@ -19,11 +17,6 @@ ecbuild_add_option(FEATURE TEST_G CONDITION COND_G)
 
 ecbuild_add_option(FEATURE TEST_H REQUIRED_PACKAGES "foo 1.2" )         # should pass as available is version 1.2.3
 ecbuild_add_option(FEATURE TEST_I REQUIRED_PACKAGES "foo VERSION 1.2" ) # should pass as available is version 1.2.3
-
-if( ECBUILD_2_COMPAT ) # bug present with ECBUILD_2_COMPAT=ON, which will prevent a following find_package with more strict version requirement
- set( foo_FOUND 0 )
- set( FOO_FOUND 0 )
-endif()
 
 ecbuild_add_option(FEATURE TEST_J REQUIRED_PACKAGES "foo 2.1" )         # should fail as available is version 1.2.3
 ecbuild_add_option(FEATURE TEST_K REQUIRED_PACKAGES "foo VERSION 2.1" ) # should fail as available is version 1.2.3

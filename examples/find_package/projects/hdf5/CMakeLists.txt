@@ -22,7 +22,7 @@
 #    https://gitlab.kitware.com/cmake/cmake/merge_requests/3918
 # with fixes hopefully available in 3.16
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 find_package( ecbuild 3.0.0 REQUIRED )
 project( find_hdf5 VERSION 0.0.0 LANGUAGES C Fortran )
 

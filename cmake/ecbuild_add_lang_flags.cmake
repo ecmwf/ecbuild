@@ -10,18 +10,18 @@
 #.rst:
 #
 # ecbuild_add_lang_flags
-# =====================
+# ======================
 #
 # This is mostly an internal function of ecbuild, wrapped by the macros ecbuild_add_c_flags,
 # ecbuild_add_cxx_flags and ecbuild_add_fortran_flags.
 #
 # Add compiler flags to the CMAKE_${lang}_FLAGS only if supported by compiler. ::
 #
-#   ecbuild_add_lang_flags( <flag1> [ <flag2> ... ]
-#                          LANG [C|CXX|Fortran]
-#                          [ BUILD <build> ]
-#                          [ NAME <name> ]
-#                          [ NO_FAIL ] )
+#   ecbuild_add_lang_flags( FLAGS <flag1> [ <flag2> ... ]
+#                           LANG [C|CXX|Fortran]
+#                           [ BUILD <build> ]
+#                           [ NAME <name> ]
+#                           [ NO_FAIL ] )
 #
 # Options
 # -------
@@ -40,15 +40,13 @@
 #
 ##############################################################################
 
-function( ecbuild_add_lang_flags _in_flags )
+function( ecbuild_add_lang_flags )
 
   ecbuild_debug("call ecbuild_add_lang_flags( ${ARGV} )")
 
-  set( _flags ${_in_flags} )
-
   set( options NO_FAIL )
   set( single_value_args BUILD NAME LANG )
-  set( multi_value_args )
+  set( multi_value_args FLAGS )
 
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
 
@@ -57,6 +55,20 @@ function( ecbuild_add_lang_flags _in_flags )
   else()
     ecbuild_critical("ecbuild_add_lang_flags() called without LANG parameter")
   endif()
+
+  if(DEFINED _PAR_FLAGS)
+    set(_flags ${_PAR_FLAGS})
+  else()
+    list(FIND ARGV FLAGS ARG_FOUND)
+    if( ARG_FOUND  STREQUAL -1 )
+      ecbuild_critical("ecbuild_add_lang_flags() called without FLAGS parameter")
+    endif()
+    return()
+  endif()
+
+  # To handle the case where FLAGS is a list
+  string( REPLACE ";" " " _flags "${_flags}" )
+
 
   ecbuild_debug( "CMAKE_${_lang}_COMPILER_LOADED [${CMAKE_${_lang}_COMPILER_LOADED}]" )
 

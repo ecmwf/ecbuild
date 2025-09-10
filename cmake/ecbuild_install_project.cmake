@@ -220,7 +220,7 @@ macro( ecbuild_install_project )
 
     ecbuild_enabled_features( ${PROJECT_NAME}_FEATURES )
     foreach( _f ${${PROJECT_NAME}_FEATURES} )
-        set( ${PROJECT_NAME}_HAVE_${_f} True )
+        set( ${PROJECT_NAME}_HAVE_${_f} 1 )
         if(ECBUILD_2_COMPAT AND NOT PNAME STREQUAL PROJECT_NAME)
             ecbuild_declare_compat( ${PNAME}_HAVE_${_f} ${PROJECT_NAME}_HAVE_${_f} )
         endif()

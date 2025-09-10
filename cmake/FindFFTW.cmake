@@ -22,17 +22,22 @@
 # Search procedure
 # ----------------
 #
-# 1) FFTW_LIBRARIES and FFTW_INCLUDE_DIRS set by user
-#    --> Nothing is searched and these variables are used instead
+# * FFTW_LIBRARIES and FFTW_INCLUDE_DIRS set by user
+#   
+#   * Nothing is searched and these variables are used instead
 #
-# 2) Find MKL implementation via FFTW_ENABLE_MKL
-#    --> If FFTW_ENABLE_MKL is explicitely set to ON, only MKL is considered
-#        If FFTW_ENABLE_MKL is explictely set to OFF, MKL will not be considered
-#        If FFTW_ENABLE_MKL is undefined, MKL is preferred unless ENABLE_MKL is explicitely set to OFF
-#    --> MKLROOT environment variable helps to detect MKL (See FindMKL.cmake)
+# * Find MKL implementation via FFTW_ENABLE_MKL
 #
-# 3) Find official FFTW impelementation
-#    --> FFTW_ROOT variable / environment variable helps to detect FFTW
+#   * If FFTW_ENABLE_MKL is explicitly set to ON, only MKL is considered
+#   * If FFTW_ENABLE_MKL is explicitly set to OFF, MKL will not be considered
+#   * If FFTW_ENABLE_MKL is undefined, MKL is preferred unless ENABLE_MKL is explicitly set to OFF
+#   * Note: MKLROOT environment variable helps to detect MKL (See FindMKL.cmake)
+#
+# * Find ARMPL or NVPL implementations, via FFTW_ENABLE_ARMPL or FFTW_ENABLE_NVPL, with behaviour as for MKL
+#
+# * Find official FFTW implementation
+#
+#   * FFTW_ROOT variable / environment variable helps to detect FFTW
 #
 # Components
 # ----------
@@ -69,6 +74,8 @@
 # :FFTW_LIBRARIES:        User overriden FFTW libraries
 # :FFTW_INCLUDE_DIRS:     User overriden FFTW includes directories
 # :FFTW_ENABLE_MKL:       User requests use of MKL implementation
+# :FFTW_ENABLE_ARMPL:     User requests use of ARMPL implementation
+# :FFTW_ENABLE_NVPL:      User requests use of NVPL implementation
 #
 ##############################################################################
 
@@ -138,6 +145,96 @@ if( NOT FFTW_FOUND_ALL_COMPONENTS )
                 else()
                     if( NOT FFTW_MKL_FIND_QUIETLY )
                         message(STATUS "FindFFTW: MKL required, but MKL was not found" )
+                    endif()
+                    set( FFTW_FOUND FALSE )
+                    return()
+                endif()
+            endif()
+        endif()
+    endif()
+endif()
+
+### Check ARMPL
+FFTW_CHECK_ALL_COMPONENTS()
+if( NOT FFTW_FOUND_ALL_COMPONENTS )
+
+    if( NOT DEFINED FFTW_ENABLE_ARMPL AND NOT DEFINED ENABLE_ARMPL )
+	set( FFTW_ENABLE_ARMPL ON )
+	set( FFTW_FindARMPL_OPTIONS QUIET )
+    elseif( FFTW_ENABLE_ARMPL )
+	set( FFTW_ARMPL_REQUIRED TRUE )
+    elseif( ENABLE_ARMPL AND NOT DEFINED FFTW_ENABLE_ARMPL )
+	set( FFTW_ENABLE_ARMPL ON )
+    endif()
+
+    if( FFTW_ENABLE_ARMPL )
+	if( NOT ARMPL_FOUND )
+	    find_package( ARMPL ${FFTW_FindARMPL_OPTIONS} )
+        endif()
+	if( ARMPL_FOUND )
+            if( NOT FFTW_INCLUDE_DIRS )
+		set( FFTW_INCLUDE_DIRS ${ARMPL_INCLUDE_DIRS} )
+            endif()
+            if( NOT FFTW_LIBRARIES )
+		set( FFTW_LIBRARIES ${ARMPL_LIBRARIES} )
+            endif()
+
+            foreach( _component ${FFTW_FIND_COMPONENTS} )
+                set( FFTW_${_component}_FOUND TRUE )
+		set( FFTW_${_component}_LIBRARIES ${ARMPL_LIBRARIES} )
+            endforeach()
+        else()
+	    if( FFTW_ARMPL_REQUIRED )
+                if( FFTW_FIND_REQUIRED )
+		    message(CRITICAL "FindFFTW: ARMPL required, but was not found" )
+                else()
+		    if( NOT FFTW_ARMPL_FIND_QUIETLY )
+			message(STATUS "FindFFTW: ARMPL required, but was not found" )
+                    endif()
+                    set( FFTW_FOUND FALSE )
+                    return()
+                endif()
+            endif()
+        endif()
+    endif()
+endif()
+
+### Check NVPL
+FFTW_CHECK_ALL_COMPONENTS()
+if( NOT FFTW_FOUND_ALL_COMPONENTS )
+
+    if( NOT DEFINED FFTW_ENABLE_NVPL AND NOT DEFINED ENABLE_NVPL )
+	set( FFTW_ENABLE_NVPL ON )
+	set( FFTW_FindNVPL_OPTIONS QUIET )
+    elseif( FFTW_ENABLE_NVPL )
+	set( FFTW_NVPL_REQUIRED TRUE )
+    elseif( ENABLE_NVPL AND NOT DEFINED FFTW_ENABLE_NVPL )
+	set( FFTW_ENABLE_NVPL ON )
+    endif()
+
+    if( FFTW_ENABLE_NVPL )
+	if( NOT NVPL_FOUND )
+	    find_package( NVPL ${FFTW_FindNVPL_OPTIONS} )
+        endif()
+	if( NVPL_FOUND )
+            if( NOT FFTW_INCLUDE_DIRS )
+		set( FFTW_INCLUDE_DIRS ${NVPL_INCLUDE_DIRS} )
+            endif()
+            if( NOT FFTW_LIBRARIES )
+		set( FFTW_LIBRARIES ${NVPL_LIBRARIES} )
+            endif()
+
+            foreach( _component ${FFTW_FIND_COMPONENTS} )
+                set( FFTW_${_component}_FOUND TRUE )
+		set( FFTW_${_component}_LIBRARIES ${NVPL_LIBRARIES} )
+            endforeach()
+        else()
+	    if( FFTW_NVPL_REQUIRED )
+                if( FFTW_FIND_REQUIRED )
+			message(CRITICAL "FindFFTW: NVPL required, but NVPL was not found" )
+                else()
+		    if( NOT FFTW_NVPL_FIND_QUIETLY )
+			    message(STATUS "FindFFTW: NVPL required, but NVPL was not found" )
                     endif()
                     set( FFTW_FOUND FALSE )
                     return()
