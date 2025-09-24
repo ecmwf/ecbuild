@@ -33,6 +33,9 @@
 # for each name given in the list of ``NAMES``.
 # ``RESULT`` is set to the number of missing files.
 #
+# If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
+# ``https://sites.ecmwf.int/repository`` is used.
+#
 # Examples
 # --------
 #
@@ -62,7 +65,7 @@ function(ecbuild_check_urls)
 
     # Allow the user to override the download URL (ECBUILD-447)
     if( NOT DEFINED ECBUILD_DOWNLOAD_BASE_URL )
-      set( ECBUILD_DOWNLOAD_BASE_URL https://get.ecmwf.int/repository/test-data )
+      set( ECBUILD_DOWNLOAD_BASE_URL https://sites.ecmwf.int/repository )
     endif()
 
     # Do not retry downloads by default (ECBUILD-307)
