@@ -160,10 +160,11 @@ endfunction()
 # Download test data from ``<ECBUILD_DOWNLOAD_BASE_URL>/<DIRNAME>/<NAME>``
 #
 # If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
-# ``https://get.ecmwf.int/repository/test-data`` is used.
+# ``https://sites.ecmwf.int/repository`` is used.
 #
 # If the ``DIRNAME`` argument is not given, test data will be downloaded
-# from ``<ECBUILD_DOWNLOAD_BASE_URL>/<project>/<relative path to current dir>/<NAME>``
+# from ``<ECBUILD_DOWNLOAD_BASE_URL>/<project>/test-data/<relative path to current dir>/<NAME>``
+# where ``<project>`` is the name of the project with all '_' replaced by '-'.
 #
 # By default, the downloaded file is verified against an md5 checksum, either
 # given as the ``MD5`` argument or downloaded from the server otherwise. Use
@@ -222,13 +223,13 @@ function( ecbuild_get_test_data )
 
     # Allow the user to override the base download URL (ECBUILD-447)
     if( NOT DEFINED ECBUILD_DOWNLOAD_BASE_URL )
-      set( ECBUILD_DOWNLOAD_BASE_URL https://get.ecmwf.int/repository/test-data )
+      set( ECBUILD_DOWNLOAD_BASE_URL https://sites.ecmwf.int/repository )
     endif()
 
     # Set download URL
     if( NOT _p_DIRNAME )
-      set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL}/${PROJECT_NAME}/${currdir}) 
-	      #      set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL} )
+      string( REGEX REPLACE "_" "-" NORMALIZED_PROJECT_NAME "${PROJECT_NAME}")  # replace all '_' by '-'
+      set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL}/${NORMALIZED_PROJECT_NAME}/test-data/${currdir})
     else()
       set( DOWNLOAD_URL ${ECBUILD_DOWNLOAD_BASE_URL}/${_p_DIRNAME} )
     endif()
