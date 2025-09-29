@@ -507,6 +507,7 @@ function( ecbuild_add_library_impl )
 
       install( TARGETS ${_PAR_TARGET}
         EXPORT  ${PROJECT_NAME}-targets
+        RUNTIME_DEPENDENCY_SET ${_PAR_TARGET}-deps
         RUNTIME DESTINATION ${INSTALL_BIN_DIR}
         LIBRARY DESTINATION ${INSTALL_LIB_DIR}
         ARCHIVE DESTINATION ${INSTALL_LIB_DIR} )
