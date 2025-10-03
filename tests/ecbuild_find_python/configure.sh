@@ -22,6 +22,10 @@ export PATH=$SOURCE/../../bin:$PATH
 echo $PATH
 echo $SOURCE
 
+# Ensure Python 3.x is available
+# This effectively asserts that a working python3 exists, otherwise the script will fail here
+python3 --version
+
 # --------------------- cleanup ------------------------
 $SOURCE/clean.sh
 

@@ -312,6 +312,12 @@ if( UNIX )
     set( EC_OS_NAME "freebsd" )
   endif()
 
+  ### OpenBSD ###
+
+  if( ${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD" )
+    set( EC_OS_NAME "openbsd" )
+  endif()
+
   ### Solaris ###
 
   if( ${CMAKE_SYSTEM_NAME} MATCHES "SunOS" )

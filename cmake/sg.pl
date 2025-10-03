@@ -55,7 +55,7 @@ foreach my $c ( @c )
 	push @init1, map { "$_(b)" } $c->super;
 	push @init1, map { "$_(b(\&$_))" } $c->members;
 
-	my $col1;
+	my $col1 = "";
 	$col1=":\n" if(@init1);
 	my $init1 = join(",\n",map {"\t$_"} @init1);
 
@@ -63,7 +63,7 @@ foreach my $c ( @c )
 	push @init2, map { "$_(b(\"$n\"))" } $c->super;
 	push @init2, map { "$_(b(\"$n\",\"$_\"))" } $c->members;
 
-	my $col2;
+	my $col2 = "";
 	$col2=":\n" if(@init2);
 	my $init2 = join(",\n",map {"\t$_"} @init2);
 
@@ -487,7 +487,7 @@ sub next_is_ident {
 	my $x = next_is('\w+');
 	if($x)
 	{
-		$x = "$y$x";
+		$x = (defined $y ? "$y$x" : $x);
 		if(peek_next("<"))
 		{
 			my @x = consume_block("<",">");
@@ -523,7 +523,7 @@ sub make_type {
 	my @x;
 	foreach my $a ( @a )
 	{
-		push @x, " " if($p =~ /^(\w+|\&|\*)$/ && $a =~ /^\w+$/);
+		push @x, " " if(defined $p && $p =~ /^(\w+|\&|\*)$/ && $a =~ /^\w+$/);
 		push @x, $a;
 		$p = $a;
 	}
