@@ -1,0 +1,12 @@
+include("${CMAKE_CURRENT_LIST_DIR}/fooTargets.cmake")
+
+get_target_property(_imported_configs foo::foo IMPORTED_CONFIGURATIONS)
+message(STATUS "_imported_configs=${_imported_configs}")
+foreach(_config ${_imported_configs})
+    get_target_property(_library_chk foo::foo "IMPORTED_LOCATION_${_config}")
+    message(STATUS "_library_chk=${_library_chk}")
+    if(EXISTS "${_library_chk}")
+        set_target_properties(foo::foo PROPERTIES IMPORTED_LOCATION "${_library_chk}")
+        break()
+    endif()
+endforeach()
