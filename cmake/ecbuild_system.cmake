@@ -226,6 +226,7 @@ if( NOT ECBUILD_SYSTEM_INITIALISED )
     include( ecbuild_cache )
     include( ecbuild_remove_fortran_flags )
     include( ecbuild_configure_file )
+    include( ecbuild_install_dependency_with_soversion )
 
     if( NOT (PROJECT_NAME STREQUAL ecbuild) )
         include( ecbuild_bundle )
