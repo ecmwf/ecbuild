@@ -1,0 +1,47 @@
+{% set name = "ecbuild" %}
+{% set git_tag = environ.get('GIT_DESCRIBE_TAG', '0.0.0').lstrip('v') %}
+{% set version = git_tag.replace('-', '') | lower %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  path: ../..
+
+build:
+  number: 0
+  skip: true  # [win]
+
+requirements:
+  build:
+    - cmake
+    - {{ compiler('cxx') }}
+  run:
+    - cmake
+    - {{ compiler('cxx') }}
+
+test:
+  commands:
+    - test -f $PREFIX/bin/ecbuild
+    - test -d $PREFIX/share/ecbuild/cmake
+    - $PREFIX/bin/ecbuild --version
+
+about:
+  home: https://github.com/ecmwf/ecbuild
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: |
+    A CMake-based build system, consisting of a collection of CMake macros and functions that ease the managing of
+    software build systems.
+  description: |
+    ecBuild is built on top of CMake and consists of a set of macros as well as a wrapper around CMake.
+  doc_url: https://github.com/ecmwf/ecbuild#readme
+  dev_url: https://github.com/ecmwf/ecbuild
+
+extra:
+  recipe-maintainers:
+    - simondsmart
+    - dvuckovic
