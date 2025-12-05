@@ -9,6 +9,8 @@ on:
     - '**'
     tags-ignore:
     - '**'
+    paths-ignore:
+    - ".cd/**"
 
   # Trigger the workflow on all pull requests
   pull_request: ~

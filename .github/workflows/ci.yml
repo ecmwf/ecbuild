@@ -12,6 +12,7 @@ on:
       - "docs/**"
       - "bamboo/**"
       - "README.rst"
+      - ".cd/**"
 
   # Trigger the workflow on pull request
   pull_request: ~
