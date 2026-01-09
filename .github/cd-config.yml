@@ -3,5 +3,9 @@ builds:
     type: "conda"
     enabled: true
 
+  - name: "tarball"
+    type: "tarball"
+    enabled: true
+
 release:
   enabled: true
