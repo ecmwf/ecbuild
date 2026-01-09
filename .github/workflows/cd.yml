@@ -17,7 +17,7 @@ permissions:
 jobs:
   build-and-release:
     name: "${{ startsWith(github.ref, 'refs/tags/') && 'Build and Release' || 'Dry Run' }}"
-    uses: ecmwf/reusable-workflows/.github/workflows/main-cd.yml@v2
+    uses: ecmwf/reusable-workflows/.github/workflows/main-cd.yml@cd-tarball
     with:
       ref_name: ${{ github.ref_name }}
     secrets: inherit
