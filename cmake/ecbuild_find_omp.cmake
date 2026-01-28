@@ -79,6 +79,8 @@ endmacro()
 # ecbuild_find_omp
 # ================
 #
+# DEPRECATED: This macro is deprecated. Please use FindOpenMP directly.
+#
 # Find OpenMP. ::
 #
 #   ecbuild_find_omp( [ COMPONENTS <component1> [ <component2> ... ] ]
@@ -115,6 +117,8 @@ endmacro()
 ##############################################################################
 
 macro( ecbuild_find_omp )
+
+  ecbuild_deprecate("ecbuild_find_omp is deprecated. Please use FindOpenMP directly.")
 
   set( options REQUIRED STUBS )
   set( single_value_args )
@@ -200,12 +204,16 @@ endmacro( ecbuild_find_omp )
 # ecbuild_enable_omp
 # ==================
 #
+# DEPRECATED: This macro is deprecated. Please use FindOpenMP directly.
+#
 # Find OpenMP for C, C++ and Fortran and set the compiler flags for each
 # language for which OpenMP support was detected.
 #
 ##############################################################################
 
 macro( ecbuild_enable_omp )
+
+  ecbuild_deprecate("ecbuild_enable_omp is deprecated. Please use FindOpenMP directly.")
 
   ecbuild_debug("ecbuild_enable_omp: Trying to enable OpenMP")
   ecbuild_find_omp( COMPONENTS C CXX Fortran )
@@ -236,12 +244,16 @@ endmacro( ecbuild_enable_omp )
 # ecbuild_enable_ompstubs
 # =======================
 #
+# DEPRECATED: This macro is deprecated. Please use FindOpenMP directly.
+#
 # Find OpenMP stubs for C, C++ and Fortran and set the compiler flags for each
 # language for which OpenMP stubs were detected.
 #
 ##############################################################################
 
 macro( ecbuild_enable_ompstubs )
+
+  ecbuild_deprecate("ecbuild_enable_ompstubs is deprecated. Please use FindOpenMP directly.")
 
   ecbuild_find_omp( COMPONENTS C CXX Fortran STUBS )
 
