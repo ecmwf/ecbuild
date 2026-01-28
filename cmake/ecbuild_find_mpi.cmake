@@ -12,6 +12,8 @@
 # ecbuild_find_mpi
 # ================
 #
+# DEPRECATED: This macro is deprecated. Please use FindMPI directly.
+#
 # Find MPI and check if MPI compilers successfully compile C/C++/Fortran. ::
 #
 #   ecbuild_find_mpi( [ COMPONENTS <component1> [ <component2> ... ] ]
@@ -71,6 +73,8 @@
 ##############################################################################
 
 macro( ecbuild_find_mpi )
+
+    ecbuild_deprecate("ecbuild_find_mpi is deprecated. Please use FindMPI directly.")
 
     # parse parameters
 
@@ -149,6 +153,8 @@ endmacro( ecbuild_find_mpi )
 # ecbuild_enable_mpi
 # ==================
 #
+# DEPRECATED: This macro is deprecated. Please use FindMPI directly.
+#
 # Find MPI, add include directories and set compiler flags. ::
 #
 #   ecbuild_enable_mpi( [ COMPONENTS <component1> [ <component2> ... ] ]
@@ -171,6 +177,8 @@ endmacro( ecbuild_find_mpi )
 ##############################################################################
 
 macro( ecbuild_enable_mpi )
+
+    ecbuild_deprecate("ecbuild_enable_mpi is deprecated. Please use FindMPI directly.")
 
     set( options REQUIRED )
     set( single_value_args )
@@ -216,6 +224,8 @@ endmacro( ecbuild_enable_mpi )
 # ecbuild_include_mpi
 # ===================
 #
+# DEPRECATED: This macro is deprecated. Please use FindMPI directly.
+#
 # Add MPI include directories and set compiler flags, assuming MPI was found.
 #
 # For each MPI language binding found, set corresponding compiler flags and
@@ -224,6 +234,8 @@ endmacro( ecbuild_enable_mpi )
 ##############################################################################
 
 macro( ecbuild_include_mpi )
+
+    ecbuild_deprecate("ecbuild_include_mpi is deprecated. Please use FindMPI directly.")
 
     set( options )
     set( single_value_args )
