@@ -9,7 +9,7 @@
 # -emf activates .mods and uses lower case
 # -rmoid produces a listing file
 set( CMAKE_Fortran_FLAGS_RELEASE        "-emf -rmoid -N 1023 -O3 -hfp3 -hscalar3 -hvector3 -DNDEBUG"                    CACHE STRING "Release Fortran flags"                 FORCE )
-set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-emf -rmoid -N 1023 -O2 -hfp1 -G2 -DNDEBUG"                                    CACHE STRING "Release-with-debug-info Fortran flags" FORCE )
-set( CMAKE_Fortran_FLAGS_PRODUCTION     "-emf -rmoid -N 1023 -O2 -hfp1 -G2"                                             CACHE STRING "Production Fortran flags"              FORCE )
-set( CMAKE_Fortran_FLAGS_BIT            "-emf -rmoid -N 1023 -O2 -hfp1 -G2 -hflex_mp=conservative -hadd_paren -DNDEBUG" CACHE STRING "Bit-reproducible Fortran flags"        FORCE )
-set( CMAKE_Fortran_FLAGS_DEBUG          "-emf -rmoid -N 1023 -O0 -G0"                                                   CACHE STRING "Debug Fortran flags"                   FORCE )
+set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-emf -rmoid -N 1023 -O2 -hfp1 -g -DNDEBUG"                                     CACHE STRING "Release-with-debug-info Fortran flags" FORCE )
+set( CMAKE_Fortran_FLAGS_PRODUCTION     "-emf -rmoid -N 1023 -O2 -hfp1 -g"                                              CACHE STRING "Production Fortran flags"              FORCE )
+set( CMAKE_Fortran_FLAGS_BIT            "-emf -rmoid -N 1023 -O2 -hfp1 -g -hflex_mp=conservative -hadd_paren -DNDEBUG"  CACHE STRING "Bit-reproducible Fortran flags"        FORCE )
+set( CMAKE_Fortran_FLAGS_DEBUG          "-emf -rmoid -N 1023 -O0 -g"                                                    CACHE STRING "Debug Fortran flags"                   FORCE )
