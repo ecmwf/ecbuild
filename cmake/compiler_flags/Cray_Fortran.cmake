@@ -18,7 +18,7 @@ if( CMAKE_Fortran_COMPILER_VERSION VERSION_GREATER_EQUAL 18.0.1 )
     set( CMAKE_Fortran_SUBMODULE_EXT ".smod" )
 endif()
 
-if( CMAKE_Fortran_COMPILER_VERSION VERSION_GREATER_EQUAL 18.0.0 AND CMAKE_Fortran_COMPILER VERSION_LESS 20.0.0 )
+if( CMAKE_Fortran_COMPILER_VERSION VERSION_GREATER_EQUAL 18.0.0 AND CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 20.0.0 )
     # Unfortunately, CCE 18 and 19 incurred a bug in the lower-casing of
     # submodule .smod files with the above change, leading to incomplete
     # lower-casing of the output file name, e.g., `parent_mod.sUB_MOD.smod`.
