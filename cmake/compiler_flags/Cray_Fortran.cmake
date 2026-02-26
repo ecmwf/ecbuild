@@ -9,21 +9,12 @@
 # -emf activates .mods and uses lower case
 # -rmoid produces a listing file
 
-if( CMAKE_Fortran_COMPILER_VERSION VERSION_GREATER_EQUAL 18.0.1 )
-    # From CCE 18.0.1 onwards, HPE/Cray renamed mod files for Fortran submodules
-    # from <submodule_name>.mod to <parent_module_name>.<submodule_name>.smod
-    # CMake does not yet (as of v4.2.3) handle this correctly, thus we have to
-    # manually inject the correct behaviour here by
-    set( CMAKE_Fortran_SUBMODULE_SEP "." )
-    set( CMAKE_Fortran_SUBMODULE_EXT ".smod" )
-endif()
-
 if( CMAKE_Fortran_COMPILER_VERSION VERSION_GREATER_EQUAL 18.0.0 AND CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 20.0.0 )
     # Unfortunately, CCE 18 and 19 incurred a bug in the lower-casing of
-    # submodule .smod files with the above change, leading to incomplete
-    # lower-casing of the output file name, e.g., `parent_mod.sUB_MOD.smod`.
+    # submodule .smod files, leading to incomplete lower-casing of the output
+    # file name, e.g., `parent_mod.sUB_MOD.smod`.
     # This is supposedly fixed in CCE20, but we have to switch off the use of
-    # the `-ef` option for versions in-between.
+    # lowr-casing, thus only using the `-em` option for versions in-between.
     set( _crayftn_mod_options "-em" )
 else()
     set( _crayftn_mod_options "-emf" )
