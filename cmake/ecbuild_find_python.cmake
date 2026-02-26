@@ -95,6 +95,10 @@ function( ecbuild_find_python )
 
     # Search first without specifying the version, since doing so gives preference to the specified
     # version even though a never version of the interpreter may be available
+    if ( NOT Python_EXECUTABLE AND PYTHON_EXECUTABLE )
+        ecbuild_deprecate( "ecbuild_find_python: PYTHON_EXECUTABLE is deprecated in favour of Python_EXECUTABLE" )
+        set( Python_EXECUTABLE ${PYTHON_EXECUTABLE} )
+    endif()
     if ( _p_NO_LIBS )
       find_package( Python ${_p_VERSION} COMPONENTS Interpreter ${_p_REQUIRED} )
       set( __required_vars Python_FOUND Python_Interpreter_FOUND )
