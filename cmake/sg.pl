@@ -337,7 +337,7 @@ sub parse {
 		grep { length($_);                }   # drop empty tokens
 		map  { /\W/ ? split('',$_) :  $_; }   # split non-word tokens into chars
 		map  { s/\s//g; $_;               }   # strip whitespace within tokens
-		split(/\b/, $x );                      # split on word boundaries
+		split(/\b/, $x );                     # split on word boundaries
 
 	# Top-level grammar loop
 	my @c;
