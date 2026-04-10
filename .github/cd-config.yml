@@ -3,5 +3,9 @@ builds:
     type: "conda"
     enabled: true
 
+  - name: "hpc"
+    type: "hpc"
+    enabled: true
+
 release:
   enabled: true
