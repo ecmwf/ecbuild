@@ -6,7 +6,7 @@
 # granted to it by virtue of its status as an intergovernmental organisation
 # nor does it submit to any jurisdiction.
 
-macro( ecbuild_target_fortran_module_directory )
+function( ecbuild_target_fortran_module_directory )
   set( options NO_MODULE_DIRECTORY )
   set( single_value_args TARGET MODULE_DIRECTORY INSTALL_MODULE_DIRECTORY )
   set( multi_value_args "" )
@@ -35,4 +35,4 @@ macro( ecbuild_target_fortran_module_directory )
     endif()
   endif()
 
-endmacro()
+endfunction()
