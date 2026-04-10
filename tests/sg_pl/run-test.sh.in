@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+set -ex
+
+# ------------------------------------------------------------------
+# Test: sg.pl handles explicit template specializations (template <>)
+#
+# Verifies:
+#   1. sg.pl exits 0  (no crash on template <>)
+#   2. RegularClass.b exists and contains correct specName
+#   3. TemplateClass.b exists and contains correct template specName
+#   4. No .b file generated for the explicit specialization
+#   5. AfterSpecClass.b exists (parser recovery after specialization)
+#   6. Exactly 3 .b files total
+# ------------------------------------------------------------------
+
+PERL="@PERL_EXECUTABLE@"
+SG_PL="@ECBUILD_MACROS_DIR@/sg.pl"
+HEADER="@CMAKE_CURRENT_SOURCE_DIR@/test_sg_pl.h"
+OUTDIR="@CMAKE_CURRENT_BINARY_DIR@/sg_output"
+
+# Clean and create output directory
+rm -rf "${OUTDIR}"
+mkdir -p "${OUTDIR}"
+
+# Run sg.pl -- primary assertion: exit code 0
+"${PERL}" "${SG_PL}" "${HEADER}" "${OUTDIR}" eckit
+
+# ------------------------------------------------------------------
+# Assert expected .b files exist
+# ------------------------------------------------------------------
+
+echo "Checking RegularClass.b exists..."
+test -f "${OUTDIR}/RegularClass.b"
+
+echo "Checking TemplateClass.b exists..."
+test -f "${OUTDIR}/TemplateClass.b"
+
+echo "Checking AfterSpecClass.b exists..."
+test -f "${OUTDIR}/AfterSpecClass.b"
+
+# ------------------------------------------------------------------
+# Assert NO .b file for the explicit specialization
+# ------------------------------------------------------------------
+
+echo "Checking no .b file for explicit specialization..."
+count=$(ls -1 "${OUTDIR}" | grep -c 'TemplateClass<' || true)
+if [ "${count}" -ne 0 ]; then
+    echo "FAIL: found .b file for template specialization"
+    ls -la "${OUTDIR}"
+    exit 1
+fi
+
+# Exactly 3 .b files expected
+file_count=$(ls -1 "${OUTDIR}"/*.b | wc -l | tr -d ' ')
+if [ "${file_count}" -ne 3 ]; then
+    echo "FAIL: expected 3 .b files, found ${file_count}"
+    ls -la "${OUTDIR}"
+    exit 1
+fi
+
+# ------------------------------------------------------------------
+# Assert .b file content
+# ------------------------------------------------------------------
+
+echo "Checking RegularClass.b content..."
+grep -q 'static const char\* specName' "${OUTDIR}/RegularClass.b"
+grep -q 'return "RegularClass"' "${OUTDIR}/RegularClass.b"
+
+echo "Checking TemplateClass.b content..."
+grep -q 'static std::string specName' "${OUTDIR}/TemplateClass.b"
+grep -q 'Traits<T>::name()' "${OUTDIR}/TemplateClass.b"
+
+echo "Checking AfterSpecClass.b content..."
+grep -q 'static const char\* specName' "${OUTDIR}/AfterSpecClass.b"
+grep -q 'return "AfterSpecClass"' "${OUTDIR}/AfterSpecClass.b"
+
+echo "All checks passed."

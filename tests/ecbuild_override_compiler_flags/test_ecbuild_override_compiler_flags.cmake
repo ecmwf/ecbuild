@@ -4,7 +4,7 @@ find_package( ecbuild 3.6 REQUIRED )
 
 project(OverrideCompilerFlags VERSION 1.0 LANGUAGES C CXX Fortran)
 
-ecbuild_override_compiler_flags( COMPILE_FLAGS compiler_flags.cmake )
+ecbuild_override_compiler_flags( COMPILE_FLAGS ${CMAKE_CURRENT_SOURCE_DIR}/compiler_flags.cmake )
 
 ecbuild_add_library(
    TARGET    overrideflags

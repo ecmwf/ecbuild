@@ -39,8 +39,6 @@ mark_as_advanced( ECBUILD_RECORD_GIT_COMMIT_SHA1 )
 
 include( CMakeDependentOption ) # make options depend on one another
 
-set( CMAKE_NO_SYSTEM_FROM_IMPORTED ON )
-
 # hide some CMake options from CMake UI
 
 mark_as_advanced( CMAKE_OSX_ARCHITECTURES CMAKE_OSX_DEPLOYMENT_TARGET CMAKE_OSX_SYSROOT )
