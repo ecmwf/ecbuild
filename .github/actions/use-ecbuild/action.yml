@@ -2,8 +2,8 @@ name: Use ecbuild
 description: >
   Installs ecbuild from the version of this repository referenced in the
   action call (uses: ecmwf/ecbuild/.github/actions/use-ecbuild@<ref>).
-  The ecbuild source tree is this action's own repository checkout, so the
-  installed version always matches the referenced ref.
+  Clones a fresh copy at github.action_ref to avoid the symlink loop in
+  tests/bundle_subproj/mybundle/ecbuild that breaks tarball extraction.
 
   Uses a local cache keyed on the action SHA and OS to avoid rebuilding on
   repeated runs.
@@ -34,11 +34,21 @@ runs:
         path: ${{ steps.set-paths.outputs.install-path }}
         key: ecbuild-${{ github.action_sha }}-${{ inputs.os }}
 
+    - name: Clone ecbuild source
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        git clone --depth 1 \
+          --branch "${{ github.action_ref }}" \
+          https://github.com/ecmwf/ecbuild.git \
+          "$RUNNER_TEMP/_ecbuild-src"
+
     - name: Build and install ecbuild
       if: steps.cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        cmake -S "${{ github.action_path }}/../../.." \
-              -B "$GITHUB_WORKSPACE/ecbuild-build" \
-              -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install/ecbuild"
-        cmake --install "$GITHUB_WORKSPACE/ecbuild-build"
+        cmake -S "$RUNNER_TEMP/_ecbuild-src" \
+              -B "$RUNNER_TEMP/_ecbuild-build" \
+              -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install/ecbuild" \
+              -DENABLE_TESTS=OFF
+        cmake --install "$RUNNER_TEMP/_ecbuild-build"
