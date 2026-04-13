@@ -33,6 +33,16 @@
 #
 ##############################################################################
 
+macro( ecbuild_get_build_type_list _outvar )
+  set( _btypelist NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+
+  if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
+    list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
+  endif ()
+
+  set( ${_outvar} ${_btypelist} )
+endmacro()
+
 macro( ecbuild_compiler_flags _lang )
 
   # Set compiler and language specific default flags - OVERWRITES variables in CMake cache
@@ -41,11 +51,7 @@ macro( ecbuild_compiler_flags _lang )
     include( ${ECBUILD_MACROS_DIR}/compiler_flags/${CMAKE_${_lang}_COMPILER_ID}_${_lang}.cmake OPTIONAL )
   endif()
 
-  set (_btypelist NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO)
-
-  if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
-    list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
-  endif ()
+  ecbuild_get_build_type_list( _btypelist )
 
   # Apply user or toolchain specified compilation flag overrides (NOT written to cache)
 
@@ -96,11 +102,9 @@ macro( ecbuild_purge_compiler_flags _lang )
     set( oneValueArgs "" )
     set( multiValueArgs "" )
 
-    set (_btypelist ALL DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO)
-
-    if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
-      list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
-    endif ()
+    ecbuild_get_build_type_list( _btypelist )
+    list( REMOVE_ITEM _btypelist NONE )
+    list( INSERT _btypelist 0 ALL )
 
     cmake_parse_arguments( _PAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
@@ -117,7 +121,7 @@ macro( ecbuild_purge_compiler_flags _lang )
 
     endif()
 
-    if( ${_PAR_WARN} )
+    if( _PAR_WARN )
       ecbuild_warn( "Purging compiler flags set for ${_lang}" )
     endif()
 
@@ -153,11 +157,7 @@ macro( ecbuild_linker_flags )
     endif()
   endforeach()
   
-  set (_btypelist NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO)
-
-  if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
-    list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
-  endif ()
+  ecbuild_get_build_type_list( _btypelist )
 
   foreach( _btype IN LISTS _btypelist)
   
@@ -186,7 +186,7 @@ endmacro()
 
 macro( ecbuild_override_compiler_flags )
 
-    set( options "" )
+    set( options WARN CACHE_ECBUILD_FLAGS )
     set( oneValueArgs SOURCE_FLAGS COMPILE_FLAGS )
     set( multiValueArgs "" )
 
@@ -204,7 +204,11 @@ macro( ecbuild_override_compiler_flags )
     elseif( DEFINED _PAR_SOURCE_FLAGS OR DEFINED _PAR_COMPILE_FLAGS )
        foreach( _lang C CXX Fortran )
          if( CMAKE_${_lang}_COMPILER_LOADED )
-          ecbuild_purge_compiler_flags( ${_lang} WARN )
+           if( _PAR_WARN )
+             ecbuild_purge_compiler_flags( ${_lang} WARN )
+           else()
+             ecbuild_purge_compiler_flags( ${_lang} )
+           endif()
          endif()
        endforeach()
    
@@ -213,6 +217,25 @@ macro( ecbuild_override_compiler_flags )
             ecbuild_debug( "Override ECBUILD_COMPILE_FLAGS (${ECBUILD_COMPILE_FLAGS}) with ${_PAR_COMPILE_FLAGS}" )
           endif()
           set( ECBUILD_COMPILE_FLAGS ${_PAR_COMPILE_FLAGS} )
+
+          if( _PAR_CACHE_ECBUILD_FLAGS )
+            ecbuild_get_build_type_list( _btypelist )
+
+            foreach( _lang C CXX Fortran )
+              if( DEFINED ECBUILD_${_lang}_FLAGS )
+                ecbuild_debug( "Cache ECBUILD_${_lang}_FLAGS (${ECBUILD_${_lang}_FLAGS}) to ${PNAME}_${_lang}_FLAGS" )
+                set( ${PNAME}_${_lang}_FLAGS "${ECBUILD_${_lang}_FLAGS}" )
+              endif()
+
+              foreach( _btype IN LISTS _btypelist )
+                if( DEFINED ECBUILD_${_lang}_FLAGS_${_btype} )
+                  ecbuild_debug( "Cache ECBUILD_${_lang}_FLAGS_${_btype} (${ECBUILD_${_lang}_FLAGS_${_btype}}) to ${PNAME}_${_lang}_FLAGS_${_btype}" )
+                  set( ${PNAME}_${_lang}_FLAGS_${_btype} "${ECBUILD_${_lang}_FLAGS_${_btype}}" )
+                endif()
+              endforeach()
+            endforeach()
+          endif()
+
           include( ${ECBUILD_COMPILE_FLAGS} )
        elseif( DEFINED _PAR_SOURCE_FLAGS )
           if( DEFINED ECBUILD_SOURCE_FLAGS)
@@ -346,9 +369,9 @@ foreach( _flags COMPILE SOURCE )
   endif()
 endforeach()
 if( DEFINED ECBUILD_COMPILE_FLAGS )
-  ecbuild_override_compiler_flags( COMPILE_FLAGS ${ECBUILD_COMPILE_FLAGS} )
+  ecbuild_override_compiler_flags( COMPILE_FLAGS ${ECBUILD_COMPILE_FLAGS} WARN CACHE_ECBUILD_FLAGS )
 elseif( DEFINED ECBUILD_SOURCE_FLAGS )
-  ecbuild_override_compiler_flags( SOURCE_FLAGS ${ECBUILD_SOURCE_FLAGS} )
+  ecbuild_override_compiler_flags( SOURCE_FLAGS ${ECBUILD_SOURCE_FLAGS} WARN )
 endif()
 
 foreach( _lang C CXX Fortran )
