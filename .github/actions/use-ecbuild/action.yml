@@ -1,0 +1,44 @@
+name: Use ecbuild
+description: >
+  Installs ecbuild from the version of this repository referenced in the
+  action call (uses: ecmwf/ecbuild/.github/actions/use-ecbuild@<ref>).
+  The ecbuild source tree is this action's own repository checkout, so the
+  installed version always matches the referenced ref.
+
+  Uses a local cache keyed on the action SHA and OS to avoid rebuilding on
+  repeated runs.
+
+inputs:
+  os:
+    description: 'OS label (used as part of the cache key)'
+    required: false
+    default: ubuntu-latest
+
+outputs:
+  install-path:
+    description: 'Absolute path where ecbuild was installed'
+    value: ${{ steps.set-paths.outputs.install-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set install path
+      id: set-paths
+      shell: bash
+      run: echo "install-path=$GITHUB_WORKSPACE/install/ecbuild" >> "$GITHUB_OUTPUT"
+
+    - name: Cache ecbuild
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.set-paths.outputs.install-path }}
+        key: ecbuild-${{ github.action_sha }}-${{ inputs.os }}
+
+    - name: Build and install ecbuild
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        cmake -S "${{ github.action_path }}/../../.." \
+              -B "$GITHUB_WORKSPACE/ecbuild-build" \
+              -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install/ecbuild"
+        cmake --install "$GITHUB_WORKSPACE/ecbuild-build"
