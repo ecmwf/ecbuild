@@ -211,7 +211,7 @@ macro( ecbuild_override_compiler_flags )
            endif()
          endif()
        endforeach()
-   
+
        if( DEFINED _PAR_COMPILE_FLAGS )
           if( DEFINED ECBUILD_COMPILE_FLAGS)
             ecbuild_debug( "Override ECBUILD_COMPILE_FLAGS (${ECBUILD_COMPILE_FLAGS}) with ${_PAR_COMPILE_FLAGS}" )
@@ -243,7 +243,7 @@ macro( ecbuild_override_compiler_flags )
           endif()
           set( ECBUILD_SOURCE_FLAGS ${_PAR_SOURCE_FLAGS} )
        endif()
-   
+
        ecbuild_linker_flags()
     endif()
 
