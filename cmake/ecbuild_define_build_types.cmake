@@ -54,7 +54,8 @@ if( NOT CMAKE_BUILD_TYPE MATCHES "None"  AND
     NOT CMAKE_BUILD_TYPE MATCHES "Bit" AND
     NOT CMAKE_BUILD_TYPE MATCHES "Production" AND
     NOT CMAKE_BUILD_TYPE MATCHES "Release"  AND
-    NOT CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" )
+    NOT CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" AND
+    NOT CMAKE_BUILD_TYPE MATCHES "MinSizeRel" )
   ecbuild_warn( "CMAKE_BUILD_TYPE has an unusual value (\"${CMAKE_BUILD_TYPE_CAPS}\"). ${_BUILD_TYPE_MSG}. Please make sure your build system correctly handles CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}.")
 endif()
 
