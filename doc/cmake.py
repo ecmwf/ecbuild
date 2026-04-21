@@ -50,7 +50,7 @@ class EncodedString(str):
     """
         Safely convert an object to a string, handling encoding issues.
 
-        This replaces previously used `ErrorString` and `SafeString` classes,
+        This replaces previously used `ErrorString` and `SafeString` classes (recently removed/deprecated from `docutils`),
         which were used to handle encoding errors when converting objects to strings for error messages.
     """
     def __new__(cls, obj):
