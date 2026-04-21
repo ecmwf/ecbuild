@@ -11,7 +11,7 @@ set( ECBUILD_Fortran_FLAGS "-user_common_fortran" )
 
 ecbuild_override_compiler_flags(
   COMPILE_FLAGS ${CMAKE_CURRENT_SOURCE_DIR}/compiler_flags.cmake
-  CACHE_ECBUILD_FLAGS
+  INHERIT_ECBUILD_FLAGS
 )
 
 ecbuild_add_library(

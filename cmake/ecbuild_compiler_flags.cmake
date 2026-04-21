@@ -176,17 +176,34 @@ endmacro()
 # ecbuild_override_compiler_flags
 # ===============================
 #
-# Purge existing CMAKE_<lang>_FLAGS flags and trigger the use of per source
-# file overrideable flags (see ``Using custom compilation flags`` for an
-# explanation).
+# Purge existing ``CMAKE_<lang>_FLAGS`` flags and trigger the use of per
+# source file overrideable flags (see ``Using custom compilation flags`` for
+# an explanation).
 #
-#   ecbuild_override_compiler_flags()
+#   ecbuild_override_compiler_flags( [WARN] [INHERIT_ECBUILD_FLAGS]
+#                                    [COMPILE_FLAGS <file>]
+#                                    [SOURCE_FLAGS <file>] )
+#
+# Options:
+#
+# WARN
+#   Emit a warning when compiler flags are purged.
+#
+# INHERIT_ECBUILD_FLAGS
+#   Only applies together with ``COMPILE_FLAGS``. Copies any
+#   ``ECBUILD_<lang>_FLAGS`` and ``ECBUILD_<lang>_FLAGS_<btype>`` values to
+#   project specific ``<PNAME>_<lang>_FLAGS`` and
+#   ``<PNAME>_<lang>_FLAGS_<btype>`` variables before loading the compile
+#   flags file. This allows per source ``COMPILE_FLAGS`` rules to build on
+#   ecBuild level overrides even though ``CMAKE_<lang>_FLAGS`` are purged.
+#
+#   This option does not apply to ``SOURCE_FLAGS``.
 #
 ##############################################################################
 
 macro( ecbuild_override_compiler_flags )
 
-    set( options WARN CACHE_ECBUILD_FLAGS )
+    set( options WARN INHERIT_ECBUILD_FLAGS )
     set( oneValueArgs SOURCE_FLAGS COMPILE_FLAGS )
     set( multiValueArgs "" )
 
@@ -218,7 +235,7 @@ macro( ecbuild_override_compiler_flags )
           endif()
           set( ECBUILD_COMPILE_FLAGS ${_PAR_COMPILE_FLAGS} )
 
-          if( _PAR_CACHE_ECBUILD_FLAGS )
+          if( _PAR_INHERIT_ECBUILD_FLAGS )
             ecbuild_get_build_type_list( _btypelist )
 
             foreach( _lang C CXX Fortran )
@@ -268,6 +285,13 @@ endmacro()
 # defining the override rules. If set, ``<PNAME>_ECBUILD_COMPILE_FLAGS``
 # takes precendence and ``ECBUILD_COMPILE_FLAGS`` is ignored, allowing for
 # rules that only apply to a subproject (e.g. in a bundle).
+#
+# If ``ecbuild_override_compiler_flags(INHERIT_ECBUILD_FLAGS COMPILE_FLAGS
+# <file>)`` is used, existing ``ECBUILD_<lang>_FLAGS`` and
+# ``ECBUILD_<lang>_FLAGS_<btype>`` values are copied to project specific
+# ``<PNAME>_<lang>_FLAGS`` and ``<PNAME>_<lang>_FLAGS_<btype>`` variables
+# before the compile flags file is loaded. This is only supported for
+# ``COMPILE_FLAGS``.
 #
 # Flags can be overridden in 3 different ways:
 #
@@ -369,7 +393,7 @@ foreach( _flags COMPILE SOURCE )
   endif()
 endforeach()
 if( DEFINED ECBUILD_COMPILE_FLAGS )
-  ecbuild_override_compiler_flags( COMPILE_FLAGS ${ECBUILD_COMPILE_FLAGS} WARN CACHE_ECBUILD_FLAGS )
+  ecbuild_override_compiler_flags( COMPILE_FLAGS ${ECBUILD_COMPILE_FLAGS} WARN INHERIT_ECBUILD_FLAGS )
 elseif( DEFINED ECBUILD_SOURCE_FLAGS )
   ecbuild_override_compiler_flags( SOURCE_FLAGS ${ECBUILD_SOURCE_FLAGS} WARN )
 endif()
