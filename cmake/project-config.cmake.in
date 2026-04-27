@@ -41,7 +41,12 @@ if(EXISTS ${@PROJECT_NAME@_CMAKE_DIR}/@CONF_IMPORT_FILE@)
 endif()
 
 ### insert definitions for IMPORTED targets
-if(NOT @PROJECT_NAME@_BINARY_DIR)
+# Guard: for install-tree exports (@PROJECT_NAME@_IS_BUILD_DIR_EXPORT=OFF) we must
+# always load the targets file.  For build-tree exports the targets are already
+# defined by the build system, so we only skip when we are genuinely inside that
+# build (i.e. the variable was set by ecbuild's own project() hook, not by an
+# unrelated project that happens to share the same name).
+if(NOT (@PROJECT_NAME@_IS_BUILD_DIR_EXPORT AND @PROJECT_NAME@_BINARY_DIR))
   find_file(@PROJECT_NAME@_TARGETS_FILE
     NAMES @PROJECT_NAME@-targets.cmake
     HINTS @PACKAGE_TARGETS_DIRS@
