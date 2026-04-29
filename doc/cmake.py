@@ -45,11 +45,24 @@ QtHelpBuilder.build_keywords = new_build_keywords
 
 from docutils.parsers.rst import Directive, directives
 from docutils.transforms import Transform
-try:
-    from docutils.utils.error_reporting import SafeString, ErrorString
-except ImportError:
-    # error_reporting was not in utils before version 0.11:
-    from docutils.error_reporting import SafeString, ErrorString
+
+class EncodedString(str):
+    """
+        Safely convert an object to a string, handling encoding issues.
+
+        This replaces previously used `ErrorString` and `SafeString` classes (recently removed/deprecated from `docutils`),
+        which were used to handle encoding errors when converting objects to strings for error messages.
+    """
+    def __new__(cls, obj):
+        try:
+            if isinstance(obj, bytes):
+                return super().__new__(cls, obj.decode('utf-8', errors='replace'))
+            return super().__new__(cls, str(obj))
+        except Exception:
+            try:
+                return super().__new__(cls, repr(obj))
+            except Exception:
+                return super().__new__(cls, object.__repr__(obj))
 
 from docutils import io, nodes
 
@@ -88,10 +101,10 @@ class CMakeModule(Directive):
             raise self.severe('Problems with "%s" directive path:\n'
                               'Cannot encode input file path "%s" '
                               '(wrong locale?).' %
-                              (self.name, SafeString(path)))
+                              (self.name, EncodedString(path)))
         except IOError as error:
             raise self.severe('Problems with "%s" directive path:\n%s.' %
-                              (self.name, ErrorString(error)))
+                              (self.name, EncodedString(error)))
         raw_lines = f.read().splitlines()
         f.close()
         rst = None

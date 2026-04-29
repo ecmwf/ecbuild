@@ -3,5 +3,12 @@ builds:
     type: "conda"
     enabled: true
 
+  - name: "hpc"
+    type: "hpc"
+    enabled: true
+    config:
+      modules:
+        - python3
+
 release:
   enabled: true
