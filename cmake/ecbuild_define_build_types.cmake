@@ -6,6 +6,33 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+##############################################################################
+#.rst:
+#
+# ecbuild_get_build_type_list
+# ===========================
+#
+# Return the list of recognised CMake build types ::
+#
+#   ecbuild_get_build_type_list( <outvar> )
+#
+# The list contains the standard ecBuild build types
+# (``NONE``, ``DEBUG``, ``BIT``, ``PRODUCTION``, ``RELEASE``,
+# ``RELWITHDEBINFO``) plus the value of ``CMAKE_BUILD_TYPE`` if it is set
+# to a custom value not already in the list.
+#
+##############################################################################
+
+macro( ecbuild_get_build_type_list _outvar )
+  set( _btypelist NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
+
+  if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
+    list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
+  endif ()
+
+  set( ${_outvar} ${_btypelist} )
+endmacro()
+
 ############################################################################################
 # define default build type
 
