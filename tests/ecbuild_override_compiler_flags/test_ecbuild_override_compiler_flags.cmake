@@ -14,6 +14,23 @@ ecbuild_override_compiler_flags(
   INHERIT_ECBUILD_FLAGS
 )
 
+# ecbuild_override_compiler_flags must invoke ecbuild_purge_compiler_flags and
+# clear CMAKE_<lang>_FLAGS* for every build type, even though
+# OVERRIDECOMPILERFLAGS_ECBUILD_COMPILE_FLAGS is not set. Previously the purge
+# was a no-op on this code path.
+ecbuild_get_build_type_list( _purged_btypes )
+list( REMOVE_ITEM _purged_btypes NONE )
+foreach( _lang C CXX Fortran )
+  if( NOT CMAKE_${_lang}_FLAGS STREQUAL "" )
+    message(FATAL_ERROR "ecbuild_purge_compiler_flags did not clear CMAKE_${_lang}_FLAGS: '${CMAKE_${_lang}_FLAGS}'")
+  endif()
+  foreach( _btype IN LISTS _purged_btypes )
+    if( NOT CMAKE_${_lang}_FLAGS_${_btype} STREQUAL "" )
+      message(FATAL_ERROR "ecbuild_purge_compiler_flags did not clear CMAKE_${_lang}_FLAGS_${_btype}: '${CMAKE_${_lang}_FLAGS_${_btype}}'")
+    endif()
+  endforeach()
+endforeach()
+
 ecbuild_add_library(
    TARGET    overrideflags
    SOURCES   emptyfile.c emptyfile.cxx emptyfile.F90
