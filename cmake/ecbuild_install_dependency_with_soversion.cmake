@@ -42,9 +42,9 @@
 #
 ##############################################################################
 function(ecbuild_install_dependency_with_soversion _target)
-    get_target_property(_loc ${_target} IMPORTED_LOCATION)
+    get_target_property(_loc ${_target} LOCATION)
     if(NOT _loc)
-        message(FATAL_ERROR "Could not find IMPORTED_LOCATION for target ${_target}")
+        message(FATAL_ERROR "Could not find LOCATION for target ${_target}")
     endif()
 
     get_filename_component(_dir ${_loc} DIRECTORY)

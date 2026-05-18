@@ -33,16 +33,6 @@
 #
 ##############################################################################
 
-macro( ecbuild_get_build_type_list _outvar )
-  set( _btypelist NONE DEBUG BIT PRODUCTION RELEASE RELWITHDEBINFO )
-
-  if (NOT "${CMAKE_BUILD_TYPE}" IN_LIST _btypelist)
-    list (APPEND _btypelist "${CMAKE_BUILD_TYPE}")
-  endif ()
-
-  set( ${_outvar} ${_btypelist} )
-endmacro()
-
 macro( ecbuild_compiler_flags _lang )
 
   # Set compiler and language specific default flags - OVERWRITES variables in CMake cache
@@ -81,49 +71,6 @@ macro( ecbuild_compiler_flags _lang )
   foreach( _btype IN LISTS _btypelist)
     ecbuild_debug_var( CMAKE_${_lang}_FLAGS_${_btype} )
   endforeach()
-
-endmacro()
-
-##############################################################################
-#.rst:
-#
-# ecbuild_purge_compiler_flags
-# ============================
-#
-# Purge compiler flags for a given language ::
-#
-#   ecbuild_purge_compiler_flags( <lang> )
-#
-##############################################################################
-
-macro( ecbuild_purge_compiler_flags _lang )
-
-    set( options WARN )
-    set( oneValueArgs "" )
-    set( multiValueArgs "" )
-
-    ecbuild_get_build_type_list( _btypelist )
-    list( REMOVE_ITEM _btypelist NONE )
-    list( INSERT _btypelist 0 ALL )
-
-    cmake_parse_arguments( _PAR "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-
-    if( CMAKE_${_lang}_COMPILER_LOADED )
-
-      # Clear default compilation flags potentially inherited from parent scope
-      # when using custom compilation flags
-      if( ECBUILD_SOURCE_FLAGS OR ECBUILD_COMPILE_FLAGS )
-        set(CMAKE_${_lang}_FLAGS "")
-        foreach( _btype IN LISTS _btypelist)
-          set(CMAKE_${_lang}_FLAGS_${_btype} "")
-        endforeach()
-      endif()
-
-    endif()
-
-    if( _PAR_WARN )
-      ecbuild_warn( "Purging compiler flags set for ${_lang}" )
-    endif()
 
 endmacro()
 
