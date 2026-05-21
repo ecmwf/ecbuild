@@ -28,7 +28,8 @@ endif()
 #                [ BRANCH <gitbranch> | TAG <gittag> ]
 #                [ UPDATE | NOREMOTE ]
 #                [ MANUAL ]
-#                [ RECURSIVE ] )
+#                [ RECURSIVE ]
+#                [ SHALLOW ] )
 #
 # Options
 # -------
@@ -59,6 +60,10 @@ endif()
 #
 # RECURSIVE : optional
 #   Do a recursive fetch or update
+#
+# SHALLOW : optional
+#   Do a shallow clone (``--depth 1``) on initial checkout.
+#   When combined with RECURSIVE, submodules are also fetched at depth 1.
 #
 ##############################################################################
 
