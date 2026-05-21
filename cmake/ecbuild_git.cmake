@@ -204,7 +204,9 @@ function( ecbuild_git )
 
       # fetching latest tags and branches
 
-      if( NOT _PAR_NOREMOTE )
+      if( _PAR_SHALLOW )
+        ecbuild_info("${_PAR_DIR} is SHALLOW : Skipping fetch")
+      elseif( NOT _PAR_NOREMOTE )
 
         ecbuild_info("git fetch --all @ ${ABS_PAR_DIR}")
         execute_process( COMMAND "${GIT_EXECUTABLE}" fetch --all -q
@@ -236,10 +238,11 @@ function( ecbuild_git )
         ecbuild_critical("git checkout ${_gitref} on ${_PAR_DIR} failed:\n  ${GIT_EXECUTABLE} checkout -q ${_gitref}\n  ${error}")
       endif()
 
-      if( DEFINED _PAR_BRANCH AND _PAR_UPDATE ) #############################################################################
+      if( DEFINED _PAR_BRANCH AND _PAR_UPDATE AND NOT _PAR_SHALLOW ) #############################
 
         # Use git pull --ff-only, we WANT this to fail on upstream rebase and
         # we DON'T want merge commits here!
+        # Skipped for SHALLOW clones to avoid deepening history.
         execute_process( COMMAND "${GIT_EXECUTABLE}" pull -q --ff-only
                          RESULT_VARIABLE nok ERROR_VARIABLE error
                          WORKING_DIRECTORY "${ABS_PAR_DIR}")
