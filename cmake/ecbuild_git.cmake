@@ -64,7 +64,7 @@ endif()
 
 function( ecbuild_git )
 
-  set( options UPDATE NOREMOTE MANUAL RECURSIVE )
+  set( options UPDATE NOREMOTE MANUAL RECURSIVE SHALLOW )
   set( single_value_args PROJECT DIR URL TAG BRANCH )
   set( multi_value_args )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
@@ -98,13 +98,23 @@ function( ecbuild_git )
 
     if( NOT EXISTS "${_PAR_DIR}" )
 
+      set( _clone_args )
+      if( _PAR_SHALLOW )
+        list( APPEND _clone_args "--depth" "1" )
+        if( DEFINED _PAR_BRANCH )
+          list( APPEND _clone_args "--branch" "${_PAR_BRANCH}" )
+        elseif( DEFINED _PAR_TAG )
+          list( APPEND _clone_args "--branch" "${_PAR_TAG}" )
+        endif()
+      endif()
+
       ecbuild_info( "Cloning ${_PAR_PROJECT} from ${_PAR_URL} into ${_PAR_DIR}...")
       execute_process(
-        COMMAND ${GIT_EXECUTABLE} "clone" ${_PAR_URL} ${clone_args} ${_PAR_DIR} "-q"
+        COMMAND ${GIT_EXECUTABLE} "clone" ${_PAR_URL} ${_clone_args} ${_PAR_DIR} "-q"
         RESULT_VARIABLE nok ERROR_VARIABLE error
         WORKING_DIRECTORY "${PARENT_DIR}")
       if(nok)
-        ecbuild_critical("${_PAR_DIR} git clone failed:\n  ${GIT_EXECUTABLE} clone ${_PAR_URL} ${clone_args} ${_PAR_DIR} -q\n  ${error}\n")
+        ecbuild_critical("${_PAR_DIR} git clone failed:\n  ${GIT_EXECUTABLE} clone ${_PAR_URL} ${_clone_args} ${_PAR_DIR} -q\n  ${error}\n")
       endif()
       ecbuild_info( "${_PAR_DIR} retrieved.")
       set( _needs_switch 1 )
@@ -235,8 +245,12 @@ function( ecbuild_git )
       endif() ####################################################################################
 
       if( _PAR_RECURSIVE )
-        ecbuild_info("git submodule --quiet update --init --recursive @ ${ABS_PAR_DIR}")
-        execute_process( COMMAND "${GIT_EXECUTABLE}" submodule --quiet update --init --recursive
+        set( _submodule_args submodule --quiet update --init --recursive )
+        if( _PAR_SHALLOW )
+          list( APPEND _submodule_args "--depth" "1" )
+        endif()
+        ecbuild_info("git ${_submodule_args} @ ${ABS_PAR_DIR}")
+        execute_process( COMMAND "${GIT_EXECUTABLE}" ${_submodule_args}
                         RESULT_VARIABLE nok ERROR_VARIABLE error
                         WORKING_DIRECTORY "${ABS_PAR_DIR}")
         if(nok)
