@@ -194,7 +194,7 @@ function( ecbuild_git )
       ecbuild_critical("SHALLOW repository ${_PAR_DIR} is not switchable.")
     endif()
 
-    if( DEFINED _PAR_BRANCH AND _PAR_UPDATE AND NOT _PAR_NOREMOTE )
+    if( DEFINED _PAR_BRANCH AND _PAR_UPDATE AND NOT _PAR_NOREMOTE AND NOT _PAR_SHALLOW )
 
       add_custom_target( git_update_${_PAR_PROJECT}
                          COMMAND "${GIT_EXECUTABLE}" pull -q
