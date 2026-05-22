@@ -64,7 +64,8 @@ endif()
 # SHALLOW : optional
 #   Do a shallow clone (``--depth 1``) on initial checkout.
 #   When combined with RECURSIVE, submodules are also fetched at depth 1.
-#   Cannot be combined with TAG when it's a commit ID (SHA)
+#   Cannot be combined with TAG when it's a commit ID (SHA).
+#   SHALLOW is not switchable and will fail if UPDATE is requested on an existing shallow clone.
 #
 ##############################################################################
 
@@ -97,6 +98,7 @@ function( ecbuild_git )
   if( ECBUILD_GIT )
 
     set( _needs_switch 0 )
+    set( _created_repo 0 )
 
     get_filename_component( ABS_PAR_DIR "${_PAR_DIR}" ABSOLUTE )
     get_filename_component( PARENT_DIR  "${_PAR_DIR}/.." ABSOLUTE )
@@ -130,6 +132,7 @@ function( ecbuild_git )
         ecbuild_critical("${_PAR_DIR} git clone failed:\n  ${GIT_EXECUTABLE} clone ${_PAR_URL} ${_clone_args} ${_PAR_DIR} -q\n  ${error}\n")
       endif()
       ecbuild_info( "${_PAR_DIR} retrieved.")
+      set( _created_repo 1 )
       set( _needs_switch 1 )
 
     endif()
@@ -185,6 +188,10 @@ function( ecbuild_git )
 
     if( NOT _PAR_MANUAL AND DEFINED _PAR_TAG AND NOT "${_current_tag}" STREQUAL "${_PAR_TAG}" )
       set( _needs_switch 1 )
+    endif()
+
+    if( _PAR_SHALLOW AND _needs_switch AND NOT _created_repo )
+      ecbuild_critical("SHALLOW repository ${_PAR_DIR} is not switchable.")
     endif()
 
     if( DEFINED _PAR_BRANCH AND _PAR_UPDATE AND NOT _PAR_NOREMOTE )
