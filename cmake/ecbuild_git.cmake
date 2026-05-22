@@ -64,6 +64,7 @@ endif()
 # SHALLOW : optional
 #   Do a shallow clone (``--depth 1``) on initial checkout.
 #   When combined with RECURSIVE, submodules are also fetched at depth 1.
+#   Cannot be combined with TAG when it's a commit ID (SHA)
 #
 ##############################################################################
 
@@ -84,6 +85,13 @@ function( ecbuild_git )
 
   if(_PAR_UNPARSED_ARGUMENTS)
     ecbuild_critical("Unknown keywords given to ecbuild_git(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+  endif()
+
+  if( _PAR_SHALLOW AND DEFINED _PAR_TAG )
+    string(LENGTH "${_PAR_TAG}" _tag_len)
+    if( _tag_len GREATER_EQUAL 7 AND _tag_len LESS_EQUAL 40 AND _PAR_TAG MATCHES "^[0-9a-fA-F]+$" )
+      ecbuild_critical("SHALLOW cloning cannot be used: TAG (${_PAR_TAG}) looks like a commit ID (SHA)!")
+    endif()
   endif()
 
   if( ECBUILD_GIT )
