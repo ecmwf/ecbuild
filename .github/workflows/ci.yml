@@ -1,98 +1,43 @@
-name: ci
+name: CI
 
 on:
-  # Trigger the workflow on push to master or develop, except tag creation
   push:
-    branches:
-      - "master"
-      - "develop"
-    tags-ignore:
-      - "**"
-    paths-ignore:
-      - "docs/**"
-      - "bamboo/**"
-      - "README.rst"
-      - ".cd/**"
+    branches: [fix_interface_exports]
+  pull_request:
 
-  # Trigger the workflow on pull request
-  pull_request: ~
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-  # Trigger the workflow manually
-  workflow_dispatch: ~
-
-  # Trigger after public PR approved for CI
-  pull_request_target:
-    types: [labeled]
-
+env:
+  ARTIFACT_POLL_INTERVAL: ${{ vars.ARTIFACT_POLL_INTERVAL || '60' }}
 
 jobs:
-  # Run CI including downstream packages on self-hosted runners
-  downstream-ci:
-    name: downstream-ci
-    if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
-    uses: ecmwf/downstream-ci/.github/workflows/downstream-ci.yml@main
-    with:
-      ecbuild: ecmwf/ecbuild@${{ github.event.pull_request.head.sha || github.sha }}
-      codecov_upload: false
-    secrets: inherit
-
-  # Run CI of private downstream packages on self-hosted runners
-  private-downstream-ci:
-    name: private-downstream-ci
-    needs: [downstream-ci]
-    if: ${{ (success() || failure()) && (!github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci') }}
+  resolve:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
+    outputs:
+      build-matrix: ${{ steps.r.outputs.matrix-build }}
     steps:
-      - name: Dispatch private downstream CI
-        uses: ecmwf/dispatch-private-downstream-ci@v1
+      - uses: actions/checkout@v6
+      - id: r
+        uses: ecmwf-enterprise-sandbox/downstream-ci/actions/resolve-deps@main
         with:
-          token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          owner: ecmwf
-          repository: private-downstream-ci
-          event_type: downstream-ci
-          payload: '{"ecbuild": "ecmwf/ecbuild@${{ github.event.pull_request.head.sha || github.sha }}"}'
+          current-branch: ${{ github.head_ref || github.ref_name }}
+          matrix: build
+          token: ${{ secrets.ORG_READ_TOKEN || github.token }}
+          app-id: ${{ secrets.DOWNSTREAM_CI_APP_ID }}
+          app-private-key: ${{ secrets.DOWNSTREAM_CI_APP_PRIVATE_KEY }}
 
-  # Build downstream packages on HPC
-  downstream-ci-hpc:
-    name: downstream-ci-hpc
-    if: ${{ !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
-    uses: ecmwf/downstream-ci/.github/workflows/downstream-ci-hpc.yml@main
-    with:
-      ecbuild: ecmwf/ecbuild@${{ github.event.pull_request.head.sha || github.sha }}
-    secrets: inherit
-
-  # Run CI of private downstream packages on HPC
-  private-downstream-ci-hpc:
-    name: private-downstream-ci-hpc
-    needs: [downstream-ci-hpc]
-    if: ${{ (success() || failure()) && (!github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci') }}
+  build:
+    needs: resolve
+    name: build (${{ matrix.build-type }})
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.resolve.outputs.build-matrix) }}
     steps:
-      - name: Dispatch private downstream CI
-        uses: ecmwf/dispatch-private-downstream-ci@v1
+      - uses: actions/checkout@v6
+      - name: Build and publish
+        uses: ./.github/actions/build-and-publish
         with:
-          token: ${{ secrets.GH_REPO_READ_TOKEN }}
-          owner: ecmwf
-          repository: private-downstream-ci
-          event_type: downstream-ci-hpc
-          payload: '{"ecbuild": "ecmwf/ecbuild@${{ github.event.pull_request.head.sha || github.sha }}","skip_matrix_jobs": "nvidia-22.11"}'
-
-# DISABLED FOR NOW UNTIL REPO IS SET UP FOR THIS
-#  notify:
-#    runs-on: ubuntu-latest
-#    needs:
-#      - downstream-ci
-#      - private-downstream-ci
-#      - downstream-ci-hpc
-#      - private-downstream-ci-hpc
-#    if: ${{ always() && !github.event.pull_request.head.repo.fork && github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci' }}
-#    steps:
-#      - name: Trigger Teams notification
-#        uses: ecmwf/notify-teams@v1
-#        with:
-#          incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
-#          needs_context: ${{ toJSON(needs) }}
+          matrix-leg: ${{ toJSON(matrix) }}

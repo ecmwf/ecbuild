@@ -1,0 +1,92 @@
+# Hand-written entry point for the consumer-driven recovery path. ecbuild is a
+# leaf producer (no upstream package deps), so the generator can't infer it from
+# the manifest alone; downstream-ci's write_or_check leaves this file in place.
+# When a consumer (fortmath, cxxmath, ecflowmath) finds a missing ecbuild
+# artifact, resolve_deps dispatches us here with from-job=rebuild-self.
+name: Cross-repo trigger (ecbuild)
+
+run-name: >-
+  Cross-repo trigger (${{ inputs.from-repo }}@${{ inputs.from-sha }})
+  [${{ inputs.dispatch-id }}]
+
+on:
+  workflow_dispatch:
+    inputs:
+      dispatch-id:
+        description: 'Correlation id stamped into run-name so the dispatcher can find this run'
+        required: true
+        type: string
+      from-repo:
+        description: 'owner/repo of the dispatcher (downstream consumer)'
+        required: true
+        type: string
+      from-sha:
+        description: 'SHA of the dispatcher commit'
+        required: true
+        type: string
+      from-job:
+        description: >
+          For ecbuild the only accepted value is the sentinel 'rebuild-self';
+          there is no upstream package that could otherwise originate this dispatch.
+        required: true
+        type: string
+      branch:
+        description: 'Dispatcher branch name; we attempt branch-matching against it'
+        required: true
+        type: string
+      fallback-ref:
+        description: 'Ref to check out if branch does not exist in this repo'
+        required: false
+        type: string
+        default: 'fix_interface_exports'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ARTIFACT_POLL_INTERVAL: ${{ vars.ARTIFACT_POLL_INTERVAL || '60' }}
+
+jobs:
+  resolve:
+    if: inputs.from-job == 'rebuild-self'
+    runs-on: ubuntu-latest
+    outputs:
+      ref: ${{ steps.pick.outputs.ref }}
+      matrix-build: ${{ steps.r.outputs.matrix-build }}
+    steps:
+      - id: pick
+        uses: ecmwf-enterprise-sandbox/downstream-ci/actions/pick-ref@main
+        with:
+          repo: ecmwf-enterprise-sandbox/ecbuild
+          try-branch: ${{ inputs.branch }}
+          fallback-ref: ${{ inputs.fallback-ref }}
+          token: ${{ secrets.ORG_READ_TOKEN || github.token }}
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.pick.outputs.ref }}
+      - id: r
+        uses: ecmwf-enterprise-sandbox/downstream-ci/actions/resolve-deps@main
+        with:
+          current-branch: ${{ steps.pick.outputs.ref }}
+          matrix: build
+          token: ${{ secrets.ORG_READ_TOKEN || github.token }}
+          app-id: ${{ secrets.DOWNSTREAM_CI_APP_ID }}
+          app-private-key: ${{ secrets.DOWNSTREAM_CI_APP_PRIVATE_KEY }}
+
+  build:
+    needs: [resolve]
+    if: inputs.from-job == 'rebuild-self'
+    name: build (${{ matrix.build-type }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.resolve.outputs.matrix-build) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.resolve.outputs.ref }}
+      - name: Build and publish
+        uses: ./.github/actions/build-and-publish
+        with:
+          matrix-leg: ${{ toJSON(matrix) }}

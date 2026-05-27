@@ -1,0 +1,33 @@
+# Single source of truth for ecbuild's CI.
+#
+# ecbuild is a compiler-independent leaf producer: a CMake toolchain/module
+# collection (project(ecbuild LANGUAGES C)) with no upstream package deps.
+# fortmath, cxxmath and ecflowmath consume its install tree as a build tool, so
+# they declare it in their [[deps]] with compiler-inputs = [] and fetch the
+# ecbuild-<sha>-<os>-<build-type> artifact like any other dependency.
+#
+# Alongside this manifest:
+#   - ci.yml               — push/PR build that publishes the artifact.
+#   - cross-repo-trigger.yml
+#                          — workflow_dispatch entry point for consumer-driven
+#                            recovery (from-job=rebuild-self), fired when a
+#                            consumer finds the expected ecbuild artifact missing.
+
+[package]
+name = "ecbuild"
+prefix = "ecbuild"
+repo = "ecmwf-enterprise-sandbox/ecbuild"
+# ecbuild produces a single compiler-independent install tree; no compiler is
+# part of its artifact identity.
+compiler-inputs = []
+
+[[matrix.build.include]]
+build-type = "Release"
+os = "ubuntu-latest"
+
+# No [[trigger-downstream]] entries: like stack-deps, consumers declare ecbuild
+# in their own [[deps]] and recover a missing artifact by dispatching
+# cross-repo-trigger.yml directly.
+[matrix.build]
+downstream-runnable = true
+needs = []

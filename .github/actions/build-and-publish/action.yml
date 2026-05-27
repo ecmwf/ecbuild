@@ -1,0 +1,35 @@
+name: Build and publish ecbuild
+description: >
+  Builds ecbuild and uploads its install tree as a workflow artifact under the
+  resolved canonical name. Shared by ci.yml (push/PR) and cross-repo-trigger.yml
+  (consumer-driven rebuild) so the build/publish path is defined exactly once.
+
+inputs:
+  matrix-leg:
+    description: 'JSON-encoded full matrix leg (includes _resolved.* fields from the resolve job)'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Decode matrix-leg
+      id: m
+      shell: bash
+      run: |
+        leg='${{ inputs.matrix-leg }}'
+        echo "build-type=$(jq -r '."build-type"' <<<"$leg")" >> "$GITHUB_OUTPUT"
+        echo "own-artifact-name=$(jq -r '._resolved."own-artifact-name"' <<<"$leg")" >> "$GITHUB_OUTPUT"
+
+    - name: Build ecbuild
+      id: build
+      uses: ./.github/actions/build-ecbuild
+      with:
+        source-path: ${{ github.workspace }}
+        build-type: ${{ steps.m.outputs.build-type }}
+
+    - name: Publish ecbuild
+      uses: ecmwf-enterprise-sandbox/downstream-ci/actions/fetch-and-publish@main
+      with:
+        mode: publish
+        install-path: ${{ steps.build.outputs.install-path }}
+        artifact-name: ${{ steps.m.outputs.own-artifact-name }}

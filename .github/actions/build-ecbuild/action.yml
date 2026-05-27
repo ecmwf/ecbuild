@@ -1,0 +1,68 @@
+name: Build ecbuild from source
+description: >
+  Configures and installs ecbuild (a compiler-independent CMake toolchain
+  collection) to a canonical prefix derived from the shared install-prefix
+  action. When source-path is set the already checked-out tree is used; when
+  empty the given ref is checked out from the remote.
+
+inputs:
+  ref:
+    description: 'Branch, tag, or SHA to check out (ignored when source-path is set)'
+    required: false
+    default: fix_interface_exports
+  source-path:
+    description: 'Path to an already checked-out source tree. Empty -> check out ref from remote.'
+    required: false
+    default: ''
+  build-type:
+    description: 'CMake build type'
+    required: false
+    default: Release
+  token:
+    description: 'GitHub token for checking out the source'
+    required: false
+    default: ''
+
+outputs:
+  install-path:
+    description: 'Absolute path where ecbuild is installed'
+    value: ${{ steps.set-paths.outputs.install-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get install prefix
+      id: prefix
+      uses: ecmwf-enterprise-sandbox/downstream-ci/actions/install-prefix@main
+
+    - name: Set install path
+      id: set-paths
+      shell: bash
+      run: echo "install-path=${{ steps.prefix.outputs.base }}/ecbuild" >> "$GITHUB_OUTPUT"
+
+    - name: Checkout ecbuild source
+      if: inputs.source-path == ''
+      uses: actions/checkout@v6
+      with:
+        repository: ecmwf-enterprise-sandbox/ecbuild
+        ref: ${{ inputs.ref }}
+        path: _ecbuild-src
+        token: ${{ inputs.token || github.token }}
+
+    - name: Configure and install ecbuild
+      shell: bash
+      run: |
+        # Resolve the source tree from $GITHUB_WORKSPACE (env) rather than the
+        # github.workspace expression: the env var carries the in-container path
+        # on self-hosted container jobs, while the expression bakes the host path
+        # that does not exist inside the container. Works on GitHub-hosted too.
+        if [[ -n "${{ inputs.source-path }}" ]]; then
+          src="$GITHUB_WORKSPACE"
+        else
+          src="$GITHUB_WORKSPACE/_ecbuild-src"
+        fi
+        cmake -S "$src" \
+              -B "$RUNNER_TEMP/_ecbuild-build" \
+              -DCMAKE_INSTALL_PREFIX="${{ steps.set-paths.outputs.install-path }}" \
+              -DENABLE_TESTS=OFF
+        cmake --install "$RUNNER_TEMP/_ecbuild-build"
