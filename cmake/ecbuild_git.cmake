@@ -84,6 +84,10 @@ function( ecbuild_git )
     ecbuild_critical( "Cannot pass both NOREMOTE and UPDATE in macro ecbuild_git" )
   endif()
 
+  if( _PAR_UPDATE AND _PAR_SHALLOW )
+    ecbuild_warn("UPDATE and SHALLOW conflict — shallow clones aren't switchable; UPDATE may be ignored or fail.")
+  endif()
+
   if(_PAR_UNPARSED_ARGUMENTS)
     ecbuild_critical("Unknown keywords given to ecbuild_git(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
   endif()
