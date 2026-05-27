@@ -99,11 +99,13 @@ EOF
 
 commit "Initial commit: add README"
 
-# Add each project as a submodule (using absolute local paths)
+# IMPORTANT: create each project as a submodule using file:// URL
+# to honor shallow clones (--depth 1)
+BARE_DIR="$BASE_DIR/../bare-repos"
+mkdir -p "$BARE_DIR"
 for proj in "${PROJECTS[@]}"; do
-    SUBMOD_PATH="$(cd "../$proj" && pwd)"
-    git submodule add "$SUBMOD_PATH" "$proj"
-    echo "    added submodule: modules/$proj  ->  $SUBMOD_PATH"
+    git clone --bare "$BASE_DIR/$proj" "$BARE_DIR/$proj.git" >/dev/null 2>&1
+    git submodule add "file://$BARE_DIR/$proj.git" "$proj"
 done
 commit "Add submodules: alpha, beta, gamma"
 
@@ -116,3 +118,6 @@ Submodule remotes point to local sibling directories for demo purposes.
 Replace the URLs in \`.gitmodules\` with real remote URLs before sharing.
 EOF
 commit "docs: note about submodule remote URLs"
+
+# IMPORTANT: bare repo to ensure shallow clone behavior is honored
+git clone --bare "$(pwd)" "$BARE_DIR/$UMBRELLA.git" >/dev/null 2>&1

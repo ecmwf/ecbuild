@@ -17,6 +17,9 @@ cd "$BASE_DIR"
 # ─────────────────────────────────────────────
 # Create the umbrella bundle
 # ─────────────────────────────────────────────
+
+UMBRELLA_GIT="file://$(dirname "${UMBRELLA_DIR}")/../bare-repos/$(basename "${UMBRELLA_DIR}").git"
+
 cat > CMakeLists.txt <<EOF
 
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
@@ -29,7 +32,7 @@ ecbuild_bundle_initialize()
 
 ecbuild_bundle(
   PROJECT umbrella
-  GIT "${UMBRELLA_DIR}"
+  GIT "${UMBRELLA_GIT}"
   BRANCH main
   RECURSIVE
   SHALLOW
