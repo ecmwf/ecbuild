@@ -28,7 +28,8 @@ endif()
 #                [ BRANCH <gitbranch> | TAG <gittag> ]
 #                [ UPDATE | NOREMOTE ]
 #                [ MANUAL ]
-#                [ RECURSIVE ] )
+#                [ RECURSIVE ]
+#                [ SHALLOW ] )
 #
 # Options
 # -------
@@ -60,11 +61,17 @@ endif()
 # RECURSIVE : optional
 #   Do a recursive fetch or update
 #
+# SHALLOW : optional
+#   Do a shallow clone (``--depth 1``) on initial checkout.
+#   When combined with RECURSIVE, submodules are also fetched at depth 1.
+#   Cannot be combined with TAG when it's a commit ID (SHA).
+#   SHALLOW is not switchable and will fail if UPDATE is requested on an existing shallow clone.
+#
 ##############################################################################
 
 function( ecbuild_git )
 
-  set( options UPDATE NOREMOTE MANUAL RECURSIVE )
+  set( options UPDATE NOREMOTE MANUAL RECURSIVE SHALLOW )
   set( single_value_args PROJECT DIR URL TAG BRANCH )
   set( multi_value_args )
   cmake_parse_arguments( _PAR "${options}" "${single_value_args}" "${multi_value_args}" ${_FIRST_ARG} ${ARGN} )
@@ -77,13 +84,25 @@ function( ecbuild_git )
     ecbuild_critical( "Cannot pass both NOREMOTE and UPDATE in macro ecbuild_git" )
   endif()
 
+  if( _PAR_UPDATE AND _PAR_SHALLOW )
+    ecbuild_warn("UPDATE and SHALLOW conflict — shallow clones aren't switchable; UPDATE may be ignored or fail.")
+  endif()
+
   if(_PAR_UNPARSED_ARGUMENTS)
     ecbuild_critical("Unknown keywords given to ecbuild_git(): \"${_PAR_UNPARSED_ARGUMENTS}\"")
+  endif()
+
+  if( _PAR_SHALLOW AND DEFINED _PAR_TAG )
+    string(LENGTH "${_PAR_TAG}" _tag_len)
+    if( _tag_len GREATER_EQUAL 7 AND _tag_len LESS_EQUAL 40 AND _PAR_TAG MATCHES "^[0-9a-fA-F]+$" )
+      ecbuild_critical("SHALLOW cloning cannot be used: TAG (${_PAR_TAG}) looks like a commit ID (SHA)!")
+    endif()
   endif()
 
   if( ECBUILD_GIT )
 
     set( _needs_switch 0 )
+    set( _created_repo 0 )
 
     get_filename_component( ABS_PAR_DIR "${_PAR_DIR}" ABSOLUTE )
     get_filename_component( PARENT_DIR  "${_PAR_DIR}/.." ABSOLUTE )
@@ -98,15 +117,26 @@ function( ecbuild_git )
 
     if( NOT EXISTS "${_PAR_DIR}" )
 
+      set( _clone_args )
+      if( _PAR_SHALLOW )
+        list( APPEND _clone_args "--depth" "1" )
+        if( DEFINED _PAR_BRANCH )
+          list( APPEND _clone_args "--branch" "${_PAR_BRANCH}" )
+        elseif( DEFINED _PAR_TAG )
+          list( APPEND _clone_args "--branch" "${_PAR_TAG}" )
+        endif()
+      endif()
+
       ecbuild_info( "Cloning ${_PAR_PROJECT} from ${_PAR_URL} into ${_PAR_DIR}...")
       execute_process(
-        COMMAND ${GIT_EXECUTABLE} "clone" ${_PAR_URL} ${clone_args} ${_PAR_DIR} "-q"
+        COMMAND ${GIT_EXECUTABLE} "clone" ${_PAR_URL} ${_clone_args} ${_PAR_DIR} "-q"
         RESULT_VARIABLE nok ERROR_VARIABLE error
         WORKING_DIRECTORY "${PARENT_DIR}")
       if(nok)
-        ecbuild_critical("${_PAR_DIR} git clone failed:\n  ${GIT_EXECUTABLE} clone ${_PAR_URL} ${clone_args} ${_PAR_DIR} -q\n  ${error}\n")
+        ecbuild_critical("${_PAR_DIR} git clone failed:\n  ${GIT_EXECUTABLE} clone ${_PAR_URL} ${_clone_args} ${_PAR_DIR} -q\n  ${error}\n")
       endif()
       ecbuild_info( "${_PAR_DIR} retrieved.")
+      set( _created_repo 1 )
       set( _needs_switch 1 )
 
     endif()
@@ -164,7 +194,11 @@ function( ecbuild_git )
       set( _needs_switch 1 )
     endif()
 
-    if( DEFINED _PAR_BRANCH AND _PAR_UPDATE AND NOT _PAR_NOREMOTE )
+    if( _PAR_SHALLOW AND _needs_switch AND NOT _created_repo )
+      ecbuild_critical("SHALLOW repository ${_PAR_DIR} is not switchable.")
+    endif()
+
+    if( DEFINED _PAR_BRANCH AND _PAR_UPDATE AND NOT _PAR_NOREMOTE AND NOT _PAR_SHALLOW )
 
       add_custom_target( git_update_${_PAR_PROJECT}
                          COMMAND "${GIT_EXECUTABLE}" pull -q
@@ -189,7 +223,9 @@ function( ecbuild_git )
 
       # fetching latest tags and branches
 
-      if( NOT _PAR_NOREMOTE )
+      if( _PAR_SHALLOW )
+        ecbuild_info("${_PAR_DIR} is SHALLOW : Skipping fetch")
+      elseif( NOT _PAR_NOREMOTE )
 
         ecbuild_info("git fetch --all @ ${ABS_PAR_DIR}")
         execute_process( COMMAND "${GIT_EXECUTABLE}" fetch --all -q
@@ -221,10 +257,11 @@ function( ecbuild_git )
         ecbuild_critical("git checkout ${_gitref} on ${_PAR_DIR} failed:\n  ${GIT_EXECUTABLE} checkout -q ${_gitref}\n  ${error}")
       endif()
 
-      if( DEFINED _PAR_BRANCH AND _PAR_UPDATE ) #############################################################################
+      if( DEFINED _PAR_BRANCH AND _PAR_UPDATE AND NOT _PAR_SHALLOW ) #############################
 
         # Use git pull --ff-only, we WANT this to fail on upstream rebase and
         # we DON'T want merge commits here!
+        # Skipped for SHALLOW clones to avoid deepening history.
         execute_process( COMMAND "${GIT_EXECUTABLE}" pull -q --ff-only
                          RESULT_VARIABLE nok ERROR_VARIABLE error
                          WORKING_DIRECTORY "${ABS_PAR_DIR}")
@@ -235,8 +272,12 @@ function( ecbuild_git )
       endif() ####################################################################################
 
       if( _PAR_RECURSIVE )
-        ecbuild_info("git submodule --quiet update --init --recursive @ ${ABS_PAR_DIR}")
-        execute_process( COMMAND "${GIT_EXECUTABLE}" submodule --quiet update --init --recursive
+        set( _submodule_args submodule --quiet update --init --recursive )
+        if( _PAR_SHALLOW )
+          list( APPEND _submodule_args "--depth" "1" )
+        endif()
+        ecbuild_info("git ${_submodule_args} @ ${ABS_PAR_DIR}")
+        execute_process( COMMAND "${GIT_EXECUTABLE}" ${_submodule_args}
                         RESULT_VARIABLE nok ERROR_VARIABLE error
                         WORKING_DIRECTORY "${ABS_PAR_DIR}")
         if(nok)

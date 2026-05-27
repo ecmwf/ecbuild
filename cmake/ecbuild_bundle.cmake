@@ -66,7 +66,8 @@ endmacro()
 #                   [ BRANCH <gitbranch> | TAG <gittag> ]
 #                   [ UPDATE | NOREMOTE ]
 #                   [ MANUAL ]
-#                   [ RECURSIVE ] )
+#                   [ RECURSIVE ]
+#                   [ SHALLOW ] )
 #
 # Options
 # -------
@@ -100,6 +101,9 @@ endmacro()
 #
 # RECURSIVE : optional
 #   Do a recursive fetch or update
+#
+# SHALLOW : optional
+#   Do a shallow clone (depth=1). See ``ecbuild_git`` for details.
 #
 # Usage
 # -----
