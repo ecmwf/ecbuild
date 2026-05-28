@@ -21,7 +21,8 @@
 #                           LANG [C|CXX|Fortran]
 #                           [ BUILD <build> ]
 #                           [ NAME <name> ]
-#                           [ NO_FAIL ] )
+#                           [ NO_FAIL ]
+#                           [ PROJECT ] )
 #
 # Options
 # -------
@@ -38,13 +39,18 @@
 # NO_FAIL : optional
 #   do not fail if the flag cannot be added
 #
+# PROJECT : optional
+#   add flags to project specific ``${PNAME}_${lang}_FLAGS`` and
+#   ``${PNAME}_${lang}_FLAGS_<build>`` instead of the corresponding
+#   ``CMAKE_${lang}_FLAGS`` variables.
+#
 ##############################################################################
 
 function( ecbuild_add_lang_flags )
 
   ecbuild_debug("call ecbuild_add_lang_flags( ${ARGV} )")
 
-  set( options NO_FAIL )
+  set( options NO_FAIL PROJECT )
   set( single_value_args BUILD NAME LANG )
   set( multi_value_args FLAGS )
 
@@ -73,6 +79,12 @@ function( ecbuild_add_lang_flags )
   ecbuild_debug( "CMAKE_${_lang}_COMPILER_LOADED [${CMAKE_${_lang}_COMPILER_LOADED}]" )
 
   if( CMAKE_${_lang}_COMPILER_LOADED )
+
+    if( _PAR_PROJECT )
+      set( _compile_flags_base_var ${PNAME}_${_lang}_FLAGS )
+    else()
+      set( _compile_flags_base_var CMAKE_${_lang}_FLAGS )
+    endif()
 
     if( ECBUILD_TRUST_FLAGS )
       set( _flag_ok 1 )
@@ -114,11 +126,20 @@ function( ecbuild_add_lang_flags )
     if( _flag_ok )
 
       if( _PAR_BUILD )
-        set( CMAKE_${_lang}_FLAGS_${_PAR_BUILD} "${CMAKE_${_lang}_FLAGS_${_PAR_BUILD}} ${_flags}" PARENT_SCOPE )
-        ecbuild_info( "Added ${_lang} flag [${_flags}] to build type ${_PAR_BUILD}" )
+        set( _compile_flags_var ${_compile_flags_base_var}_${_PAR_BUILD} )
+        set( ${_compile_flags_var} "${${_compile_flags_var}} ${_flags}" PARENT_SCOPE )
+        if( _PAR_PROJECT )
+          ecbuild_info( "Added ${_lang} flag [${_flags}] to project build type ${_PAR_BUILD}" )
+        else()
+          ecbuild_info( "Added ${_lang} flag [${_flags}] to build type ${_PAR_BUILD}" )
+        endif()
       else()
-        set( CMAKE_${_lang}_FLAGS "${CMAKE_${_lang}_FLAGS} ${_flags}" PARENT_SCOPE )
-        ecbuild_info( "Added ${_lang} flag [${_flags}]" )
+        set( ${_compile_flags_base_var} "${${_compile_flags_base_var}} ${_flags}" PARENT_SCOPE )
+        if( _PAR_PROJECT )
+          ecbuild_info( "Added ${_lang} flag [${_flags}] to project flags" )
+        else()
+          ecbuild_info( "Added ${_lang} flag [${_flags}]" )
+        endif()
       endif()
 
     elseif( _PAR_NO_FAIL )
