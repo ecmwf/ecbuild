@@ -65,7 +65,9 @@ endif()
 #   Do a shallow clone (``--depth 1``) on initial checkout.
 #   When combined with RECURSIVE, submodules are also fetched at depth 1.
 #   Cannot be combined with TAG when it's a commit ID (SHA).
-#   SHALLOW is not switchable and will fail if UPDATE is requested on an existing shallow clone.
+#   When using the SHALLOW option, attempting to switch branch/tag will result in a failure.
+#   The SHALLOW option will fail if used in combination with UPDATE.
+#   The SHALLOW option will fail if used in combination with NOREMOTE.
 #
 ##############################################################################
 
@@ -85,7 +87,11 @@ function( ecbuild_git )
   endif()
 
   if( _PAR_UPDATE AND _PAR_SHALLOW )
-    ecbuild_warn("UPDATE and SHALLOW conflict — shallow clones aren't switchable; UPDATE may be ignored or fail.")
+    ecbuild_critical("Cannot pass both UPDATE and SHALLOW in ecbuild_git.")
+  endif()
+
+  if( _PAR_NOREMOTE AND _PAR_SHALLOW )
+    ecbuild_critical("Cannot pass both NOREMOTE and SHALLOW in ecbuild_git.")
   endif()
 
   if(_PAR_UNPARSED_ARGUMENTS)
