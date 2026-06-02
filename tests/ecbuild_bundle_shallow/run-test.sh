@@ -37,25 +37,25 @@ mkdir build
 cd build
 ecbuild --prefix=$(pwd)/install -- ../bundle
 
-# ---- check shallowness (umbrella) --------------------
-cd ${BINARY_TEST_DIR}/workspace/bundle/umbrella
+# ---- check shallowness (umbrella + submodules) -------
+PASS=1
 
-if [[ "$(git rev-parse --is-shallow-repository)" == "true" ]]; then
-    echo "Submodule is shallow: PASS"
-    exit 0
+cd "${BINARY_TEST_DIR}/workspace/bundle/umbrella"
+if [[ "$(git rev-parse --is-shallow-repository)" != "true" ]]; then
+    echo "Umbrella is not shallow: FAIL"
+    PASS=0
 else
-    echo "Submodule is not shallow: FAIL"
-    exit 1
+    echo "Umbrella is shallow: PASS"
 fi
 
-# ---- check shallowness (umbrella submodules) ---------
 for sub in alpha beta gamma; do
     cd "${BINARY_TEST_DIR}/workspace/bundle/umbrella/${sub}"
-
-    if [[ "$(git rev-parse --is-shallow-repository)" == "true" ]]; then
-        echo "Submodule $sub is shallow: PASS"
-    else
+    if [[ "$(git rev-parse --is-shallow-repository)" != "true" ]]; then
         echo "Submodule $sub is not shallow: FAIL"
-        exit 1
+        PASS=0
+    else
+        echo "Submodule $sub is shallow: PASS"
     fi
 done
+
+exit $(( 1 - PASS ))
