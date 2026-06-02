@@ -6,11 +6,26 @@ ECBUILD_PATH=${CMAKE_SOURCE_DIR}/bin
 SOURCE_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}
 BINARY_TEST_DIR=${CMAKE_CURRENT_BINARY_DIR}
 
-# Git 2.38.1+ blocks local file:// submodule clones by default.
-# Allow them for the duration of this script only.
-export GIT_CONFIG_COUNT=1
-export GIT_CONFIG_KEY_0=protocol.file.allow
-export GIT_CONFIG_VALUE_0=always
+#
+# Redirect HOME to a per-job temp directory so that every git process
+# (including subprocesses spawned internally by git-submodule) reads a private
+# ~/.gitconfig. This avoids lock contention on the real ~/.gitconfig when
+# parallel CI jobs run, and works on all git versions.
+#
+# GIT_CONFIG_GLOBAL (requires git >= 2.32) and GIT_CONFIG_COUNT (not forwarded
+# by git-submodule to its child processes) are not viable alternatives here.
+#
+# Required on git >= 2.38.1 and on distros that have backported CVE-2022-39253
+# (e.g. Debian 11's git 2.30.2).
+#
+_tmp_home=$(mktemp -d)
+export HOME="${_tmp_home}"
+trap 'rm -rf "${_tmp_home}"' EXIT
+pushd "${HOME}" > /dev/null
+git config --global protocol.file.allow always
+git config --global user.name  "Test User"
+git config --global user.email "test@user"
+popd > /dev/null
 
 # Add ecbuild to path
 export PATH=$ECBUILD_PATH:$PATH
