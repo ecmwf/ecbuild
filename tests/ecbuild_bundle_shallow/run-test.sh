@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
-set -x
+set -euo pipefail
 
 HERE="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd -P )"
 
