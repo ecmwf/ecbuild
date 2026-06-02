@@ -33,8 +33,8 @@ for proj in "${PROJECTS[@]}"; do
     mkdir -p "$proj"
     cd "$proj"
     git init -b main
-    git config user.email "demo@example.com"
-    git config user.name  "Demo User"
+    git config --local user.email "demo@example.com"
+    git config --local user.name  "Demo User"
 
     # Initial commit with README
     cat > README.md <<EOF
@@ -81,8 +81,8 @@ echo "──> Setting up umbrella project: $UMBRELLA"
 mkdir -p "$UMBRELLA"
 cd "$UMBRELLA"
 git init -b main
-git config user.email "demo@example.com"
-git config user.name  "Demo User"
+git config --local user.email "demo@example.com"
+git config --local user.name  "Demo User"
 
 # Initial README
 cat > README.md <<EOF
