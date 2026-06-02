@@ -230,7 +230,9 @@ function( ecbuild_git )
       # fetching latest tags and branches
 
       if( _PAR_SHALLOW )
-        ecbuild_info("${_PAR_DIR} is SHALLOW : Skipping fetch")
+        ecbuild_info("${_PAR_DIR} is a shallow clone\n"
+          "   * Skipping fetch in order to preserve shallow history.\n"
+          "   * Run 'git fetch --unshallow' manually if full history is needed.")
       elseif( NOT _PAR_NOREMOTE )
 
         ecbuild_info("git fetch --all @ ${ABS_PAR_DIR}")
