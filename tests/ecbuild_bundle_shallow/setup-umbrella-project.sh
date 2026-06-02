@@ -104,7 +104,7 @@ commit "Initial commit: add README"
 BARE_DIR="$BASE_DIR/../bare-repos"
 mkdir -p "$BARE_DIR"
 for proj in "${PROJECTS[@]}"; do
-    git clone --bare "$BASE_DIR/$proj" "$BARE_DIR/$proj.git" >/dev/null 2>&1
+    git clone --bare "$BASE_DIR/$proj" "$BARE_DIR/$proj.git" >/dev/null
     git submodule add "file://$BARE_DIR/$proj.git" "$proj"
 done
 commit "Add submodules: alpha, beta, gamma"
@@ -120,4 +120,4 @@ EOF
 commit "docs: note about submodule remote URLs"
 
 # IMPORTANT: bare repo to ensure shallow clone behavior is honored
-git clone --bare "$(pwd)" "$BARE_DIR/$UMBRELLA.git" >/dev/null 2>&1
+git clone --bare "$(pwd)" "$BARE_DIR/$UMBRELLA.git" >/dev/null

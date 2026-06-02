@@ -18,6 +18,7 @@ export GIT_CONFIG_VALUE_0=always
 export PATH=$ECBUILD_PATH:$PATH
 
 # ---- cleanup -----------------------------------------
+[[ -n "${BINARY_TEST_DIR}" ]] || { echo "BINARY_TEST_DIR is not set"; exit 1; }
 rm -rf "${BINARY_TEST_DIR}/workspace"
 
 # ---- setup umbrella project (with submodules) --------
