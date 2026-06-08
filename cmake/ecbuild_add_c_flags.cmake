@@ -17,7 +17,8 @@
 #   ecbuild_add_c_flags( <flag1> [ <flag2> ... ]
 #                        [ BUILD <build> ]
 #                        [ NAME <name> ]
-#                        [ NO_FAIL ] )
+#                        [ NO_FAIL ]
+#                        [ PROJECT ] )
 #
 # Options
 # -------
@@ -30,6 +31,11 @@
 #
 # NO_FAIL : optional
 #   do not fail if the flag cannot be added
+#
+# PROJECT : optional
+#   add flags to project specific ``${PNAME}_C_FLAGS`` and
+#   ``${PNAME}_C_FLAGS_<build>`` instead of the corresponding
+#   ``CMAKE_C_FLAGS`` variables.
 #
 ##############################################################################
 
