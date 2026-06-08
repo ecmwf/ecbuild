@@ -33,8 +33,8 @@ for proj in "${PROJECTS[@]}"; do
     mkdir -p "$proj"
     cd "$proj"
     git init -b main
-    git config user.email "demo@example.com"
-    git config user.name  "Demo User"
+    git config --local user.email "demo@example.com"
+    git config --local user.name  "Demo User"
 
     # Initial commit with README
     cat > README.md <<EOF
@@ -81,8 +81,8 @@ echo "──> Setting up umbrella project: $UMBRELLA"
 mkdir -p "$UMBRELLA"
 cd "$UMBRELLA"
 git init -b main
-git config user.email "demo@example.com"
-git config user.name  "Demo User"
+git config --local user.email "demo@example.com"
+git config --local user.name  "Demo User"
 
 # Initial README
 cat > README.md <<EOF
@@ -99,13 +99,14 @@ EOF
 
 commit "Initial commit: add README"
 
-# IMPORTANT: create each project as a submodule using file:// URL
-# to honor shallow clones (--depth 1)
+#
+# IMPORTANT: create each project as a submodule using file:// URL to honor shallow clones (--depth 1).
+#
 BARE_DIR="$BASE_DIR/../bare-repos"
 mkdir -p "$BARE_DIR"
 for proj in "${PROJECTS[@]}"; do
-    git clone --bare "$BASE_DIR/$proj" "$BARE_DIR/$proj.git" >/dev/null 2>&1
-    git submodule add "file://$BARE_DIR/$proj.git" "$proj"
+    git clone --bare "$BASE_DIR/$proj" "$BARE_DIR/$proj.git" >/dev/null
+    git -c protocol.file.allow=always submodule add "file://$BARE_DIR/$proj.git" "$proj"
 done
 commit "Add submodules: alpha, beta, gamma"
 
@@ -119,5 +120,7 @@ Replace the URLs in \`.gitmodules\` with real remote URLs before sharing.
 EOF
 commit "docs: note about submodule remote URLs"
 
+#
 # IMPORTANT: bare repo to ensure shallow clone behavior is honored
-git clone --bare "$(pwd)" "$BARE_DIR/$UMBRELLA.git" >/dev/null 2>&1
+#
+git clone --bare "$(pwd)" "$BARE_DIR/$UMBRELLA.git" >/dev/null
