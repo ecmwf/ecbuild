@@ -18,7 +18,8 @@
 #   ecbuild_add_fortran_flags( <flag1> [ <flag2> ... ]
 #                              [ BUILD <build> ]
 #                              [ NAME <name> ]
-#                              [ NO_FAIL ] )
+#                              [ NO_FAIL ]
+#                              [ PROJECT ] )
 #
 # Options
 # -------
@@ -32,6 +33,11 @@
 #
 # NO_FAIL : optional
 #   do not fail if the flag cannot be added
+#
+# PROJECT : optional
+#   add flags to project specific ``${PNAME}_Fortran_FLAGS`` and
+#   ``${PNAME}_Fortran_FLAGS_<build>`` instead of the corresponding
+#   ``CMAKE_Fortran_FLAGS`` variables.
 #
 ##############################################################################
 

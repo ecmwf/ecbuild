@@ -66,7 +66,8 @@ endmacro()
 #                   [ BRANCH <gitbranch> | TAG <gittag> ]
 #                   [ UPDATE | NOREMOTE ]
 #                   [ MANUAL ]
-#                   [ RECURSIVE ] )
+#                   [ RECURSIVE ]
+#                   [ SHALLOW ] )
 #
 # Options
 # -------
@@ -101,6 +102,9 @@ endmacro()
 # RECURSIVE : optional
 #   Do a recursive fetch or update
 #
+# SHALLOW : optional
+#   Do a shallow clone (depth=1). See ``ecbuild_git`` for details.
+#
 # Usage
 # -----
 #
@@ -125,6 +129,12 @@ endmacro()
 #
 # To switch off a subproject when building a bundle, set the CMake variable
 # ``BUNDLE_SKIP_<PNAME>`` where ``PNAME`` is the capitalised project name.
+#
+# Note: BRANCH, TAG, UPDATE, NOREMOTE, MANUAL, RECURSIVE, and SHALLOW are not
+# parsed by ecbuild_bundle itself.  They are forwarded verbatim to ecbuild_git
+# via the unparsed-arguments mechanism (``${_PAR_UNPARSED_ARGUMENTS}``).  Any
+# future keyword added to ecbuild_bundle must not clash with an ecbuild_git
+# keyword unless intentional forwarding is desired.
 #
 ##############################################################################
 
