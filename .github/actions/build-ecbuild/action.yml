@@ -1,0 +1,39 @@
+name: Build ecbuild from source
+description: >
+  Configures and installs the already-checked-out ecbuild (a
+  compiler-independent CMake toolchain collection) to a canonical prefix
+  derived from the shared install-prefix action. Caller must have already
+  run actions/checkout@v6 in the same job — the action reads the source from
+  $GITHUB_WORKSPACE.
+
+inputs:
+  build-type:
+    description: 'CMake build type'
+    required: false
+    default: Release
+
+outputs:
+  install-path:
+    description: 'Absolute path where ecbuild is installed'
+    value: ${{ steps.set-paths.outputs.install-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get install prefix
+      id: prefix
+      uses: ecmwf/ci-infrastructure/actions/install-prefix@main
+
+    - name: Set install path
+      id: set-paths
+      shell: bash
+      run: echo "install-path=${{ steps.prefix.outputs.base }}/ecbuild" >> "$GITHUB_OUTPUT"
+
+    - name: Configure and install ecbuild
+      shell: bash
+      run: |
+        cmake -S "$GITHUB_WORKSPACE" \
+              -B "$RUNNER_TEMP/_ecbuild-build" \
+              -DCMAKE_INSTALL_PREFIX="${{ steps.set-paths.outputs.install-path }}" \
+              -DENABLE_TESTS=OFF
+        cmake --install "$RUNNER_TEMP/_ecbuild-build"

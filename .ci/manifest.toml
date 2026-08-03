@@ -1,0 +1,55 @@
+# Single source of truth for ecbuild's CI.
+#
+# ecbuild is a compiler-independent leaf producer: a CMake toolchain/module
+# collection (project(ecbuild LANGUAGES C)) with no upstream package deps.
+# fortmath, cxxmath and ecflowmath consume its install tree as a build tool, so
+# they declare it in their [[deps]] with compiler-inputs = [] and fetch the
+# ecbuild-<sha>-<os>-<build-type> artifact like any other dependency.
+#
+# Alongside this manifest:
+#   - ci.yml               — push/PR build that publishes the artifact.
+#   - cross-repo-trigger.yml
+#                          — workflow_dispatch entry point for consumer-driven
+#                            recovery (from-job=rebuild-self), fired when a
+#                            consumer finds the expected ecbuild artifact missing.
+
+[package]
+name = "ecbuild"
+prefix = "ecbuild"
+repo = "ecmwf/ecbuild"
+# ecbuild produces a single compiler-independent install tree; no compiler is
+# part of its artifact identity.
+compiler-inputs = []
+
+# ecbuild is compiler-independent — any ubuntu-24.04 image with cmake + a C
+# compiler works. `platform = "ubuntu-24.04"` is what makes its single install
+# tree reusable across every downstream image (gfortran12/13, clang18) without
+# a per-image rebuild.
+[[matrix.build.include]]
+build-type = "Release"
+runs-on = "arc-runner-normal"
+container = "eccr.ecmwf.int/public-playground-ci/ubuntu24.04-base:latest"
+platform = "ubuntu-24.04"
+
+# Smoke leg: a GitHub-hosted host-mode runner, kept in rotation so the
+# non-container path doesn't bitrot. It gets its OWN platform slug
+# (gh-ubuntu-24.04) — the GH runner's toolchain is a different build from the
+# eccr images, so its artifact must not collide with (or masquerade as) the
+# canonical ubuntu-24.04 one. Uses the GH-preinstalled toolchain (gfortran-13
+# / g++-13).
+[[matrix.build.include]]
+build-type = "Release"
+runs-on = "ubuntu-24.04"
+platform = "gh-ubuntu-24.04"
+
+# No [[trigger-downstream]] entries: like stack-deps, consumers declare ecbuild
+# in their own [[deps]] and recover a missing artifact by dispatching
+# cross-repo-trigger.yml directly.
+[matrix.build]
+# Leaf producer: nothing upstream-triggers us. Only fires on consumer-driven
+# rebuild (e.g. cxxmath/ecflowmath find ecbuild's artifact missing and
+# dispatch us with rebuild-request=true).
+triggers = ["rebuild-request"]
+action = "./.github/actions/build-ecbuild"
+forwarded-inputs = ["build-type"]
+needs = []
