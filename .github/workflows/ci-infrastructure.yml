@@ -25,8 +25,8 @@ jobs:
       - id: mint
         uses: actions/create-github-app-token@v3
         with:
-          client-id: ${{ secrets.DOWNSTREAM_CI_APP_CLIENT_ID }}
-          private-key: ${{ secrets.DOWNSTREAM_CI_APP_PRIVATE_KEY }}
+          client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
       - uses: actions/checkout@v6
       - id: r
@@ -35,8 +35,8 @@ jobs:
           current-branch: ${{ github.head_ref || github.ref_name }}
           matrix: build
           token: ${{ steps.mint.outputs.token }}
-          client-id: ${{ secrets.DOWNSTREAM_CI_APP_CLIENT_ID }}
-          app-private-key: ${{ secrets.DOWNSTREAM_CI_APP_PRIVATE_KEY }}
+          client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
 
   build:
     needs: resolve

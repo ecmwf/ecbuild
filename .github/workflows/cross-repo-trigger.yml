@@ -85,8 +85,8 @@ jobs:
     - id: mint
       uses: actions/create-github-app-token@v3
       with:
-        client-id: ${{ secrets.DOWNSTREAM_CI_APP_CLIENT_ID }}
-        private-key: ${{ secrets.DOWNSTREAM_CI_APP_PRIVATE_KEY }}
+        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
+        private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
         owner: ${{ github.repository_owner }}
     - id: pick
       uses: ecmwf/ci-infrastructure/actions/pick-ref@main
@@ -106,8 +106,8 @@ jobs:
         current-branch: ${{ steps.pick.outputs.ref }}
         matrix: build
         token: ${{ steps.mint.outputs.token }}
-        client-id: ${{ secrets.DOWNSTREAM_CI_APP_CLIENT_ID }}
-        app-private-key: ${{ secrets.DOWNSTREAM_CI_APP_PRIVATE_KEY }}
+        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
+        app-private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
   ecbuild__build:
     needs:
     - resolve
@@ -123,8 +123,8 @@ jobs:
     - id: mint
       uses: actions/create-github-app-token@v3
       with:
-        client-id: ${{ secrets.DOWNSTREAM_CI_APP_CLIENT_ID }}
-        private-key: ${{ secrets.DOWNSTREAM_CI_APP_PRIVATE_KEY }}
+        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
+        private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
         owner: ${{ github.repository_owner }}
     - id: check_start
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.from-jobs != '[]' }}
