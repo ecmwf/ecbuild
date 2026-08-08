@@ -187,6 +187,39 @@
 #
 ##############################################################################
 
+# Flush the (deduplicated) accumulated test names into the ECBUILD_ALL_TESTS cache
+# entry.
+function( _ecbuild_flush_all_tests )
+  get_property( _all GLOBAL PROPERTY ECBUILD_ALL_TESTS_ACCUMULATOR )
+  if( _all )
+    list( REMOVE_DUPLICATES _all )
+  endif()
+  set( ECBUILD_ALL_TESTS "${_all}" CACHE INTERNAL "" )
+endfunction()
+
+# Record a test in ECBUILD_ALL_TESTS.
+# To create this list, accumulate into a global property (amortised O(1) append)
+# and rebuild the cache entry once, at the end of the top-level directory. This
+# is done using `cmake_language(DEFER)`, available in CMake >= 3.19.
+# For older CMake, fall back to a test-by-test deduplicate and insert algorithm,
+# that is O(n^2) in the number of tests. This matches ecbuild <= 3.15.
+function( _ecbuild_record_test _test )
+  if( CMAKE_VERSION VERSION_LESS 3.19 )
+    list( APPEND ECBUILD_ALL_TESTS ${_test} )
+    list( REMOVE_DUPLICATES ECBUILD_ALL_TESTS )
+    set( ECBUILD_ALL_TESTS ${ECBUILD_ALL_TESTS} CACHE INTERNAL "" )
+    return()
+  endif()
+
+  set_property( GLOBAL APPEND PROPERTY ECBUILD_ALL_TESTS_ACCUMULATOR ${_test} )
+
+  get_property( _scheduled GLOBAL PROPERTY ECBUILD_ALL_TESTS_FLUSH_SCHEDULED )
+  if( NOT _scheduled )
+    set_property( GLOBAL PROPERTY ECBUILD_ALL_TESTS_FLUSH_SCHEDULED TRUE )
+    cmake_language( DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL _ecbuild_flush_all_tests )
+  endif()
+endfunction()
+
 function( ecbuild_add_test )
 
   set( options           NO_AS_NEEDED )
@@ -522,9 +555,7 @@ function( ecbuild_add_test )
     endif()
 
     # add to the overall list of tests
-    list( APPEND ECBUILD_ALL_TESTS ${_PAR_TARGET} )
-    list( REMOVE_DUPLICATES ECBUILD_ALL_TESTS )
-    set( ECBUILD_ALL_TESTS ${ECBUILD_ALL_TESTS} CACHE INTERNAL "" )
+    _ecbuild_record_test( ${_PAR_TARGET} )
 
   endif() # _condition
 
