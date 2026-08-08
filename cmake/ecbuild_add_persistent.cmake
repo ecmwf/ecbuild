@@ -39,7 +39,6 @@
 set( sg_perl "${CMAKE_CURRENT_LIST_DIR}/sg.pl" CACHE INTERNAL "perl script to generate persistent objects" )
 
 function( ecbuild_add_persistent )
-  ecbuild_find_perl( REQUIRED )
 
   set( options )
   set( single_value_args SRC_LIST NAMESPACE )
@@ -53,6 +52,11 @@ function( ecbuild_add_persistent )
 
   if( NOT _PAR_SRC_LIST  )
     ecbuild_critical("The call to ecbuild_add_persistent() doesn't specify the SRC_LIST.")
+  endif()
+
+  # Perl is only needed to run sg.pl over FILES argument.
+  if( _PAR_FILES )
+    ecbuild_find_perl( REQUIRED )
   endif()
 
   ecbuild_debug( "ecbuild_add_persistent: adding persistent layer for [${_PAR_FILES}]" )
