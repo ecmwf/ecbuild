@@ -36,6 +36,7 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             COPYING
 )
 
+
 add_subdirectory( bin )
 add_subdirectory( share )
 add_subdirectory( cmake )
