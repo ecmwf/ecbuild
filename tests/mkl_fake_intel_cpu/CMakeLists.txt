@@ -7,10 +7,11 @@
 # that must be linked *before* that library so its definition wins.
 
 # 1. Stand-in for mkl_core
-ecbuild_add_library( TARGET  fakemkl_core
-                      TYPE    STATIC
-                      SOURCES fake_mkl_core.c
-                      NOINSTALL )
+# Note: plain add_library() is used here on purpose, not ecbuild_add_library().
+# ecbuild_add_library() registers the target in ${PROJECT_NAME}_ALL_LIBS even
+# with NOINSTALL, which would make ecbuild_install_project() try to install an
+# 'ecbuild-targets' export set containing no targets -- breaking configure.
+add_library( fakemkl_core STATIC fake_mkl_core.c )
 
 # 2. The override object, built the same way FindMKL.cmake builds it when
 #    MKL_FAKE_INTEL_CPU is ON.
@@ -20,10 +21,7 @@ file( WRITE ${_mkl_fake_intel_cpu_src}
 int mkl_serv_intel_cpu_true(void) { return 1; }
 " )
 
-ecbuild_add_library( TARGET  mkl_fake_intel_cpu
-                      TYPE    OBJECT
-                      SOURCES ${_mkl_fake_intel_cpu_src}
-                      NOINSTALL )
+add_library( mkl_fake_intel_cpu OBJECT ${_mkl_fake_intel_cpu_src} )
 
 set_target_properties( mkl_fake_intel_cpu PROPERTIES POSITION_INDEPENDENT_CODE ON )
 
