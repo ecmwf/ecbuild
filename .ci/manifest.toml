@@ -5,6 +5,9 @@ repo = "ecmwf/ecbuild"
 # ecbuild produces a single compiler-independent install tree; no compiler is
 # part of its artifact identity.
 compiler-inputs = []
+# ecbuild is public, so its fan-out calls consumers' cross-repo-trigger.yml via
+# `uses:` rather than dispatching them.
+visibility = "public"
 
 [[matrix.build.include]]
 build-type = "Release"
@@ -22,3 +25,20 @@ triggers = ["rebuild-request"]
 action = "./.github/actions/build-ecbuild"
 forwarded-inputs = ["build-type"]
 needs = []
+
+# --- downstream CI fan-out ---------------------------------------------------
+# Every ECMWF package here find_package()s ecbuild, so a change to it has to be
+# proved against all three. `ref` is the consumer-side ref the orchestrator pins
+# its `uses:` to; runtime branch matching can still redirect the source checkout
+# to a same-named branch (e.g. sync-branch-ci-rollout) independently.
+[[trigger-downstream]]
+repo = "ecmwf/eckit"
+ref = "develop"
+
+[[trigger-downstream]]
+repo = "ecmwf/eccodes"
+ref = "develop"
+
+[[trigger-downstream]]
+repo = "ecmwf/ecflow"
+ref = "develop"
