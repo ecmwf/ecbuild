@@ -24,6 +24,29 @@ int main(void)
     }
 #endif
 
+    const int N = 4;
+
+    double A[N * N];
+    double B[N * N];
+    double C[N * N];
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            A[i * N + j] = i + 1;
+            B[i * N + j] = (i == j) ? 2.0 : 0.0;
+            C[i * N + j] = 0.0;
+        }
+    }
+
+    cblas_dgemm (CblasRowMajor,
+                 CblasNoTrans, CblasNoTrans,
+                 N, N, N,
+                 1.0,
+                 A, N,
+                 B, N,
+                 0.0,
+                 C, N);
+
     result = mkl_serv_intel_cpu_true();
     if( result != 1 )
     {
