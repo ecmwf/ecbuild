@@ -31,14 +31,23 @@ needs = []
 # proved against all three. `ref` is the consumer-side ref the orchestrator pins
 # its `uses:` to; runtime branch matching can still redirect the source checkout
 # to a same-named branch (e.g. sync-branch-ci-rollout) independently.
+# ROLLOUT NOTE: pinned to the sync branch on purpose, and TEMPORARY.
+# `ref` is what the orchestrator pins its `uses:` to, and `uses:` cannot take an
+# expression, so it decides which WORKFLOW DEFINITION runs. Pointing it at the
+# sync branch is what lets the full downstream CI be exercised before the
+# rollout merges: the orchestrator lives on the default branch (workflow_run
+# only ever runs the default-branch copy) while the consumer logic it calls
+# comes from the sync branch. Source checkout and artifact refs are handled
+# independently at runtime by pick-ref and the sync-branch override.
+# FLIP TO develop AND REGENERATE WHEN THE ROLLOUT MERGES.
 [[trigger-downstream]]
 repo = "ecmwf/eckit"
-ref = "develop"
+ref = "sync-branch-ci-rollout"
 
 [[trigger-downstream]]
 repo = "ecmwf/eccodes"
-ref = "develop"
+ref = "sync-branch-ci-rollout"
 
 [[trigger-downstream]]
 repo = "ecmwf/ecflow"
-ref = "develop"
+ref = "sync-branch-ci-rollout"
