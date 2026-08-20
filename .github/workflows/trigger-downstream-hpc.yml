@@ -74,37 +74,37 @@ jobs:
     needs:
     - validate
     - eckit
-    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger-hpc.yml@develop
+    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger-hpc.yml@sync-branch-ci-rollout
     with:
       from-repo: ${{ github.repository }}
       from-sha: ${{ github.event.workflow_run.head_sha }}
       from-jobs: '["ecbuild/build-hpc"]'
       branch: ${{ github.event.workflow_run.head_branch }}
-      fallback-ref: develop
+      fallback-ref: sync-branch-ci-rollout
     secrets: inherit
   ecflow:
     name: ecflow
     needs:
     - validate
-    uses: ecmwf/ecflow/.github/workflows/cross-repo-trigger-hpc.yml@develop
+    uses: ecmwf/ecflow/.github/workflows/cross-repo-trigger-hpc.yml@sync-branch-ci-rollout
     with:
       from-repo: ${{ github.repository }}
       from-sha: ${{ github.event.workflow_run.head_sha }}
       from-jobs: '["ecbuild/build-hpc"]'
       branch: ${{ github.event.workflow_run.head_branch }}
-      fallback-ref: develop
+      fallback-ref: sync-branch-ci-rollout
     secrets: inherit
   eckit:
     name: eckit
     needs:
     - validate
-    uses: ecmwf/eckit/.github/workflows/cross-repo-trigger-hpc.yml@develop
+    uses: ecmwf/eckit/.github/workflows/cross-repo-trigger-hpc.yml@sync-branch-ci-rollout
     with:
       from-repo: ${{ github.repository }}
       from-sha: ${{ github.event.workflow_run.head_sha }}
       from-jobs: '["ecbuild/build-hpc"]'
       branch: ${{ github.event.workflow_run.head_branch }}
-      fallback-ref: develop
+      fallback-ref: sync-branch-ci-rollout
     secrets: inherit
   report-result:
     needs:
