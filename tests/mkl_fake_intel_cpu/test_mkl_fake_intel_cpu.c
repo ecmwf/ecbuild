@@ -22,7 +22,6 @@ int main(void)
                 version.MajorVersion, version.MinorVersion,
                 version.UpdateVersion );
     }
-#endif
 
     const int N = 4;
 
@@ -46,6 +45,7 @@ int main(void)
                  B, N,
                  0.0,
                  C, N);
+#endif
 
     result = mkl_serv_intel_cpu_true();
     if( result != 1 )
