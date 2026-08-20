@@ -26,6 +26,32 @@ action = "./.github/actions/build-ecbuild"
 forwarded-inputs = ["build-type"]
 needs = []
 
+# --- HPC build --------------------------------------------------------------
+# The ecbuild install tree built inside a SLURM job, so every HPC consumer
+# find_package()s the cluster-built copy rather than the container one.
+# compiler-inputs is [] here as on the runner lane, so this artifact is shared by
+# every HPC toolchain; only platform separates it from the container build.
+#
+# runs-on/container/site are scheduling only and never enter the artifact name.
+# The container carries the cluster ssh identity (keys, the hpc-batch alias,
+# known_hosts) without which troika cannot submit; it is private, hence
+# container-credentials.
+[[matrix.build-hpc.include]]
+build-type = "Release"
+runs-on = "arc-hpc-pet-vsphere-prod"
+container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+site = "hpc-batch"
+platform = "atos-hpc-gnu"
+
+[matrix.build-hpc]
+execution = "hpc"
+container-credentials = true
+job-script = "./.ci/hpc/build.sh"
+# A leaf producer: nothing upstream can strand this artifact, but a consumer
+# that cannot find it must be able to ask for a rebuild.
+triggers = ["rebuild-request"]
+needs = []
+
 # --- downstream CI fan-out ---------------------------------------------------
 # Every ECMWF package here find_package()s ecbuild, so a change to it has to be
 # proved against all three. `ref` is the consumer-side ref the orchestrator pins
