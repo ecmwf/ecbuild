@@ -48,26 +48,28 @@ macro( ecbuild_find_perl )
     ecbuild_critical("Unknown keywords given to ecbuild_find_perl(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
-  find_package( Perl QUIET )
+  # Probe only once per build tree: PERL_EXECUTABLE is a cache entry, so testing
+  # it makes the probe happen once and the results are then published through
+  # the cache to every later directory scope.
+  if( NOT DEFINED PERL_EXECUTABLE )
 
-  if( NOT PERL_EXECUTABLE AND _p_REQUIRED )
-    ecbuild_critical( "Failed to find Perl (REQUIRED)" )
-  endif()
+    find_package( Perl QUIET )
 
-  if( PERL_EXECUTABLE )
-
-    execute_process( COMMAND ${PERL_EXECUTABLE} -V:version OUTPUT_VARIABLE  perl_version_output_variable  RESULT_VARIABLE  perl_version_return )
-    if( NOT perl_version_return )
-      string(REGEX REPLACE "version='([^']+)'.*" "\\1" PERL_VERSION ${perl_version_output_variable})
+    # FindPerl already determined the version
+    if( NOT PERL_VERSION )
+      set( PERL_VERSION "${PERL_VERSION_STRING}" )
     endif()
 
-    # from cmake 2.8.8 onwards
-    if( NOT PERL_VERSION_STRING )
-      set( PERL_VERSION_STRING ${PERL_VERSION} )
-    endif()
+    set( PERL_FOUND          "${PERL_FOUND}"          CACHE INTERNAL "Perl was found" )
+    set( PERL_VERSION        "${PERL_VERSION}"        CACHE INTERNAL "Perl version" )
+    set( PERL_VERSION_STRING "${PERL_VERSION_STRING}" CACHE INTERNAL "Perl version" )
 
     ecbuild_debug("ecbuild_find_perl: found perl version ${PERL_VERSION_STRING} as ${PERL_EXECUTABLE}")
 
+  endif()
+
+  if( NOT PERL_EXECUTABLE AND _p_REQUIRED )
+    ecbuild_critical( "Failed to find Perl (REQUIRED)" )
   endif()
 
 endmacro( ecbuild_find_perl )

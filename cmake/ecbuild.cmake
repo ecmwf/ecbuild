@@ -23,7 +23,64 @@ option( ECBUILD_2_COMPAT "Keep compatibility with ecbuild 2" ${ECBUILD_2_COMPAT_
 option( ECBUILD_2_COMPAT_DEPRECATE "Emit deprecation warnings in the compatibility layer" ${ECBUILD_2_COMPAT_DEPRECATE_VALUE} )
 
 if( ECBUILD_2_COMPAT_DEPRECATE )
-    set( CMAKE_WARN_DEPRECATED ON )
+
+    #
+    # Since CMake 4.4, CMP0218 policy changes how to control the behaviour of deprecated features.
+    #
+    # Note: CMAKE_WARN_DEPRECATED and CMAKE_ERROR_DEPRECATED variables are ignored
+    #       and CMD_DEPRECATED diagnostic state is used instead.
+    cmake_policy( PUSH )
+    if( POLICY CMP0218 )
+        cmake_policy( SET CMP0218 NEW )
+    endif()
+
+    #
+    # Set the deprecation severity level -- this inline macro is used only here
+    #
+    # This allows to workaround the deprecation warnings in CMake 4.4+ and keep compatibility with older versions.
+    # It considers if cmake_diagnostic command (CMake 4.4+) is available, to set either CMD_DEPRECATED or
+    # CMAKE_WARN_DEPRECATED/CMAKE_ERROR_DEPRECATED variables.
+    #
+    # Options
+    # -------
+    #
+    # SEVERITY : required
+    #   deprecation severity level ("IGNORE", "WARN", "ERROR")
+    #
+    #   Note: cmake_diagnostic (CMake 4.4+) does not accept "ERROR" as a diagnostic action; the accepted
+    #         actions are IGNORE, WARN, SEND_ERROR and FATAL_ERROR. "ERROR" is thus mapped to SEND_ERROR,
+    #         which matches the CMAKE_ERROR_DEPRECATED semantics used on older versions.
+    #
+    macro(ecbuild_set_deprecation_severity SEVERITY)
+        if(NOT "${SEVERITY}" MATCHES "^(IGNORE|WARN|ERROR)$")
+            message(FATAL_ERROR "Unknown deprecation severity: ${SEVERITY}")
+        endif()
+
+        if(COMMAND cmake_diagnostic)
+            if("${SEVERITY}" STREQUAL "ERROR")
+                cmake_diagnostic(SET CMD_DEPRECATED SEND_ERROR)
+            else()
+                cmake_diagnostic(SET CMD_DEPRECATED ${SEVERITY})
+            endif()
+        elseif("${SEVERITY}" STREQUAL "IGNORE")
+            set(CMAKE_WARN_DEPRECATED OFF)
+            set(CMAKE_ERROR_DEPRECATED OFF)
+        elseif("${SEVERITY}" STREQUAL "WARN")
+            set(CMAKE_WARN_DEPRECATED ON)
+            set(CMAKE_ERROR_DEPRECATED OFF)
+        elseif("${SEVERITY}" STREQUAL "ERROR")
+            set(CMAKE_WARN_DEPRECATED ON)
+            set(CMAKE_ERROR_DEPRECATED ON)
+        endif()
+    endmacro()
+
+    #
+    # Set the deprecation severity level to WARN by default.
+    #
+    ecbuild_set_deprecation_severity( "WARN" )
+
+    cmake_policy( POP )
+
 endif()
 
 ########################################################################################################
