@@ -26,6 +26,11 @@
 
 module load prgenv/gnu
 module load cmake
+# test_ecbuild_find_python ecbuild_critical's on PYTHON_FOUND, and that needs the
+# Development component (headers + libs), not just an interpreter. The compute
+# node's stock python is 2.7.18/3.6.8 with no dev package, so without this the
+# test fails while the other 47 pass. Same module ecflow's recipe loads.
+module load python3/3.13.13-01
 
 cmake -S "$CI_SOURCE_DIR" -B "${TMPDIR:-/tmp}/build" \
   -DCMAKE_BUILD_TYPE=Release \
