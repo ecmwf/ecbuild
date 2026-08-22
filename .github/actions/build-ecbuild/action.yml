@@ -1,10 +1,11 @@
 name: Build ecbuild from source
 description: >
-  Configures and installs the already-checked-out ecbuild (a
+  Configures, builds and installs the already-checked-out ecbuild (a
   compiler-independent CMake toolchain collection) to a canonical prefix
-  derived from the shared install-prefix action. Caller must have already
-  run actions/checkout@v6 in the same job — the action reads the source from
-  $GITHUB_WORKSPACE.
+  derived from the shared install-prefix action, and leaves the build tree in
+  place so the caller can run ctest against it without reconfiguring. Caller
+  must have already run actions/checkout@v6 in the same job — the action reads
+  the source from $GITHUB_WORKSPACE.
 
 inputs:
   build-type:
@@ -16,6 +17,9 @@ outputs:
   install-path:
     description: 'Absolute path where ecbuild is installed'
     value: ${{ steps.set-paths.outputs.install-path }}
+  build-dir:
+    description: 'Absolute path of the build tree, for ctest'
+    value: ${{ steps.set-paths.outputs.build-dir }}
 
 runs:
   using: composite
@@ -24,16 +28,40 @@ runs:
       id: prefix
       uses: ecmwf/ci-infrastructure/actions/install-prefix@main
 
-    - name: Set install path
+    - name: Set paths
       id: set-paths
       shell: bash
-      run: echo "install-path=${{ steps.prefix.outputs.base }}/ecbuild" >> "$GITHUB_OUTPUT"
-
-    - name: Configure and install ecbuild
-      shell: bash
       run: |
+        set -euo pipefail
+        {
+          echo "install-path=${{ steps.prefix.outputs.base }}/ecbuild"
+          echo "build-dir=$RUNNER_TEMP/_ecbuild-build"
+        } >> "$GITHUB_OUTPUT"
+
+    # ENABLE_TESTS=ON so tests/ and regressions/ are configured and their
+    # targets built — ecbuild's suite is ecbuild_add_test(TYPE SCRIPT) all the
+    # way down (nested cmake configures of small fixture projects), so it needs
+    # no toolchain beyond the C compiler already required to configure, and
+    # reaches the network for nothing. The caller runs ctest against build-dir.
+    - name: Configure ecbuild
+      shell: bash
+      env:
+        BUILD_TYPE: ${{ inputs.build-type }}
+        INSTALL_PATH: ${{ steps.set-paths.outputs.install-path }}
+        BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
+      run: |
+        set -euo pipefail
         cmake -S "$GITHUB_WORKSPACE" \
-              -B "$RUNNER_TEMP/_ecbuild-build" \
-              -DCMAKE_INSTALL_PREFIX="${{ steps.set-paths.outputs.install-path }}" \
-              -DENABLE_TESTS=OFF
-        cmake --install "$RUNNER_TEMP/_ecbuild-build"
+              -B "$BUILD_DIR" \
+              -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+              -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
+              -DENABLE_TESTS=ON
+
+    - name: Build and install ecbuild
+      shell: bash
+      env:
+        BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
+      run: |
+        set -euo pipefail
+        cmake --build "$BUILD_DIR" --parallel "$(nproc)"
+        cmake --install "$BUILD_DIR"

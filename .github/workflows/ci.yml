@@ -49,8 +49,13 @@ jobs:
           app-private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
 
   build:
+    # Build and test share one job and one container: once ecbuild is built and
+    # published we test the tree in place, rather than starting a second
+    # container that would re-checkout and re-download our own artifact.
+    # Consumers pick the artifact up as soon as the publish step runs, without
+    # waiting for the tests.
     needs: resolve
-    name: build (${{ matrix.build-type }}, ${{ matrix.platform }})
+    name: build+test (${{ matrix.build-type }}, ${{ matrix.platform }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
       image: ${{ matrix.container || '' }}
@@ -72,6 +77,9 @@ jobs:
           mode: publish
           install-path: ${{ steps.build.outputs.install-path }}
           artifact-name: ${{ matrix._resolved.own-artifact-name }}
+
+      - name: Test
+        run: ctest --test-dir "${{ steps.build.outputs.build-dir }}" --output-on-failure
 
   build-hpc:
     # The same install tree, produced inside a SLURM job so HPC consumers resolve

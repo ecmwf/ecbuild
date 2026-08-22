@@ -25,6 +25,11 @@ triggers = ["rebuild-request"]
 action = "./.github/actions/build-ecbuild"
 forwarded-inputs = ["build-type"]
 needs = []
+# Matches ci.yml's build+test job. In practice this only ever runs on the
+# consumer-driven recovery path (rebuild-request is our only trigger), and even
+# there it delays nobody: the artifact is published before ctest starts, so the
+# consumer that asked for the rebuild picks it up and moves on.
+ctest = true
 
 # --- HPC build --------------------------------------------------------------
 # The ecbuild install tree built inside a SLURM job, so every HPC consumer
