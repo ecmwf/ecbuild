@@ -48,6 +48,24 @@ container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:lat
 site = "hpc-batch"
 platform = "atos-hpc-gnu"
 
+# The same tree under the intel platform slug, for ecflow's atos-hpc-intel leg.
+# Every consumer resolves its deps at its OWN platform slug, so that leg looks
+# for ecbuild-<sha>-atos-hpc-intel-Release — which nothing published, and it
+# failed with "Not in the artifact store".
+#
+# The install tree is byte-identical to the gnu leg's (compiler-inputs = [] and
+# there is nothing compiler-dependent to install), so this leg exists for the
+# platform slug and for one real gain: it runs the test suite under the intel
+# toolchain, which is the only place ecbuild's macros are exercised there.
+# `job-script` is per-leg and is NOT part of identity.
+[[matrix.build-hpc.include]]
+build-type = "Release"
+runs-on = "arc-hpc-pet-vsphere-prod"
+container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+site = "hpc-batch"
+platform = "atos-hpc-intel"
+job-script = "./.ci/hpc/build-intel.sh"
+
 [matrix.build-hpc]
 execution = "hpc"
 container-credentials = true
