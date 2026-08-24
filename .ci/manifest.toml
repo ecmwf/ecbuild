@@ -12,7 +12,7 @@ visibility = "public"
 [[matrix.build.include]]
 build-type = "Release"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-playground-ci/ubuntu24.04-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest"
 platform = "ubuntu-24.04"
 
 [[matrix.build.include]]
@@ -49,7 +49,7 @@ ctest-args = '-j "$(nproc)"'
 [[matrix.build-hpc.include]]
 build-type = "Release"
 runs-on = "arc-hpc-pet-vsphere-prod"
-container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
 platform = "atos-hpc-gnu"
 
@@ -66,7 +66,7 @@ platform = "atos-hpc-gnu"
 [[matrix.build-hpc.include]]
 build-type = "Release"
 runs-on = "arc-hpc-pet-vsphere-prod"
-container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
 platform = "atos-hpc-intel"
 job-script = "./.ci/hpc/build-intel.sh"
@@ -80,7 +80,7 @@ job-script = "./.ci/hpc/build-intel.sh"
 [[matrix.build-hpc.include]]
 build-type = "Release"
 runs-on = "arc-hpc-pet-vsphere-prod"
-container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
 platform = "atos-hpc-aocc"
 job-script = "./.ci/hpc/build-aocc.sh"
@@ -88,7 +88,7 @@ job-script = "./.ci/hpc/build-aocc.sh"
 [[matrix.build-hpc.include]]
 build-type = "Release"
 runs-on = "arc-hpc-pet-vsphere-prod"
-container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
 platform = "atos-hpc-nvidia"
 job-script = "./.ci/hpc/build-nvidia.sh"
