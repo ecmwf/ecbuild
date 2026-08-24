@@ -31,6 +31,10 @@ needs = []
 # artifact the moment it appears, so testing before publishing is what stops it
 # picking up a red build.
 ctest = true
+# Parallel, like the build step above: ctest defaults to one test at a time, which
+# left cumulative sec*proc equal to wall-clock in every run so far — the whole
+# machine idle but for one test. Kept identical to ci.yml's Test step.
+ctest-args = '-j "$(nproc)"'
 
 # --- HPC build --------------------------------------------------------------
 # The ecbuild install tree built inside a SLURM job, so every HPC consumer

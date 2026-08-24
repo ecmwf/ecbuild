@@ -76,7 +76,7 @@ jobs:
           build-type: ${{ matrix.build-type }}
 
       - name: Test
-        run: ctest --test-dir "${{ steps.build.outputs.build-dir }}" --output-on-failure
+        run: ctest --test-dir "${{ steps.build.outputs.build-dir }}" --output-on-failure -j "$(nproc)"
 
       - name: Publish ecbuild
         uses: ecmwf/ci-infrastructure/actions/fetch-and-publish@main
