@@ -67,6 +67,28 @@ site = "hpc-batch"
 platform = "atos-hpc-intel"
 job-script = "./.ci/hpc/build-intel.sh"
 
+# Build-only platforms, for ecflow's aocc and nvidia legs. Same reason as the
+# intel leg: consumers resolve deps at their OWN platform slug, so those legs look
+# for ecbuild-<sha>-atos-hpc-{aocc,nvidia}-Release and nothing published them.
+# Their recipes run no ctest (see the scripts) — atos-hpc-aocc/nvidia mirror the
+# legacy ci-hpc-config.yml platforms whose ctest_options are `--version`, i.e.
+# build this toolchain, test nothing on it.
+[[matrix.build-hpc.include]]
+build-type = "Release"
+runs-on = "arc-hpc-pet-vsphere-prod"
+container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+site = "hpc-batch"
+platform = "atos-hpc-aocc"
+job-script = "./.ci/hpc/build-aocc.sh"
+
+[[matrix.build-hpc.include]]
+build-type = "Release"
+runs-on = "arc-hpc-pet-vsphere-prod"
+container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+site = "hpc-batch"
+platform = "atos-hpc-nvidia"
+job-script = "./.ci/hpc/build-nvidia.sh"
+
 [matrix.build-hpc]
 execution = "hpc"
 container-credentials = true
