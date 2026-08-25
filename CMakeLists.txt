@@ -15,6 +15,7 @@ cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} )
 
+
 include( ecbuild )
 project( ecbuild LANGUAGES C )
 
@@ -34,7 +35,6 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             LICENSE
                             COPYING
 )
-
 
 add_subdirectory( bin )
 add_subdirectory( share )

@@ -47,15 +47,13 @@ runs:
     #   - the manifest must not name a Fortran compiler. ecbuild produces one
     #     compiler-independent install tree (compiler-inputs = []), and saying
     #     otherwise would imply its consumers need Fortran, which they do not.
-    #   - swapping the leg to the gfortran13 image does NOT fix it: those images
-    #     ship only versioned binaries (gfortran-13, no unversioned gfortran) --
-    #     which is exactly why eccodes has to pass -DCMAKE_Fortran_COMPILER --
-    #     and these fixture projects name no compiler, so CMake's own search for
-    #     `gfortran`/`f95` finds nothing. The unversioned metapackage is what
-    #     makes them discoverable without anyone declaring anything.
-    # A no-op on GitHub-hosted runners, which already ship gfortran -- that leg
-    # was the only one green before this. The base image installs sudo precisely
-    # so this line works as root in a container and as a normal user on a runner.
+    #   - the gfortran13 image would not help: it ships only versioned binaries
+    #     (gfortran-13, no unversioned gfortran), and these fixture projects name
+    #     no compiler, so CMake's search for `gfortran`/`f95` finds nothing. The
+    #     unversioned metapackage is what makes them discoverable.
+    # A no-op on GitHub-hosted runners, which already ship gfortran. The base
+    # image installs sudo precisely so this line works as root in a container and
+    # as a normal user on a runner.
     - name: Install gfortran for the test suite
       shell: bash
       run: |
