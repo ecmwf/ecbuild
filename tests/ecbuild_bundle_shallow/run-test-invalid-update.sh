@@ -72,52 +72,18 @@ if [[ "${cmake_status}" -eq 0 ]]; then
     exit 1
 fi
 
-needle="Cannot pass both UPDATE and SHALLOW"
-
-if echo "${output}" | grep -q "${needle}"; then
-    echo "SHALLOW+UPDATE correctly rejected: PASS"
-else
-    echo "cmake failed but expected error message not found: FAIL"
-
-    # ---- diagnostics ---------------------------------------------------
-    # This branch has fired on GitHub-hosted ubuntu-24.04 (cmake 3.31.6) while
-    # the same commit passes on the self-hosted container (cmake 3.28.3) and on
-    # HPC -- and the ${output} printed below visibly CONTAINS the needle. So the
-    # first question is which half is lying: is the needle absent from
-    # ${output}, or present but not matched through the pipe?
-    #
-    # The bash `case` answers that outright: no subprocess, no pipe, no locale,
-    # no grep. If it says PRESENT while grep says NO MATCH, the message is fine
-    # and the plumbing is at fault; the three grep variants below then say which
-    # part of the plumbing (SIGPIPE via pipefail, the pipe itself, or grep).
-    saved="${WORKSPACE}/captured-output.txt"
-    printf '%s' "${output}" > "${saved}"
-
-    case "${output}" in
-        *"${needle}"*) echo "DIAG bash-substring : PRESENT" ;;
-        *)             echo "DIAG bash-substring : ABSENT"  ;;
-    esac
-    echo "DIAG output-bytes    : $(wc -c < "${saved}" | tr -d ' ')"
-    echo "DIAG saved-to        : ${saved}"
-
-    grep -q "${needle}" "${saved}"      && echo "DIAG grep-file       : MATCH" || echo "DIAG grep-file       : NO MATCH ($?)"
-    grep -q "${needle}" <<< "${output}" && echo "DIAG grep-herestring : MATCH" || echo "DIAG grep-herestring : NO MATCH ($?)"
-    set +o pipefail
-    echo "${output}" | grep -q "${needle}" && echo "DIAG grep-pipe-nopf  : MATCH" || echo "DIAG grep-pipe-nopf  : NO MATCH ($?)"
-    set -o pipefail
-
-    echo "DIAG cmake           : $(cmake --version | head -1)"
-    echo "DIAG grep            : $(grep --version | head -1)"
-    echo "DIAG bash            : ${BASH_VERSION}"
-    echo "DIAG locale          : LANG=${LANG:-unset} LC_ALL=${LC_ALL:-unset} LC_CTYPE=${LC_CTYPE:-unset}"
-
-    # The message sits near the end of the capture, so the tail covers it. od
-    # shows the real bytes: an invisible separator inside the needle would look
-    # perfectly normal in the plain text below.
-    echo "DIAG last 800 bytes, as bytes:"
-    tail -c 800 "${saved}" | od -c
-    # --------------------------------------------------------------------
-
-    echo "${output}"
-    exit 1
-fi
+# A `case` rather than `echo "${output}" | grep -q ...`: with `set -o pipefail`
+# (above) that pipeline reports failure when grep -q finds its match and exits
+# while echo is still writing, so echo takes SIGPIPE and the status of a
+# SUCCESSFUL match becomes 141. That made this test flaky on GitHub-hosted
+# runners. Bash matches the substring with no pipe, no subprocess and no locale.
+case "${output}" in
+    *"Cannot pass both UPDATE and SHALLOW"*)
+        echo "SHALLOW+UPDATE correctly rejected: PASS"
+        ;;
+    *)
+        echo "cmake failed but expected error message not found: FAIL"
+        echo "${output}"
+        exit 1
+        ;;
+esac
