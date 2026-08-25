@@ -10,7 +10,6 @@
 # cmake options:
 #
 #       -DCMAKE_INSTALL_PREFIX=/path/to/install
-
 cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 
