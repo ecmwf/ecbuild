@@ -12,8 +12,9 @@
 # Logging
 # =======
 #
-# ecBuild provides functions for logging based on a log level set by the user,
-# similar to the Python logging module:
+# ecBuild provides functions for logging based on a log level set by the user
+# (controlled through the variable ``ECBUILD_LOG_LEVEL``), similar to the Python
+# logging module:.
 #
 # :ecbuild_debug:     logs a ``STATUS`` message if log level <= ``DEBUG``
 # :ecbuild_info:      logs a ``STATUS`` message if log level <= ``INFO``
