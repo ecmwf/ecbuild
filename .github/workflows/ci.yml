@@ -2,11 +2,27 @@ name: CI
 
 on:
   push:
-    branches: [develop]
-  pull_request:
+    branches: [develop, master]
+    paths-ignore:
+      - "docs/**"
+      - "bamboo/**"
+      - "README.rst"
+      - ".cd/**"
+  # `synchronize` is required by the gate (approval is revoked on every push);
+  # `labeled`/`unlabeled` are what let a maintainer grant and withdraw it.
+  pull_request_target:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+    paths-ignore:
+      - "docs/**"
+      - "bamboo/**"
+      - "README.rst"
+      - ".cd/**"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # The PR number, not github.ref: under pull_request_target github.ref is the
+  # BASE branch, so keying on it would put every open pull request in one group
+  # and have them cancel each other.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -16,8 +32,21 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+permissions:
+  contents: read
+
 jobs:
+  ci-approval:
+    # bash, jq, and gh only for the revocation -- no checkout, no Python and no
+    # network to reach a verdict, so the cheapest runner is the right one.
+    runs-on: ubuntu-slim
+    permissions:
+      pull-requests: write   # only so the label can be revoked again
+    steps:
+      - uses: ecmwf/ci-infrastructure/actions/require-ci-approval@main
+
   resolve:
+    needs: ci-approval
     # Runs in the base image on purpose. ci-infrastructure is baked into that
     # image and advertised via CI_INFRASTRUCTURE_PYTHON, so
     # ensure-infrastructure-present short-circuits to a true no-op. Without a
@@ -39,6 +68,13 @@ jobs:
           private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
       - uses: actions/checkout@v6
+        with:
+          # `pull_request_target` checks out the BASE branch by default, so
+          # without this every job below would build our own code and prove
+          # nothing about the pull request. The merge ref is the same tree
+          # `pull_request` would have handed us. Empty on push, where checkout
+          # falls back to the pushed ref.
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
       - id: r
         uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
         with:
@@ -59,7 +95,7 @@ jobs:
     # carries no hint that its tests failed. The cost is that a consumer waits
     # for our tests.
     needs: resolve
-    name: build+test (${{ matrix.build-type }}, ${{ matrix.platform }})
+    name: build+test (${{ matrix.platform }}, ${{ matrix.build-type }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
       image: ${{ matrix.container || '' }}
@@ -68,6 +104,9 @@ jobs:
       matrix: ${{ fromJSON(needs.resolve.outputs.build-matrix) }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          # The PR's merge ref; see the resolve job.
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
 
       - name: Build ecbuild
         id: build
@@ -89,11 +128,11 @@ jobs:
     # The same install tree, produced inside a SLURM job so HPC consumers resolve
     # a cluster-built ecbuild. The container carries the cluster ssh identity, so
     # troika can submit from an ARC pod; build-on-hpc submits, waits for the
-    # sentinel, fetches the install tree back and publishes the atos-hpc-gnu
+    # sentinel, fetches the install tree back and publishes the hpc-atos-gnu
     # artifact itself — hence no separate publish step. ecbuild has no package
     # deps, so there is no fetch step.
     needs: resolve
-    name: build-hpc (${{ matrix.site }}, ${{ matrix.platform }})
+    name: build-hpc (${{ matrix.platform }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
       image: ${{ matrix.container }}
@@ -105,12 +144,15 @@ jobs:
       matrix: ${{ fromJSON(needs.resolve.outputs.build-hpc-matrix) }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          # The PR's merge ref; see the resolve job.
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
 
       - name: Build ecbuild on HPC
         uses: ecmwf/ci-infrastructure/actions/build-on-hpc@main
         with:
           site: ${{ matrix.site }}
-          job-script: ${{ matrix.job-script || './.ci/hpc/build.sh' }}
+          job-script: ${{ matrix.job-script || './.ci/hpc/build-gnu.sh' }}
           artifact-name: ${{ matrix._resolved.own-artifact-name }}
           work-dir: ${{ vars.HPC_CI_WORK_DIR }}
           remote-work-dir: ${{ vars.HPC_CI_REMOTE_WORK_DIR }}

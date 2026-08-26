@@ -2,8 +2,8 @@
 # ecbuild's HPC build recipe for the intel toolchain, submitted as a SLURM job by
 # build-on-hpc.
 #
-# Exists for ecflow's atos-hpc-intel leg: every consumer resolves its deps at its
-# OWN platform slug, so that leg looks for ecbuild-<sha>-atos-hpc-intel-Release.
+# Exists for ecflow's hpc-atos-intel leg: every consumer resolves its deps at its
+# OWN platform slug, so that leg looks for ecbuild-<sha>-hpc-atos-intel-Release.
 #
 # The install tree is byte-identical to the gnu leg's — ecbuild is a
 # compiler-independent collection of CMake modules (compiler-inputs = [], and the
@@ -11,7 +11,7 @@
 # TESTS: the fixture projects compile with whatever prgenv provides, so this leg
 # is what proves ecbuild's macros work under intel.
 #
-# Differs from build.sh only in the prgenv module.
+# Differs from build-gnu.sh only in the prgenv module and the pinned compilers.
 #
 # ci-infrastructure wraps this file (it unpacks the transferred source into
 # node-local $TMPDIR and cds there, exports $CI_INSTALL_PREFIX, appends the
@@ -29,7 +29,12 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=2
 
-module load prgenv/intel
+# prgenv/intel-llvm, NOT prgenv/intel: the latter resolves to IntelLLVM 2021.4.0,
+# a different toolchain entirely. It still links, so the mismatch is invisible --
+# which is exactly why it is pinned here rather than left to prgenv's default.
+module load prgenv/intel-llvm
+module unload intel
+module load intel/2025.3.1
 module load cmake
 # test_ecbuild_find_python ecbuild_critical's on PYTHON_FOUND, which needs the
 # Development component (headers + libs), not just an interpreter — the compute
@@ -38,6 +43,8 @@ module load python3/3.13.13-01
 
 cmake -S "$CI_SOURCE_DIR" -B "${TMPDIR:-/tmp}/build" \
   -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=icx \
+  -DCMAKE_CXX_COMPILER=icpx \
   -DCMAKE_INSTALL_PREFIX="$CI_INSTALL_PREFIX" \
   -DENABLE_TESTS=ON
 cmake --build "${TMPDIR:-/tmp}/build" --parallel "${SLURM_NTASKS:-8}"

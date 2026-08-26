@@ -47,14 +47,15 @@ ctest-args = '-j "$(nproc)"'
 # container-credentials.
 [[matrix.build-hpc.include]]
 build-type = "Release"
-runs-on = "arc-hpc-pet-vsphere-prod"
+runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
-platform = "atos-hpc-gnu"
+platform = "hpc-atos-gnu"
+job-script = "./.ci/hpc/build-gnu.sh"
 
-# The same tree under the intel platform slug, for ecflow's atos-hpc-intel leg.
+# The same tree under the intel platform slug, for ecflow's hpc-atos-intel leg.
 # Every consumer resolves its deps at its OWN platform slug, so that leg looks
-# for ecbuild-<sha>-atos-hpc-intel-Release.
+# for ecbuild-<sha>-hpc-atos-intel-Release.
 #
 # The install tree is byte-identical to the gnu leg's (compiler-inputs = [] and
 # there is nothing compiler-dependent to install), so this leg exists for the
@@ -63,36 +64,36 @@ platform = "atos-hpc-gnu"
 # `job-script` is per-leg and is NOT part of identity.
 [[matrix.build-hpc.include]]
 build-type = "Release"
-runs-on = "arc-hpc-pet-vsphere-prod"
+runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
-platform = "atos-hpc-intel"
+platform = "hpc-atos-intel"
 job-script = "./.ci/hpc/build-intel.sh"
 
 # Build-only platforms, for ecflow's aocc and nvidia legs. Same reason as the
 # intel leg: consumers resolve deps at their OWN platform slug, so those legs
-# look for ecbuild-<sha>-atos-hpc-{aocc,nvidia}-Release. Their recipes run no
+# look for ecbuild-<sha>-hpc-atos-{aocc,nvidia}-Release. Their recipes run no
 # ctest, matching the legacy ci-hpc-config.yml platforms they mirror.
 [[matrix.build-hpc.include]]
 build-type = "Release"
-runs-on = "arc-hpc-pet-vsphere-prod"
+runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
-platform = "atos-hpc-aocc"
+platform = "hpc-atos-aocc"
 job-script = "./.ci/hpc/build-aocc.sh"
 
 [[matrix.build-hpc.include]]
 build-type = "Release"
-runs-on = "arc-hpc-pet-vsphere-prod"
+runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
-platform = "atos-hpc-nvidia"
+platform = "hpc-atos-nvidia"
 job-script = "./.ci/hpc/build-nvidia.sh"
 
 [matrix.build-hpc]
 execution = "hpc"
 container-credentials = true
-job-script = "./.ci/hpc/build.sh"
+job-script = "./.ci/hpc/build-gnu.sh"
 # A leaf producer: nothing upstream can strand this artifact, but a consumer
 # that cannot find it must be able to ask for a rebuild.
 triggers = ["rebuild-request"]

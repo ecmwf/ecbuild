@@ -2,13 +2,13 @@
 # ecbuild's HPC build recipe for the nvidia toolchain, submitted as a SLURM job by
 # build-on-hpc.
 #
-# Exists for the platform slug: ecflow has an atos-hpc-nvidia leg, and every
+# Exists for the platform slug: ecflow has an hpc-atos-nvidia leg, and every
 # consumer resolves its deps at its OWN platform, so that leg looks for
-# ecbuild-<sha>-atos-hpc-nvidia-Release. The install tree is byte-identical to
+# ecbuild-<sha>-hpc-atos-nvidia-Release. The install tree is byte-identical to
 # every other ecbuild artifact — compiler-inputs = [] and there is nothing
 # compiler-dependent to install.
 #
-# No ctest: atos-hpc-nvidia mirrors the legacy ci-hpc-config.yml's `nvidia-24.11`
+# No ctest: hpc-atos-nvidia mirrors the legacy ci-hpc-config.yml's `nvidia-24.11`
 # platform, which builds this toolchain and runs no tests on it. ENABLE_TESTS is
 # OFF to match — building fixtures we never run buys no signal.
 #

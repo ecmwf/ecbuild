@@ -2,13 +2,13 @@
 # ecbuild's HPC build recipe for the aocc toolchain, submitted as a SLURM job by
 # build-on-hpc.
 #
-# Exists for the platform slug: ecflow has an atos-hpc-aocc leg, and every
+# Exists for the platform slug: ecflow has an hpc-atos-aocc leg, and every
 # consumer resolves its deps at its OWN platform, so that leg looks for
-# ecbuild-<sha>-atos-hpc-aocc-Release. The install tree is byte-identical to
+# ecbuild-<sha>-hpc-atos-aocc-Release. The install tree is byte-identical to
 # every other ecbuild artifact — compiler-inputs = [] and there is nothing
 # compiler-dependent to install.
 #
-# No ctest: atos-hpc-aocc mirrors the legacy ci-hpc-config.yml's `aocc-4.0.0`
+# No ctest: hpc-atos-aocc mirrors the legacy ci-hpc-config.yml's `aocc-4.0.0`
 # platform, which builds this toolchain and runs no tests on it. ENABLE_TESTS is
 # OFF to match — building fixtures we never run buys no signal.
 #
