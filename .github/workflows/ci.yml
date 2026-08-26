@@ -8,20 +8,16 @@ on:
       - "bamboo/**"
       - "README.rst"
       - ".cd/**"
-  # `synchronize` is required by the gate (approval is revoked on every push);
-  # `labeled`/`unlabeled` are what let a maintainer grant and withdraw it.
-  pull_request_target:
+  pull_request:
     types: [opened, reopened, synchronize, labeled, unlabeled]
     paths-ignore:
       - "docs/**"
       - "bamboo/**"
       - "README.rst"
       - ".cd/**"
+  workflow_dispatch:
 
 concurrency:
-  # The PR number, not github.ref: under pull_request_target github.ref is the
-  # BASE branch, so keying on it would put every open pull request in one group
-  # and have them cancel each other.
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
@@ -37,11 +33,9 @@ permissions:
 
 jobs:
   ci-approval:
-    # bash, jq, and gh only for the revocation -- no checkout, no Python and no
-    # network to reach a verdict, so the cheapest runner is the right one.
     runs-on: ubuntu-slim
     permissions:
-      pull-requests: write   # only so the label can be revoked again
+      pull-requests: write
     steps:
       - uses: ecmwf/ci-infrastructure/actions/require-ci-approval@main
 
@@ -69,11 +63,6 @@ jobs:
           owner: ${{ github.repository_owner }}
       - uses: actions/checkout@v6
         with:
-          # `pull_request_target` checks out the BASE branch by default, so
-          # without this every job below would build our own code and prove
-          # nothing about the pull request. The merge ref is the same tree
-          # `pull_request` would have handed us. Empty on push, where checkout
-          # falls back to the pushed ref.
           ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
       - id: r
         uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
@@ -105,7 +94,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          # The PR's merge ref; see the resolve job.
           ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
 
       - name: Build ecbuild
@@ -145,7 +133,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          # The PR's merge ref; see the resolve job.
           ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
 
       - name: Build ecbuild on HPC
