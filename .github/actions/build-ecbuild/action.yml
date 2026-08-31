@@ -38,22 +38,6 @@ runs:
           echo "build-dir=$RUNNER_TEMP/_ecbuild-build"
         } >> "$GITHUB_OUTPUT"
 
-    # Four of the tests (shared_libs, override_compiler_flags{,_bailout} and
-    # test_custom_build_type) declare Fortran in their fixture project's
-    # `project()` call, so ctest needs a Fortran compiler even though ecbuild
-    # itself is LANGUAGES C and nothing that CONSUMES ecbuild needs Fortran.
-    #
-    # Installed here rather than solved in the manifest or the image, on purpose:
-    #   - the manifest must not name a Fortran compiler. ecbuild produces one
-    #     compiler-independent install tree (compiler-inputs = []), and saying
-    #     otherwise would imply its consumers need Fortran, which they do not.
-    #   - the gfortran13 image would not help: it ships only versioned binaries
-    #     (gfortran-13, no unversioned gfortran), and these fixture projects name
-    #     no compiler, so CMake's search for `gfortran`/`f95` finds nothing. The
-    #     unversioned metapackage is what makes them discoverable.
-    # A no-op on GitHub-hosted runners, which already ship gfortran. The base
-    # image installs sudo precisely so this line works as root in a container and
-    # as a normal user on a runner.
     - name: Install gfortran for the test suite
       shell: bash
       run: |
@@ -61,10 +45,6 @@ runs:
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends gfortran
 
-    # ENABLE_TESTS=ON so tests/ and regressions/ are configured and their
-    # targets built — ecbuild's suite is ecbuild_add_test(TYPE SCRIPT) all the
-    # way down (nested cmake configures of small fixture projects), so it
-    # reaches the network for nothing. The caller runs ctest against build-dir.
     - name: Configure ecbuild
       shell: bash
       env:

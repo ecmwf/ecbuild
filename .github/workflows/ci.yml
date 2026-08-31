@@ -41,13 +41,6 @@ jobs:
 
   resolve:
     needs: ci-approval
-    # Runs in the base image on purpose. ci-infrastructure is baked into that
-    # image and advertised via CI_INFRASTRUCTURE_PYTHON, so
-    # ensure-infrastructure-present short-circuits to a true no-op. Without a
-    # container it instead builds a venv per job — with PyPI/GitHub egress —
-    # and cannot cache it: ARC's Kubernetes mode overlays _work, where
-    # RUNNER_TOOL_CACHE lives, with an ephemeral per-job volume. That costs far
-    # more than the runner size saves.
     runs-on: arc-runner-normal
     container:
       image: eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest
@@ -74,15 +67,6 @@ jobs:
           app-private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
 
   build:
-    # Build and test share one job and one container: once ecbuild is built we
-    # test the tree in place, rather than starting a second container that would
-    # re-checkout and re-download our own artifact.
-    #
-    # Publishing comes AFTER the tests, so a red suite leaves nothing behind: the
-    # artifact store records existence and nothing else — resolve_deps and
-    # fetch_deps both decide with a bare object_exists — so a published artifact
-    # carries no hint that its tests failed. The cost is that a consumer waits
-    # for our tests.
     needs: resolve
     name: build+test (${{ matrix.platform }}, ${{ matrix.build-type }})
     runs-on: ${{ matrix['runs-on'] }}
@@ -117,12 +101,6 @@ jobs:
           artifact-name: ${{ matrix._resolved.own-artifact-name }}
 
   build-hpc:
-    # The same install tree, produced inside a SLURM job so HPC consumers resolve
-    # a cluster-built ecbuild. The container carries the cluster ssh identity, so
-    # troika can submit from an ARC pod; build-on-hpc submits, waits for the
-    # sentinel, fetches the install tree back and publishes the hpc-atos-gnu
-    # artifact itself — hence no separate publish step. ecbuild has no package
-    # deps, so there is no fetch step.
     needs: resolve
     name: build-hpc (${{ matrix.platform }})
     runs-on: ${{ matrix['runs-on'] }}
