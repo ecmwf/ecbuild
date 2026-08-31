@@ -1,35 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
-# project() is not needed for this script-mode test
 
-# ---------------------------------------------------------------------------
-# Reproduce the ecbuild macros exactly as found in
-# source/ecbuild/cmake/ecbuild_compiler_flags.cmake
-# and source/ecbuild/cmake/ecbuild_regex_escape.cmake
-# ---------------------------------------------------------------------------
-
-function(ecbuild_regex_escape input outvar)
-    string(REGEX REPLACE "[][.*+?|()\\^$]" "\\\\\\0" output "${input}")
-    set(${outvar} "${output}" PARENT_SCOPE)
-endfunction()
-
-macro(ecbuild_linker_flags)
-  foreach(_obj EXE SHARED MODULE)
-    if(ECBUILD_${_obj}_LINKER_FLAGS)
-      set(CMAKE_${_obj}_LINKER_FLAGS ${ECBUILD_${_obj}_LINKER_FLAGS})
-    endif()
-
-    if(NOT "$ENV{LD_RUN_PATH}" EQUAL "")
-      set(LD_RUN_PATH "$ENV{LD_RUN_PATH}")
-      string(REPLACE ":" ";" LD_RUN_PATH "$ENV{LD_RUN_PATH}")
-      foreach(rpath ${LD_RUN_PATH})
-        ecbuild_regex_escape("${rpath}" rpath_escaped)
-        if(NOT CMAKE_${_obj}_LINKER_FLAGS MATCHES ".*-Wl,-rpath,${rpath_escaped}.*")
-          set(CMAKE_${_obj}_LINKER_FLAGS "${CMAKE_${_obj}_LINKER_FLAGS} -Wl,-rpath,${rpath}")
-        endif()
-      endforeach()
-    endif()
-  endforeach()
-endmacro()
+find_package( ecbuild REQUIRED )
+project( test_ecbuild_rpath_bug VERSION 0.1.0 LANGUAGES C ) 
 
 # ---------------------------------------------------------------------------
 # Mimic the Intel environment: LD_RUN_PATH contains .../lib/release BEFORE
