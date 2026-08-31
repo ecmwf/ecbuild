@@ -12,8 +12,26 @@ concurrency:
   group: trigger-downstream-hpc-${{ github.event.workflow_run.head_sha }}
   cancel-in-progress: true
 jobs:
+  label-gate:
+    runs-on: ubuntu-slim
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+    steps:
+    - id: mint
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
+        private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
+    - name: Check the downstream-CI label
+      id: gate
+      uses: ecmwf/ci-infrastructure/actions/check-pr-label@main
+      with:
+        label: run-downstream-CI
+        sha: ${{ github.event.workflow_run.head_sha }}
+        token: ${{ steps.mint.outputs.token }}
   validate:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ (github.event.workflow_run.conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     steps:
     - id: mint
@@ -29,8 +47,10 @@ jobs:
     - uses: ecmwf/ci-infrastructure/actions/validate-generated-workflows@main
       with:
         token: ${{ steps.mint.outputs.token }}
+    needs:
+    - label-gate
   report-start:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ (github.event.workflow_run.conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     steps:
     - id: mint
@@ -49,8 +69,10 @@ jobs:
           -f context='downstream/hpc' \
           -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
           -f description='Downstream HPC tests running'
+    needs:
+    - label-gate
   report-ci-failure:
-    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    if: ${{ (github.event.workflow_run.conclusion != 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     steps:
     - id: mint
@@ -69,9 +91,12 @@ jobs:
           -f context='downstream/hpc' \
           -f target_url="${{ github.event.workflow_run.html_url }}" \
           -f description='Upstream CI failed; downstream HPC not run'
+    needs:
+    - label-gate
   eccodes:
     name: eccodes
     needs:
+    - label-gate
     - validate
     - eckit
     uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger-hpc.yml@sync-branch-ci-rollout
@@ -82,9 +107,11 @@ jobs:
       branch: ${{ github.event.workflow_run.head_branch }}
       fallback-ref: sync-branch-ci-rollout
     secrets: inherit
+    if: ${{ needs['label-gate'].outputs.run == 'true' }}
   ecflow:
     name: ecflow
     needs:
+    - label-gate
     - validate
     uses: ecmwf/ecflow/.github/workflows/cross-repo-trigger-hpc.yml@sync-branch-ci-rollout
     with:
@@ -94,9 +121,11 @@ jobs:
       branch: ${{ github.event.workflow_run.head_branch }}
       fallback-ref: sync-branch-ci-rollout
     secrets: inherit
+    if: ${{ needs['label-gate'].outputs.run == 'true' }}
   eckit:
     name: eckit
     needs:
+    - label-gate
     - validate
     uses: ecmwf/eckit/.github/workflows/cross-repo-trigger-hpc.yml@sync-branch-ci-rollout
     with:
@@ -106,13 +135,15 @@ jobs:
       branch: ${{ github.event.workflow_run.head_branch }}
       fallback-ref: sync-branch-ci-rollout
     secrets: inherit
+    if: ${{ needs['label-gate'].outputs.run == 'true' }}
   report-result:
     needs:
+    - label-gate
     - validate
     - eccodes
     - ecflow
     - eckit
-    if: ${{ always() && github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ (always() && github.event.workflow_run.conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     steps:
     - id: mint
