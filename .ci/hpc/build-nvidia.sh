@@ -17,3 +17,9 @@ cmake -S "$CI_SOURCE_DIR" -B "${TMPDIR:-/tmp}/build" \
   -DCMAKE_INSTALL_PREFIX="$CI_INSTALL_PREFIX" \
   -DENABLE_TESTS=OFF
 cmake --install "${TMPDIR:-/tmp}/build"
+
+# The fetcher takes the artifact from CI_INSTALL_ARCHIVE, not from the install
+# tree; .part + mv so it only ever appears complete.
+mkdir -p "$(dirname "$CI_INSTALL_ARCHIVE")"
+tar -czf "$CI_INSTALL_ARCHIVE.part" -C "$CI_INSTALL_PREFIX" .
+mv "$CI_INSTALL_ARCHIVE.part" "$CI_INSTALL_ARCHIVE"
