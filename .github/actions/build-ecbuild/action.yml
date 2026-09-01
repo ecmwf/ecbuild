@@ -2,10 +2,11 @@ name: Build ecbuild from source
 description: >
   Configures, builds and installs the already-checked-out ecbuild (a
   compiler-independent CMake toolchain collection) to a canonical prefix
-  derived from the shared install-prefix action, and leaves the build tree in
-  place so the caller can run ctest against it without reconfiguring. Caller
-  must have already run actions/checkout@v6 in the same job — the action reads
-  the source from $GITHUB_WORKSPACE.
+  derived from the shared install-prefix action. Caller must have already run
+  actions/checkout@v6 in the same job — the action reads the source from
+  $GITHUB_WORKSPACE.
+
+  The test suite lives in .github/actions/test-ecbuild.
 
 inputs:
   build-type:
@@ -38,13 +39,6 @@ runs:
           echo "build-dir=$RUNNER_TEMP/_ecbuild-build"
         } >> "$GITHUB_OUTPUT"
 
-    - name: Install gfortran for the test suite
-      shell: bash
-      run: |
-        set -euo pipefail
-        sudo apt-get update
-        sudo apt-get install -y --no-install-recommends gfortran
-
     - name: Configure ecbuild
       shell: bash
       env:
@@ -56,8 +50,7 @@ runs:
         cmake -S "$GITHUB_WORKSPACE" \
               -B "$BUILD_DIR" \
               -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
-              -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
-              -DENABLE_TESTS=ON
+              -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH"
 
     - name: Build and install ecbuild
       shell: bash
@@ -65,5 +58,5 @@ runs:
         BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
       run: |
         set -euo pipefail
-        cmake --build "$BUILD_DIR" --parallel "$(nproc)"
+        cmake --build "$BUILD_DIR" --parallel "$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
         cmake --install "$BUILD_DIR"

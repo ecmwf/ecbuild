@@ -16,13 +16,29 @@ build-type = "Release"
 runs-on = "ubuntu-24.04"
 platform = "gh-ubuntu-24.04"
 
+[[matrix.build.include]]
+build-type = "Release"
+runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-x86_64"]
+platform = "macos-13-x86"
+
 [matrix.build]
 triggers = ["rebuild-request"]
 action = "./.github/actions/build-ecbuild"
 forwarded-inputs = ["build-type"]
 needs = []
-ctest = true
-ctest-args = '-j "$(nproc)"'
+
+[[matrix.test.include]]
+build-type = "Release"
+runs-on = "arc-runner-normal"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gfortran13:latest"
+platform = "ubuntu-24.04"
+
+# No `triggers`: ci.yml-only, nothing rendered into cross-repo-trigger.yml.
+[matrix.test]
+publishes = false
+action = "./.github/actions/test-ecbuild"
+forwarded-inputs = ["build-type"]
+needs = ["build"]
 
 [[matrix.build-hpc.include]]
 build-type = "Release"

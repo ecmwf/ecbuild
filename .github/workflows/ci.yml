@@ -46,6 +46,7 @@ jobs:
       image: eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest
     outputs:
       build-matrix: ${{ steps.r.outputs.matrix-build }}
+      test-matrix: ${{ steps.r.outputs.matrix-test }}
       build-hpc-matrix: ${{ steps.r.outputs.matrix-build-hpc }}
     steps:
       - id: mint
@@ -61,14 +62,14 @@ jobs:
         uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
         with:
           current-branch: ${{ github.head_ref || github.ref_name }}
-          matrix: build,build-hpc
+          matrix: build,test,build-hpc
           token: ${{ steps.mint.outputs.token }}
           client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
           app-private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
 
   build:
     needs: resolve
-    name: build+test (${{ matrix.platform }}, ${{ matrix.build-type }})
+    name: build (${{ matrix.platform }}, ${{ matrix.build-type }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
       image: ${{ matrix.container || '' }}
@@ -86,19 +87,31 @@ jobs:
         with:
           build-type: ${{ matrix.build-type }}
 
-      # Invocation comes from .ci/manifest.toml's [matrix.build], the same place
-      # the generated cross-repo-trigger.yml renders its Test step from. Spelling
-      # it out again here is how the two lanes drift apart.
-      - name: Test
-        if: ${{ matrix._resolved.ctest }}
-        run: ctest --test-dir "${{ steps.build.outputs.build-dir }}" --output-on-failure ${{ matrix._resolved['ctest-args'] }}
-
       - name: Publish ecbuild
         uses: ecmwf/ci-infrastructure/actions/fetch-and-publish@main
         with:
           mode: publish
           install-path: ${{ steps.build.outputs.install-path }}
           artifact-name: ${{ matrix._resolved.own-artifact-name }}
+
+  test:
+    needs: resolve
+    name: test (${{ matrix.platform }})
+    runs-on: ${{ matrix['runs-on'] }}
+    container:
+      image: ${{ matrix.container || '' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.resolve.outputs.test-matrix) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
+
+      - name: Test ecbuild
+        uses: ./.github/actions/test-ecbuild
+        with:
+          build-type: ${{ matrix.build-type }}
 
   build-hpc:
     needs: resolve
