@@ -49,6 +49,8 @@ jobs:
       test-matrix: ${{ steps.r.outputs.matrix-test }}
       build-hpc-matrix: ${{ steps.r.outputs.matrix-build-hpc }}
     steps:
+      - name: Announce image
+        uses: ecmwf/ci-infrastructure/actions/announce-image@main
       - id: mint
         uses: actions/create-github-app-token@v3
         with:
@@ -77,6 +79,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.resolve.outputs.build-matrix) }}
     steps:
+      - name: Announce image
+        uses: ecmwf/ci-infrastructure/actions/announce-image@main
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
@@ -104,6 +108,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.resolve.outputs.test-matrix) }}
     steps:
+      - name: Announce image
+        uses: ecmwf/ci-infrastructure/actions/announce-image@main
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
@@ -126,6 +132,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.resolve.outputs.build-hpc-matrix) }}
     steps:
+      - name: Announce image
+        uses: ecmwf/ci-infrastructure/actions/announce-image@main
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
