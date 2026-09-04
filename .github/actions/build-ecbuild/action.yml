@@ -12,7 +12,7 @@ inputs:
   build-type:
     description: 'CMake build type'
     required: false
-    default: Release
+    default: RelWithDebInfo
 
 outputs:
   install-path:

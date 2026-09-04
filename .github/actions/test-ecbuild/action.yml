@@ -8,7 +8,7 @@ inputs:
   build-type:
     description: 'CMake build type'
     required: false
-    default: Release
+    default: RelWithDebInfo
   fortran-compiler:
     description: >
       Exported as FC, not -DCMAKE_Fortran_COMPILER: the tests shell out to nested
