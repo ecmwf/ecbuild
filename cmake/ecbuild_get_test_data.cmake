@@ -481,7 +481,7 @@ endfunction()\n\n" )
         endif()
         unset( _path_comps )
 
-        string( REPLACE "." "_" _name "${_file}" )
+        string( REGEX REPLACE "[.,=]" "_" _name "${_file}" )
         string( REGEX MATCH ":.*"  _md5  "${_d}" )
         string( REPLACE ":" "" _md5 "${_md5}" )
 
