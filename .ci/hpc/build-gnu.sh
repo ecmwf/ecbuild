@@ -7,8 +7,15 @@
 #SBATCH --ntasks=2
 
 module load prgenv/gnu
+# gcc/old, not a version number: it is the alias for the compiler a login node
+# gives you with nothing loaded (8.5.0 today), which is what this cluster's GNU
+# builds actually target. `module avail gcc` lists no 8.5.0 to pin directly.
+module unload gcc
+module load gcc/old
 module load cmake
 module load python3/3.13.13-01
+
+echo "Using: $(command -v gcc) ($($(command -v gcc) --version | head -1))"
 
 cmake -S "$CI_SOURCE_DIR" -B "${TMPDIR:-/tmp}/build" \
   -DCMAKE_BUILD_TYPE=Release \
