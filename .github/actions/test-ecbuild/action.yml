@@ -1,0 +1,55 @@
+name: Test ecbuild
+description: >
+  Configures the already-checked-out ecbuild with its test suite enabled and
+  runs ctest against it. Caller must have already run actions/checkout@v6 in the
+  same job — the action reads the source from $GITHUB_WORKSPACE.
+
+inputs:
+  build-type:
+    description: 'CMake build type'
+    required: false
+    default: Release
+  fortran-compiler:
+    description: >
+      Exported as FC, not -DCMAKE_Fortran_COMPILER: the tests shell out to nested
+      `cmake` invocations that inherit only the environment. The default matches
+      the gfortran13 image, which ships no unversioned `gfortran`.
+    required: false
+    default: gfortran-13
+
+runs:
+  using: composite
+  steps:
+    - name: Set paths
+      id: set-paths
+      shell: bash
+      run: echo "build-dir=$RUNNER_TEMP/_ecbuild-test-build" >> "$GITHUB_OUTPUT"
+
+    - name: Configure ecbuild with tests
+      shell: bash
+      env:
+        BUILD_TYPE: ${{ inputs.build-type }}
+        BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
+        FC: ${{ inputs.fortran-compiler }}
+      run: |
+        set -euo pipefail
+        if ! command -v "$FC" >/dev/null; then
+          echo "::error::Fortran compiler '$FC' not found. ecbuild's suite needs one;"
+          echo "::error::pass a different 'fortran-compiler' or use an image that ships it."
+          exit 1
+        fi
+        cmake -S "$GITHUB_WORKSPACE" \
+              -B "$BUILD_DIR" \
+              -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+              -DENABLE_TESTS=ON
+
+    - name: Run ctest
+      shell: bash
+      env:
+        BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
+        FC: ${{ inputs.fortran-compiler }}
+      run: |
+        set -euo pipefail
+        ctest --test-dir "$BUILD_DIR" \
+              --output-on-failure \
+              -j "$(nproc 2>/dev/null || sysctl -n hw.ncpu)"

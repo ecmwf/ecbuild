@@ -2,17 +2,13 @@
 name = "ecbuild"
 prefix = "ecbuild"
 repo = "ecmwf/ecbuild"
-# ecbuild produces a single compiler-independent install tree; no compiler is
-# part of its artifact identity.
 compiler-inputs = []
-# ecbuild is public, so its fan-out calls consumers' cross-repo-trigger.yml via
-# `uses:` rather than dispatching them.
 visibility = "public"
 
 [[matrix.build.include]]
 build-type = "Release"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-playground-ci/ubuntu24.04-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest"
 platform = "ubuntu-24.04"
 
 [[matrix.build.include]]
@@ -20,52 +16,104 @@ build-type = "Release"
 runs-on = "ubuntu-24.04"
 platform = "gh-ubuntu-24.04"
 
+[[matrix.build.include]]
+build-type = "Release"
+runs-on = "arc-runner-normal"
+container = "eccr.ecmwf.int/public-ci-images/rocky8-base:latest"
+platform = "rocky-8"
+
+[[matrix.build.include]]
+build-type = "Release"
+runs-on = "arc-runner-normal"
+container = "eccr.ecmwf.int/public-ci-images/debian11-base:latest"
+platform = "debian-11"
+
+[[matrix.build.include]]
+build-type = "Release"
+runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-arm64"]
+platform = "macos-13-arm"
+
+[[matrix.build.include]]
+build-type = "Release"
+runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-x86_64"]
+platform = "macos-13-x86"
+
 [matrix.build]
 triggers = ["rebuild-request"]
 action = "./.github/actions/build-ecbuild"
 forwarded-inputs = ["build-type"]
 needs = []
 
-# --- HPC build --------------------------------------------------------------
-# The ecbuild install tree built inside a SLURM job, so every HPC consumer
-# find_package()s the cluster-built copy rather than the container one.
-# compiler-inputs is [] here as on the runner lane, so this artifact is shared by
-# every HPC toolchain; only platform separates it from the container build.
-#
-# runs-on/container/site are scheduling only and never enter the artifact name.
-# The container carries the cluster ssh identity (keys, the hpc-batch alias,
-# known_hosts) without which troika cannot submit; it is private, hence
-# container-credentials.
+[[matrix.test.include]]
+build-type = "Release"
+runs-on = "arc-runner-normal"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gfortran13:latest"
+platform = "ubuntu-24.04"
+
+# No `triggers`: ci.yml-only, nothing rendered into cross-repo-trigger.yml.
+[matrix.test]
+publishes = false
+action = "./.github/actions/test-ecbuild"
+forwarded-inputs = ["build-type"]
+needs = ["build"]
+
 [[matrix.build-hpc.include]]
 build-type = "Release"
-runs-on = "arc-hpc-pet-vsphere-prod"
-container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+runs-on = "hpc-submit"
+container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
-platform = "atos-hpc-gnu"
+platform = "hpc-atos-gnu"
+# gcc/old, not a version number: as of now gives you 8.5.0
+# `module avail gcc` lists no 8.5.0 to pin directly.
+modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load python3/3.13.13-01"]
+cc = "gcc"
+cxx = "g++"
+time = "00:30:00"
+tests = true
+
+[[matrix.build-hpc.include]]
+build-type = "Release"
+runs-on = "hpc-submit"
+container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
+site = "hpc-batch"
+platform = "hpc-atos-intel"
+modules = ["load prgenv/intel-llvm", "unload intel", "load intel/2025.3.1", "load cmake", "load python3/3.13.13-01"]
+cc = "icx"
+cxx = "icpx"
+time = "00:30:00"
+tests = true
+
+[[matrix.build-hpc.include]]
+build-type = "Release"
+runs-on = "hpc-submit"
+container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
+site = "hpc-batch"
+platform = "hpc-atos-aocc"
+modules = ["load prgenv/amd", "unload aocc", "load aocc/4.0.0", "load cmake"]
+cc = "clang"
+cxx = "clang++"
+time = "00:15:00"
+tests = false
+
+[[matrix.build-hpc.include]]
+build-type = "Release"
+runs-on = "hpc-submit"
+container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
+site = "hpc-batch"
+platform = "hpc-atos-nvidia"
+modules = ["load prgenv/nvidia", "unload nvidia", "load nvidia/24.11", "load cmake"]
+cc = "nvc"
+cxx = "nvc++"
+time = "00:15:00"
+tests = false
 
 [matrix.build-hpc]
 execution = "hpc"
 container-credentials = true
-job-script = "./.ci/hpc/build.sh"
-# A leaf producer: nothing upstream can strand this artifact, but a consumer
-# that cannot find it must be able to ask for a rebuild.
+job-script = "./.ci/hpc/build.sh.j2"
 triggers = ["rebuild-request"]
 needs = []
 
-# --- downstream CI fan-out ---------------------------------------------------
-# Every ECMWF package here find_package()s ecbuild, so a change to it has to be
-# proved against all three. `ref` is the consumer-side ref the orchestrator pins
-# its `uses:` to; runtime branch matching can still redirect the source checkout
-# to a same-named branch (e.g. sync-branch-ci-rollout) independently.
-# ROLLOUT NOTE: pinned to the sync branch on purpose, and TEMPORARY.
-# `ref` is what the orchestrator pins its `uses:` to, and `uses:` cannot take an
-# expression, so it selects which WORKFLOW DEFINITION runs. Pointing it at the
-# sync branch is what lets the full downstream CI be exercised before the
-# rollout merges: the orchestrator lives on the default branch (workflow_run
-# only ever runs the default-branch copy) while the consumer logic it calls
-# comes from the sync branch. Source checkout and artifact refs are handled
-# independently at runtime by pick-ref and resolve_deps' sync-branch override.
-# FLIP TO develop AND REGENERATE WHEN THE ROLLOUT MERGES.
 [[trigger-downstream]]
 repo = "ecmwf/eckit"
 ref = "sync-branch-ci-rollout"
@@ -77,3 +125,6 @@ ref = "sync-branch-ci-rollout"
 [[trigger-downstream]]
 repo = "ecmwf/ecflow"
 ref = "sync-branch-ci-rollout"
+
+[downstream-gate]
+label = "run-downstream-CI"
