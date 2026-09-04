@@ -57,21 +57,14 @@ action = "./.github/actions/test-ecbuild"
 forwarded-inputs = ["build-type"]
 needs = ["build"]
 
-# The toolchain is declared here, not buried in a per-toolchain script:
-# .ci/hpc/build.sh.j2 is rendered against these values. `modules` are ordered
-# `module` SUB-COMMANDS, because a block interleaves an unload between two
-# loads. `tests = false` also skips the build+ctest steps, which is what the
-# aocc and nvidia recipes did implicitly. Bump `platform` when you bump a
-# toolchain: that is what invalidates the cache.
 [[matrix.build-hpc.include]]
 build-type = "Release"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
 platform = "hpc-atos-gnu"
-# gcc/old, not a version number: it is the alias for the compiler a login node
-# gives you with nothing loaded (8.5.0 today), which is what this cluster's GNU
-# builds actually target. `module avail gcc` lists no 8.5.0 to pin directly.
+# gcc/old, not a version number: as of now gives you 8.5.0
+# `module avail gcc` lists no 8.5.0 to pin directly.
 modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load python3/3.13.13-01"]
 cc = "gcc"
 cxx = "g++"
