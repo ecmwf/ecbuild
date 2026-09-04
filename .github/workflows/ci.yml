@@ -92,9 +92,8 @@ jobs:
           build-type: ${{ matrix.build-type }}
 
       - name: Publish ecbuild
-        uses: ecmwf/ci-infrastructure/actions/fetch-and-publish@main
+        uses: ecmwf/ci-infrastructure/actions/publish-artifact@main
         with:
-          mode: publish
           install-path: ${{ steps.build.outputs.install-path }}
           artifact-name: ${{ matrix._resolved.own-artifact-name }}
 
