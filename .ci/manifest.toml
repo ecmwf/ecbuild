@@ -6,35 +6,35 @@ compiler-inputs = []
 visibility = "public"
 
 [[matrix.build.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = "arc-runner-normal"
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest"
 platform = "ubuntu-24.04"
 
 [[matrix.build.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = "ubuntu-24.04"
 platform = "gh-ubuntu-24.04"
 
 [[matrix.build.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = "arc-runner-normal"
 container = "eccr.ecmwf.int/public-ci-images/rocky8-base:latest"
 platform = "rocky-8"
 
 [[matrix.build.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = "arc-runner-normal"
 container = "eccr.ecmwf.int/public-ci-images/debian11-base:latest"
 platform = "debian-11"
 
 [[matrix.build.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-arm64"]
 platform = "macos-13-arm"
 
 [[matrix.build.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-x86_64"]
 platform = "macos-13-x86"
 
@@ -45,7 +45,7 @@ forwarded-inputs = ["build-type"]
 needs = []
 
 [[matrix.test.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = "arc-runner-normal"
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gfortran13:latest"
 platform = "ubuntu-24.04"
@@ -64,7 +64,7 @@ needs = ["build"]
 # aocc and nvidia recipes did implicitly. Bump `platform` when you bump a
 # toolchain: that is what invalidates the cache.
 [[matrix.build-hpc.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
@@ -79,7 +79,7 @@ time = "00:30:00"
 tests = true
 
 [[matrix.build-hpc.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
@@ -91,7 +91,7 @@ time = "00:30:00"
 tests = true
 
 [[matrix.build-hpc.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
@@ -103,7 +103,7 @@ time = "00:15:00"
 tests = false
 
 [[matrix.build-hpc.include]]
-build-type = "RelWithDebInfo"
+build-type = "Release"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
