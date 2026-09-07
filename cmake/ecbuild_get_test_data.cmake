@@ -350,7 +350,8 @@ endfunction(ecbuild_get_test_data)
 # -------
 #
 # NAMES : required
-#   list of names of the test data files
+#   list of names of the test data files. Each name may contain a relative
+#   path and may be followed by an md5 checksum separated with a ``:``.
 #
 # TARGET : optional
 #   CMake target name
@@ -385,6 +386,20 @@ endfunction(ecbuild_get_test_data)
 # for each name given in the list of ``NAMES``. Each name may contain a
 # relative path, which is appended to ``DIRNAME`` and may be followed by an
 # md5 checksum, separated with a ``:`` (the name must not contain spaces).
+# Characters that are not valid in CMake target names, including ``=`` and
+# ``,`` in filenames, are supported.
+#
+# Each file is assigned an internal target name containing readable directory
+# and filename components followed by a hash of the complete relative path.
+# The hash keeps the targets distinct when different paths have the same
+# readable C identifier. These internal target names are implementation details
+# and should not be invoked directly; use the target passed with ``TARGET``.
+#
+# Files in different relative directories must have different basenames. The
+# relative directory is used for the remote location and internal target name,
+# but the downloaded file is stored directly in ``DIRLOCAL`` using its basename.
+# For example, ``foo/a.txt`` and ``bar/a.txt`` would both produce
+# ``<DIRLOCAL>/a.txt`` and are therefore not supported in the same invocation.
 #
 # If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
 # ``https://get.ecmwf.int/repository/test-data`` is used.
@@ -413,6 +428,15 @@ endfunction(ecbuild_get_test_data)
 #
 #   ecbuild_get_test_multidata( TARGET get_grib_data DIRNAME test/data/dir
 #                               NAMES msl.grib:f69ca0929d1122c7878d19f32401abe9 )
+#
+# Download filenames containing punctuation: ::
+#
+#   ecbuild_get_test_multidata(
+#     TARGET get_gridspec_data
+#     DIRNAME eccodes/test-data/data/gridspec
+#     NAMES gridType=regular_ll.grib
+#           gridType=regular_ll,scanningMode=96.grib
+#     NOCHECK )
 #
 ##############################################################################
 
