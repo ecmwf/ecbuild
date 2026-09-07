@@ -71,7 +71,7 @@ jobs:
 
   build:
     needs: [ci-approval, resolve]
-    name: build (${{ matrix.platform }}, ${{ matrix.build-type }})
+    name: build (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
       image: ${{ matrix.container || '' }}
@@ -99,7 +99,7 @@ jobs:
 
   test:
     needs: [ci-approval, resolve]
-    name: test (${{ matrix.platform }})
+    name: test (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
       image: ${{ matrix.container || '' }}
@@ -120,7 +120,7 @@ jobs:
 
   build-hpc:
     needs: [ci-approval, resolve]
-    name: build-hpc (${{ matrix.platform }})
+    name: build-hpc (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
       image: ${{ matrix.container }}
