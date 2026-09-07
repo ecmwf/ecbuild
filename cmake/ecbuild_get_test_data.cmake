@@ -353,8 +353,8 @@ endfunction(ecbuild_get_test_data)
 #   list of names of the test data files. Each name may contain a relative
 #   path and may be followed by an md5 checksum separated with a ``:``.
 #
-# TARGET : optional
-#   CMake target name
+# TARGET : required
+#   name of the download test (and prefix for its internal CMake targets)
 #
 # DIRNAME : optional
 #   use when there is a directory structure on the server that 
