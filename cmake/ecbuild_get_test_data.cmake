@@ -481,7 +481,9 @@ endfunction()\n\n" )
         endif()
         unset( _path_comps )
 
-        string( MAKE_C_IDENTIFIER "${_file}" _name )
+        string( MAKE_C_IDENTIFIER "${_file}" _file_cidentifier )
+        string( MD5 _dir_file_hash "${_f}" )
+        set( _target_name "__get_data_${_p_TARGET}_${_file_cidentifier}_${_dir_file_hash}" )
         string( REGEX MATCH ":.*"  _md5  "${_d}" )
         string( REPLACE ":" "" _md5 "${_md5}" )
 
@@ -490,7 +492,7 @@ endfunction()\n\n" )
         endif()
 
         ecbuild_get_test_data(
-            TARGET __get_data_${_p_TARGET}_${_name}
+            TARGET ${_target_name}
             DIRLOCAL ${_p_DIRLOCAL}
             NAME ${_file} ${_DIRNAME} ${_md5} ${_extract} ${_nocheck} ${_insecure})
 
@@ -502,7 +504,7 @@ endfunction()\n\n" )
           set( _fast "/fast" )
         endif()
         file( APPEND ${_script}
-              "exec_check( \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target __get_data_${_p_TARGET}_${_name}${_fast} )\n" )
+              "exec_check( \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target ${_target_name}${_fast} )\n" )
 
     endforeach()
 

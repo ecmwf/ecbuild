@@ -48,23 +48,49 @@ function(assert_generated_targets aggregate_target expected_count)
   endif()
 endfunction()
 
+# Verify the target name generated from a readable basename and the hash of the
+# full relative source path.
+#
+# aggregate_target
+#   Name passed to ecbuild_get_test_multidata(TARGET).
+# source_path
+#   Relative source path passed as an entry in NAMES, without a checksum.
+function(assert_generated_target_name aggregate_target source_path)
+  get_filename_component(file "${source_path}" NAME)
+  string(MAKE_C_IDENTIFIER "${file}" file_cidentifier)
+  string(MD5 dir_file_hash "${source_path}")
+  set(expected_target "__get_data_${aggregate_target}_${file_cidentifier}_${dir_file_hash}")
+
+  if(NOT TARGET ${expected_target})
+    message(FATAL_ERROR "Expected target '${expected_target}' was not created for '${source_path}'")
+  endif()
+  if(expected_target MATCHES "[=,]")
+    message(FATAL_ERROR "Generated target '${expected_target}' contains an unsupported character")
+  endif()
+endfunction()
+
 if(TEST_CASE STREQUAL "supported_names")
+  set(supported_names
+    foo.grib
+    archive.tar.gz
+    README
+    .config
+    a-b.grib
+    a+b.grib
+    a_b.grib
+    foo/1.txt
+    foo/_1.txt
+    bar/other.txt
+  )
   ecbuild_get_test_multidata(
     TARGET supported_names
-    NAMES
-      foo.grib
-      archive.tar.gz
-      README
-      .config
-      a-b.grib
-      a+b.grib
-      a_b.grib
-      foo/1.txt
-      foo/_1.txt
-      bar/other.txt
+    NAMES ${supported_names}
     NOCHECK
   )
   assert_generated_targets(supported_names 10)
+  foreach(source_path IN LISTS supported_names)
+    assert_generated_target_name(supported_names "${source_path}")
+  endforeach()
 
 elseif(TEST_CASE STREQUAL "checksum_options")
   set(checksum "d41d8cd98f00b204e9800998ecf8427e")
@@ -94,6 +120,9 @@ elseif(TEST_CASE STREQUAL "dot_underscore_collision")
     NAMES a.b a_b
     NOCHECK
   )
+  assert_generated_targets(dot_underscore_collision 2)
+  assert_generated_target_name(dot_underscore_collision "a.b")
+  assert_generated_target_name(dot_underscore_collision "a_b")
 
 elseif(TEST_CASE STREQUAL "equals_in_filename")
   ecbuild_get_test_multidata(
@@ -101,6 +130,8 @@ elseif(TEST_CASE STREQUAL "equals_in_filename")
     NAMES gridType=regular_ll.grib
     NOCHECK
   )
+  assert_generated_targets(equals_in_filename 1)
+  assert_generated_target_name(equals_in_filename "gridType=regular_ll.grib")
 
 elseif(TEST_CASE STREQUAL "comma_in_filename")
   ecbuild_get_test_multidata(
@@ -108,6 +139,8 @@ elseif(TEST_CASE STREQUAL "comma_in_filename")
     NAMES gridType,regular_ll.grib
     NOCHECK
   )
+  assert_generated_targets(comma_in_filename 1)
+  assert_generated_target_name(comma_in_filename "gridType,regular_ll.grib")
 
 elseif(TEST_CASE STREQUAL "multiple_invalid_characters")
   ecbuild_get_test_multidata(
@@ -115,6 +148,8 @@ elseif(TEST_CASE STREQUAL "multiple_invalid_characters")
     NAMES gridType=regular_ll,scanningMode=96.grib
     NOCHECK
   )
+  assert_generated_targets(multiple_invalid_characters 1)
+  assert_generated_target_name(multiple_invalid_characters "gridType=regular_ll,scanningMode=96.grib")
 
 else()
   message(FATAL_ERROR "Unknown TEST_CASE '${TEST_CASE}'")

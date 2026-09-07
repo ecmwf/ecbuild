@@ -40,8 +40,8 @@ run_configure_case(supported_names success "")
 run_configure_case(checksum_options success "")
 
 # Existing limitations are isolated so each failure mode remains observable.
-run_configure_case(duplicate_basename failure "target.*already exists")
-run_configure_case(dot_underscore_collision failure "target.*already exists")
-run_configure_case(equals_in_filename failure "target name.*not valid")
-run_configure_case(comma_in_filename failure "target name.*not valid")
-run_configure_case(multiple_invalid_characters failure "target name.*not valid")
+run_configure_case(duplicate_basename failure "custom rule.*a\\.txt")
+run_configure_case(dot_underscore_collision success "")
+run_configure_case(equals_in_filename success "")
+run_configure_case(comma_in_filename success "")
+run_configure_case(multiple_invalid_characters success "")
