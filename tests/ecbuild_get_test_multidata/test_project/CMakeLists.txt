@@ -48,8 +48,8 @@ function(assert_generated_targets aggregate_target expected_count)
   endif()
 endfunction()
 
-# Verify the target name generated from a readable basename and the hash of the
-# full relative source path.
+# Verify the target name generated from readable directory and basename
+# components, and the hash of the full relative source path.
 #
 # aggregate_target
 #   Name passed to ecbuild_get_test_multidata(TARGET).
@@ -57,9 +57,16 @@ endfunction()
 #   Relative source path passed as an entry in NAMES, without a checksum.
 function(assert_generated_target_name aggregate_target source_path)
   get_filename_component(file "${source_path}" NAME)
+  get_filename_component(dir "${source_path}" PATH)
+  if(dir)
+    string(MAKE_C_IDENTIFIER "${dir}" dir_cidentifier)
+    string(APPEND dir_cidentifier "_")
+  else()
+    set(dir_cidentifier "")
+  endif()
   string(MAKE_C_IDENTIFIER "${file}" file_cidentifier)
   string(MD5 dir_file_hash "${source_path}")
-  set(expected_target "__get_data_${aggregate_target}_${file_cidentifier}_${dir_file_hash}")
+  set(expected_target "__get_data_${aggregate_target}_${dir_cidentifier}${file_cidentifier}_${dir_file_hash}")
 
   if(NOT TARGET ${expected_target})
     message(FATAL_ERROR "Expected target '${expected_target}' was not created for '${source_path}'")
