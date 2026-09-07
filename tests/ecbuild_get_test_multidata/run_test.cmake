@@ -38,6 +38,10 @@ endfunction()
 # Existing supported inputs must continue to generate distinct download targets.
 run_configure_case(supported_names success "")
 run_configure_case(checksum_options success "")
+run_configure_case(punctuation_in_relative_filenames success "")
+run_configure_case(punctuation_in_relative_directories success "")
+run_configure_case(semicolon_in_path failure "target.*already exists")
+run_configure_case(brackets_in_filename failure "Expected 2 generated targets")
 
 # Existing limitations are isolated so each failure mode remains observable.
 run_configure_case(duplicate_basename failure "custom rule.*a\\.txt")
