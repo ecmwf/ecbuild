@@ -8,10 +8,42 @@ on:
     - CI
     types:
     - completed
+  pull_request_target:
+    types:
+    - labeled
 concurrency:
-  group: trigger-downstream-runner-${{ github.event.workflow_run.head_sha }}
+  group: trigger-downstream-runner-${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha }}
   cancel-in-progress: true
 jobs:
+  ci-approval:
+    if: ${{ github.event_name != 'pull_request_target' || github.event.label.name == 'run-downstream-CI' }}
+    runs-on: ubuntu-slim
+    permissions:
+      pull-requests: write
+    steps:
+    - uses: ecmwf/ci-infrastructure/actions/require-ci-approval@main
+  context:
+    needs:
+    - ci-approval
+    runs-on: ubuntu-slim
+    outputs:
+      head-sha: ${{ steps.ctx.outputs.head-sha }}
+      head-branch: ${{ steps.ctx.outputs.head-branch }}
+      ci-conclusion: ${{ steps.ctx.outputs.ci-conclusion }}
+      ci-url: ${{ steps.ctx.outputs.ci-url }}
+      ci-summary: ${{ steps.ctx.outputs.ci-summary }}
+    steps:
+    - id: mint
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
+        private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
+    - name: Resolve the commit under test
+      id: ctx
+      uses: ecmwf/ci-infrastructure/actions/resolve-dispatch-context@main
+      with:
+        token: ${{ steps.mint.outputs.token }}
   label-gate:
     runs-on: ubuntu-slim
     outputs:
@@ -28,10 +60,13 @@ jobs:
       uses: ecmwf/ci-infrastructure/actions/check-pr-label@main
       with:
         label: run-downstream-CI
-        sha: ${{ github.event.workflow_run.head_sha }}
+        sha: ${{ needs.context.outputs.head-sha }}
         token: ${{ steps.mint.outputs.token }}
+    needs:
+    - ci-approval
+    - context
   validate:
-    if: ${{ (github.event.workflow_run.conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
+    if: ${{ (needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     steps:
     - id: mint
@@ -42,15 +77,17 @@ jobs:
         owner: ${{ github.repository_owner }}
     - uses: actions/checkout@v6
       with:
-        ref: ${{ github.event.workflow_run.head_sha }}
+        ref: ${{ needs.context.outputs.head-sha }}
         token: ${{ steps.mint.outputs.token }}
     - uses: ecmwf/ci-infrastructure/actions/validate-generated-workflows@main
       with:
         token: ${{ steps.mint.outputs.token }}
     needs:
+    - ci-approval
+    - context
     - label-gate
   report-start:
-    if: ${{ (github.event.workflow_run.conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
+    if: ${{ (needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     steps:
     - id: mint
@@ -64,15 +101,17 @@ jobs:
         GH_TOKEN: ${{ steps.mint.outputs.token }}
       run: |
         gh api -X POST \
-          "/repos/${{ github.repository }}/statuses/${{ github.event.workflow_run.head_sha }}" \
+          "/repos/${{ github.repository }}/statuses/${{ needs.context.outputs.head-sha }}" \
           -f state=pending \
           -f context='downstream/runner' \
           -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
           -f description='Downstream runner tests running'
     needs:
+    - ci-approval
+    - context
     - label-gate
   report-ci-failure:
-    if: ${{ (github.event.workflow_run.conclusion != 'success') && needs['label-gate'].outputs.run == 'true' }}
+    if: ${{ (needs.context.outputs.ci-conclusion != 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     steps:
     - id: mint
@@ -86,64 +125,74 @@ jobs:
         GH_TOKEN: ${{ steps.mint.outputs.token }}
       run: |
         gh api -X POST \
-          "/repos/${{ github.repository }}/statuses/${{ github.event.workflow_run.head_sha }}" \
+          "/repos/${{ github.repository }}/statuses/${{ needs.context.outputs.head-sha }}" \
           -f state=failure \
           -f context='downstream/runner' \
-          -f target_url="${{ github.event.workflow_run.html_url }}" \
-          -f description='Upstream CI failed; downstream runner not run'
+          -f target_url="${{ needs.context.outputs.ci-url }}" \
+          -f description="${{ needs.context.outputs.ci-summary }}; downstream runner not run"
     needs:
+    - ci-approval
+    - context
     - label-gate
   eccodes:
     name: eccodes
     needs:
+    - ci-approval
+    - context
     - label-gate
     - validate
     - eckit
     uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger.yml@develop
     with:
       from-repo: ${{ github.repository }}
-      from-sha: ${{ github.event.workflow_run.head_sha }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
       from-jobs: '["ecbuild/build"]'
-      branch: ${{ github.event.workflow_run.head_branch }}
+      branch: ${{ needs.context.outputs.head-branch }}
       fallback-ref: develop
     secrets: inherit
     if: ${{ needs['label-gate'].outputs.run == 'true' }}
   ecflow:
     name: ecflow
     needs:
+    - ci-approval
+    - context
     - label-gate
     - validate
     uses: ecmwf/ecflow/.github/workflows/cross-repo-trigger.yml@develop
     with:
       from-repo: ${{ github.repository }}
-      from-sha: ${{ github.event.workflow_run.head_sha }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
       from-jobs: '["ecbuild/build"]'
-      branch: ${{ github.event.workflow_run.head_branch }}
+      branch: ${{ needs.context.outputs.head-branch }}
       fallback-ref: develop
     secrets: inherit
     if: ${{ needs['label-gate'].outputs.run == 'true' }}
   eckit:
     name: eckit
     needs:
+    - ci-approval
+    - context
     - label-gate
     - validate
     uses: ecmwf/eckit/.github/workflows/cross-repo-trigger.yml@develop
     with:
       from-repo: ${{ github.repository }}
-      from-sha: ${{ github.event.workflow_run.head_sha }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
       from-jobs: '["ecbuild/build"]'
-      branch: ${{ github.event.workflow_run.head_branch }}
+      branch: ${{ needs.context.outputs.head-branch }}
       fallback-ref: develop
     secrets: inherit
     if: ${{ needs['label-gate'].outputs.run == 'true' }}
   report-result:
     needs:
+    - ci-approval
+    - context
     - label-gate
     - validate
     - eccodes
     - ecflow
     - eckit
-    if: ${{ (always() && github.event.workflow_run.conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
+    if: ${{ (always() && needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     steps:
     - id: mint
@@ -163,7 +212,7 @@ jobs:
           fi
         done
         gh api -X POST \
-          "/repos/${{ github.repository }}/statuses/${{ github.event.workflow_run.head_sha }}" \
+          "/repos/${{ github.repository }}/statuses/${{ needs.context.outputs.head-sha }}" \
           -f state="$state" \
           -f context='downstream/runner' \
           -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
