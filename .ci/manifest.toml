@@ -116,15 +116,15 @@ needs = []
 
 [[trigger-downstream]]
 repo = "ecmwf/eckit"
-ref = "sync-branch-ci-rollout"
+ref = "develop"
 
 [[trigger-downstream]]
 repo = "ecmwf/eccodes"
-ref = "sync-branch-ci-rollout"
+ref = "develop"
 
 [[trigger-downstream]]
 repo = "ecmwf/ecflow"
-ref = "sync-branch-ci-rollout"
+ref = "develop"
 
 [downstream-gate]
 label = "run-downstream-CI"
