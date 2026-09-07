@@ -505,18 +505,36 @@ endfunction()\n\n" )
         endif()
         unset( _path_comps )
 
+        #
+        # Define _dir_cidentifier
+        #
         if( _dir )
             string( MAKE_C_IDENTIFIER "${_dir}" _dir_cidentifier )
             string( APPEND _dir_cidentifier "_" )
         else()
             set( _dir_cidentifier "" )
         endif()
+
+        #
+        # Define _file_cidentifier
+        #
         string( MAKE_C_IDENTIFIER "${_file}" _file_cidentifier )
+
+        #
+        # Define _dir_file_hash
+        #
         string( MD5 _dir_file_hash "${_f}" )
+
+        #
+        # Define the name of the target for downloading a specific file
+        #
         set( _target_name "__get_data_${_p_TARGET}_${_dir_cidentifier}${_file_cidentifier}_${_dir_file_hash}" )
+
+        #
+        # Define the md5 checksum if given in the name, otherwise it will be downloaded from the server
+        #
         string( REGEX MATCH ":.*"  _md5  "${_d}" )
         string( REPLACE ":" "" _md5 "${_md5}" )
-
         if( _md5 )
             set( _md5 MD5 ${_md5} )
         endif()
