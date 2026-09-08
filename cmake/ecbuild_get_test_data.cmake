@@ -563,11 +563,20 @@ function( ecbuild_get_test_multidata )
 
     set( _script ${CMAKE_CURRENT_BINARY_DIR}/get_data_${_p_TARGET}.cmake )
 
+    # Collect failures and report them together at the end rather than stopping
+    # at the first: one unreachable file used to leave every later file in the
+    # set undownloaded, so a single transient network error failed every test
+    # that reads any of this data instead of only the ones that need that file.
+    #
+    # \${ARGV}, not \${CMD}: the latter is expanded here, where it does not exist,
+    # so the message named nothing.
     file( WRITE ${_script} "
+set(EXEC_CHECK_FAILURES \"\")
 function(EXEC_CHECK)
      execute_process(COMMAND \${ARGV} RESULT_VARIABLE CMD_RESULT)
      if(CMD_RESULT)
-           message(FATAL_ERROR \"Error running ${CMD}\")
+           string(REPLACE \";\" \" \" CMD_TEXT \"\${ARGV}\")
+           set(EXEC_CHECK_FAILURES \"\${EXEC_CHECK_FAILURES}\\n  [exit \${CMD_RESULT}] \${CMD_TEXT}\" PARENT_SCOPE)
      endif()
 endfunction()\n\n" )
 
@@ -636,6 +645,9 @@ endfunction()\n\n" )
               "exec_check( \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target ${_target_name}${_fast} )\n" )
 
     endforeach()
+
+    file( APPEND ${_script}
+          "\nif(EXEC_CHECK_FAILURES)\n  message(FATAL_ERROR \"Failed downloads:\${EXEC_CHECK_FAILURES}\")\nendif()\n" )
 
     if( HAVE_TESTS )
       add_test(  NAME ${_p_TARGET} COMMAND ${CMAKE_COMMAND} -P ${_script} )

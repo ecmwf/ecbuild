@@ -32,8 +32,19 @@ build_and_download() {
   (cd "$build"; ctest -L download_data --output-on-failure > ctest.log 2>&1) || true
 }
 
-# --- a curl that knows --retry-all-errors is asked to use it -----------------
+# --- a refused file must not abandon the rest of the set ---------------------
 build_and_download $HERE/build
+
+test -f $HERE/build/a.txt || fail "a.txt, downloaded before the failure, is missing"
+test -f $HERE/build/c.txt || fail "c.txt, queued after the failure, was never attempted"
+test ! -f $HERE/build/b.txt || fail "b.txt should have been refused"
+
+# --- and the failure must name the command that failed -----------------------
+grep -q "Failed downloads:" $HERE/build/ctest.log || fail "no failure summary"
+grep -q "__get_data_get_stuff_b_txt" $HERE/build/ctest.log ||
+  fail "the failure summary does not name the failing command"
+
+# --- a curl that knows --retry-all-errors is asked to use it -----------------
 
 flag_used "--retry-all-errors" || fail "modern curl was not given --retry-all-errors"
 if flag_used "--http1.1"; then fail "modern curl should negotiate its own HTTP version"; fi
