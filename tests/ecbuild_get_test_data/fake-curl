@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Stands in for curl via -DCURL_PROGRAM, so the download paths can be exercised
+# with no network. Records each argv, refuses b.txt with curl's HTTP/2 framing
+# error, and writes any other file.
+#
+# `--version` is the capability probe ecbuild runs to decide whether this curl
+# understands --retry-all-errors; FAKE_CURL_OLD=1 makes it answer "no".
+
+echo "$@" >> "$FAKE_CURL_LOG"
+
+case " $* " in
+  *" --version "*)
+    [ -n "${FAKE_CURL_OLD:-}" ] && exit 2
+    exit 0
+    ;;
+esac
+
+out=""
+url=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --output) out="$2"; shift 2 ;;
+    -*)       shift ;;
+    *)        url="$1"; shift ;;
+  esac
+done
+
+case "$url" in
+  *b.txt) echo "curl: (16) Error in the HTTP2 framing layer" >&2; exit 16 ;;
+esac
+
+printf 'content of %s\n' "$( basename "$url" )" > "$out"

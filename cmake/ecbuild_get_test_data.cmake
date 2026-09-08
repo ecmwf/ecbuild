@@ -31,11 +31,51 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
   if( NOT DEFINED ECBUILD_DOWNLOAD_INSECURE OR NOT ECBUILD_DOWNLOAD_INSECURE )
     set( ECBUILD_DOWNLOAD_INSECURE _p_INSECURE )
   endif()
+  # Wait between retries: an immediate retry hits the same busy server again
+  if( NOT DEFINED ECBUILD_DOWNLOAD_RETRY_DELAY )
+    set( ECBUILD_DOWNLOAD_RETRY_DELAY 2 )
+  endif()
+  # Seconds a transfer may sit below 1 kB/s before curl gives up on it and (with
+  # ECBUILD_DOWNLOAD_RETRIES) retries. --connect-timeout only bounds the
+  # handshake, so without this a connection that opens and then stalls hangs
+  # until whatever outer time limit the caller has, if any.
+  if( NOT DEFINED ECBUILD_DOWNLOAD_STALL_TIMEOUT )
+    set( ECBUILD_DOWNLOAD_STALL_TIMEOUT 60 )
+  endif()
+  # "1.1", "2", or empty to let curl negotiate
+  if( NOT DEFINED ECBUILD_DOWNLOAD_HTTP_VERSION )
+    set( ECBUILD_DOWNLOAD_HTTP_VERSION "" )
+  endif()
+  # Escape hatch for anything not covered above
+  if( NOT DEFINED ECBUILD_DOWNLOAD_EXTRA_FLAGS )
+    set( ECBUILD_DOWNLOAD_EXTRA_FLAGS "" )
+  endif()
+
 
   find_program( CURL_PROGRAM curl )
   mark_as_advanced(CURL_PROGRAM)
   find_program( WGET_PROGRAM wget )
   mark_as_advanced(WGET_PROGRAM)
+
+  # curl retries only what it calls transient -- timeouts, FTP 4xx, HTTP 408/429/5xx.
+  # CURLE_HTTP2 (16), CURLE_RECV_ERROR (56) and friends are excluded, so --retry
+  # never fires for the mid-transfer resets a busy server produces.
+  # --retry-all-errors closes that gap, but is curl >= 7.71. Probe the binary
+  # rather than parse `curl --version`: distributions backport options, so a
+  # version comparison refuses the flag on releases that have it. An unrecognised
+  # option makes curl exit non-zero even next to --version. Cached because this
+  # function runs once per file -- hundreds of times in a large project.
+  if( CURL_PROGRAM AND NOT DEFINED ECBUILD_CURL_HAS_RETRY_ALL_ERRORS )
+    execute_process( COMMAND ${CURL_PROGRAM} --retry-all-errors --version
+                     RESULT_VARIABLE _curl_probe
+                     OUTPUT_QUIET ERROR_QUIET )
+    if( _curl_probe EQUAL 0 )
+      set( ECBUILD_CURL_HAS_RETRY_ALL_ERRORS 1 CACHE INTERNAL "curl accepts --retry-all-errors" )
+    else()
+      set( ECBUILD_CURL_HAS_RETRY_ALL_ERRORS 0 CACHE INTERNAL "curl accepts --retry-all-errors" )
+    endif()
+    mark_as_advanced( ECBUILD_CURL_HAS_RETRY_ALL_ERRORS )
+  endif()
 
   if( NOT CURL_PROGRAM AND NOT WGET_PROGRAM )
     if( NOT WARNING_CANNOT_DOWNLOAD_TEST_DATA )
@@ -68,11 +108,33 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
         set( INSECURE_CURL "" )
       endif()
 
+      set( _curl_flags ${INSECURE_CURL} --silent --show-error --fail )
+
+      if( ECBUILD_CURL_HAS_RETRY_ALL_ERRORS )
+        list( APPEND _curl_flags --retry-all-errors )
+      elseif( NOT ECBUILD_DOWNLOAD_HTTP_VERSION )
+        # This curl cannot retry a framing error, so do not give it one to hit.
+        # Nothing is lost: one curl process per file never multiplexed anyway,
+        # which is all HTTP/2 would have bought here.
+        set( ECBUILD_DOWNLOAD_HTTP_VERSION "1.1" )
+      endif()
+
+      if( ECBUILD_DOWNLOAD_HTTP_VERSION STREQUAL "1.1" )
+        list( APPEND _curl_flags --http1.1 )
+      elseif( ECBUILD_DOWNLOAD_HTTP_VERSION STREQUAL "2" )
+        list( APPEND _curl_flags --http2 )
+      endif()
+
+      list( APPEND _curl_flags
+        --retry ${ECBUILD_DOWNLOAD_RETRIES}
+        --retry-delay ${ECBUILD_DOWNLOAD_RETRY_DELAY}
+        --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
+        --speed-limit 1000 --speed-time ${ECBUILD_DOWNLOAD_STALL_TIMEOUT}
+        ${ECBUILD_DOWNLOAD_EXTRA_FLAGS} )
+
       add_custom_command( OUTPUT ${_p_NAME}
         COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
-        COMMAND ${CURL_PROGRAM} ${INSECURE_CURL} --silent --show-error --fail --output ${_p_DIRLOCAL}/${_p_NAME}
-        --retry ${ECBUILD_DOWNLOAD_RETRIES}
-        --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
+        COMMAND ${CURL_PROGRAM} ${_curl_flags} --output ${_p_DIRLOCAL}/${_p_NAME}
         ${_p_DIR_URL}/${_p_NAME} )
 
   else()
@@ -173,6 +235,25 @@ endfunction()
 # The default timeout is 30 seconds, which can be overridden with
 # ``ECBUILD_DOWNLOAD_TIMEOUT``. Downloads are by default only tried once, use
 # ``ECBUILD_DOWNLOAD_RETRIES`` to set the number of retries.
+#
+# Further download behaviour, all curl-only:
+#
+# ``ECBUILD_DOWNLOAD_RETRY_DELAY``
+#   seconds between retries (default 2)
+#
+# ``ECBUILD_DOWNLOAD_STALL_TIMEOUT``
+#   seconds a transfer may stall below 1 kB/s before it is abandoned and
+#   retried (default 60). ``ECBUILD_DOWNLOAD_TIMEOUT`` bounds only the connect.
+#
+# ``ECBUILD_DOWNLOAD_HTTP_VERSION``
+#   ``1.1``, ``2``, or empty to let curl negotiate. Defaults to empty, except on
+#   a curl too old for ``--retry-all-errors``, where it defaults to ``1.1``:
+#   such a curl cannot retry an HTTP/2 framing error, so it is not asked to
+#   speak HTTP/2.
+#
+# ``ECBUILD_DOWNLOAD_EXTRA_FLAGS``
+#   further flags appended to the curl command line
+#
 #
 # Examples
 # --------
