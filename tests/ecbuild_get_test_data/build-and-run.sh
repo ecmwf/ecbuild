@@ -23,12 +23,18 @@ flag_used() {
   grep -- "--output" $FAKE_CURL_LOG | grep -q -- "$1"
 }
 
+# Same, restricted to the invocation that fetched one file.
+flag_used_for() {
+  grep -- "--output ./$1 " $FAKE_CURL_LOG | grep -q -- "$2"
+}
+
 build_and_download() {
   local build=$1
   shift
   rm -rf "$build"
   : > $FAKE_CURL_LOG
   ecbuild $SOURCE/test_project -B "$build" -DCURL_PROGRAM=$SOURCE/fake-curl "$@"
+  # The download target fails (b.txt is refused); the point is what it does anyway.
   (cd "$build"; ctest -L download_data --output-on-failure > ctest.log 2>&1) || true
 }
 
@@ -45,7 +51,6 @@ grep -q "__get_data_get_stuff_b_txt" $HERE/build/ctest.log ||
   fail "the failure summary does not name the failing command"
 
 # --- a curl that knows --retry-all-errors is asked to use it -----------------
-
 flag_used "--retry-all-errors" || fail "modern curl was not given --retry-all-errors"
 if flag_used "--http1.1"; then fail "modern curl should negotiate its own HTTP version"; fi
 
@@ -60,5 +65,12 @@ if flag_used "--retry-all-errors"; then fail "old curl was given a flag it does 
 build_and_download $HERE/build-http2 -DECBUILD_DOWNLOAD_HTTP_VERSION=2
 
 flag_used "--http2 " || fail "ECBUILD_DOWNLOAD_HTTP_VERSION=2 was ignored"
+
+# --- certificates are checked unless the caller says otherwise ---------------
+if flag_used_for a.txt "--insecure"; then fail "a plain download skipped certificate checking"; fi
+flag_used_for d.txt "--insecure" || fail "INSECURE was ignored"
+
+build_and_download $HERE/build-insecure -DECBUILD_DOWNLOAD_INSECURE=ON
+flag_used_for a.txt "--insecure" || fail "ECBUILD_DOWNLOAD_INSECURE=ON was ignored"
 
 echo "OK"

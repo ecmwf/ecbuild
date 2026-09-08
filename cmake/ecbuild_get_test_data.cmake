@@ -27,9 +27,11 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
   if( NOT DEFINED ECBUILD_DOWNLOAD_TIMEOUT )
     set( ECBUILD_DOWNLOAD_TIMEOUT 30 )
   endif()
-  # Allow insecure download as a global option
+  # Allow insecure download as a global option, else take the per-call INSECURE.
+  # ${_p_INSECURE}, not _p_INSECURE: the bare name is a non-empty string, which
+  # if() reads as true, so every download ran with certificate checking off.
   if( NOT DEFINED ECBUILD_DOWNLOAD_INSECURE OR NOT ECBUILD_DOWNLOAD_INSECURE )
-    set( ECBUILD_DOWNLOAD_INSECURE _p_INSECURE )
+    set( ECBUILD_DOWNLOAD_INSECURE ${_p_INSECURE} )
   endif()
   # Wait between retries: an immediate retry hits the same busy server again
   if( NOT DEFINED ECBUILD_DOWNLOAD_RETRY_DELAY )
@@ -50,7 +52,6 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
   if( NOT DEFINED ECBUILD_DOWNLOAD_EXTRA_FLAGS )
     set( ECBUILD_DOWNLOAD_EXTRA_FLAGS "" )
   endif()
-
 
   find_program( CURL_PROGRAM curl )
   mark_as_advanced(CURL_PROGRAM)
@@ -253,7 +254,6 @@ endfunction()
 #
 # ``ECBUILD_DOWNLOAD_EXTRA_FLAGS``
 #   further flags appended to the curl command line
-#
 #
 # Examples
 # --------
