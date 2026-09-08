@@ -8,24 +8,14 @@ on:
     - CI
     types:
     - completed
-  pull_request_target:
-    types:
-    - labeled
 concurrency:
-  group: trigger-downstream-runner-${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha }}
+  group: trigger-downstream-runner-${{ github.event.workflow_run.head_sha }}
   cancel-in-progress: true
 jobs:
-  ci-approval:
-    if: ${{ github.event_name != 'pull_request_target' || github.event.label.name == 'run-downstream-CI' }}
+  context:
     runs-on: ubuntu-slim
     permissions:
-      pull-requests: write
-    steps:
-    - uses: ecmwf/ci-infrastructure/actions/require-ci-approval@main
-  context:
-    needs:
-    - ci-approval
-    runs-on: ubuntu-slim
+      actions: read
     outputs:
       head-sha: ${{ steps.ctx.outputs.head-sha }}
       head-branch: ${{ steps.ctx.outputs.head-branch }}
@@ -33,37 +23,23 @@ jobs:
       ci-url: ${{ steps.ctx.outputs.ci-url }}
       ci-summary: ${{ steps.ctx.outputs.ci-summary }}
     steps:
-    - id: mint
-      uses: actions/create-github-app-token@v3
-      with:
-        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
-        private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
-        owner: ${{ github.repository_owner }}
     - name: Resolve the commit under test
       id: ctx
       uses: ecmwf/ci-infrastructure/actions/resolve-dispatch-context@main
-      with:
-        token: ${{ steps.mint.outputs.token }}
   label-gate:
     runs-on: ubuntu-slim
+    permissions:
+      pull-requests: read
     outputs:
       run: ${{ steps.gate.outputs.run }}
     steps:
-    - id: mint
-      uses: actions/create-github-app-token@v3
-      with:
-        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
-        private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
-        owner: ${{ github.repository_owner }}
     - name: Check the downstream-CI label
       id: gate
       uses: ecmwf/ci-infrastructure/actions/check-pr-label@main
       with:
         label: run-downstream-CI
         sha: ${{ needs.context.outputs.head-sha }}
-        token: ${{ steps.mint.outputs.token }}
     needs:
-    - ci-approval
     - context
   validate:
     if: ${{ (needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
@@ -83,22 +59,17 @@ jobs:
       with:
         token: ${{ steps.mint.outputs.token }}
     needs:
-    - ci-approval
     - context
     - label-gate
   report-start:
     if: ${{ (needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
+    permissions:
+      statuses: write
     steps:
-    - id: mint
-      uses: actions/create-github-app-token@v3
-      with:
-        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
-        private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
-        owner: ${{ github.repository_owner }}
     - name: Post pending downstream status
       env:
-        GH_TOKEN: ${{ steps.mint.outputs.token }}
+        GH_TOKEN: ${{ github.token }}
       run: |
         gh api -X POST \
           "/repos/${{ github.repository }}/statuses/${{ needs.context.outputs.head-sha }}" \
@@ -107,22 +78,17 @@ jobs:
           -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
           -f description='Downstream runner tests running'
     needs:
-    - ci-approval
     - context
     - label-gate
   report-ci-failure:
     if: ${{ (needs.context.outputs.ci-conclusion != 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
+    permissions:
+      statuses: write
     steps:
-    - id: mint
-      uses: actions/create-github-app-token@v3
-      with:
-        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
-        private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
-        owner: ${{ github.repository_owner }}
     - name: Post downstream failure status
       env:
-        GH_TOKEN: ${{ steps.mint.outputs.token }}
+        GH_TOKEN: ${{ github.token }}
       run: |
         gh api -X POST \
           "/repos/${{ github.repository }}/statuses/${{ needs.context.outputs.head-sha }}" \
@@ -131,13 +97,11 @@ jobs:
           -f target_url="${{ needs.context.outputs.ci-url }}" \
           -f description="${{ needs.context.outputs.ci-summary }}; downstream runner not run"
     needs:
-    - ci-approval
     - context
     - label-gate
   eccodes:
     name: eccodes
     needs:
-    - ci-approval
     - context
     - label-gate
     - validate
@@ -154,7 +118,6 @@ jobs:
   ecflow:
     name: ecflow
     needs:
-    - ci-approval
     - context
     - label-gate
     - validate
@@ -170,7 +133,6 @@ jobs:
   eckit:
     name: eckit
     needs:
-    - ci-approval
     - context
     - label-gate
     - validate
@@ -185,7 +147,6 @@ jobs:
     if: ${{ needs['label-gate'].outputs.run == 'true' }}
   report-result:
     needs:
-    - ci-approval
     - context
     - label-gate
     - validate
@@ -194,16 +155,12 @@ jobs:
     - eckit
     if: ${{ (always() && needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
+    permissions:
+      statuses: write
     steps:
-    - id: mint
-      uses: actions/create-github-app-token@v3
-      with:
-        client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
-        private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
-        owner: ${{ github.repository_owner }}
     - name: Post final downstream status
       env:
-        GH_TOKEN: ${{ steps.mint.outputs.token }}
+        GH_TOKEN: ${{ github.token }}
       run: |
         state=success
         for r in ${{ needs.validate.result }} ${{ needs.eccodes.result }} ${{ needs.ecflow.result }} ${{ needs.eckit.result }}; do
