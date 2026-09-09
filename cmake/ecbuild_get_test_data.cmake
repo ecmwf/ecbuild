@@ -19,6 +19,7 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
   #set(ENV{http_proxy} "http://proxy.ecmwf.int:3333")
   #endif()
 
+  # Retry up to two times
   if( NOT DEFINED ECBUILD_DOWNLOAD_RETRIES )
     set( ECBUILD_DOWNLOAD_RETRIES 2 )
   endif()
