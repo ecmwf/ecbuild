@@ -54,6 +54,10 @@ grep -q "__get_data_get_stuff_b_txt" $HERE/build/ctest.log ||
 flag_used "--retry-all-errors" || fail "modern curl was not given --retry-all-errors"
 if flag_used "--http1.1"; then fail "modern curl should negotiate its own HTTP version"; fi
 
+# --- and is left to back off on its own between retries ----------------------
+# --retry-delay would replace curl's exponential backoff with a fixed wait.
+if flag_used "--retry-delay"; then fail "a download was given a fixed retry delay"; fi
+
 # --- one that does not is kept off HTTP/2 instead ----------------------------
 # It could not retry a framing error, so it is not given the chance to hit one.
 FAKE_CURL_OLD=1 build_and_download $HERE/build-old
@@ -72,5 +76,10 @@ flag_used_for d.txt "--insecure" || fail "INSECURE was ignored"
 
 build_and_download $HERE/build-insecure -DECBUILD_DOWNLOAD_INSECURE=ON
 flag_used_for a.txt "--insecure" || fail "ECBUILD_DOWNLOAD_INSECURE=ON was ignored"
+
+# --- anything else is reachable through the escape hatch ---------------------
+build_and_download $HERE/build-extra "-DECBUILD_DOWNLOAD_EXTRA_FLAGS=--retry-delay;5"
+
+flag_used "--retry-delay 5" || fail "ECBUILD_DOWNLOAD_EXTRA_FLAGS was ignored"
 
 echo "OK"

@@ -19,23 +19,16 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
   #set(ENV{http_proxy} "http://proxy.ecmwf.int:3333")
   #endif()
 
-  # Do not retry downloads by default (ECBUILD-307)
   if( NOT DEFINED ECBUILD_DOWNLOAD_RETRIES )
-    set( ECBUILD_DOWNLOAD_RETRIES 0 )
+    set( ECBUILD_DOWNLOAD_RETRIES 2 )
   endif()
   # Use default timeout of 30s if not specified (ECBUILD-307)
   if( NOT DEFINED ECBUILD_DOWNLOAD_TIMEOUT )
     set( ECBUILD_DOWNLOAD_TIMEOUT 30 )
   endif()
   # Allow insecure download as a global option, else take the per-call INSECURE.
-  # ${_p_INSECURE}, not _p_INSECURE: the bare name is a non-empty string, which
-  # if() reads as true, so every download ran with certificate checking off.
   if( NOT DEFINED ECBUILD_DOWNLOAD_INSECURE OR NOT ECBUILD_DOWNLOAD_INSECURE )
     set( ECBUILD_DOWNLOAD_INSECURE ${_p_INSECURE} )
-  endif()
-  # Wait between retries: an immediate retry hits the same busy server again
-  if( NOT DEFINED ECBUILD_DOWNLOAD_RETRY_DELAY )
-    set( ECBUILD_DOWNLOAD_RETRY_DELAY 2 )
   endif()
   # Seconds a transfer may sit below 1 kB/s before curl gives up on it and (with
   # ECBUILD_DOWNLOAD_RETRIES) retries. --connect-timeout only bounds the
@@ -128,7 +121,6 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
 
       list( APPEND _curl_flags
         --retry ${ECBUILD_DOWNLOAD_RETRIES}
-        --retry-delay ${ECBUILD_DOWNLOAD_RETRY_DELAY}
         --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
         --speed-limit 1000 --speed-time ${ECBUILD_DOWNLOAD_STALL_TIMEOUT}
         ${ECBUILD_DOWNLOAD_EXTRA_FLAGS} )
@@ -184,7 +176,7 @@ endfunction()
 #                          [ DIRLOCAL <dir> ]
 #                          [ MD5 <hash> ]
 #                          [ EXTRACT ]
-#                          [ NOCHECK ] 
+#                          [ NOCHECK ]
 #                          [ INSECURE ])
 #
 # curl or wget is required (curl is preferred if available).
@@ -199,7 +191,7 @@ endfunction()
 #   CMake target name
 #
 # DIRNAME : optional
-#   use when there is a directory structure on the server that 
+#   use when there is a directory structure on the server that
 #   hosts test files
 #
 # DIRLOCAL : optional, defaults to ".", local directory in which the test data is copied
@@ -238,9 +230,6 @@ endfunction()
 # ``ECBUILD_DOWNLOAD_RETRIES`` to set the number of retries.
 #
 # Further download behaviour, all curl-only:
-#
-# ``ECBUILD_DOWNLOAD_RETRY_DELAY``
-#   seconds between retries (default 2)
 #
 # ``ECBUILD_DOWNLOAD_STALL_TIMEOUT``
 #   seconds a transfer may stall below 1 kB/s before it is abandoned and
@@ -422,7 +411,7 @@ endfunction(ecbuild_get_test_data)
 #                               [ DIRLOCAL <dir> ]
 #                               [ LABELS <label1> [<label2> ...] ]
 #                               [ EXTRACT ]
-#                               [ NOCHECK ] 
+#                               [ NOCHECK ]
 #                               [ INSECURE ] )
 #
 # curl or wget is required (curl is preferred if available).
@@ -438,7 +427,7 @@ endfunction(ecbuild_get_test_data)
 #   name of the download test (and prefix for its internal CMake targets)
 #
 # DIRNAME : optional
-#   use when there is a directory structure on the server that 
+#   use when there is a directory structure on the server that
 #   hosts test files
 #
 # DIRLOCAL : optional, defaults to ".", local directory in which the test data is copied
