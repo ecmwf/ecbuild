@@ -1,0 +1,82 @@
+version = 1
+SPDX-PackageName = "ecbuild"
+SPDX-PackageSupplier = "European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-PackageDownloadLocation = "https://github.com/ecmwf/ecbuild"
+
+# This file covers the content that cannot carry an SPDX header, and the
+# third-party content that must not be re-stamped with one.
+#
+# An in-file header always takes precedence over an entry here.
+
+# ----------------------------------------------------------------------------
+# ECMWF-authored content that cannot carry a comment
+# ----------------------------------------------------------------------------
+
+# Plain-text data read verbatim.
+# Single-line templates whose output is a checksum line.
+[[annotations]]
+path = ["AUTHORS", "NOTICE", "cmake/VERSION", "examples/find_package/README",
+        "cmake/md5.in", "cmake/sha1.in"]
+SPDX-FileCopyrightText = "2011- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
+# JSON content -- necessary as it has no comment syntax.
+[[annotations]]
+path = ["**/*.json", "ecbuild.sublime-project"]
+SPDX-FileCopyrightText = "2011- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = [".gitignore", "**/.gitignore"]
+SPDX-FileCopyrightText = "2011- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
+
+[[annotations]]
+path = ["doc/static/ecbuild-logo-16.png", "doc/static/ecbuild.ico"]
+SPDX-FileCopyrightText = "2011- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ----------------------------------------------------------------------------
+# Third-party content: original licensing, never re-stamped (ADR-010 clause 7)
+# ----------------------------------------------------------------------------
+
+# The Sphinx documentation build, and CMake's own artwork, taken from the CMake
+# documentation theme.
+[[annotations]]
+path = ["doc/CMakeLists.txt", "doc/cmake.py", "doc/conf.py",
+        "doc/static/cmake.css", "doc/static/cmake-logo-16.png",
+        "doc/static/cmake-favicon.ico"]
+SPDX-FileCopyrightText = "2000-2013 Kitware, Inc. and Insight Software Consortium"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "cmake/contrib/FindEigen3.cmake"
+SPDX-FileCopyrightText = ["2006, 2007 Montel Laurent",
+                          "2008, 2009 Gael Guennebaud",
+                          "2009 Benoit Jacob",
+                          "2013- European Centre for Medium-Range Weather Forecasts (ECMWF)"]
+SPDX-License-Identifier = "BSD-2-Clause"
+
+[[annotations]]
+path = "cmake/contrib/FindNetCDF4.cmake"
+SPDX-FileCopyrightText = "UCLALES, Max-Planck-Institut fuer Meteorologie"
+SPDX-License-Identifier = "AFL-3.0"
+
+[[annotations]]
+path = ["cmake/contrib/GetGitRevisionDescription.cmake",
+        "cmake/contrib/GetGitRevisionDescription.cmake.in"]
+SPDX-FileCopyrightText = "2009-2010 Iowa State University"
+SPDX-License-Identifier = "BSL-1.0"
+
+# Vendored upstream HDF5 example.
+[[annotations]]
+path = "examples/find_package/projects/hdf5/hdf5_examples/**"
+SPDX-FileCopyrightText = "The HDF Group; Board of Trustees of the University of Illinois"
+SPDX-License-Identifier = "HDF5"
+
+# Vendored upstream NetCDF example.
+[[annotations]]
+path = "examples/find_package/projects/netcdf/netcdf_examples/**"
+SPDX-FileCopyrightText = "2018 Unidata"
+SPDX-License-Identifier = "BSD-3-Clause"
