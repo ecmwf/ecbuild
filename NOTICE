@@ -1,10 +1,23 @@
 Notice
 ------
 
+ecbuild
+
+Copyright 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+
+Licensed under the Apache Licence, Version 2.0.
+
+In applying this licence, ECMWF does not waive the privileges and immunities
+granted to it by virtue of its status as an intergovernmental organisation nor
+does it submit to any jurisdiction.
+
+Third-party software included in this source tree retains the licensing of its
+origin, as described below.
+
 1. The files FindLex and FindYacc are based on the FindBison and FindFlex
    macros from the original CMake code base.
    As requested, the License text has been preserved. The modifications are
-   governed by the Apache License as described in COPYING.
+   governed by the Apache License as described in LICENSE.
 
 2. FindEigen3 is based on a macro from Montel Laurent and others and
    distributed under the BSD 2-Clause License.
