@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 add_subdirectory( ECBUILD_359 )
 add_subdirectory( ECBUILD_401 )
 add_subdirectory( ECBUILD_407 )

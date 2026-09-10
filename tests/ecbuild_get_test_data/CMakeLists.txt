@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 ecbuild_add_test(
   TARGET     test_ecbuild_get_test_data
   TYPE       SCRIPT

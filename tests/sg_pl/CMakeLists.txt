@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 ecbuild_find_perl( REQUIRED )
 
 set(_dir ${CMAKE_CURRENT_BINARY_DIR})

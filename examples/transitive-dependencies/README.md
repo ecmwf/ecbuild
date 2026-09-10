@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Transitive dependencies across projects
 
 This example contains 3 projects, where projectB depends on projectA, and

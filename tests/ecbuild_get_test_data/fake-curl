@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # Stands in for curl via -DCURL_PROGRAM, so the download paths can be exercised
 # with no network. Records each argv, refuses b.txt with curl's HTTP/2 framing
 # error, and writes any other file.
