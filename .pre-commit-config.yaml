@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
+repos:
+  # `reuse lint` checks the whole project. The hook is passed no filenames, so
+  # it cannot be narrowed by an exclude; always_run keeps it honest for a commit
+  # that happens to touch nothing it would otherwise see.
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v6.2.0
+    hooks:
+      - id: reuse
+        always_run: true
