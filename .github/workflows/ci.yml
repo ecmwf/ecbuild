@@ -57,9 +57,7 @@ jobs:
           client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
           private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
+      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
       - id: r
         uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
         with:
@@ -81,9 +79,7 @@ jobs:
     steps:
       - name: Announce image
         uses: ecmwf/ci-infrastructure/actions/announce-image@main
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
+      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
 
       - name: Build ecbuild
         id: build
@@ -109,9 +105,7 @@ jobs:
     steps:
       - name: Announce image
         uses: ecmwf/ci-infrastructure/actions/announce-image@main
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
+      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
 
       - name: Test ecbuild
         uses: ./.github/actions/test-ecbuild
@@ -133,9 +127,7 @@ jobs:
     steps:
       - name: Announce image
         uses: ecmwf/ci-infrastructure/actions/announce-image@main
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/merge', github.event.pull_request.number) || '' }}
+      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
 
       - name: Build ecbuild on HPC
         uses: ecmwf/ci-infrastructure/actions/build-on-hpc@main
