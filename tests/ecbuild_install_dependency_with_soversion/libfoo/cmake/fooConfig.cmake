@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 include("${CMAKE_CURRENT_LIST_DIR}/fooTargets.cmake")
 
 get_target_property(_imported_configs foo::foo IMPORTED_CONFIGURATIONS)

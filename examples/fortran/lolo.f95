@@ -1,3 +1,6 @@
+! SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+! SPDX-License-Identifier: Apache-2.0
+
 !-----Area_Circle----------------------------------------------------
 !
 !  Function to compute the area of a circle of given radius

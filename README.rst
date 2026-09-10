@@ -1,6 +1,13 @@
+.. SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+.. SPDX-License-Identifier: Apache-2.0
+
 ============================
 ecbuild - ECMWF build system
 ============================
+
+.. image:: https://api.reuse.software/badge/github.com/ecmwf/ecbuild
+   :target: https://api.reuse.software/info/github.com/ecmwf/ecbuild
+   :alt: REUSE status
 
 ecBuild is built on top of CMake and consists of a set of macros as well as a
 wrapper around CMake. Calling::
