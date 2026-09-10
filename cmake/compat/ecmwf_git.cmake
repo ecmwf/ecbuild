@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 set( ECMWF_USER $ENV{USER} CACHE STRING "ECMWF git user" )
 set( ECMWF_GIT  SSH        CACHE STRING "ECMWF git protocol" )

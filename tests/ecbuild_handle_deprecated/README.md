@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Handle CMAKE_*_DEPRECATED
 
 Since CMake 4.4, and according to the CMake policy CMP0218, the non-cached variables

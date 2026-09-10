@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 include(${CMAKE_CURRENT_LIST_DIR}/../../../cmake/ecbuild_parse_version.cmake)
 ecbuild_parse_version_file(${CMAKE_CURRENT_LIST_DIR}/../../../VERSION PREFIX PACKAGE)
 

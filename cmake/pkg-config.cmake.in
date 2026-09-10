@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 file(READ @CMAKE_CURRENT_BINARY_DIR@/@_PAR_FILENAME@.tmp _content)
 
