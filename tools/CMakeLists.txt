@@ -10,9 +10,7 @@ list( APPEND ecbuild_bin_files
 ecbuild
 git-meld
 git-mproj
-check_install.sh
-apply_license.sh
-license.pl )
+check_install.sh )
 
 add_custom_target( ecbuild_bin SOURCES ${ecbuild_bin_files} )
 
