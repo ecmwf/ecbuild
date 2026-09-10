@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2009 Kitware, Inc.
+# SPDX-FileCopyrightText: 2006 Tristan Carel
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: BSD-3-Clause AND Apache-2.0
+
 # - Find lex executable and provides a macro to generate custom build rules
 #
 # The module defines the following variables:
@@ -5,7 +10,6 @@
 #  LEX_EXECUTABLE - the path to the lex executable
 #  LEX_LIBRARIES - The lex libraries
 #  LEX_INCLUDE_DIRS - The path to the lex headers
-#
 #
 # If lex is found on the system, the module provides the macro:
 #  LEX_TARGET(Name LexInput LexOutput [COMPILE_FLAGS <string>])
@@ -44,13 +48,6 @@
 # This file is based on the FindFLEX CMake macro, and adapted by ECMWF
 
 #=============================================================================
-# (C) Copyright 2011- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
 
 FIND_PROGRAM(LEX_EXECUTABLE lex DOC "path to the lex executable")
 MARK_AS_ADVANCED(LEX_EXECUTABLE)
