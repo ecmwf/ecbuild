@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 name: Test ecbuild
 description: >
   Configures the already-checked-out ecbuild with its test suite enabled and

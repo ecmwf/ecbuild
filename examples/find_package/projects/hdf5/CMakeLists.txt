@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # Specify "HDF5_ROOT" in environment (tested with CMake 3.15)
 
 # Known issues:

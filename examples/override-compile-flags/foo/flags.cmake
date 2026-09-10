@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Cray")
 
   set(FOO_Fortran_FLAGS "-ram -emf -hadd_paren") # common flags for all build types

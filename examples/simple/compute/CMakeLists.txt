@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 if( HAVE_MATRIX )
     set( compute_defs HAVE_MATRIX_LAPACK )
 endif()

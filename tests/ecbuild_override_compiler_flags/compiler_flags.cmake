@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 set( OVERRIDECOMPILERFLAGS_C_FLAGS "${OVERRIDECOMPILERFLAGS_C_FLAGS} -g -fPIC" )
 set( OVERRIDECOMPILERFLAGS_CXX_FLAGS "-g -fPIC" )
 set( OVERRIDECOMPILERFLAGS_Fortran_FLAGS "${OVERRIDECOMPILERFLAGS_Fortran_FLAGS} -g -fortran_only_flag" )
