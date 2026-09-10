@@ -33,7 +33,6 @@ ecbuild_add_resources(  TARGET ${PROJECT_NAME}_description_files
                             AUTHORS
                             NOTICE
                             LICENSE
-                            COPYING
 )
 
 add_subdirectory( bin )
