@@ -55,6 +55,7 @@ jobs:
       with:
         ref: ${{ needs.context.outputs.head-sha }}
         token: ${{ steps.mint.outputs.token }}
+        allow-unsafe-pr-checkout: true
     - uses: ecmwf/ci-infrastructure/actions/validate-generated-workflows@main
       with:
         token: ${{ steps.mint.outputs.token }}
