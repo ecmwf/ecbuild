@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 set(CMAKE_Fortran_COMPILER_LOADED TRUE)
 set(CMAKE_BUILD_TYPE Testing)

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 ###############################################################################
 # checks
 set(Fortran_FEATURE_CHECK_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "fortran file directory")

@@ -1,9 +1,16 @@
----
-# Only the cross-repo CI gate check for now. The repo's own formatting and lint
-# hooks are a separate rollout: it does not pass them today, and adding them here
-# would fail every pull request for reasons unrelated to CI.
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 repos:
+  # `reuse lint` checks the whole project. The hook is passed no filenames, so
+  # it cannot be narrowed by an exclude; always_run keeps it honest for a commit
+  # that happens to touch nothing it would otherwise see.
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v6.2.0
+    hooks:
+      - id: reuse
+        always_run: true
+
   - repo: https://github.com/ecmwf/ci-infrastructure
     rev: dac4b18ffe60c317fbab05246e851b6971f7eabf
     hooks:
