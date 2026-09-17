@@ -1,0 +1,25 @@
+name: "[PR] Downstream-CI label gate"
+
+on:
+  # pull_request_target runs the BASE branch's copy of this file and gets a token
+  # that can post a status on a fork's pull request. Safe here because nothing
+  # from the pull request is ever checked out or executed.
+  #
+  # `labeled`/`unlabeled` are what make the gate reactive; `synchronize` re-posts
+  # it, since a commit status is per-SHA.
+  pull_request_target:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+permissions:
+  statuses: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-slim
+    steps:
+      - uses: ecmwf/ci-infrastructure/actions/require-label-decision@main
+        with:
+          label: run-downstream-CI
+          opt-out-label: downstream-CI-not-needed
+          context: downstream-ci-label
+          description-decided: Downstream-CI decision recorded

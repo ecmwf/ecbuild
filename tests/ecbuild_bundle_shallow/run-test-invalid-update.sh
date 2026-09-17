@@ -72,10 +72,18 @@ if [[ "${cmake_status}" -eq 0 ]]; then
     exit 1
 fi
 
-if echo "${output}" | grep -q "Cannot pass both UPDATE and SHALLOW"; then
-    echo "SHALLOW+UPDATE correctly rejected: PASS"
-else
-    echo "cmake failed but expected error message not found: FAIL"
-    echo "${output}"
-    exit 1
-fi
+# A `case` rather than `echo "${output}" | grep -q ...`: with `set -o pipefail`
+# (above) that pipeline reports failure when grep -q finds its match and exits
+# while echo is still writing, so echo takes SIGPIPE and the status of a
+# SUCCESSFUL match becomes 141. That made this test flaky on GitHub-hosted
+# runners. Bash matches the substring with no pipe, no subprocess and no locale.
+case "${output}" in
+    *"Cannot pass both UPDATE and SHALLOW"*)
+        echo "SHALLOW+UPDATE correctly rejected: PASS"
+        ;;
+    *)
+        echo "cmake failed but expected error message not found: FAIL"
+        echo "${output}"
+        exit 1
+        ;;
+esac

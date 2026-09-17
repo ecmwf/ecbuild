@@ -19,23 +19,58 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
   #set(ENV{http_proxy} "http://proxy.ecmwf.int:3333")
   #endif()
 
-  # Do not retry downloads by default (ECBUILD-307)
+  # Retry up to two times
   if( NOT DEFINED ECBUILD_DOWNLOAD_RETRIES )
-    set( ECBUILD_DOWNLOAD_RETRIES 0 )
+    set( ECBUILD_DOWNLOAD_RETRIES 2 )
   endif()
   # Use default timeout of 30s if not specified (ECBUILD-307)
   if( NOT DEFINED ECBUILD_DOWNLOAD_TIMEOUT )
     set( ECBUILD_DOWNLOAD_TIMEOUT 30 )
   endif()
-  # Allow insecure download as a global option
+  # Allow insecure download as a global option, else take the per-call INSECURE.
   if( NOT DEFINED ECBUILD_DOWNLOAD_INSECURE OR NOT ECBUILD_DOWNLOAD_INSECURE )
-    set( ECBUILD_DOWNLOAD_INSECURE _p_INSECURE )
+    set( ECBUILD_DOWNLOAD_INSECURE ${_p_INSECURE} )
+  endif()
+  # Seconds a transfer may sit below 1 kB/s before curl gives up on it and (with
+  # ECBUILD_DOWNLOAD_RETRIES) retries. --connect-timeout only bounds the
+  # handshake, so without this a connection that opens and then stalls hangs
+  # until whatever outer time limit the caller has, if any.
+  if( NOT DEFINED ECBUILD_DOWNLOAD_STALL_TIMEOUT )
+    set( ECBUILD_DOWNLOAD_STALL_TIMEOUT 60 )
+  endif()
+  # "1.1", "2", or empty to let curl negotiate
+  if( NOT DEFINED ECBUILD_DOWNLOAD_HTTP_VERSION )
+    set( ECBUILD_DOWNLOAD_HTTP_VERSION "" )
+  endif()
+  # Escape hatch for anything not covered above
+  if( NOT DEFINED ECBUILD_DOWNLOAD_EXTRA_FLAGS )
+    set( ECBUILD_DOWNLOAD_EXTRA_FLAGS "" )
   endif()
 
   find_program( CURL_PROGRAM curl )
   mark_as_advanced(CURL_PROGRAM)
   find_program( WGET_PROGRAM wget )
   mark_as_advanced(WGET_PROGRAM)
+
+  # curl retries only what it calls transient -- timeouts, FTP 4xx, HTTP 408/429/5xx.
+  # CURLE_HTTP2 (16), CURLE_RECV_ERROR (56) and friends are excluded, so --retry
+  # never fires for the mid-transfer resets a busy server produces.
+  # --retry-all-errors closes that gap, but is curl >= 7.71. Probe the binary
+  # rather than parse `curl --version`: distributions backport options, so a
+  # version comparison refuses the flag on releases that have it. An unrecognised
+  # option makes curl exit non-zero even next to --version. Cached because this
+  # function runs once per file -- hundreds of times in a large project.
+  if( CURL_PROGRAM AND NOT DEFINED ECBUILD_CURL_HAS_RETRY_ALL_ERRORS )
+    execute_process( COMMAND ${CURL_PROGRAM} --retry-all-errors --version
+                     RESULT_VARIABLE _curl_probe
+                     OUTPUT_QUIET ERROR_QUIET )
+    if( _curl_probe EQUAL 0 )
+      set( ECBUILD_CURL_HAS_RETRY_ALL_ERRORS 1 CACHE INTERNAL "curl accepts --retry-all-errors" )
+    else()
+      set( ECBUILD_CURL_HAS_RETRY_ALL_ERRORS 0 CACHE INTERNAL "curl accepts --retry-all-errors" )
+    endif()
+    mark_as_advanced( ECBUILD_CURL_HAS_RETRY_ALL_ERRORS )
+  endif()
 
   if( NOT CURL_PROGRAM AND NOT WGET_PROGRAM )
     if( NOT WARNING_CANNOT_DOWNLOAD_TEST_DATA )
@@ -68,11 +103,32 @@ function( _download_test_data _p_NAME _p_DIR_URL _p_DIRLOCAL _p_CHECK_FILE_EXIST
         set( INSECURE_CURL "" )
       endif()
 
-      add_custom_command( OUTPUT ${_p_NAME}
-        COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
-        COMMAND ${CURL_PROGRAM} ${INSECURE_CURL} --silent --show-error --fail --output ${_p_DIRLOCAL}/${_p_NAME}
+      set( _curl_flags ${INSECURE_CURL} --silent --show-error --fail )
+
+      if( ECBUILD_CURL_HAS_RETRY_ALL_ERRORS )
+        list( APPEND _curl_flags --retry-all-errors )
+      elseif( NOT ECBUILD_DOWNLOAD_HTTP_VERSION )
+        # This curl cannot retry a framing error, so do not give it one to hit.
+        # Nothing is lost: one curl process per file never multiplexed anyway,
+        # which is all HTTP/2 would have bought here.
+        set( ECBUILD_DOWNLOAD_HTTP_VERSION "1.1" )
+      endif()
+
+      if( ECBUILD_DOWNLOAD_HTTP_VERSION STREQUAL "1.1" )
+        list( APPEND _curl_flags --http1.1 )
+      elseif( ECBUILD_DOWNLOAD_HTTP_VERSION STREQUAL "2" )
+        list( APPEND _curl_flags --http2 )
+      endif()
+
+      list( APPEND _curl_flags
         --retry ${ECBUILD_DOWNLOAD_RETRIES}
         --connect-timeout ${ECBUILD_DOWNLOAD_TIMEOUT}
+        --speed-limit 1000 --speed-time ${ECBUILD_DOWNLOAD_STALL_TIMEOUT}
+        ${ECBUILD_DOWNLOAD_EXTRA_FLAGS} )
+
+      add_custom_command( OUTPUT ${_p_NAME}
+        COMMENT "(curl) downloading ${_p_DIR_URL}/${_p_NAME}"
+        COMMAND ${CURL_PROGRAM} ${_curl_flags} --output ${_p_DIRLOCAL}/${_p_NAME}
         ${_p_DIR_URL}/${_p_NAME} )
 
   else()
@@ -121,7 +177,7 @@ endfunction()
 #                          [ DIRLOCAL <dir> ]
 #                          [ MD5 <hash> ]
 #                          [ EXTRACT ]
-#                          [ NOCHECK ] 
+#                          [ NOCHECK ]
 #                          [ INSECURE ])
 #
 # curl or wget is required (curl is preferred if available).
@@ -136,7 +192,7 @@ endfunction()
 #   CMake target name
 #
 # DIRNAME : optional
-#   use when there is a directory structure on the server that 
+#   use when there is a directory structure on the server that
 #   hosts test files
 #
 # DIRLOCAL : optional, defaults to ".", local directory in which the test data is copied
@@ -173,6 +229,21 @@ endfunction()
 # The default timeout is 30 seconds, which can be overridden with
 # ``ECBUILD_DOWNLOAD_TIMEOUT``. Downloads are by default only tried once, use
 # ``ECBUILD_DOWNLOAD_RETRIES`` to set the number of retries.
+#
+# Further download behaviour, all curl-only:
+#
+# ``ECBUILD_DOWNLOAD_STALL_TIMEOUT``
+#   seconds a transfer may stall below 1 kB/s before it is abandoned and
+#   retried (default 60). ``ECBUILD_DOWNLOAD_TIMEOUT`` bounds only the connect.
+#
+# ``ECBUILD_DOWNLOAD_HTTP_VERSION``
+#   ``1.1``, ``2``, or empty to let curl negotiate. Defaults to empty, except on
+#   a curl too old for ``--retry-all-errors``, where it defaults to ``1.1``:
+#   such a curl cannot retry an HTTP/2 framing error, so it is not asked to
+#   speak HTTP/2.
+#
+# ``ECBUILD_DOWNLOAD_EXTRA_FLAGS``
+#   further flags appended to the curl command line
 #
 # Examples
 # --------
@@ -341,7 +412,7 @@ endfunction(ecbuild_get_test_data)
 #                               [ DIRLOCAL <dir> ]
 #                               [ LABELS <label1> [<label2> ...] ]
 #                               [ EXTRACT ]
-#                               [ NOCHECK ] 
+#                               [ NOCHECK ]
 #                               [ INSECURE ] )
 #
 # curl or wget is required (curl is preferred if available).
@@ -350,13 +421,14 @@ endfunction(ecbuild_get_test_data)
 # -------
 #
 # NAMES : required
-#   list of names of the test data files
+#   list of names of the test data files. Each name may contain a relative
+#   path and may be followed by an md5 checksum separated with a ``:``.
 #
-# TARGET : optional
-#   CMake target name
+# TARGET : required
+#   name of the download test (and prefix for its internal CMake targets)
 #
 # DIRNAME : optional
-#   use when there is a directory structure on the server that 
+#   use when there is a directory structure on the server that
 #   hosts test files
 #
 # DIRLOCAL : optional, defaults to ".", local directory in which the test data is copied
@@ -385,6 +457,20 @@ endfunction(ecbuild_get_test_data)
 # for each name given in the list of ``NAMES``. Each name may contain a
 # relative path, which is appended to ``DIRNAME`` and may be followed by an
 # md5 checksum, separated with a ``:`` (the name must not contain spaces).
+# Characters that are not valid in CMake target names, including ``=`` and
+# ``,`` in filenames, are supported.
+#
+# Each file is assigned an internal target name containing readable directory
+# and filename components followed by a hash of the complete relative path.
+# The hash keeps the targets distinct when different paths have the same
+# readable C identifier. These internal target names are implementation details
+# and should not be invoked directly; use the target passed with ``TARGET``.
+#
+# Files in different relative directories must have different basenames. The
+# relative directory is used for the remote location and internal target name,
+# but the downloaded file is stored directly in ``DIRLOCAL`` using its basename.
+# For example, ``foo/a.txt`` and ``bar/a.txt`` would both produce
+# ``<DIRLOCAL>/a.txt`` and are therefore not supported in the same invocation.
 #
 # If the ``ECBUILD_DOWNLOAD_BASE_URL`` variable is not set, the default URL
 # ``https://get.ecmwf.int/repository/test-data`` is used.
@@ -413,6 +499,15 @@ endfunction(ecbuild_get_test_data)
 #
 #   ecbuild_get_test_multidata( TARGET get_grib_data DIRNAME test/data/dir
 #                               NAMES msl.grib:f69ca0929d1122c7878d19f32401abe9 )
+#
+# Download filenames containing punctuation: ::
+#
+#   ecbuild_get_test_multidata(
+#     TARGET get_gridspec_data
+#     DIRNAME eccodes/test-data/data/gridspec
+#     NAMES gridType=regular_ll.grib
+#           gridType=regular_ll,scanningMode=96.grib
+#     NOCHECK )
 #
 ##############################################################################
 
@@ -458,11 +553,20 @@ function( ecbuild_get_test_multidata )
 
     set( _script ${CMAKE_CURRENT_BINARY_DIR}/get_data_${_p_TARGET}.cmake )
 
+    # Collect failures and report them together at the end rather than stopping
+    # at the first: one unreachable file used to leave every later file in the
+    # set undownloaded, so a single transient network error failed every test
+    # that reads any of this data instead of only the ones that need that file.
+    #
+    # \${ARGV}, not \${CMD}: the latter is expanded here, where it does not exist,
+    # so the message named nothing.
     file( WRITE ${_script} "
+set(EXEC_CHECK_FAILURES \"\")
 function(EXEC_CHECK)
      execute_process(COMMAND \${ARGV} RESULT_VARIABLE CMD_RESULT)
      if(CMD_RESULT)
-           message(FATAL_ERROR \"Error running ${CMD}\")
+           string(REPLACE \";\" \" \" CMD_TEXT \"\${ARGV}\")
+           set(EXEC_CHECK_FAILURES \"\${EXEC_CHECK_FAILURES}\\n  [exit \${CMD_RESULT}] \${CMD_TEXT}\" PARENT_SCOPE)
      endif()
 endfunction()\n\n" )
 
@@ -481,16 +585,42 @@ endfunction()\n\n" )
         endif()
         unset( _path_comps )
 
-        string( REPLACE "." "_" _name "${_file}" )
+        #
+        # Define _dir_cidentifier
+        #
+        if( _dir )
+            string( MAKE_C_IDENTIFIER "${_dir}" _dir_cidentifier )
+            string( APPEND _dir_cidentifier "_" )
+        else()
+            set( _dir_cidentifier "" )
+        endif()
+
+        #
+        # Define _file_cidentifier
+        #
+        string( MAKE_C_IDENTIFIER "${_file}" _file_cidentifier )
+
+        #
+        # Define _dir_file_hash
+        #
+        string( MD5 _dir_file_hash "${_f}" )
+
+        #
+        # Define the name of the target for downloading a specific file
+        #
+        set( _target_name "__get_data_${_p_TARGET}_${_dir_cidentifier}${_file_cidentifier}_${_dir_file_hash}" )
+
+        #
+        # Define the md5 checksum if given in the name, otherwise it will be downloaded from the server
+        #
         string( REGEX MATCH ":.*"  _md5  "${_d}" )
         string( REPLACE ":" "" _md5 "${_md5}" )
-
         if( _md5 )
             set( _md5 MD5 ${_md5} )
         endif()
 
         ecbuild_get_test_data(
-            TARGET __get_data_${_p_TARGET}_${_name}
+            TARGET ${_target_name}
             DIRLOCAL ${_p_DIRLOCAL}
             NAME ${_file} ${_DIRNAME} ${_md5} ${_extract} ${_nocheck} ${_insecure})
 
@@ -502,9 +632,12 @@ endfunction()\n\n" )
           set( _fast "/fast" )
         endif()
         file( APPEND ${_script}
-              "exec_check( \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target __get_data_${_p_TARGET}_${_name}${_fast} )\n" )
+              "exec_check( \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target ${_target_name}${_fast} )\n" )
 
     endforeach()
+
+    file( APPEND ${_script}
+          "\nif(EXEC_CHECK_FAILURES)\n  message(FATAL_ERROR \"Failed downloads:\${EXEC_CHECK_FAILURES}\")\nendif()\n" )
 
     if( HAVE_TESTS )
       add_test(  NAME ${_p_TARGET} COMMAND ${CMAKE_COMMAND} -P ${_script} )

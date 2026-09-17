@@ -1,0 +1,10 @@
+ecbuild_add_test(
+  TARGET test_ecbuild_get_test_multidata
+  TYPE SCRIPT
+  COMMAND ${CMAKE_COMMAND}
+  ARGS
+    -DTEST_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+    -DTEST_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+    -Decbuild_ROOT=${PROJECT_SOURCE_DIR}
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/run_test.cmake
+)
