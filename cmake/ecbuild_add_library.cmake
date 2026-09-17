@@ -464,6 +464,11 @@ function( ecbuild_add_library_impl )
       endif()
     endif()
 
+    if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "LLVMFlang" AND "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+      ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): enforce linker language C for FLANG")
+      set_target_properties( ${_PAR_TARGET} PROPERTIES LINKER_LANGUAGE C )
+    endif()
+
     if( NOT _PAR_TYPE MATCHES "OBJECT" AND NOT _PAR_TYPE MATCHES "INTERFACE" AND ECBUILD_IMPLICIT_LINK_LIBRARIES )
       target_link_libraries( ${_PAR_TARGET} PRIVATE ${ECBUILD_IMPLICIT_LINK_LIBRARIES} )
     endif()
