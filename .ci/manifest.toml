@@ -15,35 +15,35 @@ compiler-inputs = []
 visibility = "public"
 
 [[matrix.build.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
 platform = "ubuntu-24.04"
 
 [[matrix.build.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "ubuntu-24.04"
 platform = "gh-ubuntu-24.04"
 
 [[matrix.build.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/rocky8-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/rocky8-gcc8-gfortran8:latest"
 platform = "rocky-8"
 
 [[matrix.build.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/debian11-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/debian11-gcc10-gfortran10:latest"
 platform = "debian-11"
 
 [[matrix.build.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-arm64"]
 platform = "macos-13-arm"
 
 [[matrix.build.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-x86_64"]
 platform = "macos-13-x86"
 
@@ -54,9 +54,9 @@ forwarded-inputs = ["build-type"]
 needs = []
 
 [[matrix.test.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gfortran13:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
 platform = "ubuntu-24.04"
 
 # No `triggers`: ci.yml-only, nothing rendered into cross-repo-trigger.yml.
@@ -67,7 +67,7 @@ forwarded-inputs = ["build-type"]
 needs = ["build"]
 
 [[matrix.build-hpc.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
@@ -78,10 +78,12 @@ modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load 
 cc = "gcc"
 cxx = "g++"
 time = "00:30:00"
+ntasks = 2
+ssdtmp = "10G"
 tests = true
 
 [[matrix.build-hpc.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
@@ -90,10 +92,12 @@ modules = ["load prgenv/intel-llvm", "unload intel", "load intel/2025.3.1", "loa
 cc = "icx"
 cxx = "icpx"
 time = "00:30:00"
+ntasks = 2
+ssdtmp = "10G"
 tests = true
 
 [[matrix.build-hpc.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
@@ -102,10 +106,12 @@ modules = ["load prgenv/amd", "unload aocc", "load aocc/4.0.0", "load cmake"]
 cc = "clang"
 cxx = "clang++"
 time = "00:15:00"
+ntasks = 2
+ssdtmp = "10G"
 tests = false
 
 [[matrix.build-hpc.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
@@ -114,6 +120,8 @@ modules = ["load prgenv/nvidia", "unload nvidia", "load nvidia/24.11", "load cma
 cc = "nvc"
 cxx = "nvc++"
 time = "00:15:00"
+ntasks = 2
+ssdtmp = "10G"
 tests = false
 
 [matrix.build-hpc]

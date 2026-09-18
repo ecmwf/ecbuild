@@ -12,7 +12,7 @@ inputs:
   build-type:
     description: 'CMake build type'
     required: false
-    default: Release
+    default: RelWithDebInfo
 
 outputs:
   install-path:
@@ -47,7 +47,8 @@ runs:
         BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
       run: |
         set -euo pipefail
-        cmake -S "$GITHUB_WORKSPACE" \
+        cmake --preset ci \
+              -S "$GITHUB_WORKSPACE" \
               -B "$BUILD_DIR" \
               -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
               -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH"
