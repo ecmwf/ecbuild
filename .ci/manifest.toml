@@ -17,7 +17,7 @@ visibility = "public"
 [[matrix.build.include]]
 build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
 platform = "ubuntu-24.04"
 
 [[matrix.build.include]]
@@ -28,13 +28,13 @@ platform = "gh-ubuntu-24.04"
 [[matrix.build.include]]
 build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/rocky8-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/rocky8-gcc8-gfortran8:latest"
 platform = "rocky-8"
 
 [[matrix.build.include]]
 build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/debian11-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/debian11-gcc10-gfortran10:latest"
 platform = "debian-11"
 
 [[matrix.build.include]]
@@ -56,7 +56,7 @@ needs = []
 [[matrix.test.include]]
 build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gfortran13:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
 platform = "ubuntu-24.04"
 
 # No `triggers`: ci.yml-only, nothing rendered into cross-repo-trigger.yml.
