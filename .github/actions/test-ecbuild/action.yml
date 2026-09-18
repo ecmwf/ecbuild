@@ -13,7 +13,7 @@ inputs:
     description: >
       Exported as FC, not -DCMAKE_Fortran_COMPILER: the tests shell out to nested
       `cmake` invocations that inherit only the environment. The default matches
-      the gfortran13 image, which ships no unversioned `gfortran`.
+      the gcc13-gfortran13 image, which ships no unversioned `gfortran`.
     required: false
     default: gfortran-13
 
