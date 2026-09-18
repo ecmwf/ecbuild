@@ -62,7 +62,7 @@ class WorkflowTests(unittest.TestCase):
                     if step.get('uses', '').startswith(f'ecmwf/reusable-workflows/cd-actions/{name}@'))
 
     def test_direct_actions_not_main_cd(self):
-        self.assertEqual(set(self.jobs), {'prepare', 'conda', 'hpc', 'hpc-sync-tag', 'release'})
+        self.assertEqual(set(self.jobs), {'ci-approval', 'prepare', 'conda', 'hpc', 'hpc-sync-tag', 'release'})
         self.assertTrue(all('uses' not in job for job in self.jobs.values()))
         for job in ('conda', 'hpc', 'hpc-sync-tag', 'release'):
             self.action(job, job)
@@ -70,7 +70,7 @@ class WorkflowTests(unittest.TestCase):
     def test_builds_use_prepared_sha(self):
         for name in ('conda', 'hpc'):
             job = self.jobs[name]
-            self.assertEqual(job['needs'], 'prepare')
+            self.assertEqual(job['needs'], ['ci-approval', 'prepare'])
             checkout = next(step for step in job['steps'] if step.get('uses', '').startswith('actions/checkout@'))
             self.assertEqual(checkout['with']['ref'], '${{ needs.prepare.outputs.source_sha }}')
             self.assertEqual(self.action(name, name)['with']['dry_run'], '${{ needs.prepare.outputs.dry_run }}')
@@ -85,6 +85,24 @@ class WorkflowTests(unittest.TestCase):
         for key in ('nexus_token', 'nexus_test_token'):
             self.assertIn("needs.prepare.outputs.dry_run == 'false'", self.action('conda', 'conda')['with'][key])
 
+    def test_all_jobs_directly_depend_on_approval(self):
+        approval = self.jobs['ci-approval']
+        self.assertEqual(approval['runs-on'], 'ubuntu-latest')
+        self.assertEqual(approval['permissions']['pull-requests'], 'write')
+        self.assertIn("github.event.label.name == 'approved-for-cd'", approval['if'])
+        step = approval['steps'][0]
+        self.assertEqual(step['uses'], 'ecmwf/ci-infrastructure/actions/require-ci-approval@main')
+        self.assertEqual(step['with']['label'], 'approved-for-cd')
+        self.assertNotIn('consume-label', step['with'])
+        self.assertIn('synchronize', self.workflow['on']['pull_request']['types'])
+        for name, job in self.jobs.items():
+            if name == 'ci-approval':
+                continue
+            needs = job['needs']
+            self.assertIn('ci-approval', [needs] if isinstance(needs, str) else needs)
+        for name in ('hpc-sync-tag', 'release'):
+            self.assertIn("needs.ci-approval.result == 'success'", self.jobs[name]['if'])
+
     def test_only_release_job_has_contents_write(self):
         self.assertEqual(self.workflow['permissions']['contents'], 'read')
         for name, job in self.jobs.items():
@@ -93,7 +111,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_release_requires_successful_prepare_and_no_build_failure(self):
         release = self.jobs['release']
-        self.assertEqual(set(release['needs']), {'prepare', 'conda', 'hpc', 'hpc-sync-tag'})
+        self.assertEqual(set(release['needs']), {'ci-approval', 'prepare', 'conda', 'hpc', 'hpc-sync-tag'})
         self.assertIn('!cancelled()', release['if'])
         self.assertIn("needs.prepare.result == 'success'", release['if'])
         for name in ('conda', 'hpc', 'hpc-sync-tag'):
