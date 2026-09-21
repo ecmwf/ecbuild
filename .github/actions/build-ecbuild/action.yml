@@ -13,6 +13,12 @@ inputs:
     description: 'CMake build type'
     required: false
     default: RelWithDebInfo
+  c-compiler:
+    description: >
+      Exported as CC when set. The gcc images ship only versioned names
+      (gcc-13, gcc-10); empty leaves CMake to find `cc` on images that have one.
+    required: false
+    default: ''
 
 outputs:
   install-path:
@@ -45,8 +51,10 @@ runs:
         BUILD_TYPE: ${{ inputs.build-type }}
         INSTALL_PATH: ${{ steps.set-paths.outputs.install-path }}
         BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
+        C_COMPILER: ${{ inputs.c-compiler }}
       run: |
         set -euo pipefail
+        if [ -n "$C_COMPILER" ]; then export CC="$C_COMPILER"; fi
         cmake --preset ci \
               -S "$GITHUB_WORKSPACE" \
               -B "$BUILD_DIR" \

@@ -95,6 +95,7 @@ jobs:
         uses: ./.github/actions/build-ecbuild
         with:
           build-type: ${{ matrix.build-type }}
+          c-compiler: ${{ matrix.c-compiler }}
 
       - name: Publish ecbuild
         uses: ecmwf/ci-infrastructure/actions/publish-artifact@main

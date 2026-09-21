@@ -16,6 +16,14 @@ inputs:
       the gcc13-gfortran13 image, which ships no unversioned `gfortran`.
     required: false
     default: gfortran-13
+  c-compiler:
+    description: 'Exported as CC, for the same reason as fortran-compiler.'
+    required: false
+    default: gcc-13
+  cxx-compiler:
+    description: 'Exported as CXX, for the same reason as fortran-compiler.'
+    required: false
+    default: g++-13
 
 runs:
   using: composite
@@ -31,6 +39,8 @@ runs:
         BUILD_TYPE: ${{ inputs.build-type }}
         BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
         FC: ${{ inputs.fortran-compiler }}
+        CC: ${{ inputs.c-compiler }}
+        CXX: ${{ inputs.cxx-compiler }}
       run: |
         set -euo pipefail
         if ! command -v "$FC" >/dev/null; then
@@ -49,6 +59,8 @@ runs:
       env:
         BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
         FC: ${{ inputs.fortran-compiler }}
+        CC: ${{ inputs.c-compiler }}
+        CXX: ${{ inputs.cxx-compiler }}
       run: |
         set -euo pipefail
         ctest --test-dir "$BUILD_DIR" \

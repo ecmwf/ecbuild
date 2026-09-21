@@ -172,10 +172,12 @@ jobs:
           printf '%s' "$val"
         }
         build_type=$(require '."build-type"' build-type)
+        c_compiler=$(jq -r '."c-compiler" // ""' <<<"$leg")
         deps_json=$(require '._resolved.deps | tojson' '_resolved.deps')
         own_artifact_name=$(require '._resolved."own-artifact-name"' '_resolved.own-artifact-name')
         {
           echo "build-type=${build_type}"
+          echo "c-compiler=${c_compiler}"
           echo "deps-json=${deps_json}"
           echo "own-artifact-name=${own_artifact_name}"
         } >> "$GITHUB_OUTPUT"
@@ -190,6 +192,7 @@ jobs:
       uses: ./.github/actions/build-ecbuild
       with:
         build-type: ${{ steps.m.outputs.build-type }}
+        c-compiler: ${{ steps.m.outputs.c-compiler }}
     - name: Publish
       uses: ecmwf/ci-infrastructure/actions/publish-artifact@main
       with:
