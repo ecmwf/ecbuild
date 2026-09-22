@@ -8,14 +8,22 @@ inputs:
   build-type:
     description: 'CMake build type'
     required: false
-    default: Release
+    default: RelWithDebInfo
   fortran-compiler:
     description: >
       Exported as FC, not -DCMAKE_Fortran_COMPILER: the tests shell out to nested
       `cmake` invocations that inherit only the environment. The default matches
-      the gfortran13 image, which ships no unversioned `gfortran`.
+      the gcc13-gfortran13 image, which ships no unversioned `gfortran`.
     required: false
     default: gfortran-13
+  c-compiler:
+    description: 'Exported as CC, for the same reason as fortran-compiler.'
+    required: false
+    default: gcc-13
+  cxx-compiler:
+    description: 'Exported as CXX, for the same reason as fortran-compiler.'
+    required: false
+    default: g++-13
 
 runs:
   using: composite
@@ -31,6 +39,8 @@ runs:
         BUILD_TYPE: ${{ inputs.build-type }}
         BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
         FC: ${{ inputs.fortran-compiler }}
+        CC: ${{ inputs.c-compiler }}
+        CXX: ${{ inputs.cxx-compiler }}
       run: |
         set -euo pipefail
         if ! command -v "$FC" >/dev/null; then
@@ -38,7 +48,8 @@ runs:
           echo "::error::pass a different 'fortran-compiler' or use an image that ships it."
           exit 1
         fi
-        cmake -S "$GITHUB_WORKSPACE" \
+        cmake --preset ci \
+              -S "$GITHUB_WORKSPACE" \
               -B "$BUILD_DIR" \
               -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
               -DENABLE_TESTS=ON
@@ -48,6 +59,8 @@ runs:
       env:
         BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
         FC: ${{ inputs.fortran-compiler }}
+        CC: ${{ inputs.c-compiler }}
+        CXX: ${{ inputs.cxx-compiler }}
       run: |
         set -euo pipefail
         ctest --test-dir "$BUILD_DIR" \

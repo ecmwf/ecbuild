@@ -14,49 +14,48 @@ repo = "ecmwf/ecbuild"
 compiler-inputs = []
 visibility = "public"
 
-[[matrix.build.include]]
-build-type = "Release"
-runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest"
-platform = "ubuntu-24.04"
+[matrix.build.defaults]
+build-type = "RelWithDebInfo"
 
 [[matrix.build.include]]
-build-type = "Release"
+runs-on = "arc-runner-normal"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
+platform = "ubuntu-24.04"
+c-compiler = "gcc-13"
+
+[[matrix.build.include]]
 runs-on = "ubuntu-24.04"
 platform = "gh-ubuntu-24.04"
 
 [[matrix.build.include]]
-build-type = "Release"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/rocky8-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/rocky8-gcc8-gfortran8:latest"
 platform = "rocky-8"
 
 [[matrix.build.include]]
-build-type = "Release"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/debian11-base:latest"
+container = "eccr.ecmwf.int/public-ci-images/debian11-gcc10-gfortran10:latest"
 platform = "debian-11"
+c-compiler = "gcc-10"
 
 [[matrix.build.include]]
-build-type = "Release"
 runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-arm64"]
 platform = "macos-13-arm"
 
 [[matrix.build.include]]
-build-type = "Release"
 runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-x86_64"]
 platform = "macos-13-x86"
 
 [matrix.build]
 triggers = ["rebuild-request"]
 action = "./.github/actions/build-ecbuild"
-forwarded-inputs = ["build-type"]
+forwarded-inputs = ["build-type", "c-compiler"]
 needs = []
 
 [[matrix.test.include]]
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
-container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gfortran13:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
 platform = "ubuntu-24.04"
 
 # No `triggers`: ci.yml-only, nothing rendered into cross-repo-trigger.yml.
@@ -66,11 +65,15 @@ action = "./.github/actions/test-ecbuild"
 forwarded-inputs = ["build-type"]
 needs = ["build"]
 
-[[matrix.build-hpc.include]]
-build-type = "Release"
+[matrix.build-hpc.defaults]
+build-type = "RelWithDebInfo"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
+ntasks = 2
+ssdtmp = "1G"
+
+[[matrix.build-hpc.include]]
 platform = "hpc-atos-gnu"
 # gcc/old, not a version number: as of now gives you 8.5.0
 # `module avail gcc` lists no 8.5.0 to pin directly.
@@ -81,10 +84,6 @@ time = "00:30:00"
 tests = true
 
 [[matrix.build-hpc.include]]
-build-type = "Release"
-runs-on = "hpc-submit"
-container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
-site = "hpc-batch"
 platform = "hpc-atos-intel"
 modules = ["load prgenv/intel-llvm", "unload intel", "load intel/2025.3.1", "load cmake", "load python3/3.13.13-01"]
 cc = "icx"
@@ -93,10 +92,6 @@ time = "00:30:00"
 tests = true
 
 [[matrix.build-hpc.include]]
-build-type = "Release"
-runs-on = "hpc-submit"
-container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
-site = "hpc-batch"
 platform = "hpc-atos-aocc"
 modules = ["load prgenv/amd", "unload aocc", "load aocc/4.0.0", "load cmake"]
 cc = "clang"
@@ -105,10 +100,6 @@ time = "00:15:00"
 tests = false
 
 [[matrix.build-hpc.include]]
-build-type = "Release"
-runs-on = "hpc-submit"
-container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
-site = "hpc-batch"
 platform = "hpc-atos-nvidia"
 modules = ["load prgenv/nvidia", "unload nvidia", "load nvidia/24.11", "load cmake"]
 cc = "nvc"
