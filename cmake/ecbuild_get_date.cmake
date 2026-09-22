@@ -49,4 +49,3 @@ macro(ecbuild_get_timestamp RESULT)
         ecbuild_warn("This is NOT UNIX - timestamp not implemented")
     endif()
 endmacro(ecbuild_get_timestamp)
-

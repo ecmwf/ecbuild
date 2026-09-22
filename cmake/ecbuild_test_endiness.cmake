@@ -25,4 +25,3 @@ function(ecbuild_test_endiness)
   set( EC_LITTLE_ENDIAN ${EC_LITTLE_ENDIAN} PARENT_SCOPE )
 
 endfunction(ecbuild_test_endiness)
-

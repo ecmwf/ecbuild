@@ -28,4 +28,3 @@ ecbuild_add_test(
 ecbuild_install_project( NAME ${PROJECT_NAME} )
 
 ecbuild_print_summary()
-

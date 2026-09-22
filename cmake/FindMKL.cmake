@@ -96,10 +96,10 @@ if( MKL_FAKE_INTEL_CPU AND MKL_LIBRARIES )
   set( _mkl_fake_intel_cpu_src "${CMAKE_BINARY_DIR}/CMakeFiles/mkl_fake_intel_cpu.c" )
 
 
-  if (TARGET mkl_fake_intel_cpu) 
-   
+  if (TARGET mkl_fake_intel_cpu)
+
      message( STATUS "Target mkl_fake_intel_cpu already exists")
-   
+
   else()
 
     file( WRITE ${_mkl_fake_intel_cpu_src}

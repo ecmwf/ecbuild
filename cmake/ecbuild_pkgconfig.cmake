@@ -496,7 +496,7 @@ if(HAVE_PKGCONFIG)
   add_custom_target(${_PAR_FILENAME}-pkg-config ALL
     BYPRODUCTS ${PKGCONFIG_DIR}/${_PAR_FILENAME}
     COMMAND ${CMAKE_COMMAND} -P ${PROJECT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
-    DEPENDS 
+    DEPENDS
       ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
   )
 

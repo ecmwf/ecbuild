@@ -9,7 +9,7 @@ C     dimensions, "x" and "y", and a netCDF variable, called "data".
 C     This example demonstrates the netCDF Fortran 77 API. This is part
 C     of the netCDF tutorial, which can be found at:
 C     http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-tutorial
-      
+
 C     Full documentation of the netCDF Fortran 77 API can be found at:
 C     http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-f77
 
@@ -23,7 +23,7 @@ C     This is the name of the data file we will create.
       character*(*) FILE_NAME
       parameter (FILE_NAME='simple_xy.nc')
 
-C     We are writing 2D data, a 6 x 12 grid. 
+C     We are writing 2D data, a 6 x 12 grid.
       integer NDIMS
       parameter (NDIMS=2)
       integer NX, NY
@@ -59,7 +59,7 @@ C     overwrite this file, if it already exists.
       retval = nf_create(FILE_NAME, NF_CLOBBER, ncid)
       if (retval .ne. nf_noerr) call handle_err(retval)
 
-C     Define the dimensions. NetCDF will hand back an ID for each. 
+C     Define the dimensions. NetCDF will hand back an ID for each.
       retval = nf_def_dim(ncid, "x", NX, x_dimid)
       if (retval .ne. nf_noerr) call handle_err(retval)
       retval = nf_def_dim(ncid, "y", NY, y_dimid)

@@ -30,4 +30,3 @@ set( empty )
 ecbuild_add_fortran_flags( ${empty} )
 
 ecbuild_add_executable(TARGET main SOURCES main.F90)
-

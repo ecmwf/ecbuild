@@ -91,7 +91,7 @@ macro( ecbuild_linker_flags )
     if( ECBUILD_${_obj}_LINKER_FLAGS )
       set( CMAKE_${_obj}_LINKER_FLAGS ${ECBUILD_${_obj}_LINKER_FLAGS} )
     endif()
-  
+
     if( NOT "$ENV{LD_RUN_PATH}" EQUAL "" )
       set( LD_RUN_PATH "$ENV{LD_RUN_PATH}" )
       string( REPLACE ":" ";" LD_RUN_PATH "$ENV{LD_RUN_PATH}" )
@@ -103,17 +103,17 @@ macro( ecbuild_linker_flags )
       endforeach()
     endif()
   endforeach()
-  
+
   ecbuild_get_build_type_list( _btypelist )
 
   foreach( _btype IN LISTS _btypelist)
-  
+
     foreach( _obj EXE SHARED MODULE )
       if( ECBUILD_${_obj}_LINKER_FLAGS_${_btype} )
         set( CMAKE_${_obj}_LINKER_FLAGS_${_btype} ${ECBUILD_${_obj}_LINKER_FLAGS_${_btype}} )
       endif()
     endforeach()
-  
+
   endforeach()
 endmacro()
 
@@ -378,4 +378,3 @@ endforeach()
 if( NOT DEFINED ECBUILD_COMPILE_FLAGS AND NOT DEFINED ECBUILD_SOURCE_FLAGS )
    ecbuild_linker_flags()
 endif()
-

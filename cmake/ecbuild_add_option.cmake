@@ -141,8 +141,8 @@ macro( ecbuild_add_option )
   get_property( _in_cache CACHE ENABLE_${_p_FEATURE} PROPERTY VALUE SET )
 
   # ***Important***
-  # 
-  # In order to support options in multi-project scenarios, and allow the user to 
+  #
+  # In order to support options in multi-project scenarios, and allow the user to
   # reconfigure the project with a different set of options, we need to precompute
   # and store the value of the user provided option.
   #
@@ -188,10 +188,10 @@ macro( ecbuild_add_option )
   elseif( NOT ENABLE_${_p_FEATURE} STREQUAL "" AND _in_cache )
 
     #
-    # User explicitly defined the value of the feature 
+    # User explicitly defined the value of the feature
     # The user can set feature to either ON or OFF; and this is cached so it doesn't revert back to the default
     #
-  
+
     ecbuild_debug("ecbuild_add_option(${_p_FEATURE}): ENABLE_${_p_FEATURE} was found in cache, updating to ENABLE_${_p_FEATURE}=${ENABLE_${_p_FEATURE}}")
     set( ENABLE_${_p_FEATURE} ${ENABLE_${_p_FEATURE}} CACHE BOOL "" FORCE )
     set( ${_p_FEATURE}_user_provided_input 1 CACHE INTERNAL "" FORCE )

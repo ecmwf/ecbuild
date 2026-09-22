@@ -7,4 +7,3 @@ ecbuild_add_test(
   TYPE       SCRIPT
   COMMAND    run-test.sh
 )
-

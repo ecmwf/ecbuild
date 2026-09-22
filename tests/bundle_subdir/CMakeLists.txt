@@ -30,4 +30,3 @@ foreach( _func ${_funcs} )
     COMMAND    ${_ref}/run-test.sh
   )
 endforeach()
-

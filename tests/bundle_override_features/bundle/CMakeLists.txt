@@ -14,4 +14,3 @@ project( bundle VERSION 0.0.0 LANGUAGES C )
 
 add_subdirectory( project_a )
 add_subdirectory( project_b )
-

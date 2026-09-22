@@ -1,5 +1,5 @@
 
-version: 2 
+version: 2
 
 # Set the OS, Python version and other tools you might need
 build:

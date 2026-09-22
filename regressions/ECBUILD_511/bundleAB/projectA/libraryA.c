@@ -3,4 +3,3 @@
 int libraryA() {
   return 4;
 }
-

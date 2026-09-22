@@ -47,7 +47,7 @@ if( ARMPL_INCLUDE_DIR ) # use include dir to find libs
 
   find_library( ARMPL_LIB
                 PATHS ${ARMPLROOT} ${ARMPL_PATH} ${ARMPL_ROOT} ${ARMPL_DIR} $ENV{ARMPLROOT} $ENV{ARMPL_PATH} $ENV{ARMPL_ROOT} $ENV{ARMPL_DIR}
-		PATH_SUFFIXES "lib" 
+		PATH_SUFFIXES "lib"
                 NAMES armpl_lp64${__armpl_lib_suffix} )
 
   if( ARMPL_LIB )

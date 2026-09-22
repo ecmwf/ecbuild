@@ -23,4 +23,3 @@ ecbuild_add_test(
   COMMAND    buildfail.sh
   CONDITION  UNIX
 )
-

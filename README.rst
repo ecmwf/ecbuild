@@ -48,4 +48,3 @@ build directory is ``$BUILD_DIR`` (e.g. ``$SRC_DIR/build``)::
    cd $BUILD_DIR
    ecbuild $SRC_DIR    # see `ecbuild --help`, you may pass CMake options as well
    make                # add your favourite options, e.g. -j
-

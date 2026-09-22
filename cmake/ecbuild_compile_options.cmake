@@ -52,7 +52,7 @@
 #
 #   ecbuild_define_compile_options( NAME <name> DESCRIPTION <description> LANGUAGE <language> [ REQUIRED ]
 #                                   [ GNU <values> ] [ NEC <values> ] [ NVHPC <values> ] [ Intel <values> ]
-#                                   [ IntelLLVM <values> ] [ Cray <values> ] [ Flang <values> ] [ NAG <values> ] 
+#                                   [ IntelLLVM <values> ] [ Cray <values> ] [ Flang <values> ] [ NAG <values> ]
 #                                   [ LLVMFlang <values> ] [ Fujitsu <values> ] )
 #
 # Options

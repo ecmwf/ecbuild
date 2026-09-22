@@ -7,6 +7,3 @@ MODULE Constants
 !---------------------------------------------------------------------
    REAL, PARAMETER :: ZOOM = 1
 END MODULE Constants
-
-
-

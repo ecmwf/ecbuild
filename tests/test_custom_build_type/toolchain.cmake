@@ -10,4 +10,3 @@ set( ECBUILD_CXX_FLAGS              "-Wno-common-cxx-flag" )
 set( ECBUILD_Fortran_FLAGS_CUSTOM   "-Wno-custom-f-flag" )
 set( ECBUILD_C_FLAGS_CUSTOM         "-Wno-custom-c-flag" )
 set( ECBUILD_CXX_FLAGS_CUSTOM       "-Wno-custom-cxx-flag" )
-

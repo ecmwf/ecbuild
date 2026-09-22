@@ -6,9 +6,9 @@ project(myproj VERSION 0.1.0 LANGUAGES C)
 ecbuild_add_library(TARGET mylib SOURCES mylib.c)
 
 ecbuild_add_test(
-    TARGET myexe 
-    SOURCES myexe.c 
-    PROPERTIES TIMEOUT 60 
+    TARGET myexe
+    SOURCES myexe.c
+    PROPERTIES TIMEOUT 60
     LIBS mylib
 )
 

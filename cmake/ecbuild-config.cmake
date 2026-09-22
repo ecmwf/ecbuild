@@ -14,4 +14,3 @@ if(NOT ${ecbuild_MACROS_DIR} IN_LIST CMAKE_MODULE_PATH)
 endif()
 cmake_policy( POP )
 include(ecbuild)
-
