@@ -18,4 +18,3 @@ This directory contains examples of some useful features of ecBuild:
   compile flags on a per-file basis
 * `config-bundle/ <config-bundle/README.md>`_ - Providing project-specific
   configuration
-

@@ -3,18 +3,8 @@ name: CI
 on:
   push:
     branches: [develop, master]
-    paths-ignore:
-      - "docs/**"
-      - "bamboo/**"
-      - "README.rst"
-      - ".cd/**"
   pull_request:
     types: [opened, reopened, synchronize, labeled]
-    paths-ignore:
-      - "docs/**"
-      - "bamboo/**"
-      - "README.rst"
-      - ".cd/**"
   workflow_dispatch:
 
 concurrency:

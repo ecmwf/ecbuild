@@ -19,7 +19,7 @@
 #   ``TARGET`` is a cmake target with an IMPORTED_LOCATION property
 #
 # Use this function to install dependencies that use shared object versioning,
-# i.e. install as libxx.so -> libxx.so.1 -> libxx.so.1.2.3. In this case we 
+# i.e. install as libxx.so -> libxx.so.1 -> libxx.so.1.2.3. In this case we
 # need to collect soft-links and final shared object.
 #
 # If your dependency does NOT use shared object versioning, i.e. only installs

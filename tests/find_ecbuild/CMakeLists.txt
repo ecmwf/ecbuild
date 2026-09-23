@@ -31,4 +31,3 @@ foreach(_config ${_configs})
     COMMAND    ${_ref}/run-test.sh
   )
 endforeach()
-

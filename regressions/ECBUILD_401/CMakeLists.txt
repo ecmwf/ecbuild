@@ -9,4 +9,3 @@ ecbuild_add_test(
   COMMAND    run-test.sh
   RESOURCES  ${ec401_res}
 )
-

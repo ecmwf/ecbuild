@@ -191,4 +191,3 @@ function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
   endif()
 
 endfunction()
-

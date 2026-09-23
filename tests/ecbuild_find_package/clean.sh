@@ -12,4 +12,3 @@ rm -rf $HERE/projectB/build
 rm -rf $HERE/projectB/install
 rm -rf $HERE/projectC/build
 rm -rf $HERE/projectC/install
-

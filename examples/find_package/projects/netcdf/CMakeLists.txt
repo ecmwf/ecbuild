@@ -11,7 +11,7 @@ endif()
 
 set( suffix using_targets )
 
-ecbuild_add_test( TARGET  test_netcdf_cxx_${suffix} 
+ecbuild_add_test( TARGET  test_netcdf_cxx_${suffix}
                   SOURCES netcdf_examples/test_netcdf_cxx.cc
                   LIBS    NetCDF::NetCDF_CXX )
 

@@ -50,5 +50,3 @@ do
     git "$@"
     popd > /dev/null
 done
-
-

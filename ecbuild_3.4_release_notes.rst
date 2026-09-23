@@ -393,4 +393,3 @@ The following are deprecated and should not be provided:
 
   # some CMake macros
   include( ${example_CMAKE_DIR}/example_macros.cmake )
-

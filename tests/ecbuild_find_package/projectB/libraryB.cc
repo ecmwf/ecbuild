@@ -15,4 +15,3 @@ extern int libraryA();
 int libraryB() {
   return libraryA();
 }
-

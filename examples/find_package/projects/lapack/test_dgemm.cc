@@ -23,7 +23,7 @@ int main(int argc, char* argv[] ) {
   int m = 2; // A.rows()
   int n = 2; // B.cols()
   int k = 2; // A.cols()
-  dgemm_( trans, trans, &m, &n, &k, &alpha, A, &m, B, &k, &beta, C, &m); 
+  dgemm_( trans, trans, &m, &n, &k, &alpha, A, &m, B, &k, &beta, C, &m);
 
   for( int i=0; i<2; ++i ) {
     for( int j=0; j<2; ++j ) {
@@ -43,4 +43,3 @@ int main(int argc, char* argv[] ) {
   }
   return err_code;
 }
-

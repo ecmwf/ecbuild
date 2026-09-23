@@ -8,4 +8,3 @@ int main(int argc, char* argv[]) {
     printf("libraryB = %d\n", libraryB());
     return 0;
 }
-

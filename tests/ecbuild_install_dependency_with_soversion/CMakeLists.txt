@@ -4,4 +4,3 @@ ecbuild_add_test(
   COMMAND    ${CMAKE_CURRENT_SOURCE_DIR}/run-test.sh
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-

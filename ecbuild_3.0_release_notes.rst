@@ -431,4 +431,3 @@ hardcoding some internal URLs into the ecBuild source code. Therefore, it is
 only available in compatibility mode and should not be used anymore. Please put
 the full git URL instead (you may want to use a variable to enable easy
 changes).
-

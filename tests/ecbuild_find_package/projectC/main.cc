@@ -4,5 +4,5 @@ int main(int argc, char* argv[]) {
 
     std::cout << "libraryC = " << libraryC() << std::endl;
 
-    return 0;	
+    return 0;
 }

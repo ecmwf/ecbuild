@@ -23,7 +23,7 @@
 # ----------------
 #
 # * FFTW_LIBRARIES and FFTW_INCLUDE_DIRS set by user
-#   
+#
 #   * Nothing is searched and these variables are used instead
 #
 # * Find MKL implementation via FFTW_ENABLE_MKL
