@@ -1,3 +1,6 @@
+# Vendored upstream examples; not ours to lint or format.
+exclude: '^examples/find_package/projects/(hdf5/hdf5_examples|netcdf/netcdf_examples)/'
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -8,6 +11,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: mixed-line-ending
+        args: [--fix=lf]
 
   - repo: https://github.com/ecmwf/ci-infrastructure
     rev: dac4b18ffe60c317fbab05246e851b6971f7eabf
