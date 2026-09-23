@@ -3,18 +3,8 @@ name: CI
 on:
   push:
     branches: [develop, master]
-    paths-ignore:
-      - "docs/**"
-      - "bamboo/**"
-      - "README.rst"
-      - ".cd/**"
   pull_request:
     types: [opened, reopened, synchronize, labeled]
-    paths-ignore:
-      - "docs/**"
-      - "bamboo/**"
-      - "README.rst"
-      - ".cd/**"
   workflow_dispatch:
 
 concurrency:
@@ -39,8 +29,17 @@ jobs:
     steps:
       - uses: ecmwf/ci-infrastructure/actions/require-ci-approval@main
 
-  resolve:
+  pre-commit:
     needs: ci-approval
+    runs-on: ubuntu-slim
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ecmwf/ci-infrastructure/actions/pre-commit@main
+
+  resolve:
+    needs: [ci-approval, pre-commit]
     runs-on: arc-runner-normal
     container:
       image: eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest
