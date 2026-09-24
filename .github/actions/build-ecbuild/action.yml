@@ -1,10 +1,8 @@
 name: Build ecbuild from source
 description: >
-  Configures, builds and installs the already-checked-out ecbuild (a
-  compiler-independent CMake toolchain collection) to a canonical prefix
-  derived from the shared install-prefix action. Caller must have already run
-  actions/checkout@v6 in the same job — the action reads the source from
-  $GITHUB_WORKSPACE.
+  Builds and installs the checked-out ecbuild (a compiler-independent CMake
+  toolchain collection) with ecmwf/ci-infrastructure/actions/cmake-build, which
+  documents the inputs. Nothing worth caching is compiled, so no sccache.
 
   The test suite lives in .github/actions/test-ecbuild.
 
@@ -15,57 +13,26 @@ inputs:
     default: RelWithDebInfo
   c-compiler:
     description: >
-      Exported as CC when set. The gcc images ship only versioned names
-      (gcc-13, gcc-10); empty leaves CMake to find `cc` on images that have one.
+      C compiler, e.g. gcc-13. The gcc images ship only versioned names; empty
+      leaves CMake to find `cc` on images that have one.
     required: false
     default: ''
 
 outputs:
   install-path:
     description: 'Absolute path where ecbuild is installed'
-    value: ${{ steps.set-paths.outputs.install-path }}
+    value: ${{ steps.build.outputs.install-path }}
   build-dir:
     description: 'Absolute path of the build tree, for ctest'
-    value: ${{ steps.set-paths.outputs.build-dir }}
+    value: ${{ steps.build.outputs.build-dir }}
 
 runs:
   using: composite
   steps:
-    - name: Get install prefix
-      id: prefix
-      uses: ecmwf/ci-infrastructure/actions/install-prefix@main
-
-    - name: Set paths
-      id: set-paths
-      shell: bash
-      run: |
-        set -euo pipefail
-        {
-          echo "install-path=${{ steps.prefix.outputs.base }}/ecbuild"
-          echo "build-dir=$RUNNER_TEMP/_ecbuild-build"
-        } >> "$GITHUB_OUTPUT"
-
-    - name: Configure ecbuild
-      shell: bash
-      env:
-        BUILD_TYPE: ${{ inputs.build-type }}
-        INSTALL_PATH: ${{ steps.set-paths.outputs.install-path }}
-        BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
-        C_COMPILER: ${{ inputs.c-compiler }}
-      run: |
-        set -euo pipefail
-        if [ -n "$C_COMPILER" ]; then export CC="$C_COMPILER"; fi
-        cmake --preset ci \
-              -S "$GITHUB_WORKSPACE" \
-              -B "$BUILD_DIR" \
-              -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
-              -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH"
-
-    - name: Build and install ecbuild
-      shell: bash
-      env:
-        BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
-      run: |
-        set -euo pipefail
-        cmake --build "$BUILD_DIR" --parallel "$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
-        cmake --install "$BUILD_DIR"
+    - id: build
+      uses: ecmwf/ci-infrastructure/actions/cmake-build@main
+      with:
+        package: ecbuild
+        c-compiler: ${{ inputs.c-compiler }}
+        build-type: ${{ inputs.build-type }}
+        sccache: 'false'
