@@ -239,7 +239,7 @@ macro( ecbuild_find_package )
     ecbuild_debug ( "ecbuild_find_package(${_PAR_NAME}): find_package( ${_PAR_NAME} ${_${_PAR_NAME}_version} ${_${_PAR_NAME}_find_quiet} ${_${_PAR_NAME}_components} ${_${_PAR_NAME}_mode} )")
     find_package( ${_PAR_NAME} ${_${_PAR_NAME}_version} ${_${_PAR_NAME}_find_quiet} ${_${_PAR_NAME}_components} ${_${_PAR_NAME}_mode} )
 
-    # Restore setting 
+    # Restore setting
     set( CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY ${CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY_orig} )
 
   endif()

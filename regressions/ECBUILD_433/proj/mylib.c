@@ -3,4 +3,3 @@
 void hello(void) {
     printf("Hello!\n");
 }
-

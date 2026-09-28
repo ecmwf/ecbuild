@@ -78,4 +78,3 @@ function( ecbuild_list_extra_search_paths pkg var )
 # ecbuild_debug_var( ${var} )
 
 endfunction()
-

@@ -55,4 +55,3 @@ endfunction(MAP_INSERT)
 function( MAP_GET _map _key _var )
     set( ${_var} "${_${_map}_${_key}}" PARENT_SCOPE )
 endfunction(MAP_GET)
-

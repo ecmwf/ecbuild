@@ -337,4 +337,3 @@ set( NetCDF4_FOUND ${NETCDF4_FOUND} )
 # For backwards compatibility we set NETCDF_INCLUDE_DIR to the value of
 # NETCDF_INCLUDE_DIRS
 set( NETCDF_INCLUDE_DIR "${NETCDF_INCLUDE_DIRS}" )
-

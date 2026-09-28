@@ -36,4 +36,3 @@ to the above ``ecbuild`` command, or re-run ecBuild::
    make documentation
 
 The documentation tree will be available in ``doc/html``.
-

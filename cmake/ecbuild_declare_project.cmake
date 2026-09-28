@@ -208,7 +208,7 @@ if( NOT ${PROJECT_NAME}_DECLARED )
 
   unset( _version_str )
   if( ${PROJECT_NAME}_VERSION_STR )
-    set( _version_str "(${${PROJECT_NAME}_VERSION_STR})" )  
+    set( _version_str "(${${PROJECT_NAME}_VERSION_STR})" )
   endif()
 
   if( ${PROJECT_NAME}_GIT_SHA1_SHORT )
@@ -219,11 +219,11 @@ if( NOT ${PROJECT_NAME}_DECLARED )
 
 endif()
 
-# Define ${PROJECT_NAME}_DIR in PARENT_SCOPE so that a `find_package( <this-project> )` in a bundle 
+# Define ${PROJECT_NAME}_DIR in PARENT_SCOPE so that a `find_package( <this-project> )` in a bundle
 # will easily find the project without requiring a `HINT <this-project>_BINARY_DIR` argument [ECBUILD-460]
 if( NOT CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR )
     # Guard needed because PARENT_SCOPE cannot be used in top-level CMake project
-    
+
     set( ${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} PARENT_SCOPE )
 endif()
 

@@ -50,7 +50,7 @@ EXPECT_ONE_OF $HERE/build_2a.log "Feature FEATUREOFF disabled"
 EXPECT_ONE_OF $HERE/build_2a.log "Build files have been written"
 
 # (3) Options: -DENABLE_FEATUREON=ON -DFEATUREON_CONDITION=ON
- 
+
 mkdir -p $HERE/build_3
 ecbuild -DENABLE_FEATUREON=ON -DFEATUREON_CONDITION=ON $SOURCE/test_project -B $HERE/build_3 | tee $HERE/build_3.log
 EXPECT_ONE_OF $HERE/build_3.log "Feature FEATUREON enabled"

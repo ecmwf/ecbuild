@@ -31,6 +31,6 @@ ecbuild_info( "LAPACK_LIBRARIES : ${LAPACK_LIBRARIES}" )
 
 ### Try to link executable with LAPACK_LIBRARIES
 
-ecbuild_add_test( TARGET  test_dgemm 
+ecbuild_add_test( TARGET  test_dgemm
                   SOURCES test_dgemm.cc
                   LIBS    ${LAPACK_LIBRARIES} )

@@ -49,17 +49,17 @@ if( NVPL_INCLUDE_DIR ) # use include dir to find libs
   #  set(CMAKE_FIND_DEBUG_MODE TRUE)
   find_library( NVPL_LIB_BLAS_CORE
                 PATHS ${NVPLROOT} ${NVPL_PATH} ${NVPL_ROOT} $ENV{NVPLROOT} $ENV{NVPL_PATH} $ENV{NVPL_ROOT}
-		PATH_SUFFIXES "lib" 
+		PATH_SUFFIXES "lib"
                 NAMES nvpl_blas_core )
 
   find_library( NVPL_LIB_BLAS
                 PATHS ${NVPLROOT} ${NVPL_PATH} ${NVPL_ROOT} $ENV{NVPLROOT} $ENV{NVPL_PATH} $ENV{NVPL_ROOT}
-		PATH_SUFFIXES "lib" 
+		PATH_SUFFIXES "lib"
                 NAMES nvpl_blas_lp64${__nvpl_lib_suffix} )
 
   find_library( NVPL_LIB_FFTW
                 PATHS ${NVPLROOT} ${NVPL_PATH} ${NVPL_ROOT} $ENV{NVPLROOT} $ENV{NVPL_PATH} $ENV{NVPL_ROOT}
-		PATH_SUFFIXES "lib" 
+		PATH_SUFFIXES "lib"
                 NAMES nvpl_fftw )
 
 	#  set(CMAKE_FIND_DEBUG_MODE FALSE)

@@ -4,4 +4,3 @@
 int libraryB() {
   return libraryA() + 1;
 }
-

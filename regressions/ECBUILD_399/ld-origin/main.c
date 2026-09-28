@@ -3,4 +3,3 @@ int main(void) {
  fun2();
  return 0;
 }
-

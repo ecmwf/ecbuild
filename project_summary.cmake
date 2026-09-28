@@ -18,4 +18,3 @@ endif()
 if( DEFINED FORTRAN_LIBRARIES )
   ecbuild_info( "Fortan libs       : [${FORTRAN_LIBRARIES}]" )
 endif()
-

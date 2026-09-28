@@ -52,8 +52,8 @@
 # The following variables with prefix ``PYTHON_`` are now *DEPRECATED* and
 # will be removed in a future version; these variables are still set for
 # backwards compatibility. The new variables with prefix ``Python_``
-# should be used instead. 
-# 
+# should be used instead.
+#
 # :PYTHONINTERP_FOUND:    Python interpreter was found
 # :PYTHONLIBS_FOUND:      Python libraries were found
 # :PYTHON_FOUND:          Python was found (both interpreter and libraries)
@@ -65,7 +65,7 @@
 # :PYTHON_INCLUDE_DIRS:   Python include directories
 # :PYTHON_LIBRARIES:      Python libraries
 # :PYTHON_SITE_PACKAGES:  Python site packages directory
-# 
+#
 ##############################################################################
 
 set( __test_python ${CMAKE_CURRENT_LIST_DIR}/pymain.c )

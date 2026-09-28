@@ -21,7 +21,7 @@ macro( project _project_name )
     include( CMakeParseArguments )
     include( ecbuild_parse_version )
     include( ecbuild_log )
- 
+
     ecbuild_debug( "ecbuild project(${_project_name}) ")
 
     set( options "" )

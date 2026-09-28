@@ -54,15 +54,14 @@ enable_cuda()
 
 ecbuild_add_library(
     TYPE SHARED
-    TARGET  add 
+    TARGET  add
     SOURCES add.h add.cu kernel_add.h kernel_add.cu
     PUBLIC_LIBS CUDA::cudart
 )
 
 
 ecbuild_add_executable(
-    TARGET  main 
+    TARGET  main
     SOURCES main.cc
     LIBS    add
 )
-

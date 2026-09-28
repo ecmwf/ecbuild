@@ -23,7 +23,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "Cray")
     string(TOUPPER ${CMAKE_BUILD_TYPE} btype)
     string(REGEX REPLACE "-g|-G[0-2]|-Gfast" "" flags "${FOO_Fortran_FLAGS_${btype}}")
     set_source_files_properties(foo_no_debug_symbols.f90 PROPERTIES OVERRIDE_COMPILE_FLAGS "${flags}")
-    
+
   endif()
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")

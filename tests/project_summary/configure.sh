@@ -28,7 +28,7 @@ $SOURCE/clean.sh
 # ----------------- configure project ---------------------
 
 # Options: (defaults)
- 
+
 mkdir -p $HERE/build_0
 ecbuild $SOURCE/test_project -B $HERE/build_0 | tee $HERE/build_0.log
 EXPECT_ONE_OF $HERE/build_0.log "* FEATURE_A, proja(ON): '', projb(OFF): ''"
@@ -49,28 +49,28 @@ ecbuild -DENABLE_FEATURE_A=ON -DPROJB_ENABLE_FEATURE_A=OFF $SOURCE/test_project 
 EXPECT_ONE_OF $HERE/build_2.log "* FEATURE_A, proja(ON): '', projb(OFF): ''"
 
 # Options: -DENABLE_FEATURE_A=OFF -DPROJB_ENABLE_FEATURE_A=ON -DSOME_PACKAGE_FOUND=OFF
- 
+
 mkdir -p $HERE/build_3
 ecbuild -DENABLE_FEATURE_A=OFF -DPROJB_ENABLE_FEATURE_A=ON -DSOME_PACKAGE_FOUND=OFF $SOURCE/test_project -B $HERE/build_3 | tee $HERE/build_3.log
 EXPECT_ONE_OF $HERE/build_3.log "* FEATURE_A, proja(OFF): '', projb(ON): ''"
 EXPECT_ONE_OF $HERE/build_3.log "* FEATURE_B, projb(OFF): ''"
 
 # Options: -DENABLE_FEATURE_A=OFF -DPROJB_ENABLE_FEATURE_A=ON -DSOME_PACKAGE_FOUND=ON
- 
+
 mkdir -p $HERE/build_4
 ecbuild -DENABLE_FEATURE_A=OFF -DPROJB_ENABLE_FEATURE_A=ON -DSOME_PACKAGE_FOUND=ON $SOURCE/test_project -B $HERE/build_4 | tee $HERE/build_4.log
 EXPECT_ONE_OF $HERE/build_4.log "* FEATURE_A, proja(OFF): '', projb(ON): ''"
 EXPECT_ONE_OF $HERE/build_4.log "* FEATURE_B, projb(ON): ''"
 
 # Options: -DENABLE_FEATURE_A=OFF -DPROJB_ENABLE_FEATURE_A=ON -DENABLE_FEATURE_B=ON -DSOME_PACKAGE_FOUND=ON
- 
+
 mkdir -p $HERE/build_5
 ecbuild -DENABLE_FEATURE_A=OFF -DPROJB_ENABLE_FEATURE_A=ON -DENABLE_FEATURE_B=ON -DSOME_PACKAGE_FOUND=ON $SOURCE/test_project -B $HERE/build_5 | tee $HERE/build_5.log
 EXPECT_ONE_OF $HERE/build_5.log "* FEATURE_A, proja(OFF): '', projb(ON): ''"
 EXPECT_ONE_OF $HERE/build_5.log "* FEATURE_B, projb(ON): ''"
 
 # Options: -DENABLE_FEATURE_A=OFF -DPROJB_ENABLE_FEATURE_A=ON -DENABLE_FEATURE_B=ON -DSOME_PACKAGE_FOUND=OFF
- 
+
 mkdir -p $HERE/build_6
 ecbuild -DENABLE_FEATURE_A=OFF -DPROJB_ENABLE_FEATURE_A=ON -DENABLE_FEATURE_B=ON -DSOME_PACKAGE_FOUND=OFF $SOURCE/test_project -B $HERE/build_6 | tee $HERE/build_6.log
 EXPECT_ONE_OF $HERE/build_6.log "Configuring incomplete, errors occurred!"

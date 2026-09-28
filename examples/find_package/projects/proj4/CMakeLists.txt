@@ -10,4 +10,3 @@ if( NOT TARGET PROJ4::proj )
 endif()
 
 ecbuild_add_test( TARGET main SOURCES example.c LIBS PROJ4::proj )
-

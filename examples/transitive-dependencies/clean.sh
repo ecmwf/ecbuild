@@ -12,4 +12,3 @@ rm -rf projectB/build
 rm -rf projectB/install
 rm -rf projectC/build
 rm -rf projectC/install
-

@@ -17,7 +17,7 @@ check_lib_exists() {
 
   if [ ! -f $HERE/build/lib/lib${libname}.$ext ]; then
      echo "$HERE/build/lib/lib${libname}.$ext not found"
-     exit 1 
+     exit 1
   fi
 
 }

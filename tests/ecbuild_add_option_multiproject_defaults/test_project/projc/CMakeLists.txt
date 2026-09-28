@@ -5,5 +5,5 @@ project( projc LANGUAGES NONE VERSION 0.3 )
 ecbuild_add_option(
     FEATURE FEATURE_A
     DEFAULT ON
-    REQUIRED_PACKAGES nonexistent       
+    REQUIRED_PACKAGES nonexistent
 )

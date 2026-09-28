@@ -112,4 +112,3 @@ endif()
 find_package_handle_standard_args( NetCDF3  DEFAULT_MSG ${NETCDF_REQUIRED_VARS} )
 
 set( NETCDF_FOUND ${NETCDF3_FOUND} )
-

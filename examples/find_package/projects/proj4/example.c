@@ -48,4 +48,3 @@ int main (void) {
     proj_context_destroy (C); /* may be omitted in the single threaded case */
     return 0;
 }
-
