@@ -9,7 +9,6 @@ header = """
 
 [package]
 name = "ecbuild"
-prefix = "ecbuild"
 repo = "ecmwf/ecbuild"
 compiler-inputs = []
 visibility = "public"
