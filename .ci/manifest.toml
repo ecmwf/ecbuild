@@ -49,7 +49,6 @@ platform = "macos-13-x86"
 triggers = ["rebuild-request"]
 action = "./.github/actions/build-ecbuild"
 forwarded-inputs = ["build-type", "c-compiler"]
-needs = []
 
 [[matrix.test.include]]
 build-type = "RelWithDebInfo"
@@ -111,7 +110,6 @@ execution = "hpc"
 container-credentials = true
 job-script = "./.ci/hpc/build.sh.j2"
 triggers = ["rebuild-request"]
-needs = []
 
 [[trigger-downstream]]
 repo = "ecmwf/eckit"
