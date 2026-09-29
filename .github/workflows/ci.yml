@@ -56,7 +56,7 @@ jobs:
           client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
           private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
+      - uses: actions/checkout@v6
       - id: r
         uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
         with:
@@ -77,7 +77,7 @@ jobs:
     steps:
       - name: Announce image
         uses: ecmwf/ci-infrastructure/actions/announce-image@main
-      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
+      - uses: actions/checkout@v6
 
       - name: Build ecbuild
         id: build
@@ -104,7 +104,7 @@ jobs:
     steps:
       - name: Announce image
         uses: ecmwf/ci-infrastructure/actions/announce-image@main
-      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
+      - uses: actions/checkout@v6
 
       - name: Test ecbuild
         uses: ./.github/actions/test-ecbuild
@@ -126,7 +126,7 @@ jobs:
     steps:
       - name: Announce image
         uses: ecmwf/ci-infrastructure/actions/announce-image@main
-      - uses: ecmwf/ci-infrastructure/actions/checkout-under-test@main
+      - uses: actions/checkout@v6
 
       - name: Build ecbuild on HPC
         uses: ecmwf/ci-infrastructure/actions/build-on-hpc@main
