@@ -11,5 +11,5 @@ self-hosted-runner:
     - arc-runner-normal
     - arc-runner-large
     - arc-runner-very-large
-    - arc-hpc-pet-vsphere-prod
+    - hpc-submit
     - hpc
