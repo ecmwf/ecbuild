@@ -122,6 +122,3 @@ ref = "develop"
 [[trigger-downstream]]
 repo = "ecmwf/ecflow"
 ref = "develop"
-
-[downstream-gate]
-label = "run-downstream-CI"
