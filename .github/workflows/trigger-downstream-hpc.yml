@@ -39,7 +39,7 @@ jobs:
     steps:
     - name: Check the downstream-CI label
       id: gate
-      uses: ecmwf/ci-infrastructure/actions/check-pr-label@main
+      uses: ecmwf/ci-infrastructure/actions/should-downstream-run@main
       with:
         sha: ${{ needs.context.outputs.head-sha }}
     needs:
