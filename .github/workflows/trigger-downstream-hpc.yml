@@ -35,19 +35,23 @@ jobs:
       pull-requests: read
     outputs:
       run: ${{ steps.gate.outputs.run }}
+      depth: ${{ steps.gate.outputs.depth }}
     steps:
     - name: Check the downstream-CI label
       id: gate
       uses: ecmwf/ci-infrastructure/actions/check-pr-label@main
       with:
-        label: run-downstream-CI
         sha: ${{ needs.context.outputs.head-sha }}
     needs:
     - context
   validate:
     if: ${{ (needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
-    runs-on: ubuntu-slim
+    runs-on: arc-runner-normal
+    container:
+      image: eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest
     steps:
+    - name: Announce image
+      uses: ecmwf/ci-infrastructure/actions/announce-image@main
     - id: mint
       uses: actions/create-github-app-token@v3
       with:
@@ -58,7 +62,6 @@ jobs:
       with:
         ref: ${{ needs.context.outputs.head-sha }}
         token: ${{ steps.mint.outputs.token }}
-        allow-unsafe-pr-checkout: true
     - uses: ecmwf/ci-infrastructure/actions/validate-generated-workflows@main
       with:
         token: ${{ steps.mint.outputs.token }}
@@ -118,7 +121,7 @@ jobs:
       branch: ${{ needs.context.outputs.head-branch }}
       fallback-ref: develop
     secrets: inherit
-    if: ${{ needs['label-gate'].outputs.run == 'true' }}
+    if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 2) }}
   ecflow:
     name: ecflow
     needs:
@@ -133,7 +136,7 @@ jobs:
       branch: ${{ needs.context.outputs.head-branch }}
       fallback-ref: develop
     secrets: inherit
-    if: ${{ needs['label-gate'].outputs.run == 'true' }}
+    if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 1) }}
   eckit:
     name: eckit
     needs:
@@ -148,7 +151,7 @@ jobs:
       branch: ${{ needs.context.outputs.head-branch }}
       fallback-ref: develop
     secrets: inherit
-    if: ${{ needs['label-gate'].outputs.run == 'true' }}
+    if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 1) }}
   report-result:
     needs:
     - context
@@ -172,9 +175,12 @@ jobs:
             state=failure
           fi
         done
+        depth="${{ needs['label-gate'].outputs.depth }}"
+        scope=""
+        if [ "$depth" != all ]; then scope=" (up to level $depth)"; fi
         gh api -X POST \
           "/repos/${{ github.repository }}/statuses/${{ needs.context.outputs.head-sha }}" \
           -f state="$state" \
           -f context='downstream/hpc' \
           -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-          -f description="Downstream HPC tests $state"
+          -f description="Downstream HPC tests $state$scope"

@@ -9,7 +9,6 @@ header = """
 
 [package]
 name = "ecbuild"
-prefix = "ecbuild"
 repo = "ecmwf/ecbuild"
 compiler-inputs = []
 visibility = "public"
@@ -50,7 +49,6 @@ platform = "macos-13-x86"
 triggers = ["rebuild-request"]
 action = "./.github/actions/build-ecbuild"
 forwarded-inputs = ["build-type", "c-compiler"]
-needs = []
 
 [[matrix.test.include]]
 build-type = "RelWithDebInfo"
@@ -72,6 +70,7 @@ container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
 ntasks = 2
 ssdtmp = "1G"
+job-script = "./.ci/hpc/build.sh.j2"
 
 [[matrix.build-hpc.include]]
 platform = "hpc-atos-gnu"
@@ -110,9 +109,7 @@ tests = false
 [matrix.build-hpc]
 execution = "hpc"
 container-credentials = true
-job-script = "./.ci/hpc/build.sh.j2"
 triggers = ["rebuild-request"]
-needs = []
 
 [[trigger-downstream]]
 repo = "ecmwf/eckit"
@@ -125,6 +122,3 @@ ref = "develop"
 [[trigger-downstream]]
 repo = "ecmwf/ecflow"
 ref = "develop"
-
-[downstream-gate]
-label = "run-downstream-CI"
