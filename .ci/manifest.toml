@@ -14,7 +14,7 @@ compiler-inputs = []
 visibility = "public"
 
 [matrix.build.defaults]
-job-script = "./.ci/build.sh.j2"
+job-script = "./.ci/runner/build.sh.j2"
 build-type = "RelWithDebInfo"
 
 [[matrix.build.include]]
