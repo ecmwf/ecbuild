@@ -14,6 +14,7 @@ compiler-inputs = []
 visibility = "public"
 
 [matrix.build.defaults]
+job-script = "./.ci/build.sh.j2"
 build-type = "RelWithDebInfo"
 
 [[matrix.build.include]]
@@ -47,8 +48,6 @@ platform = "macos-13-x86"
 
 [matrix.build]
 triggers = ["rebuild-request"]
-action = "./.github/actions/build-ecbuild"
-forwarded-inputs = ["build-type", "c-compiler"]
 
 [[matrix.test.include]]
 build-type = "RelWithDebInfo"
@@ -107,7 +106,7 @@ time = "00:15:00"
 tests = false
 
 [matrix.build-hpc]
-execution = "hpc"
+execution = "hpc-atos"
 container-credentials = true
 triggers = ["rebuild-request"]
 

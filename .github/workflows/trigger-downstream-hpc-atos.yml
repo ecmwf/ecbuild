@@ -12,7 +12,7 @@ on:
     types:
     - completed
 concurrency:
-  group: trigger-downstream-hpc-${{ github.event.workflow_run.head_sha }}
+  group: trigger-downstream-hpc-atos-${{ github.event.workflow_run.head_sha }}
   cancel-in-progress: true
 jobs:
   context:
@@ -81,7 +81,7 @@ jobs:
         gh api -X POST \
           "/repos/${{ github.repository }}/statuses/${{ needs.context.outputs.head-sha }}" \
           -f state=pending \
-          -f context='downstream/hpc' \
+          -f context='downstream/hpc-atos' \
           -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
           -f description='Downstream HPC tests running'
     needs:
@@ -100,7 +100,7 @@ jobs:
         gh api -X POST \
           "/repos/${{ github.repository }}/statuses/${{ needs.context.outputs.head-sha }}" \
           -f state=failure \
-          -f context='downstream/hpc' \
+          -f context='downstream/hpc-atos' \
           -f target_url="${{ needs.context.outputs.ci-url }}" \
           -f description="${{ needs.context.outputs.ci-summary }}; downstream HPC not run"
     needs:
@@ -113,7 +113,7 @@ jobs:
     - label-gate
     - validate
     - eckit
-    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger-hpc.yml@develop
+    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger-hpc-atos.yml@develop
     with:
       from-repo: ${{ github.repository }}
       from-sha: ${{ needs.context.outputs.head-sha }}
@@ -128,7 +128,7 @@ jobs:
     - context
     - label-gate
     - validate
-    uses: ecmwf/ecflow/.github/workflows/cross-repo-trigger-hpc.yml@develop
+    uses: ecmwf/ecflow/.github/workflows/cross-repo-trigger-hpc-atos.yml@develop
     with:
       from-repo: ${{ github.repository }}
       from-sha: ${{ needs.context.outputs.head-sha }}
@@ -143,7 +143,7 @@ jobs:
     - context
     - label-gate
     - validate
-    uses: ecmwf/eckit/.github/workflows/cross-repo-trigger-hpc.yml@develop
+    uses: ecmwf/eckit/.github/workflows/cross-repo-trigger-hpc-atos.yml@develop
     with:
       from-repo: ${{ github.repository }}
       from-sha: ${{ needs.context.outputs.head-sha }}
@@ -181,6 +181,6 @@ jobs:
         gh api -X POST \
           "/repos/${{ github.repository }}/statuses/${{ needs.context.outputs.head-sha }}" \
           -f state="$state" \
-          -f context='downstream/hpc' \
+          -f context='downstream/hpc-atos' \
           -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
           -f description="Downstream HPC tests $state$scope"

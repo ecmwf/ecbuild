@@ -81,10 +81,11 @@ jobs:
 
       - name: Build ecbuild
         id: build
-        uses: ./.github/actions/build-ecbuild
+        uses: ecmwf/ci-infrastructure/actions/run-job-script@main
         with:
-          build-type: ${{ matrix.build-type }}
-          c-compiler: ${{ matrix.c-compiler }}
+          job-script: ${{ matrix.job-script }}
+          matrix-leg: ${{ toJSON(matrix) }}
+          package: ecbuild
 
       - name: Publish ecbuild
         uses: ecmwf/ci-infrastructure/actions/publish-artifact@main

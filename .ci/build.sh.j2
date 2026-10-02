@@ -1,0 +1,16 @@
+#!/bin/bash
+{# SPDX-FileCopyrightText: 2009- European Centre for Medium-Range Weather Forecasts (ECMWF)
+   SPDX-License-Identifier: Apache-2.0
+
+   ecbuild compiles nothing, so this extends no shared template; a leg names
+   a C compiler only to pin the toolchain. The tests run in the separate test kind. #}
+build="${CI_BUILD_DIR:-${TMPDIR:-/tmp}/build}"
+echo "Using: $(command -v cmake) ($(cmake --version | head -1))"
+cmake --preset ci -S "$CI_SOURCE_DIR" -B "$build" \
+  -DCMAKE_BUILD_TYPE={{ build_type | sh }} \
+{% if leg.get("c-compiler") %}
+  -DCMAKE_C_COMPILER="$(command -v {{ leg["c-compiler"] | sh }})" \
+{% endif %}
+  -DCMAKE_INSTALL_PREFIX="$CI_INSTALL_PREFIX"
+cmake --build "$build"
+cmake --install "$build"
