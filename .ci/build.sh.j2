@@ -2,7 +2,7 @@
 {# SPDX-FileCopyrightText: 2009- European Centre for Medium-Range Weather Forecasts (ECMWF)
    SPDX-License-Identifier: Apache-2.0
 
-   ecbuild compiles nothing, so this does not extend the CMake template; a leg names
+   ecbuild compiles nothing, so this extends no shared template; a leg names
    a C compiler only to pin the toolchain. The tests run in the separate test kind. #}
 build="${CI_BUILD_DIR:-${TMPDIR:-/tmp}/build}"
 echo "Using: $(command -v cmake) ($(cmake --version | head -1))"
