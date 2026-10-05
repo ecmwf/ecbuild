@@ -1,0 +1,14 @@
+{# SPDX-FileCopyrightText: 2009- European Centre for Medium-Range Weather Forecasts (ECMWF)
+   SPDX-License-Identifier: Apache-2.0
+
+   The test suite runs nested `cmake`, which sees the compilers only through the environment. #}
+{% extends "ci-infrastructure/cmake-runner.sh.j2" %}
+{% block set_environment %}
+export CC={{ c_compiler_binary | sh }}
+export CXX={{ cxx_compiler_binary | sh }}
+export FC={{ fortran_compiler_binary | sh }}
+{% endblock %}
+{% block cmake_args %}
+  -DENABLE_TESTS=ON \
+{% endblock %}
+{% block install %}{% endblock %}
