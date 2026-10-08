@@ -11,11 +11,15 @@ on:
     - CI
     types:
     - completed
+  pull_request:
+    types:
+    - labeled
 concurrency:
-  group: trigger-downstream-hpc-atos-${{ github.event.workflow_run.head_sha }}
+  group: trigger-downstream-hpc-atos-${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha }}
   cancel-in-progress: true
 jobs:
   context:
+    if: ${{ github.event_name != 'pull_request' || (startsWith(github.event.label.name, 'run-downstream-ci') && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-slim
     permissions:
       actions: read
@@ -88,7 +92,7 @@ jobs:
     - context
     - label-gate
   report-ci-failure:
-    if: ${{ (needs.context.outputs.ci-conclusion != 'success') && needs['label-gate'].outputs.run == 'true' }}
+    if: ${{ (needs.context.outputs.ci-conclusion != 'success' && needs.context.outputs.ci-conclusion != '') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     permissions:
       statuses: write
