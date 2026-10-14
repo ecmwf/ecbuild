@@ -11,11 +11,21 @@ on:
     - CI
     types:
     - completed
+  pull_request:
+    types:
+    - labeled
 concurrency:
-  group: trigger-downstream-runner-${{ github.event.workflow_run.head_sha }}
+  group: trigger-downstream-runner-${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha }}
   cancel-in-progress: true
 jobs:
+  ci-approval:
+    runs-on: ubuntu-slim
+    permissions:
+      pull-requests: write
+    steps:
+    - uses: ecmwf/ci-infrastructure/actions/require-ci-approval@main
   context:
+    if: ${{ github.event_name != 'pull_request' || (startsWith(github.event.label.name, 'run-downstream-ci') && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-slim
     permissions:
       actions: read
@@ -29,6 +39,8 @@ jobs:
     - name: Resolve the commit under test
       id: ctx
       uses: ecmwf/ci-infrastructure/actions/resolve-dispatch-context@main
+    needs:
+    - ci-approval
   label-gate:
     runs-on: ubuntu-slim
     permissions:
@@ -43,6 +55,7 @@ jobs:
       with:
         sha: ${{ needs.context.outputs.head-sha }}
     needs:
+    - ci-approval
     - context
   validate:
     if: ${{ (needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
@@ -66,6 +79,7 @@ jobs:
       with:
         token: ${{ steps.mint.outputs.token }}
     needs:
+    - ci-approval
     - context
     - label-gate
   report-start:
@@ -85,10 +99,11 @@ jobs:
           -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
           -f description='Downstream runner tests running'
     needs:
+    - ci-approval
     - context
     - label-gate
   report-ci-failure:
-    if: ${{ (needs.context.outputs.ci-conclusion != 'success') && needs['label-gate'].outputs.run == 'true' }}
+    if: ${{ (needs.context.outputs.ci-conclusion != 'success' && needs.context.outputs.ci-conclusion != '') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     permissions:
       statuses: write
@@ -104,11 +119,31 @@ jobs:
           -f target_url="${{ needs.context.outputs.ci-url }}" \
           -f description="${{ needs.context.outputs.ci-summary }}; downstream runner not run"
     needs:
+    - ci-approval
     - context
     - label-gate
+  atlas:
+    name: atlas
+    needs:
+    - ci-approval
+    - context
+    - label-gate
+    - validate
+    - eckit
+    - fckit
+    uses: ecmwf/atlas/.github/workflows/cross-repo-trigger.yml@develop
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["ecbuild/build"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: develop
+    secrets: inherit
+    if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3) }}
   eccodes:
     name: eccodes
     needs:
+    - ci-approval
     - context
     - label-gate
     - validate
@@ -125,6 +160,7 @@ jobs:
   ecflow:
     name: ecflow
     needs:
+    - ci-approval
     - context
     - label-gate
     - validate
@@ -140,6 +176,7 @@ jobs:
   eckit:
     name: eckit
     needs:
+    - ci-approval
     - context
     - label-gate
     - validate
@@ -152,14 +189,34 @@ jobs:
       fallback-ref: develop
     secrets: inherit
     if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 1) }}
-  report-result:
+  fckit:
+    name: fckit
     needs:
+    - ci-approval
     - context
     - label-gate
     - validate
+    - eckit
+    uses: ecmwf/fckit/.github/workflows/cross-repo-trigger.yml@develop
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["ecbuild/build"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: develop
+    secrets: inherit
+    if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 2) }}
+  report-result:
+    needs:
+    - ci-approval
+    - context
+    - label-gate
+    - validate
+    - atlas
     - eccodes
     - ecflow
     - eckit
+    - fckit
     if: ${{ (always() && needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-slim
     permissions:
@@ -170,7 +227,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         state=success
-        for r in ${{ needs.validate.result }} ${{ needs.eccodes.result }} ${{ needs.ecflow.result }} ${{ needs.eckit.result }}; do
+        for r in ${{ needs.validate.result }} ${{ needs.atlas.result }} ${{ needs.eccodes.result }} ${{ needs.ecflow.result }} ${{ needs.eckit.result }} ${{ needs.fckit.result }}; do
           if [ "$r" = failure ] || [ "$r" = cancelled ]; then
             state=failure
           fi
