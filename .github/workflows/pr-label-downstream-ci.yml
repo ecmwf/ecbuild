@@ -1,19 +1,29 @@
-name: "[PR] Downstream-CI label gate"
+# SPDX-FileCopyrightText: 2009- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
+# GENERATED FILE - DO NOT EDIT.
+# Regenerate via the ci-infrastructure-generate CLI.
+# Source of truth: each repo's .ci/manifest.toml.
+name: '[PR] Downstream-CI label gate'
 on:
-  # `labeled`/`unlabeled` are what make the gate reactive; `synchronize` re-posts
-  # it, since a commit status is per-SHA.
-  pull_request:
-    types: [opened, reopened, synchronize, labeled, unlabeled]
-
+  pull_request_target:
+    types:
+    - opened
+    - reopened
+    - synchronize
+    - labeled
+    - unlabeled
 permissions:
   statuses: write
-
+  actions: write
 jobs:
   gate:
     runs-on: ubuntu-slim
     steps:
-      - uses: ecmwf/ci-infrastructure/actions/require-label-decision@main
-        with:
-          context: downstream-ci-label
-          description-decided: Downstream-CI decision recorded
+    - uses: ecmwf/ci-infrastructure/actions/require-label-decision@main
+      with:
+        context: downstream-ci-label
+        description-decided: Downstream-CI decision recorded
+    - uses: ecmwf/ci-infrastructure/actions/dispatch-downstream@main
+      with:
+        workflows: trigger-downstream.yml trigger-downstream-hpc-atos.yml
