@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # Vendored upstream examples; not ours to lint or format.
 exclude: '^examples/find_package/projects/(hdf5/hdf5_examples|netcdf/netcdf_examples)/'
 
@@ -12,6 +15,15 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
         args: [--fix=lf]
+
+  # `reuse lint` checks the whole project. The hook is passed no filenames, so
+  # it cannot be narrowed by an exclude; always_run keeps it honest for a commit
+  # that happens to touch nothing it would otherwise see.
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v6.2.0
+    hooks:
+      - id: reuse
+        always_run: true
 
   - repo: https://github.com/ecmwf/ci-infrastructure
     rev: 5bdb37d257926100f98e450fedd07054716e4a42

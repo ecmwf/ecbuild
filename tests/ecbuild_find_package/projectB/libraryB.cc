@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifdef A_PRIVATE
 #error A_PRIVATE should not be exported by target projectA_private
 #endif

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 #[[ $(uname) == "Darwin" ]] && return # no module environment on the Mac
 
 # initialise module environment if it is not

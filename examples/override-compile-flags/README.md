@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+SPDX-License-Identifier: Apache-2.0
+-->
+
 An example of a bundle containing two sub-projects, bar and foo, where foo
 needs to override compile flags of several source files.
 
