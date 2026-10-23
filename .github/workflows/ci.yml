@@ -143,3 +143,15 @@ jobs:
           work-dir: ${{ vars.HPC_CI_WORK_DIR }}
           remote-work-dir: ${{ vars.HPC_CI_REMOTE_WORK_DIR }}
           troika-user: ${{ secrets.HPC_CI_SSH_USER }}
+
+  ci-result:
+    name: collect results
+    if: always()
+    needs: [ci-approval, pre-commit, resolve, build, test, build-hpc]
+    runs-on: ubuntu-slim
+    permissions:
+      statuses: write
+    steps:
+      - uses: ecmwf/ci-infrastructure/actions/ci-result@main
+        with:
+          needs: ${{ toJSON(needs) }}
