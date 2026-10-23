@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2009- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
 # SPDX-License-Identifier: Apache-2.0
 
 # GENERATED FILE - DO NOT EDIT.
@@ -88,6 +88,7 @@ jobs:
       with:
         ref: ${{ needs.context.outputs.head-sha }}
         token: ${{ steps.mint.outputs.token }}
+        persist-credentials: false
     - uses: ecmwf/ci-infrastructure/actions/validate-generated-workflows@main
       with:
         token: ${{ steps.mint.outputs.token }}
