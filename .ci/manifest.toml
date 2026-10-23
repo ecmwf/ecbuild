@@ -40,13 +40,14 @@ container = "eccr.ecmwf.int/public-ci-images/debian11-gcc10-gfortran10:latest"
 platform = "debian-11"
 c-compiler = "gcc-10"
 
-[[matrix.build.include]]
-runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-arm64"]
-platform = "macos-13-arm"
+# Off: the self-hosted macOS builders may trust the compromised eMudhra CAs (Oct 2026).
+# [[matrix.build.include]]
+# runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-arm64"]
+# platform = "macos-13-arm"
 
-[[matrix.build.include]]
-runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-x86_64"]
-platform = "macos-13-x86"
+# [[matrix.build.include]]
+# runs-on = ["self-hosted", "platform-builder-macosx-13.4.1-x86_64"]
+# platform = "macos-13-x86"
 
 [[matrix.build.include]]
 runs-on = "arc-runner-normal"
