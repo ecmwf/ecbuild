@@ -62,6 +62,18 @@ jobs:
           client-id: ${{ secrets.CI_PERMISSIONS_APP_CLIENT_ID }}
           app-private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
 
+  hpc-gate:
+    needs: ci-approval
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write
+      pull-requests: read
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+    steps:
+      - id: gate
+        uses: ecmwf/ci-infrastructure/actions/hpc-gate@main
+
   build:
     needs: [ci-approval, pre-commit, resolve]
     name: build (${{ matrix._resolved['job-name'] }})
@@ -112,7 +124,8 @@ jobs:
           package: ecbuild
 
   build-hpc:
-    needs: [ci-approval, pre-commit, resolve]
+    needs: [ci-approval, pre-commit, resolve, hpc-gate]
+    if: needs.hpc-gate.outputs.run == 'true'
     name: build-hpc (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
@@ -140,10 +153,23 @@ jobs:
           remote-work-dir: ${{ vars.HPC_CI_REMOTE_WORK_DIR }}
           troika-user: ${{ secrets.HPC_CI_SSH_USER }}
 
+  collect-result-hpc:
+    name: collect HPC results
+    if: always() && needs.hpc-gate.outputs.run == 'true'
+    needs: [ci-approval, hpc-gate, build-hpc]
+    runs-on: ubuntu-slim
+    permissions:
+      statuses: write
+    steps:
+      - uses: ecmwf/ci-infrastructure/actions/ci-result@main
+        with:
+          needs: ${{ toJSON(needs) }}
+          context: ci-result/hpc-atos
+
   ci-result:
     name: collect results
     if: always()
-    needs: [ci-approval, pre-commit, resolve, build, test, build-hpc]
+    needs: [ci-approval, hpc-gate, pre-commit, resolve, build, test]
     runs-on: ubuntu-slim
     permissions:
       statuses: write
