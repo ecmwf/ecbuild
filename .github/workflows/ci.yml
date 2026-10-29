@@ -40,17 +40,13 @@ jobs:
       - uses: ecmwf/ci-infrastructure/actions/pre-commit@main
 
   resolve:
-    needs: [ci-approval, pre-commit]
-    runs-on: arc-runner-normal
-    container:
-      image: eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest
+    needs: ci-approval
+    runs-on: ubuntu-latest
     outputs:
       build-matrix: ${{ steps.r.outputs.matrix-build }}
       test-matrix: ${{ steps.r.outputs.matrix-test }}
       build-hpc-matrix: ${{ steps.r.outputs.matrix-build-hpc }}
     steps:
-      - name: Announce image
-        uses: ecmwf/ci-infrastructure/actions/announce-image@main
       - id: mint
         uses: actions/create-github-app-token@v3
         with:
@@ -67,7 +63,7 @@ jobs:
           app-private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
 
   build:
-    needs: [ci-approval, resolve]
+    needs: [ci-approval, pre-commit, resolve]
     name: build (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
@@ -95,7 +91,7 @@ jobs:
           artifact-name: ${{ matrix._resolved.own-artifact-name }}
 
   test:
-    needs: [ci-approval, resolve]
+    needs: [ci-approval, pre-commit, resolve]
     name: test (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
@@ -116,7 +112,7 @@ jobs:
           package: ecbuild
 
   build-hpc:
-    needs: [ci-approval, resolve]
+    needs: [ci-approval, pre-commit, resolve]
     name: build-hpc (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
