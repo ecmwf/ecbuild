@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   ci-approval:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: write
     steps:
@@ -32,7 +32,7 @@ jobs:
 
   pre-commit:
     needs: ci-approval
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
     steps:
@@ -64,7 +64,7 @@ jobs:
 
   hpc-gate:
     needs: ci-approval
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: read
     outputs:
@@ -156,7 +156,7 @@ jobs:
     name: collect HPC results
     if: always() && needs.hpc-gate.outputs.run == 'true'
     needs: [ci-approval, hpc-gate, build-hpc]
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     permissions:
       statuses: write
     steps:
@@ -169,7 +169,7 @@ jobs:
     name: collect results
     if: always()
     needs: [ci-approval, hpc-gate, pre-commit, resolve, build, test]
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     permissions:
       statuses: write
     steps:
