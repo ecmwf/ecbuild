@@ -26,7 +26,7 @@ The regression uses the parent build's generator and build tool. It also checks
 that CTest executes the registered test and that changing a prerequisite input
 causes the default build to regenerate its output.
 
-The test fails on the original implementation. Replacing the marker's custom
-target command with `add_custom_target(${_PAR_TARGET}.x ALL)` makes it pass;
-the existing `add_dependencies` call must remain. This change was verified
-with Ninja and Unix Makefiles, but is not included in this reproducer.
+The test fails on the original implementation. The dependency-only target
+`add_custom_target(${_PAR_TARGET}.x ALL)` avoids repeated marker commands while
+the existing `add_dependencies` call preserves prerequisite generation.
+This fix is covered with Ninja and Unix Makefiles.

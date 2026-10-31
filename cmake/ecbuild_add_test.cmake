@@ -446,7 +446,7 @@ function( ecbuild_add_test )
     # we build a phony target to trigger the dependencies
     if( DEFINED _PAR_COMMAND AND DEFINED _PAR_DEPENDS )
 
-      add_custom_target( ${_PAR_TARGET}.x ALL COMMAND ${CMAKE_COMMAND} -E touch ${_PAR_TARGET}.x )
+      add_custom_target( ${_PAR_TARGET}.x ALL )
 
       add_dependencies( ${_PAR_TARGET}.x ${_PAR_DEPENDS} )
 
