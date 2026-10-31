@@ -24,8 +24,8 @@ ctest -R '^test_ecbuild_pkgconfig_incremental$' --output-on-failure
 
 The test uses the parent build's generator and build tool and explicitly enables
 PKGCONFIG in the nested project, independently of the parent feature setting.
-It fails with the
-current command-bearing custom target because the unchanged build regenerates
-the pkg-config file. A fix should use an output-based custom command depending
-on both the configured template and script, and a dependency-only `ALL` target.
-No production fix is included in this reproducer.
+It fails with the original command-bearing custom target because the unchanged
+build regenerates the pkg-config file. The fix uses an output-based custom
+command depending on both the configured template and script, and a
+dependency-only `ALL` target. It also runs the script from the directory where
+it is configured, so calls from subdirectories work.
