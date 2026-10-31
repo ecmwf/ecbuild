@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
+ecbuild_add_test(
+  TARGET     test_ecbuild_test_processors
+  TYPE       SCRIPT
+  COMMAND    ${CMAKE_CURRENT_SOURCE_DIR}/build-and-run.sh
+  ENVIRONMENT CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} CMAKE_CURRENT_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}
+)
