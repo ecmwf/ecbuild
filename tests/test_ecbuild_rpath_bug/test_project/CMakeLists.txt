@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 find_package( ecbuild REQUIRED )
-project( test_ecbuild_rpath_bug VERSION 0.1.0 LANGUAGES C ) 
+project( test_ecbuild_rpath_bug VERSION 0.1.0 LANGUAGES C )
 
 # ---------------------------------------------------------------------------
 # Mimic the Intel environment: LD_RUN_PATH contains .../lib/release BEFORE
@@ -40,4 +40,3 @@ if(CMAKE_SHARED_LINKER_FLAGS MATCHES "/opt/softs/gcc/9.2.0/lib( |$)")
 else()
     message(FATAL_ERROR "BUG REPRODUCED: .../gcc/9.2.0/lib is missing from rpath")
 endif()
-
