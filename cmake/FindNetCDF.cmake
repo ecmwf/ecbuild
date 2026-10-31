@@ -25,6 +25,9 @@
 #   - NetCDF_<comp>_FOUND         - whether the component is found
 #   - NetCDF::NetCDF_<comp>       - target of component to be used with target_link_libraries()
 #
+# NetCDF::NetCDF_CXX and NetCDF::NetCDF_CXX_LEGACY link NetCDF::NetCDF_C when C is found too:
+# their headers include netcdf.h, which may live in a different prefix.
+#
 # Caveat: The targets might not link properly with static libraries, setting NetCDF_<comp>_EXTRA_LIBRARIES may be required.
 #
 # The following paths will be searched in order if set in CMake (first priority) or environment (second priority)
@@ -139,6 +142,15 @@ foreach( _comp ${_search_components} )
       if( DEFINED NetCDF_${_comp}_EXTRA_LIBRARIES )
         target_link_libraries(NetCDF::NetCDF_${_comp} INTERFACE ${NetCDF_${_comp}_EXTRA_LIBRARIES})
       endif()
+    endif()
+  endif()
+endforeach()
+
+foreach( _comp CXX CXX_LEGACY )
+  if( TARGET NetCDF::NetCDF_${_comp} AND TARGET NetCDF::NetCDF_C )
+    get_target_property( _links NetCDF::NetCDF_${_comp} INTERFACE_LINK_LIBRARIES )
+    if( NOT "NetCDF::NetCDF_C" IN_LIST _links )
+      target_link_libraries( NetCDF::NetCDF_${_comp} INTERFACE NetCDF::NetCDF_C )
     endif()
   endif()
 endforeach()
