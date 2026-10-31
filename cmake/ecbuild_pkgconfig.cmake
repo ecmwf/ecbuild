@@ -493,11 +493,18 @@ if(HAVE_PKGCONFIG)
 
   # Reprocess the generated file to make it relocatable
   configure_file(${ECBUILD_MACROS_DIR}/pkg-config.cmake.in  ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake @ONLY ESCAPE_QUOTES )
-  add_custom_target(${_PAR_FILENAME}-pkg-config ALL
-    BYPRODUCTS ${PKGCONFIG_DIR}/${_PAR_FILENAME}
-    COMMAND ${CMAKE_COMMAND} -P ${PROJECT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
+  # An output-based command avoids regenerating the .pc file on every build.
+  # Track both the script and the configured template that it reads.
+  add_custom_command(
+    OUTPUT ${PKGCONFIG_DIR}/${_PAR_FILENAME}
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
     DEPENDS
       ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}-pkg-config-build.cmake
+      ${CMAKE_CURRENT_BINARY_DIR}/${_PAR_FILENAME}.tmp
+  )
+  # Include generation in the default build without an always-running command.
+  add_custom_target(${_PAR_FILENAME}-pkg-config ALL
+    DEPENDS ${PKGCONFIG_DIR}/${_PAR_FILENAME}
   )
 
   install( FILES ${PKGCONFIG_DIR}/${_PAR_FILENAME} DESTINATION ${INSTALL_LIB_DIR}/pkgconfig )
