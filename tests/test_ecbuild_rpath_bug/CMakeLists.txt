@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026- Meteo France
+# SPDX-License-Identifier: Apache-2.0
+
 ecbuild_add_test(
   TARGET      test_ecbuild_rpath_bug
   TYPE        SCRIPT
