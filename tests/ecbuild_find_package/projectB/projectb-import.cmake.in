@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 if( NOT ${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY )
   message( "Importing projectB, not QUIET!!!")
 endif()

@@ -1,3 +1,7 @@
+/*
+ * SPDX-FileCopyrightText: 2011- European Centre for Medium-Range Weather Forecasts (ECMWF)
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 extern "C" {
   void dgemm_(const char* transa, const char* transb, const int* m, const int* n, const int* k, const double* alpha,
