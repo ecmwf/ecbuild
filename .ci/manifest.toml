@@ -162,11 +162,3 @@ ref = "develop"
 [[trigger-downstream]]
 repo = "ecmwf/ecflow"
 ref = "develop"
-
-[[trigger-downstream]]
-repo = "ecmwf/fckit"
-ref = "develop"
-
-[[trigger-downstream]]
-repo = "ecmwf/atlas"
-ref = "develop"
