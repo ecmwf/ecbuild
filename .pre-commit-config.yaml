@@ -26,7 +26,7 @@ repos:
         always_run: true
 
   - repo: https://github.com/ecmwf/ci-infrastructure
-    rev: caf527882d318d1ffdc897a252c9abbb2ce111db
+    rev: 7094c1d238c05c585a4c9876912cca5e3fc6b753
     hooks:
       - id: check-ci-approval
       - id: check-ci-result
