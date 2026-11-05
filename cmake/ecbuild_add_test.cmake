@@ -97,6 +97,10 @@
 #   If set, the environment variable OMP_NUM_THREADS will set.
 #   Also, in case of launchers like aprun, the OMP_NUMTHREADS_FLAG will be used.
 #
+#   The test's ``PROCESSORS`` property is set to MPI tasks times OpenMP threads,
+#   so that ``ctest -j`` counts the CPUs the test occupies. ``PROCESSORS`` in
+#   ``TEST_PROPERTIES`` takes precedence.
+#
 # ENABLED : optional
 #   if set to OFF, the test is built but not enabled as a test case
 #
@@ -496,6 +500,14 @@ function( ecbuild_add_test )
         add_test( NAME ${_PAR_TARGET} COMMAND ${_WIN_CMD} ${_PAR_COMMAND} ${TEST_ARGS} ${_working_dir} ) # run a command as test
       else()
         add_test( NAME ${_PAR_TARGET} COMMAND ${_WIN_CMD} ${_PAR_TARGET}  ${TEST_ARGS} ${_working_dir} ) # run the test that was generated
+      endif()
+
+      set( _processors ${_PAR_OMP} )
+      if( _PAR_MPI )
+        math( EXPR _processors "${_PAR_MPI} * ${_PAR_OMP}" )
+      endif()
+      if( _processors GREATER 1 )
+        set_tests_properties( ${_PAR_TARGET} PROPERTIES PROCESSORS ${_processors} )
       endif()
 
       # Set custom properties
