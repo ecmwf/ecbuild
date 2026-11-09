@@ -288,6 +288,23 @@ jobs:
       fallback-ref: develop
     secrets: inherit
     if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 4) }}
+  odc:
+    name: odc
+    needs:
+    - ci-approval
+    - context
+    - label-gate
+    - validate
+    - eckit
+    uses: ecmwf/odc/.github/workflows/cross-repo-trigger.yml@develop
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["ecbuild/build"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: develop
+    secrets: inherit
+    if: ${{ needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 2) }}
   zfdb:
     name: zfdb
     needs:
@@ -333,6 +350,7 @@ jobs:
     - gribjump
     - metkit
     - mir
+    - odc
     - zfdb
     if: ${{ (always() && needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-latest
@@ -344,7 +362,7 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         state=success
-        for r in ${{ needs.validate.result }} ${{ needs.atlas.result }} ${{ needs.eccodes.result }} ${{ needs.ecflow.result }} ${{ needs.eckit.result }} ${{ needs.fckit.result }} ${{ needs.fdb.result }} ${{ needs.gribjump.result }} ${{ needs.metkit.result }} ${{ needs.mir.result }} ${{ needs.zfdb.result }}; do
+        for r in ${{ needs.validate.result }} ${{ needs.atlas.result }} ${{ needs.eccodes.result }} ${{ needs.ecflow.result }} ${{ needs.eckit.result }} ${{ needs.fckit.result }} ${{ needs.fdb.result }} ${{ needs.gribjump.result }} ${{ needs.metkit.result }} ${{ needs.mir.result }} ${{ needs.odc.result }} ${{ needs.zfdb.result }}; do
           if [ "$r" = failure ] || [ "$r" = cancelled ]; then
             state=failure
           fi
