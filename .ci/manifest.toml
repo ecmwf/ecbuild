@@ -86,15 +86,31 @@ platform = "debian-13"
 [matrix.build]
 triggers = ["rebuild-request"]
 
-[[matrix.test.include]]
+[matrix.test.defaults]
 build-type = "RelWithDebInfo"
 runs-on = "arc-runner-normal"
+job-script = "./.ci/runner/test.sh.j2"
+
+[[matrix.test.include]]
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
 platform = "ubuntu-24.04"
 c-compiler = "gcc-13"
 cxx-compiler = "g++-13"
 fortran-compiler = "gfortran-13"
-job-script = "./.ci/runner/test.sh.j2"
+
+[[matrix.test.include]]
+container = "eccr.ecmwf.int/public-ci-images/rocky8-gcc8-gfortran8:latest"
+platform = "rocky-8"
+c-compiler = "gcc-8"
+cxx-compiler = "g++-8"
+fortran-compiler = "gfortran-8"
+
+[[matrix.test.include]]
+container = "eccr.ecmwf.int/public-ci-images/debian11-gcc10-gfortran10:latest"
+platform = "debian-11"
+c-compiler = "gcc-10"
+cxx-compiler = "g++-10"
+fortran-compiler = "gfortran-10"
 
 # No `triggers`: ci.yml-only, nothing rendered into cross-repo-trigger.yml.
 [matrix.test]
