@@ -88,7 +88,6 @@ jobs:
 
   build:
     needs: [ci-approval, resolve, pre-commit]
-    if: ${{ !cancelled() && needs['ci-approval'].result == 'success' && needs['resolve'].result == 'success' && needs['pre-commit'].result == 'success' }}
     name: build (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
@@ -137,7 +136,6 @@ jobs:
 
   test:
     needs: [ci-approval, resolve, build]
-    if: ${{ !cancelled() && needs['ci-approval'].result == 'success' && needs['resolve'].result == 'success' && needs['build'].result == 'success' }}
     name: test (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
@@ -181,7 +179,7 @@ jobs:
 
   build-hpc:
     needs: [ci-approval, resolve, pre-commit, hpc-gate]
-    if: ${{ !cancelled() && needs['ci-approval'].result == 'success' && needs['resolve'].result == 'success' && needs['pre-commit'].result == 'success' && needs['hpc-gate'].result == 'success' && needs['hpc-gate'].outputs.run == 'true' }}
+    if: needs.hpc-gate.outputs.run == 'true'
     name: build-hpc (${{ matrix._resolved['job-name'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
