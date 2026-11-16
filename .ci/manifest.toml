@@ -12,6 +12,7 @@ name = "ecbuild"
 repo = "ecmwf/ecbuild"
 compiler-inputs = []
 visibility = "public"
+ci-schedule = "7 0 * * *"
 
 [matrix.build.defaults]
 job-script = "./.ci/runner/build.sh.j2"
