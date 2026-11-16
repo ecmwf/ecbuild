@@ -54,9 +54,7 @@ jobs:
     needs: ci-approval
     runs-on: ubuntu-latest
     outputs:
-      build-matrix: ${{ toJSON(fromJSON(steps.r.outputs.json)['build']) }}
-      test-matrix: ${{ toJSON(fromJSON(steps.r.outputs.json)['test']) }}
-      build-hpc-matrix: ${{ toJSON(fromJSON(steps.r.outputs.json)['build-hpc']) }}
+      matrices: ${{ steps.r.outputs.json }}
     steps:
       - id: mint
         uses: ecmwf/ci-infrastructure/actions/mint-token@main
@@ -98,7 +96,7 @@ jobs:
       image: ${{ matrix.container || '' }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.resolve.outputs.build-matrix) }}
+      matrix: ${{ fromJSON(needs.resolve.outputs.matrices).build }}
     steps:
       - name: Announce image
         uses: ecmwf/ci-infrastructure/actions/announce-image@main
@@ -141,7 +139,7 @@ jobs:
       image: ${{ matrix.container || '' }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.resolve.outputs.test-matrix) }}
+      matrix: ${{ fromJSON(needs.resolve.outputs.matrices).test }}
     steps:
       - name: Announce image
         uses: ecmwf/ci-infrastructure/actions/announce-image@main
@@ -183,7 +181,7 @@ jobs:
         password: ${{ secrets.ECCR_PULL_ROBOT_TOKEN }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.resolve.outputs.build-hpc-matrix) }}
+      matrix: ${{ fromJSON(needs.resolve.outputs.matrices).build-hpc }}
     steps:
       - name: Announce image
         uses: ecmwf/ci-infrastructure/actions/announce-image@main
