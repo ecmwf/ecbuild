@@ -69,19 +69,8 @@ jobs:
       - id: r
         uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
         with:
-          matrix: build,test,build-hpc
+          matrix: build,test
           token: ${{ steps.mint.outputs.token }}
-
-  hpc-gate:
-    needs: ci-approval
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-    outputs:
-      run: ${{ steps.gate.outputs.run }}
-    steps:
-      - id: gate
-        uses: ecmwf/ci-infrastructure/actions/hpc-gate@main
 
   build:
     needs: [ci-approval, resolve, pre-commit]
@@ -170,74 +159,10 @@ jobs:
           package: ecbuild
           cmake-prefix-path: ${{ steps.deps.outputs.cmake-prefix-path }}
 
-  build-hpc:
-    needs: [ci-approval, resolve, pre-commit, hpc-gate]
-    if: needs.hpc-gate.outputs.run == 'true'
-    name: build-hpc (${{ matrix._resolved['job-name'] }})
-    runs-on: ${{ matrix['runs-on'] }}
-    container:
-      image: ${{ matrix.container || '' }}
-      credentials:
-        username: ${{ secrets.ECCR_PULL_ROBOT_NAME }}
-        password: ${{ secrets.ECCR_PULL_ROBOT_TOKEN }}
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.resolve.outputs.matrices).build-hpc }}
-    steps:
-      - name: Announce image
-        uses: ecmwf/ci-infrastructure/actions/announce-image@main
-      - id: mint
-        uses: ecmwf/ci-infrastructure/actions/mint-token@main
-        with:
-          client-id: ${{ secrets.CI_READER_APP_CLIENT_ID }}
-          private-key: ${{ secrets.CI_READER_APP_PRIVATE_KEY }}
-          repositories: ecbuild
-          permissions: contents:read actions:read
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - name: Fetch resolved deps
-        id: deps
-        uses: ecmwf/ci-infrastructure/actions/fetch-deps@main
-        with:
-          deps-json: ${{ toJSON(matrix._resolved.deps) }}
-          token: ${{ steps.mint.outputs.token }}
-          stage-only: 'true'
-      - name: Print dependency table
-        uses: ecmwf/ci-infrastructure/actions/print-dep-table@main
-        with:
-          resolved: ${{ toJSON(matrix._resolved) }}
-          own-source: ''
-      - name: Build on HPC
-        id: build
-        uses: ecmwf/ci-infrastructure/actions/build-on-hpc@main
-        with:
-          site: ${{ matrix.site }}
-          job-script: ${{ matrix.job-script }}
-          matrix-leg: ${{ toJSON(matrix) }}
-          artifact-name: ${{ matrix._resolved['own-artifact-name'] }}
-          cmake-prefix-path: ${{ steps.deps.outputs.cmake-prefix-path }}
-          work-dir: ${{ vars.HPC_CI_WORK_DIR }}
-          remote-work-dir: ${{ vars.HPC_CI_REMOTE_WORK_DIR }}
-          troika-user: ${{ secrets.HPC_CI_SSH_USER }}
-
-  collect-result-hpc:
-    name: collect HPC results
-    if: always() && needs['hpc-gate'].outputs.run == 'true'
-    needs: [ci-approval, hpc-gate, build-hpc]
-    runs-on: ubuntu-latest
-    permissions:
-      statuses: write
-    steps:
-      - uses: ecmwf/ci-infrastructure/actions/ci-result@main
-        with:
-          needs: ${{ toJSON(needs) }}
-          context: ci-result/hpc-atos
-
   ci-result:
     name: collect results
     if: always()
-    needs: [ci-approval, hpc-gate, pre-commit, resolve, build, test]
+    needs: [ci-approval, pre-commit, resolve, build, test]
     runs-on: ubuntu-latest
     permissions:
       statuses: write
