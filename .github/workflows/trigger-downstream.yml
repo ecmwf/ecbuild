@@ -119,14 +119,24 @@ jobs:
       odc-ref: ${{ steps.r-odc.outcome == 'success' && steps.r-odc.outputs.own-sha || '' }}
       atlas: ${{ steps.r-atlas.outcome == 'success' && steps.r-atlas.outputs.json || '' }}
       atlas-ref: ${{ steps.r-atlas.outcome == 'success' && steps.r-atlas.outputs.own-sha || '' }}
+      eccodes_python: ${{ steps.r-eccodes_python.outcome == 'success' && steps.r-eccodes_python.outputs.json || '' }}
+      eccodes_python-ref: ${{ steps.r-eccodes_python.outcome == 'success' && steps.r-eccodes_python.outputs.own-sha || '' }}
       metkit: ${{ steps.r-metkit.outcome == 'success' && steps.r-metkit.outputs.json || '' }}
       metkit-ref: ${{ steps.r-metkit.outcome == 'success' && steps.r-metkit.outputs.own-sha || '' }}
+      pyodc: ${{ steps.r-pyodc.outcome == 'success' && steps.r-pyodc.outputs.json || '' }}
+      pyodc-ref: ${{ steps.r-pyodc.outcome == 'success' && steps.r-pyodc.outputs.own-sha || '' }}
+      cfgrib: ${{ steps.r-cfgrib.outcome == 'success' && steps.r-cfgrib.outputs.json || '' }}
+      cfgrib-ref: ${{ steps.r-cfgrib.outcome == 'success' && steps.r-cfgrib.outputs.own-sha || '' }}
       fdb: ${{ steps.r-fdb.outcome == 'success' && steps.r-fdb.outputs.json || '' }}
       fdb-ref: ${{ steps.r-fdb.outcome == 'success' && steps.r-fdb.outputs.own-sha || '' }}
       mir: ${{ steps.r-mir.outcome == 'success' && steps.r-mir.outputs.json || '' }}
       mir-ref: ${{ steps.r-mir.outcome == 'success' && steps.r-mir.outputs.own-sha || '' }}
+      pdbufr: ${{ steps.r-pdbufr.outcome == 'success' && steps.r-pdbufr.outputs.json || '' }}
+      pdbufr-ref: ${{ steps.r-pdbufr.outcome == 'success' && steps.r-pdbufr.outputs.own-sha || '' }}
       gribjump: ${{ steps.r-gribjump.outcome == 'success' && steps.r-gribjump.outputs.json || '' }}
       gribjump-ref: ${{ steps.r-gribjump.outcome == 'success' && steps.r-gribjump.outputs.own-sha || '' }}
+      polytope: ${{ steps.r-polytope.outcome == 'success' && steps.r-polytope.outputs.json || '' }}
+      polytope-ref: ${{ steps.r-polytope.outcome == 'success' && steps.r-polytope.outputs.own-sha || '' }}
       pins: ${{ steps.pins.outputs.pins }}
       dispatch-plans: ${{ steps.plans.outputs.dispatch-plans }}
     steps:
@@ -135,7 +145,7 @@ jobs:
         with:
           client-id: ${{ vars.CI_READER_APP_CLIENT_ID }}
           private-key: ${{ secrets.CI_READER_APP_PRIVATE_KEY }}
-          repositories: atlas,ecbuild,eccodes,ecflow,eckit,fckit,fdb,gribjump,metkit,mir,odc,stack-dependencies
+          repositories: atlas,cfgrib,conflator,ecbuild,eccodes,eccodes-python,ecflow,eckit,fckit,fdb,findlibs,gribjump,metkit,mir,odc,pdbufr,polytope,pyodc,stack-dependencies
           permissions: contents:read actions:read
       - name: Pin the commits the upstream's CI resolved
         env:
@@ -371,6 +381,44 @@ jobs:
         run: 'echo "PINS=${R_PINS}" >> "$GITHUB_ENV"
 
           echo "EXPECTED=${EXPECTED} ${R_ARTIFACTS}" >> "$GITHUB_ENV"'
+      - id: pick-eccodes_python
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3)
+        uses: ecmwf/ci-infrastructure/actions/pick-ref@main
+        with:
+          repo: ecmwf/eccodes-python
+          try-branch: ${{ needs.context.outputs.head-branch }}
+          fallback-ref: develop
+          token: ${{ steps.mint.outputs.token }}
+      - if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3)
+        uses: actions/checkout@v6
+        with:
+          repository: ecmwf/eccodes-python
+          ref: ${{ steps.pick-eccodes_python.outputs.ref }}
+          token: ${{ steps.mint.outputs.token }}
+          persist-credentials: false
+          path: .downstream/eccodes-python
+          sparse-checkout: .ci
+      - name: Resolve eccodes-python
+        id: r-eccodes_python
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3)
+        continue-on-error: true
+        uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
+        with:
+          manifest: .downstream/eccodes-python/.ci/manifest.toml
+          current-branch: ${{ steps.pick-eccodes_python.outputs.ref }}
+          pin: ${{ env.PINS }}
+          expected-artifacts: ${{ env.EXPECTED }}
+          matrix: test
+          token: ${{ steps.mint.outputs.token }}
+          rebuild-missing: 'true'
+      - name: Carry eccodes-python's commits to the next consumer
+        if: steps.r-eccodes_python.outcome == 'success'
+        env:
+          R_PINS: ${{ steps.r-eccodes_python.outputs.pins }}
+          R_ARTIFACTS: ${{ steps.r-eccodes_python.outputs.artifacts }}
+        run: 'echo "PINS=${R_PINS}" >> "$GITHUB_ENV"
+
+          echo "EXPECTED=${EXPECTED} ${R_ARTIFACTS}" >> "$GITHUB_ENV"'
       - id: pick-metkit
         if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3)
         uses: ecmwf/ci-infrastructure/actions/pick-ref@main
@@ -406,6 +454,82 @@ jobs:
         env:
           R_PINS: ${{ steps.r-metkit.outputs.pins }}
           R_ARTIFACTS: ${{ steps.r-metkit.outputs.artifacts }}
+        run: 'echo "PINS=${R_PINS}" >> "$GITHUB_ENV"
+
+          echo "EXPECTED=${EXPECTED} ${R_ARTIFACTS}" >> "$GITHUB_ENV"'
+      - id: pick-pyodc
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3)
+        uses: ecmwf/ci-infrastructure/actions/pick-ref@main
+        with:
+          repo: ecmwf/pyodc
+          try-branch: ${{ needs.context.outputs.head-branch }}
+          fallback-ref: develop
+          token: ${{ steps.mint.outputs.token }}
+      - if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3)
+        uses: actions/checkout@v6
+        with:
+          repository: ecmwf/pyodc
+          ref: ${{ steps.pick-pyodc.outputs.ref }}
+          token: ${{ steps.mint.outputs.token }}
+          persist-credentials: false
+          path: .downstream/pyodc
+          sparse-checkout: .ci
+      - name: Resolve pyodc
+        id: r-pyodc
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3)
+        continue-on-error: true
+        uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
+        with:
+          manifest: .downstream/pyodc/.ci/manifest.toml
+          current-branch: ${{ steps.pick-pyodc.outputs.ref }}
+          pin: ${{ env.PINS }}
+          expected-artifacts: ${{ env.EXPECTED }}
+          matrix: test
+          token: ${{ steps.mint.outputs.token }}
+          rebuild-missing: 'true'
+      - name: Carry pyodc's commits to the next consumer
+        if: steps.r-pyodc.outcome == 'success'
+        env:
+          R_PINS: ${{ steps.r-pyodc.outputs.pins }}
+          R_ARTIFACTS: ${{ steps.r-pyodc.outputs.artifacts }}
+        run: 'echo "PINS=${R_PINS}" >> "$GITHUB_ENV"
+
+          echo "EXPECTED=${EXPECTED} ${R_ARTIFACTS}" >> "$GITHUB_ENV"'
+      - id: pick-cfgrib
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 4)
+        uses: ecmwf/ci-infrastructure/actions/pick-ref@main
+        with:
+          repo: ecmwf/cfgrib
+          try-branch: ${{ needs.context.outputs.head-branch }}
+          fallback-ref: master
+          token: ${{ steps.mint.outputs.token }}
+      - if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 4)
+        uses: actions/checkout@v6
+        with:
+          repository: ecmwf/cfgrib
+          ref: ${{ steps.pick-cfgrib.outputs.ref }}
+          token: ${{ steps.mint.outputs.token }}
+          persist-credentials: false
+          path: .downstream/cfgrib
+          sparse-checkout: .ci
+      - name: Resolve cfgrib
+        id: r-cfgrib
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 4)
+        continue-on-error: true
+        uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
+        with:
+          manifest: .downstream/cfgrib/.ci/manifest.toml
+          current-branch: ${{ steps.pick-cfgrib.outputs.ref }}
+          pin: ${{ env.PINS }}
+          expected-artifacts: ${{ env.EXPECTED }}
+          matrix: test
+          token: ${{ steps.mint.outputs.token }}
+          rebuild-missing: 'true'
+      - name: Carry cfgrib's commits to the next consumer
+        if: steps.r-cfgrib.outcome == 'success'
+        env:
+          R_PINS: ${{ steps.r-cfgrib.outputs.pins }}
+          R_ARTIFACTS: ${{ steps.r-cfgrib.outputs.artifacts }}
         run: 'echo "PINS=${R_PINS}" >> "$GITHUB_ENV"
 
           echo "EXPECTED=${EXPECTED} ${R_ARTIFACTS}" >> "$GITHUB_ENV"'
@@ -485,6 +609,44 @@ jobs:
         run: 'echo "PINS=${R_PINS}" >> "$GITHUB_ENV"
 
           echo "EXPECTED=${EXPECTED} ${R_ARTIFACTS}" >> "$GITHUB_ENV"'
+      - id: pick-pdbufr
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 4)
+        uses: ecmwf/ci-infrastructure/actions/pick-ref@main
+        with:
+          repo: ecmwf/pdbufr
+          try-branch: ${{ needs.context.outputs.head-branch }}
+          fallback-ref: develop
+          token: ${{ steps.mint.outputs.token }}
+      - if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 4)
+        uses: actions/checkout@v6
+        with:
+          repository: ecmwf/pdbufr
+          ref: ${{ steps.pick-pdbufr.outputs.ref }}
+          token: ${{ steps.mint.outputs.token }}
+          persist-credentials: false
+          path: .downstream/pdbufr
+          sparse-checkout: .ci
+      - name: Resolve pdbufr
+        id: r-pdbufr
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 4)
+        continue-on-error: true
+        uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
+        with:
+          manifest: .downstream/pdbufr/.ci/manifest.toml
+          current-branch: ${{ steps.pick-pdbufr.outputs.ref }}
+          pin: ${{ env.PINS }}
+          expected-artifacts: ${{ env.EXPECTED }}
+          matrix: test
+          token: ${{ steps.mint.outputs.token }}
+          rebuild-missing: 'true'
+      - name: Carry pdbufr's commits to the next consumer
+        if: steps.r-pdbufr.outcome == 'success'
+        env:
+          R_PINS: ${{ steps.r-pdbufr.outputs.pins }}
+          R_ARTIFACTS: ${{ steps.r-pdbufr.outputs.artifacts }}
+        run: 'echo "PINS=${R_PINS}" >> "$GITHUB_ENV"
+
+          echo "EXPECTED=${EXPECTED} ${R_ARTIFACTS}" >> "$GITHUB_ENV"'
       - id: pick-gribjump
         if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 5)
         uses: ecmwf/ci-infrastructure/actions/pick-ref@main
@@ -523,6 +685,44 @@ jobs:
         run: 'echo "PINS=${R_PINS}" >> "$GITHUB_ENV"
 
           echo "EXPECTED=${EXPECTED} ${R_ARTIFACTS}" >> "$GITHUB_ENV"'
+      - id: pick-polytope
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 6)
+        uses: ecmwf/ci-infrastructure/actions/pick-ref@main
+        with:
+          repo: ecmwf/polytope
+          try-branch: ${{ needs.context.outputs.head-branch }}
+          fallback-ref: develop
+          token: ${{ steps.mint.outputs.token }}
+      - if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 6)
+        uses: actions/checkout@v6
+        with:
+          repository: ecmwf/polytope
+          ref: ${{ steps.pick-polytope.outputs.ref }}
+          token: ${{ steps.mint.outputs.token }}
+          persist-credentials: false
+          path: .downstream/polytope
+          sparse-checkout: .ci
+      - name: Resolve polytope
+        id: r-polytope
+        if: (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 6)
+        continue-on-error: true
+        uses: ecmwf/ci-infrastructure/actions/resolve-deps@main
+        with:
+          manifest: .downstream/polytope/.ci/manifest.toml
+          current-branch: ${{ steps.pick-polytope.outputs.ref }}
+          pin: ${{ env.PINS }}
+          expected-artifacts: ${{ env.EXPECTED }}
+          matrix: test
+          token: ${{ steps.mint.outputs.token }}
+          rebuild-missing: 'true'
+      - name: Carry polytope's commits to the next consumer
+        if: steps.r-polytope.outcome == 'success'
+        env:
+          R_PINS: ${{ steps.r-polytope.outputs.pins }}
+          R_ARTIFACTS: ${{ steps.r-polytope.outputs.artifacts }}
+        run: 'echo "PINS=${R_PINS}" >> "$GITHUB_ENV"
+
+          echo "EXPECTED=${EXPECTED} ${R_ARTIFACTS}" >> "$GITHUB_ENV"'
       - id: pins
         run: echo "pins=${PINS}" >> "$GITHUB_OUTPUT"
       - id: plans
@@ -533,11 +733,16 @@ jobs:
           PLANS_3: ${{ steps.r-fckit.outputs.dispatch-plans || '[]' }}
           PLANS_4: ${{ steps.r-odc.outputs.dispatch-plans || '[]' }}
           PLANS_5: ${{ steps.r-atlas.outputs.dispatch-plans || '[]' }}
-          PLANS_6: ${{ steps.r-metkit.outputs.dispatch-plans || '[]' }}
-          PLANS_7: ${{ steps.r-fdb.outputs.dispatch-plans || '[]' }}
-          PLANS_8: ${{ steps.r-mir.outputs.dispatch-plans || '[]' }}
-          PLANS_9: ${{ steps.r-gribjump.outputs.dispatch-plans || '[]' }}
-        run: 'plans=$(printf ''%s\n'' "${PLANS_0}" "${PLANS_1}" "${PLANS_2}" "${PLANS_3}" "${PLANS_4}" "${PLANS_5}" "${PLANS_6}" "${PLANS_7}" "${PLANS_8}" "${PLANS_9}" | jq -cs ''add // []'')
+          PLANS_6: ${{ steps.r-eccodes_python.outputs.dispatch-plans || '[]' }}
+          PLANS_7: ${{ steps.r-metkit.outputs.dispatch-plans || '[]' }}
+          PLANS_8: ${{ steps.r-pyodc.outputs.dispatch-plans || '[]' }}
+          PLANS_9: ${{ steps.r-cfgrib.outputs.dispatch-plans || '[]' }}
+          PLANS_10: ${{ steps.r-fdb.outputs.dispatch-plans || '[]' }}
+          PLANS_11: ${{ steps.r-mir.outputs.dispatch-plans || '[]' }}
+          PLANS_12: ${{ steps.r-pdbufr.outputs.dispatch-plans || '[]' }}
+          PLANS_13: ${{ steps.r-gribjump.outputs.dispatch-plans || '[]' }}
+          PLANS_14: ${{ steps.r-polytope.outputs.dispatch-plans || '[]' }}
+        run: 'plans=$(printf ''%s\n'' "${PLANS_0}" "${PLANS_1}" "${PLANS_2}" "${PLANS_3}" "${PLANS_4}" "${PLANS_5}" "${PLANS_6}" "${PLANS_7}" "${PLANS_8}" "${PLANS_9}" "${PLANS_10}" "${PLANS_11}" "${PLANS_12}" "${PLANS_13}" "${PLANS_14}" | jq -cs ''add // []'')
 
           echo "dispatch-plans=${plans}" >> "$GITHUB_OUTPUT"'
 
@@ -549,7 +754,7 @@ jobs:
         uses: ecmwf/ci-infrastructure/actions/dispatch-producers@main
         with:
           dispatch-plans: ${{ needs.resolve.outputs.dispatch-plans }}
-          repositories: atlas,ecbuild,eccodes,ecflow,eckit,fckit,fdb,gribjump,metkit,mir,odc,stack-dependencies
+          repositories: atlas,cfgrib,conflator,ecbuild,eccodes,eccodes-python,ecflow,eckit,fckit,fdb,findlibs,gribjump,metkit,mir,odc,pdbufr,polytope,pyodc,stack-dependencies
           client-id: ${{ vars.CI_DISPATCHER_APP_CLIENT_ID }}
           app-private-key: ${{ secrets.CI_DISPATCHER_APP_PRIVATE_KEY }}
     if: ${{ needs['label-gate'].outputs.run == 'true' }}
@@ -614,6 +819,29 @@ jobs:
       resolved-ref: ${{ needs.resolve.outputs.atlas-ref }}
     secrets: inherit
 
+  cfgrib:
+    name: cfgrib
+    needs:
+      - ci-approval
+      - context
+      - label-gate
+      - validate
+      - resolve
+      - rebuild-producers
+      - eccodes_python
+    if: ${{ (!cancelled() && !failure() && needs['validate'].result == 'success' && needs['resolve'].result == 'success' && needs['eccodes_python'].result == 'success') && needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 4) && !contains(needs['label-gate'].outputs.quarantined, ',cfgrib,') }}
+    uses: ecmwf/cfgrib/.github/workflows/cross-repo-trigger.yml@master
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["ecbuild/build"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: master
+      pin: ${{ needs.resolve.outputs.pins }}
+      resolved: ${{ needs.resolve.outputs.cfgrib }}
+      resolved-ref: ${{ needs.resolve.outputs.cfgrib-ref }}
+    secrets: inherit
+
   eccodes:
     name: eccodes
     needs: [ci-approval, context, label-gate, validate, resolve, rebuild-producers, eckit]
@@ -628,6 +856,22 @@ jobs:
       pin: ${{ needs.resolve.outputs.pins }}
       resolved: ${{ needs.resolve.outputs.eccodes }}
       resolved-ref: ${{ needs.resolve.outputs.eccodes-ref }}
+    secrets: inherit
+
+  eccodes_python:
+    name: eccodes-python
+    needs: [ci-approval, context, label-gate, validate, resolve, rebuild-producers, eccodes]
+    if: ${{ (!cancelled() && !failure() && needs['validate'].result == 'success' && needs['resolve'].result == 'success' && needs['eccodes'].result == 'success') && needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3) && !contains(needs['label-gate'].outputs.quarantined, ',eccodes-python,') }}
+    uses: ecmwf/eccodes-python/.github/workflows/cross-repo-trigger.yml@develop
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["ecbuild/build"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: develop
+      pin: ${{ needs.resolve.outputs.pins }}
+      resolved: ${{ needs.resolve.outputs.eccodes_python }}
+      resolved-ref: ${{ needs.resolve.outputs.eccodes_python-ref }}
     secrets: inherit
 
   ecflow:
@@ -766,6 +1010,61 @@ jobs:
       resolved-ref: ${{ needs.resolve.outputs.odc-ref }}
     secrets: inherit
 
+  pdbufr:
+    name: pdbufr
+    needs:
+      - ci-approval
+      - context
+      - label-gate
+      - validate
+      - resolve
+      - rebuild-producers
+      - eccodes_python
+    if: ${{ (!cancelled() && !failure() && needs['validate'].result == 'success' && needs['resolve'].result == 'success' && needs['eccodes_python'].result == 'success') && needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 4) && !contains(needs['label-gate'].outputs.quarantined, ',pdbufr,') }}
+    uses: ecmwf/pdbufr/.github/workflows/cross-repo-trigger.yml@develop
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["ecbuild/build"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: develop
+      pin: ${{ needs.resolve.outputs.pins }}
+      resolved: ${{ needs.resolve.outputs.pdbufr }}
+      resolved-ref: ${{ needs.resolve.outputs.pdbufr-ref }}
+    secrets: inherit
+
+  polytope:
+    name: polytope
+    needs: [ci-approval, context, label-gate, validate, resolve, rebuild-producers, gribjump]
+    if: ${{ (!cancelled() && !failure() && needs['validate'].result == 'success' && needs['resolve'].result == 'success' && needs['gribjump'].result == 'success') && needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 6) && !contains(needs['label-gate'].outputs.quarantined, ',polytope,') }}
+    uses: ecmwf/polytope/.github/workflows/cross-repo-trigger.yml@develop
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["ecbuild/build"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: develop
+      pin: ${{ needs.resolve.outputs.pins }}
+      resolved: ${{ needs.resolve.outputs.polytope }}
+      resolved-ref: ${{ needs.resolve.outputs.polytope-ref }}
+    secrets: inherit
+
+  pyodc:
+    name: pyodc
+    needs: [ci-approval, context, label-gate, validate, resolve, rebuild-producers, odc]
+    if: ${{ (!cancelled() && !failure() && needs['validate'].result == 'success' && needs['resolve'].result == 'success' && needs['odc'].result == 'success') && needs['label-gate'].outputs.run == 'true' && (needs['label-gate'].outputs.depth == 'all' || needs['label-gate'].outputs.depth >= 3) && !contains(needs['label-gate'].outputs.quarantined, ',pyodc,') }}
+    uses: ecmwf/pyodc/.github/workflows/cross-repo-trigger.yml@develop
+    with:
+      from-repo: ${{ github.repository }}
+      from-sha: ${{ needs.context.outputs.head-sha }}
+      from-jobs: '["ecbuild/build"]'
+      branch: ${{ needs.context.outputs.head-branch }}
+      fallback-ref: develop
+      pin: ${{ needs.resolve.outputs.pins }}
+      resolved: ${{ needs.resolve.outputs.pyodc }}
+      resolved-ref: ${{ needs.resolve.outputs.pyodc-ref }}
+    secrets: inherit
+
   zfdb:
     name: zfdb
     needs: [ci-approval, context, label-gate, validate, resolve, gribjump]
@@ -801,7 +1100,9 @@ jobs:
       - label-gate
       - validate
       - atlas
+      - cfgrib
       - eccodes
+      - eccodes_python
       - ecflow
       - eckit
       - fckit
@@ -810,6 +1111,9 @@ jobs:
       - metkit
       - mir
       - odc
+      - pdbufr
+      - polytope
+      - pyodc
       - zfdb
     if: ${{ (always() && needs.context.outputs.ci-conclusion == 'success') && needs['label-gate'].outputs.run == 'true' }}
     runs-on: ubuntu-latest
@@ -821,7 +1125,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           state=success
-          for r in ${{ needs.validate.result }} ${{ needs.atlas.result }} ${{ needs.eccodes.result }} ${{ needs.ecflow.result }} ${{ needs.eckit.result }} ${{ needs.fckit.result }} ${{ needs.fdb.result }} ${{ needs.gribjump.result }} ${{ needs.metkit.result }} ${{ needs.mir.result }} ${{ needs.odc.result }} ${{ needs.zfdb.result }}; do
+          for r in ${{ needs.validate.result }} ${{ needs.atlas.result }} ${{ needs.cfgrib.result }} ${{ needs.eccodes.result }} ${{ needs.eccodes_python.result }} ${{ needs.ecflow.result }} ${{ needs.eckit.result }} ${{ needs.fckit.result }} ${{ needs.fdb.result }} ${{ needs.gribjump.result }} ${{ needs.metkit.result }} ${{ needs.mir.result }} ${{ needs.odc.result }} ${{ needs.pdbufr.result }} ${{ needs.polytope.result }} ${{ needs.pyodc.result }} ${{ needs.zfdb.result }}; do
             if [ "$r" = failure ] || [ "$r" = cancelled ]; then
               state=failure
             fi
